@@ -2407,6 +2407,33 @@ buildChapterSelector();
 if (!restoreState()) {
   syncToggleButtons(); // reflect default controls on load
 }
+// Mixed-version guard (CLAUDE.md ES-module cache hazard): during a
+// service-worker update window this fresh, version-stamped main.js can be
+// paired with a STALE cached js/state/runtime.js whose default object
+// predates the parsing subtree (or a stale persistence.js that never
+// restores it). Everything parsing-related reaches state through the
+// configureParsing getState hook above, so patching the live object here
+// covers every consumer. Shape mirrors runtime.js's `parsing` default —
+// keep the two in sync (see the sync comment there).
+if (!runtime.parsing || typeof runtime.parsing !== 'object') {
+  runtime.parsing = {
+    schemaVersion: 1,
+    lesson: 1,
+    focusedParadigmId: null,
+    direction: 'parse',
+    shuffleAll: false,
+    customSetOn: false,
+    customSet: {},
+    excludeKnown: false,
+    includeAppendix: false,
+    dims: {
+      binyan: true, conjugation: true, person: true, gender: true,
+      number: true, suffix: true, state: true
+    },
+    attempts: {},
+    initializedFromVocab: false
+  };
+}
 // Rebuild after restore: runtime.appProfile may have changed, affecting grammar summary text
 buildSessions();
 buildChapterSelector();
@@ -2443,83 +2470,9 @@ function preventDoubleTapZoom(el) {
   if (el) preventDoubleTapZoom(el);
 });
 
-if ('serviceWorker' in navigator) {
-  let pendingWorker = null;
-  let reloading = false;
-  // Only reload as the result of a user-initiated update. Auto-reloading on
-  // controllerchange at launch froze iOS standalone PWAs (the page renders
-  // but taps do nothing until a force-quit). The new worker now waits until
-  // the user taps "Refresh now", so the reload runs inside their gesture —
-  // which iOS handles reliably.
-  let refreshAccepted = false;
-
-  navigator.serviceWorker.addEventListener('controllerchange', () => {
-    if (!refreshAccepted || reloading) return;
-    reloading = true;
-    window.location.reload();
-  });
-
-  window.acceptRefreshAvailable = function () {
-    refreshAccepted = true;
-    if (pendingWorker) {
-      try { pendingWorker.postMessage({ type: 'SKIP_WAITING' }); } catch (_) {}
-    }
-    // Belt-and-suspenders: if the worker activating doesn't fire
-    // controllerchange shortly, reload anyway so the tap is never a no-op.
-    setTimeout(() => {
-      if (!reloading) { reloading = true; window.location.reload(); }
-    }, 1500);
-  };
-
-  function showRefreshOverlay(sw) {
-    pendingWorker = sw;
-    const overlay = document.getElementById('refreshAvailableOverlay');
-    if (!overlay) return;
-    // Visibility needs the `.show` class (see styles.css); aria-hidden alone
-    // won't display it. We show it right away: the worker is waiting and
-    // won't apply on its own this session, so there's no auto-reload to race.
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden', 'false');
-    document.body.classList.add('modal-open');
-  }
-
-  function trackUpdates(reg) {
-    // A waiting (or just-installed) worker while a controller already exists
-    // means a returning user has a new version ready. Surface the prompt;
-    // the worker stays waiting until they tap "Refresh now".
-    if (reg.waiting && navigator.serviceWorker.controller) {
-      showRefreshOverlay(reg.waiting);
-    }
-    reg.addEventListener('updatefound', () => {
-      const sw = reg.installing;
-      if (!sw) return;
-      sw.addEventListener('statechange', () => {
-        if (sw.state === 'installed' && navigator.serviceWorker.controller) {
-          showRefreshOverlay(sw);
-        }
-      });
-    });
-  }
-
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' })
-      .then(reg => {
-        trackUpdates(reg);
-        try { reg.update(); } catch (_) {}
-        // Re-check whenever the tab regains focus, so a PWA reopened a day
-        // later picks up a deploy without needing a hard reload first.
-        document.addEventListener('visibilitychange', () => {
-          if (document.visibilityState !== 'visible') return;
-          try { reg.update(); } catch (_) {}
-          // A worker can already be waiting from before this resume — the
-          // one-time check in trackUpdates only runs at initial registration,
-          // so reopening a backgrounded PWA would otherwise sit silently on the
-          // old version. Re-surface the "Update available" prompt here.
-          if (reg.waiting && navigator.serviceWorker.controller) {
-            showRefreshOverlay(reg.waiting);
-          }
-        });
-      })
-      .catch(() => {});
-  });
-}
+// Service-worker registration + the "Update available" refresh prompt were
+// extracted to js/pwa/swUpdate.js — a CLASSIC script loaded from its own
+// <script> tag — after a field freeze: living at the tail of this module's
+// body meant any earlier startup error (e.g. the CLAUDE.md mixed-version
+// import hazard during an update window) silently killed the only recovery
+// UI. Do not re-inline it here.

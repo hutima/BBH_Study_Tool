@@ -78,6 +78,8 @@ export const runtime = {
   // js/ui/parsing.js. Owned/mutated only by js/ui/parsing.js (via the live
   // reference handed back from configureParsing's getState hook) and
   // restored/persisted by js/state/persistence.js's sanitizeParsingState.
+  // SYNC: js/app/main.js keeps a mirrored copy of this default shape in its
+  // mixed-version guard after restoreState() — update both together.
   parsing: {
     schemaVersion: 1,
     lesson: 1,
