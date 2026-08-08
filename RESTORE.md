@@ -13,7 +13,22 @@
   parsing analytics, cache `?v=2`. Also fixed a SHIPPED Phase 1 data-loss
   bug (orphan-cleanup migration deleted bbh-* vocab marks on
   import/restore). Playwright smoke steps a–j green, rerun by orchestrator.
-- Current phase: PR C — Grammar Quiz bank + mode.
+- **Hotfix merged** as `e6a36f2` (PR #5, `?v=3`): user hit a frozen app on
+  the v1→v2 update. Update prompt was NOT dropped — it was structurally
+  fragile (tail of main.js module body). Now extracted to
+  `js/pwa/swUpdate.js` (classic script, outside the module graph) + a
+  mixed-version guard fills `runtime.parsing` defaults after restore
+  (mirrored shape, sync comments both sides). Also carried the grammar
+  validator/generator tools (inert).
+- Current phase: PR C — Grammar Quiz bank + mode, plus user-requested
+  parsing UX round (grouped custom-set picker, 6-choice/all-that-apply
+  Build, contrast panel, mixed direction).
+- PR C status: 300 questions authored (5 blocks × 60, all lesson pages
+  read; fragments + author reports in session scratchpad), blinded via
+  deterministic shuffle (key files in scratchpad), 5 blind reviewers +
+  1 parsing-UX agent in flight. Next: score verdicts vs keys, fix/rewrite
+  defects, merge bank into source/bbh/grammar/questions.json, generate,
+  build Grammar mode UI (same seam pattern as Parsing), bump `?v=4`.
 - User directives this session: (1) GitHub Pages is the primary deployment —
   app must stay static/build-free/subpath-relative; merging to the default
   branch deploys. (2) Optional lesson grouping by the textbook's 13
