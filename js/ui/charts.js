@@ -415,197 +415,6 @@ export function buildTitleLadderHtml(xpData) {
   `;
 }
 
-// ── Per-value (mood / tense / voice …) proficiency breakdown ──────────────
-// Renders the grouped breakdown produced by finalizeValueBreakdown(): one
-// labelled group per dimension (Tense, Mood, …), each value a horizontal bar
-// coloured on the shared 5-band gradient (stacked-seg-b0..b80, red → green).
-// A value with no recent attempts shows a muted track + "—" so coverage gaps
-// (e.g. an aorist you've never drilled) read as honestly as weak ones.
-function masteryBandClass(pct) {
-  if (pct == null) return null;
-  if (pct < 20) return 'stacked-seg-b0';
-  if (pct < 40) return 'stacked-seg-b20';
-  if (pct < 60) return 'stacked-seg-b40';
-  if (pct < 80) return 'stacked-seg-b60';
-  return 'stacked-seg-b80';
-}
-
-// SVG fills can't use the .stacked-seg-* CSS classes (those set `background`,
-// which SVG rects ignore), so mirror the same 5-band red→green gradient as
-// explicit fills for charts that draw <rect> bars.
-function masteryBandFill(pct) {
-  if (pct == null) return 'rgba(138, 143, 168, 0.35)';
-  if (pct < 20) return 'rgba(166,  88,  88, 0.85)';
-  if (pct < 40) return 'rgba(192, 122,  76, 0.82)';
-  if (pct < 60) return 'rgba(201, 168,  76, 0.78)';
-  if (pct < 80) return 'rgba(160, 174,  90, 0.80)';
-  return 'rgba(102, 164, 120, 0.85)';
-}
-
-// Vertical bar chart of parsing accuracy across chronological buckets (each bar
-// is a run of ~N parses, oldest left → most recent right). `buckets` is the
-// `.buckets` array from getParsingAccuracyBuckets. `options.metric` selects the
-// bar height: 'full' (default — % of parses fully correct) or 'dim' (% of
-// individual dimensions correct). Bars are coloured on the shared 5-band
-// gradient so a glance reads weak (red) vs strong (green) runs.
-export function buildParsingAccuracyBucketsSvg(buckets, options = {}) {
-  const list = Array.isArray(buckets) ? buckets : [];
-  if (!list.length) {
-    return `<div class="analytics-empty">${escapeHtml(options.emptyText || 'Parse a few forms step-by-step and your accuracy trend will appear here.')}</div>`;
-  }
-  const width = options.width || 860;
-  const height = options.height || 220;
-  const padLeft = 64; const padRight = 14; const padTop = 14; const padBottom = 40;
-  const plotW = width - padLeft - padRight;
-  const plotH = height - padTop - padBottom;
-  const baseY = padTop + plotH;
-  const n = list.length;
-  const slot = plotW / n;
-  const barW = Math.min(options.maxBarWidth || 88, slot * 0.72);
-  const valueKey = options.metric === 'dim' ? 'dimPct' : 'fullPct';
-  const toY = pct => baseY - (Math.max(0, Math.min(100, pct)) / 100) * plotH;
-
-  const gridPcts = [0, 25, 50, 75, 100];
-  const grid = gridPcts.map(p => {
-    const y = toY(p);
-    return `<line x1="${padLeft}" y1="${y.toFixed(1)}" x2="${width - padRight}" y2="${y.toFixed(1)}" class="analytics-grid-line"></line>
-      <text x="${padLeft - 8}" y="${(y + 4).toFixed(1)}" text-anchor="end" class="analytics-axis-text">${p}%</text>`;
-  }).join('');
-
-  const bars = list.map((b, i) => {
-    const pct = Number(b[valueKey]) || 0;
-    const cx = padLeft + slot * i + slot / 2;
-    const x = cx - barW / 2;
-    const y = toY(pct);
-    const h = Math.max(0, baseY - y);
-    const fill = masteryBandFill(pct);
-    const title = `Parses ${b.first}–${b.last} (${b.count}): ${b.fullPct}% fully correct · ${b.dimPct}% of dimensions · ${b.fulls}/${b.count} clean`;
-    const valueLabel = `<text x="${cx.toFixed(1)}" y="${(y - 7).toFixed(1)}" text-anchor="middle" class="analytics-axis-text">${pct}%</text>`;
-    return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${fill}"><title>${escapeHtml(title)}</title></rect>${valueLabel}`;
-  }).join('');
-
-  // x-axis labels: keep it light — label the first (oldest) and last (latest)
-  // buckets, and every bar only when there are few. Otherwise they overlap.
-  const xLabels = list.map((b, i) => {
-    const show = n <= 6 || i === 0 || i === n - 1;
-    if (!show) return '';
-    const cx = padLeft + slot * i + slot / 2;
-    const label = i === n - 1 ? 'latest' : `${b.first}–${b.last}`;
-    return `<text x="${cx.toFixed(1)}" y="${height - 12}" text-anchor="middle" class="analytics-axis-text">${escapeHtml(label)}</text>`;
-  }).join('');
-
-  return `
-    <svg class="analytics-chart-svg" viewBox="0 0 ${width} ${height}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="${escapeHtml(options.title || 'Parsing accuracy over recent guesses')}">
-      <line x1="${padLeft}" y1="${padTop}" x2="${padLeft}" y2="${baseY}" class="analytics-axis-line"></line>
-      <line x1="${padLeft}" y1="${baseY}" x2="${width - padRight}" y2="${baseY}" class="analytics-axis-line"></line>
-      ${grid}
-      ${bars}
-      ${xLabels}
-    </svg>
-  `;
-}
-
-// Horizontal stacked composition of parse outcomes under the 3-tier scoring:
-// clean (every dim right first try), reattempted (eventually right via undo —
-// reduced credit), and missed. `rows` is an array of
-// { label, clean, reattempted, missed }; each renders as a labelled stacked bar
-// with a count caption, so a glance reads how much of the recent drilling was
-// clean vs needed a nudge vs flat wrong. Returns '' when there's nothing to show.
-export function buildParsingOutcomeMixHtml(rows, options = {}) {
-  const list = (Array.isArray(rows) ? rows : []).filter((r) => {
-    const total = (r.clean || 0) + (r.reattempted || 0) + (r.missed || 0);
-    return total > 0;
-  });
-  if (!list.length) return '';
-  const segs = [
-    { key: 'clean', cls: 'parsing-outcome-seg-clean', label: 'clean' },
-    { key: 'reattempted', cls: 'parsing-outcome-seg-reattempt', label: 'reattempted' },
-    { key: 'missed', cls: 'parsing-outcome-seg-missed', label: 'missed' }
-  ];
-  const rowsHtml = list.map((r) => {
-    const clean = r.clean || 0;
-    const reattempted = r.reattempted || 0;
-    const missed = r.missed || 0;
-    const total = clean + reattempted + missed;
-    const barSegs = segs.map((s) => {
-      const v = r[s.key] || 0;
-      if (!v) return '';
-      const pct = (v / total) * 100;
-      const title = `${v} ${s.label} (${Math.round(pct)}%)`;
-      return `<span class="parsing-outcome-seg ${s.cls}" style="width:${pct.toFixed(2)}%" title="${escapeHtml(title)}"></span>`;
-    }).join('');
-    const counts = `<span class="parsing-outcome-count"><span class="parsing-outcome-swatch parsing-outcome-seg-clean"></span>${clean} clean</span>`
-      + `<span class="parsing-outcome-count"><span class="parsing-outcome-swatch parsing-outcome-seg-reattempt"></span>${reattempted} reattempted</span>`
-      + `<span class="parsing-outcome-count"><span class="parsing-outcome-swatch parsing-outcome-seg-missed"></span>${missed} missed</span>`;
-    return `
-      <div class="parsing-outcome-row">
-        <div class="parsing-outcome-rowhead">
-          <span class="parsing-outcome-label">${escapeHtml(r.label || '')}</span>
-          <span class="parsing-outcome-total">${total} parse${total === 1 ? '' : 's'}</span>
-        </div>
-        <div class="parsing-outcome-bar" role="img" aria-label="${escapeHtml(`${r.label || 'parses'}: ${clean} clean, ${reattempted} reattempted, ${missed} missed`)}">${barSegs}</div>
-        <div class="parsing-outcome-legend">${counts}</div>
-      </div>`;
-  }).join('');
-  const caption = options.caption
-    || 'A reattempted parse was undone and re-answered — eventually right, but at reduced credit (a quarter for one undo, halving with each further undo).';
-  return `
-    <div class="analytics-chart-card">
-      <div class="analytics-chart-title">${escapeHtml(options.title || 'Parse outcome mix')}</div>
-      <div class="parsing-outcome-mix">${rowsHtml}</div>
-      <div class="dim-value-caption">${escapeHtml(caption)}</div>
-    </div>`;
-}
-
-export function buildDimValueBarsHtml(groups, options = {}) {
-  if (!Array.isArray(groups) || !groups.length) {
-    const msg = options.emptyText
-      || 'Drill a few more forms to unlock the per-mood / per-tense breakdown.';
-    return `<div class="dim-value-empty">${escapeHtml(msg)}</div>`;
-  }
-  const groupsHtml = groups.map((g) => {
-    const rowsHtml = g.rows.map((r) => {
-      const band = masteryBandClass(r.pct);
-      const fill = band
-        ? `<span class="dim-value-fill ${band}" style="width:${Math.max(4, r.pct)}%"></span>`
-        : '';
-      const pctText = r.pct == null ? '—' : `${r.pct}%`;
-      const cov = `${r.seenForms}/${r.forms}`;
-      const rowCls = r.pct == null ? 'dim-value-row dim-value-row-unseen' : 'dim-value-row';
-      const title = r.pct == null
-        ? `${g.label} ${r.label}: not attempted yet — ${r.forms} form${r.forms === 1 ? '' : 's'} in scope`
-        : `${g.label} ${r.label}: ${r.pct}% over recent attempts · ${r.seenForms}/${r.forms} forms seen`;
-      return `
-        <div class="${rowCls}" title="${escapeHtml(title)}">
-          <span class="dim-value-name">${escapeHtml(r.label)}</span>
-          <span class="dim-value-track">${fill}</span>
-          <span class="dim-value-pct">${pctText}</span>
-          <span class="dim-value-cov" aria-label="${r.seenForms} of ${r.forms} forms seen">${escapeHtml(cov)}</span>
-        </div>`;
-    }).join('');
-    return `
-      <div class="dim-value-group">
-        <div class="dim-value-group-label">${escapeHtml(g.label)}</div>
-        ${rowsHtml}
-      </div>`;
-  }).join('');
-  const caption = options.caption
-    || 'Per-dimension accuracy per value (each dimension scored on its own) · the number = forms you’ve seen / forms in scope';
-  // Column headers so the two right-hand numbers don't read as one figure: the
-  // % is whole-parse accuracy, the fraction is form coverage (seen / in scope).
-  const header = `
-    <div class="dim-value-head" aria-hidden="true">
-      <span></span>
-      <span></span>
-      <span class="dim-value-head-pct">acc.</span>
-      <span class="dim-value-head-cov">seen</span>
-    </div>`;
-  return `
-    <div class="dim-value-breakdown">${header}${groupsHtml}</div>
-    <div class="dim-value-caption">${escapeHtml(caption)}</div>
-  `;
-}
-
 // ── Per-word stat card (revealed by tapping a word row inside a chapter) ──
 // Pulls everything off the same g2e progress record the SRS uses, so the
 // numbers here are authoritative — same source as Study screen.
@@ -659,17 +468,8 @@ export function buildWordStatCardHtml(card, progressRaw, isKnownMark) {
       }).join('')}</div>`
     : '<div class="word-stat-history-empty">No reviews yet</div>';
 
-  // Grammar/morph cards use form/answer; vocab cards use Greek headword + English gloss.
-  // The morph cards always have `kind: 'morph'` so we can distinguish without a
-  // separate parameter — the rest of the stat card layout is identical because
-  // the per-card progress fields are the same for both directions.
-  const isMorph = card?.kind === 'morph' || !!card?.form;
-  const headword = isMorph
-    ? escapeHtml(card.form || card.lemma || '—')
-    : (typeof window !== 'undefined' && typeof window.formatGreekHeadword === 'function'
-        ? window.formatGreekHeadword(card.g)
-        : (card.g || '—'));
-  const gloss = isMorph ? escapeHtml(card.answer || card.gloss || '') : escapeHtml(card.e || '');
+  const headword = escapeHtml(card.g || '—');
+  const gloss = escapeHtml(card.e || '');
 
   const tile = (label, value) => `
     <div class="word-stat-tile">
@@ -682,7 +482,7 @@ export function buildWordStatCardHtml(card, progressRaw, isKnownMark) {
     <div class="word-stat-card">
       <div class="word-stat-head">
         <div class="word-stat-head-text">
-          <div class="word-stat-headword">${headword}</div>
+          <div class="word-stat-headword hebrew-text" dir="rtl" lang="he">${headword}</div>
           <div class="word-stat-gloss">${gloss}</div>
         </div>
         <div class="word-stat-head-pct">

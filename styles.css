@@ -1,14 +1,16 @@
-  /* Gentium Plus — self-hosted webfont used as the default serif for body,
-     display, and Greek text. WOFF2 files live in fonts/; the SW precaches
-     them so the PWA renders identically offline. Subsets bundled: latin,
-     latin-ext, greek, greek-ext (cyrillic + vietnamese skipped — not used
-     by this app). Styles bundled: regular, italic, bold, bold italic. */
+  /* Gentium Plus — self-hosted webfont used as the default serif for Latin
+     (UI chrome, English gloss/translit) text. WOFF2 files live in fonts/;
+     the SW precaches them so the PWA renders identically offline. Subsets
+     bundled: latin, latin-ext (cyrillic, greek, and vietnamese skipped —
+     not used by this app). Styles bundled: regular, italic, bold, bold
+     italic. Hebrew text uses the separate Noto Serif/Sans Hebrew faces
+     declared below instead — Gentium Plus has no Hebrew coverage. */
   @font-face {
     font-family: 'Gentium Plus';
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=187') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=1') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -16,31 +18,15 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=187') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=1') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-  }
-  @font-face {
-    font-family: 'Gentium Plus';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('fonts/gentium-plus-greek-400-normal.woff2?v=187') format('woff2');
-    unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-  }
-  @font-face {
-    font-family: 'Gentium Plus';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: url('fonts/gentium-plus-greek-ext-400-normal.woff2?v=187') format('woff2');
-    unicode-range: U+1F00-1FFF;
   }
   @font-face {
     font-family: 'Gentium Plus';
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=187') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=1') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -48,31 +34,15 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=187') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=1') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-  }
-  @font-face {
-    font-family: 'Gentium Plus';
-    font-style: italic;
-    font-weight: 400;
-    font-display: swap;
-    src: url('fonts/gentium-plus-greek-400-italic.woff2?v=187') format('woff2');
-    unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-  }
-  @font-face {
-    font-family: 'Gentium Plus';
-    font-style: italic;
-    font-weight: 400;
-    font-display: swap;
-    src: url('fonts/gentium-plus-greek-ext-400-italic.woff2?v=187') format('woff2');
-    unicode-range: U+1F00-1FFF;
   }
   @font-face {
     font-family: 'Gentium Plus';
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=187') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=1') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -80,31 +50,15 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=187') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=1') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-  }
-  @font-face {
-    font-family: 'Gentium Plus';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('fonts/gentium-plus-greek-700-normal.woff2?v=187') format('woff2');
-    unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-  }
-  @font-face {
-    font-family: 'Gentium Plus';
-    font-style: normal;
-    font-weight: 700;
-    font-display: swap;
-    src: url('fonts/gentium-plus-greek-ext-700-normal.woff2?v=187') format('woff2');
-    unicode-range: U+1F00-1FFF;
   }
   @font-face {
     font-family: 'Gentium Plus';
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=187') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=1') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -112,31 +66,15 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=187') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=1') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-  }
-  @font-face {
-    font-family: 'Gentium Plus';
-    font-style: italic;
-    font-weight: 700;
-    font-display: swap;
-    src: url('fonts/gentium-plus-greek-700-italic.woff2?v=187') format('woff2');
-    unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-  }
-  @font-face {
-    font-family: 'Gentium Plus';
-    font-style: italic;
-    font-weight: 700;
-    font-display: swap;
-    src: url('fonts/gentium-plus-greek-ext-700-italic.woff2?v=187') format('woff2');
-    unicode-range: U+1F00-1FFF;
   }
 
-  /* Noto Sans — self-hosted variable webfont used when the user picks the
-     sans-serif preference. WOFF2 files in fonts/ are Google Fonts' variable
-     Noto Sans (one file per subset × style covers the full 100–900 weight
-     range via variation axis). Bundled subsets: latin, latin-ext, greek,
-     greek-ext. Styles: normal, italic.
+  /* Noto Sans — self-hosted variable webfont used for Latin text when the
+     user picks the sans-serif preference. WOFF2 files in fonts/ are Google
+     Fonts' variable Noto Sans (one file per subset × style covers the full
+     100–900 weight range via variation axis). Bundled subsets: latin,
+     latin-ext. Styles: normal, italic. Hebrew uses Noto Sans Hebrew below.
 
      Optical-height match against the serif default: measured from the
      OS/2 tables, Gentium Plus has x-height 45.4% of em and Noto Sans has
@@ -153,7 +91,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-normal.woff2?v=187') format('woff2');
+    src: url('fonts/noto-sans-latin-normal.woff2?v=1') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -164,30 +102,8 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=187') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=1') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
-  }
-  @font-face {
-    font-family: 'Noto Sans';
-    font-style: normal;
-    font-weight: 100 900;
-    font-display: swap;
-    size-adjust: 85%;
-    ascent-override: 110%;
-    descent-override: 37%;
-    src: url('fonts/noto-sans-greek-normal.woff2?v=187') format('woff2');
-    unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
-  }
-  @font-face {
-    font-family: 'Noto Sans';
-    font-style: normal;
-    font-weight: 100 900;
-    font-display: swap;
-    size-adjust: 85%;
-    ascent-override: 110%;
-    descent-override: 37%;
-    src: url('fonts/noto-sans-greek-ext-normal.woff2?v=187') format('woff2');
-    unicode-range: U+1F00-1FFF;
   }
   @font-face {
     font-family: 'Noto Sans';
@@ -197,7 +113,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-italic.woff2?v=187') format('woff2');
+    src: url('fonts/noto-sans-latin-italic.woff2?v=1') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -208,30 +124,32 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=187') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=1') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
+
+  /* Noto Serif/Sans Hebrew — self-hosted variable webfonts (weight axis
+     400–700) providing the Hebrew glyph coverage Gentium Plus/Noto Sans
+     lack. One normal-style file per family; the textbook's Biblical Hebrew
+     text is never italicized, so no italic face is bundled. License:
+     fonts/OFL-noto-hebrew.txt. Paired with the serif/sans switch via
+     --font-hebrew (see the :root block below) so choosing "Serif"/"Sans"
+     changes the Hebrew face along with the Latin one. */
   @font-face {
-    font-family: 'Noto Sans';
-    font-style: italic;
-    font-weight: 100 900;
+    font-family: 'Noto Serif Hebrew';
+    font-style: normal;
+    font-weight: 400 700;
     font-display: swap;
-    size-adjust: 85%;
-    ascent-override: 110%;
-    descent-override: 37%;
-    src: url('fonts/noto-sans-greek-italic.woff2?v=187') format('woff2');
-    unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+    src: url('fonts/noto-serif-hebrew.woff2?v=1') format('woff2');
+    unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
   @font-face {
-    font-family: 'Noto Sans';
-    font-style: italic;
-    font-weight: 100 900;
+    font-family: 'Noto Sans Hebrew';
+    font-style: normal;
+    font-weight: 400 700;
     font-display: swap;
-    size-adjust: 85%;
-    ascent-override: 110%;
-    descent-override: 37%;
-    src: url('fonts/noto-sans-greek-ext-italic.woff2?v=187') format('woff2');
-    unicode-range: U+1F00-1FFF;
+    src: url('fonts/noto-sans-hebrew.woff2?v=1') format('woff2');
+    unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
 
   :root {
@@ -243,8 +161,8 @@
     --gold: #c9a84c;
     --gold-light: #e8c97a;
     /* Dim-gold label tint. Keep ≥4.5:1 on --bg and ≥4.2:1 on --surface —
-       it carries all the tiny uppercase meta labels (koine line, card
-       corner labels, section summaries, reader refs). */
+       it carries all the tiny uppercase meta labels (header language line,
+       card corner labels, section summaries, reader refs). */
     --gold-dim: #9a7d42;
     --cream: #f0e6c8;
     --muted: #8a8fa8;
@@ -253,21 +171,25 @@
     --green: #4a7a5a;
     --radius: 12px;
     --shadow: 0 8px 40px rgba(0,0,0,0.6);
-    /* Default serif stack: Gentium Plus (self-hosted, polytonic-capable)
-       with the generic serif as a fallback for any glyph outside the
-       bundled subsets. Used for body, display, and Greek text. */
+    /* Default serif stack: Gentium Plus (self-hosted) for Latin text, with
+       the generic serif as a fallback for any glyph outside the bundled
+       subsets. Used for body and display text. */
     --font-body: 'Gentium Plus', serif;
     --font-display: 'Gentium Plus', serif;
-    --font-greek: 'Gentium Plus', serif;
+    /* Hebrew stack: self-hosted Noto Serif Hebrew first, then a chain of
+       Hebrew-capable system/user-installed fonts (SBL Hebrew, Ezra SIL,
+       Taamey Frank CLM, David CLM — all common Biblical-Hebrew fonts that
+       may already be on the device) before falling back to generic serif. */
+    --font-hebrew: 'Noto Serif Hebrew', 'SBL Hebrew', 'Ezra SIL', 'Taamey Frank CLM', 'David CLM', serif;
   }
 
-  /* Sans-serif override: body, display, and Greek text all use the
-     self-hosted Noto Sans declared above. The generic sans-serif is a
-     last-resort fallback if the bundled woff2 ever fails to load. */
+  /* Sans-serif override: body/display Latin text and the Hebrew stack both
+     switch to their Noto Sans counterparts. The generic sans-serif is a
+     last-resort fallback if a bundled woff2 ever fails to load. */
   html[data-font-family="sans"] {
     --font-body: 'Noto Sans', sans-serif;
     --font-display: 'Noto Sans', sans-serif;
-    --font-greek: 'Noto Sans', sans-serif;
+    --font-hebrew: 'Noto Sans Hebrew', 'SBL Hebrew', 'Ezra SIL', 'Taamey Frank CLM', 'David CLM', sans-serif;
   }
 
   /* Text size: scales the rendered glyphs via a single multiplier that every
@@ -354,7 +276,6 @@
   .theme-btn + .theme-btn { border-left: 1px solid var(--border); }
   .theme-btn:hover { color: var(--gold); background: rgba(201,168,76,0.06); }
   .theme-btn.active { color: var(--gold-light); background: rgba(201,168,76,0.14); }
-  header .koine { font-family: var(--font-greek); font-size: calc((13px) * var(--text-scale)); letter-spacing: 3px; color: var(--gold-dim); text-transform: uppercase; margin-bottom: 10px; }
   header h1 { font-family: var(--font-display); font-size: calc((clamp(20px, 4vw, 30px)) * var(--text-scale)); font-weight: 600; color: var(--gold); letter-spacing: 1px; line-height: 1.3; }
   header .subtitle { font-style: italic; color: var(--muted); margin-top: 6px; font-size: calc((15px) * var(--text-scale)); }
   header .wycliffe { font-family: var(--font-display); font-size: calc((11px) * var(--text-scale)); letter-spacing: 2px; color: var(--gold-dim); text-transform: uppercase; margin-top: 8px; }
@@ -807,12 +728,11 @@
   .card-required-label-opt { opacity: 0.4; }
 
   .card-greek {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((clamp(26px, 6vw, 42px)) * var(--text-scale));
     color: var(--cream);
     text-align: center;
-    line-height: 1.4;
-    letter-spacing: 1px;
+    line-height: 1.6;
     margin-bottom: 10px;
   }
   .card-hint {
@@ -839,13 +759,65 @@
     margin-bottom: 8px;
   }
   .card-greek-small {
-    font-family: var(--font-greek);
-    font-size: calc((16px) * var(--text-scale));
+    font-family: var(--font-hebrew);
+    /* Reprised headword under the English answer — bumped well past the
+       plain 16px secondary-text size because pointed Hebrew at small sizes
+       clips/crowds its vowel points. No italic: Hebrew has no italic form,
+       and a synthetic slant distorts the points. */
+    font-size: calc((clamp(19px, 4vw, 23px)) * var(--text-scale));
     color: var(--muted);
     text-align: center;
-    font-style: italic;
+    line-height: 1.6;
     margin-top: 6px;
   }
+
+  /* Hebrew-script typography, layered on the sizing class above (.card-greek,
+     .card-greek-small, .empty-state .big) via dir="rtl" lang="he" wrapper
+     markup in js/ui/render.js. Source order after those rules lets this win
+     on the shared properties below without needing extra specificity.
+     - unicode-bidi: isolate keeps a Hebrew run's own RTL base direction from
+       leaking into surrounding punctuation — without it, parentheses and
+       slashes in headwords like "דָּבָר (דְּבָרִים)" or "אָדוֹן / אֲדֹנָי" can mirror
+       to the wrong side.
+     - letter-spacing must stay at the font's default: added tracking visually
+       detaches combining vowel points/dagesh from their base letter, so it's
+       forced off here regardless of what any other rule sets. */
+  .hebrew-text {
+    font-family: var(--font-hebrew);
+    line-height: 1.6;
+    letter-spacing: normal !important;
+    unicode-bidi: isolate;
+  }
+
+  /* Transliteration line under the answer face — visually secondary to both
+     the Hebrew headword and the English gloss. The Transliteration
+     display-prefs toggle (js/app/main.js setShowTranslit) hides it entirely
+     via the html[data-show-translit="hide"] rule further down, rather than
+     just dimming it further. */
+  .card-translit {
+    font-family: var(--font-body);
+    font-style: italic;
+    font-size: calc((14px) * var(--text-scale));
+    color: var(--muted);
+    text-align: center;
+    margin-top: 4px;
+  }
+  /* Notes (grammar/forms) + page reference, one line under the transliteration
+     — smaller still, since it's reference detail rather than content to recall. */
+  .card-detail-line {
+    /* Hebrew forms quoted inside notes fall through per-glyph to the Hebrew
+       family — --font-body carries no Hebrew coverage. */
+    font-family: var(--font-body), var(--font-hebrew);
+    font-size: calc((11px) * var(--text-scale));
+    color: var(--gold-dim);
+    opacity: 0.75;
+    text-align: center;
+    margin-top: 4px;
+  }
+  /* Transliteration display-prefs toggle (default shown) — see setShowTranslit
+     in js/app/main.js. Hiding via CSS (rather than skipping the markup) keeps
+     the DOM node stable across re-renders. */
+  html[data-show-translit="hide"] .card-translit { display: none; }
   /* Alphabet cards (Chapter 0): one large glyph with the letter's name spelt
      out in small muted text beneath it. The glyph is scaled up from the usual
      headword size; the name mirrors the small "spelling" treatment the
@@ -856,7 +828,7 @@
     margin-bottom: 4px;
   }
   .card-letter-name {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((16px) * var(--text-scale));
     color: var(--gold-dim);
     text-align: center;
@@ -868,7 +840,7 @@
    * pf.), each paired with a tiny label, so the present is associated with
    * its irregular parts at a glance. Wraps when a verb carries several. */
   .card-stem-alts {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((clamp(15px, 2.8vw, 20px)) * var(--text-scale));
     color: var(--gold-dim);
     text-align: center;
@@ -898,7 +870,7 @@
     margin-bottom: 2px;
     opacity: 0.9;
   }
-  /* Verbal stem printed inline after the form (", λαβ-") on both faces of a
+  /* Verbal stem printed inline after the form on both faces of a
    * stem-flip card. Smaller and muted so the inflected form stays dominant. */
   .card-stem-inline {
     font-size: 0.6em;
@@ -1320,7 +1292,7 @@
     font-size: calc((15px) * var(--text-scale));
   }
   .review-item .rg {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     color: var(--cream);
     min-width: 0;
   }
@@ -1364,7 +1336,7 @@
 
   /* ── Empty state ── */
   .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); font-style: italic; }
-  .empty-state .big { font-family: var(--font-greek); font-size: calc((40px) * var(--text-scale)); color: var(--border); margin-bottom: 16px; }
+  .empty-state .big { font-family: var(--font-hebrew); font-size: calc((40px) * var(--text-scale)); color: var(--border); margin-bottom: 16px; }
   /* Parsing-mode redirect card — clickable empty-state. Hops into Grammar
      mode with the matching stem-recall drill preselected. */
   button.parsing-redirect-btn {
@@ -1592,7 +1564,7 @@
   }
 
   .morph-form {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((clamp(28px, 6vw, 44px)) * var(--text-scale));
     color: var(--cream);
     line-height: 1.2;
@@ -1607,7 +1579,7 @@
   }
 
   .choice-btn-greek {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((clamp(18px, 3.2vw, 22px)) * var(--text-scale));
   }
 
@@ -1682,18 +1654,6 @@
       border-color: var(--gold-dim);
       background: #1e2030;
     }
-  }
-
-  /* Alternate-terminology sub-label under an aspect choice (Duff's
-     "continuous/undefined/completed" → the common imperfective/perfective/
-     stative labels). Small, italic, dimmed; sits on its own line. */
-  .choice-btn-alt {
-    display: block;
-    margin-top: 2px;
-    font-style: italic;
-    font-size: calc((12px) * var(--text-scale));
-    color: var(--gold-dim);
-    opacity: 0.75;
   }
 
   .choice-btn.correct {
@@ -1878,7 +1838,7 @@
   }
 
   .morph-example-greek {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((18px) * var(--text-scale));
     line-height: 1.45;
     color: var(--cream);
@@ -1917,7 +1877,7 @@
   }
 
   .morph-wrong-greek {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((17px) * var(--text-scale));
     line-height: 1.45;
     color: var(--cream);
@@ -1965,7 +1925,7 @@
     flex-wrap: wrap;
   }
   .paradigm-stat-lemma {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((18px) * var(--text-scale));
     color: var(--cream);
   }
@@ -1996,7 +1956,7 @@
     margin-bottom: 6px;
   }
   .parsing-review-lemma {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((17px) * var(--text-scale));
     color: var(--cream);
   }
@@ -2381,7 +2341,7 @@
   .morph-step-parse-match {
     margin-top: 4px;
     margin-left: 92px;
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((15px) * var(--text-scale));
     color: var(--cream);
   }
@@ -2726,7 +2686,7 @@
     margin-bottom: 4px;
   }
   .morph-lookup-form {
-    font-family: var(--font-greek, var(--font-display));
+    font-family: var(--font-hebrew, var(--font-display));
     font-size: calc((30px) * var(--text-scale));
     color: var(--gold-light);
     line-height: 1.25;
@@ -2870,7 +2830,7 @@
     padding: 8px 10px;
     border-left: 2px solid rgba(201,168,76,0.45);
     background: rgba(201,168,76,0.05);
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((15px) * var(--text-scale));
     color: var(--cream);
     border-radius: 0 6px 6px 0;
@@ -2906,7 +2866,7 @@
     text-transform: uppercase;
     color: var(--gold-dim);
   }
-  /* "Form vs meaning" — explains a tense-in-form / sense mismatch (οἶδα is a
+  /* "Form vs meaning" — explains a tense-in-form / sense mismatch (a
      perfect used as a present). Blue accent like the other "why a mark was
      accepted" explanatory notes, distinct from the gold morphology tell. */
   .morph-step-meaning-note {
@@ -5768,7 +5728,7 @@
   }
 
   .reader-verse-greek {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((clamp(18px, 3.4vw, 22px)) * var(--text-scale));
     color: var(--cream);
     line-height: 1.65;
@@ -5882,7 +5842,7 @@
   }
 
   .reader-drill-greek {
-    font-family: var(--font-greek);
+    font-family: var(--font-hebrew);
     font-size: calc((clamp(18px, 3.4vw, 22px)) * var(--text-scale));
     color: var(--cream);
     line-height: 1.55;

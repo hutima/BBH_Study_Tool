@@ -17,23 +17,18 @@ import {
   sanitizeGamificationState,
   STORAGE_KEY,
   CONSENT_STORAGE_KEY,
-  WHATS_NEW_V1_5_STORAGE_KEY,
   THEME_STORAGE_KEY,
   FONT_FAMILY_STORAGE_KEY,
   TEXT_SIZE_STORAGE_KEY
 } from '../state/store.js';
 import { getStorage } from '../utils/storage.js';
 import { shieldClicksBriefly } from '../utils/clickShield.js';
-import { maybeShowAspectDefaultOffModal } from './modals.js';
 import { renderCard } from './render.js';
 import { renderProgress, renderReview } from './progress.js';
 import {
   loadDeckFromKeys,
   buildSessions,
-  buildChapterSelector,
-  buildSupplementalSelector,
-  buildAdvancedSelector,
-  buildBookVocabSelector
+  buildChapterSelector
 } from './selectors.js';
 
 let host = {
@@ -550,11 +545,6 @@ export function setStudyMode(mode) {
   runtime.marks = host.getDirectionalMarksStore();
   host.syncToggleButtons();
 
-  // Entering parsing: one-time heads-up for returning users that the Aspect
-  // step now defaults off (and where to switch it back on). No-op for fresh
-  // installs and after it's been dismissed once.
-  if (nextMode === 'parsing') maybeShowAspectDefaultOffModal();
-
   if (host.isReaderMode()) {
     host.renderReaderModule();
     renderProgress();
@@ -598,9 +588,6 @@ export function setAppProfile(profile) {
   runtime.marks = host.getDirectionalMarksStore();
   buildSessions();
   buildChapterSelector();
-  buildSupplementalSelector();
-  buildAdvancedSelector();
-  buildBookVocabSelector();
   host.syncToggleButtons();
 
   if (!runtime.selectedKeys.length) {
@@ -615,81 +602,11 @@ export function setAppProfile(profile) {
   loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
 }
 
-export function toggleMorphSelfCheck() {
-  if (!host.isMorphologyMode()) return;
-  runtime.morphSelfCheck = !runtime.morphSelfCheck;
-  host.resetMorphAnswerState();
-  host.syncToggleButtons();
-  renderCard();
-  host.saveState();
-}
-
-// Step-by-step parsing drill — alternate render path for morph cards that
-// Legacy no-op: Parse step-by-step used to be a toggle inside Grammar mode.
-// It's now its own top-level study mode (setStudyMode('parsing')); kept as
-// a stub so saved/imported state that still references it doesn't error.
-export function toggleMorphStepByStep() {
-  // Intentionally empty — see setStudyMode('parsing') instead.
-}
-
-// Sentinel <option> value at the head of the focused-paradigm dropdown. It's the
-// dropdown face of the "Shuffle all paradigms (to chapter)" toggle: selecting it
-// turns shuffle-all on, and selecting any real paradigm turns it back off (see
-// setMorphFocusedParadigm / syncParadigmFocusUi in main.js). Mirrors how the
-// chapter dropdown's "Build mode" sentinel drives the Lookup-mode toggle. Not a
-// real lemma, so it can never collide with a paradigm value.
-//
-// Kept as an export even though main.js now defines its own local copy (rather
-// than importing this): an OLDER shipped main.js may still `import` it across a
-// service-worker update, and removing the export would SyntaxError that stale
-// importer. main.js's copy must stay byte-identical to this string — see the
-// cache-busting note in CLAUDE.md.
-export const PARSING_SHUFFLE_ALL_VALUE = '__shuffleAllToChapter__';
-
-export function setMorphFocusedParadigm(lemma) {
-  if (!host.isParsingMode()) return;
-  // "All paradigms through selected chapter" sentinel — the dropdown face of the
-  // shuffle-all toggle. Picking it turns shuffle-all on; picking a concrete
-  // paradigm while shuffle-all is on turns it back off (set the focus first so
-  // the toggle's deck rebuild uses it). Keeps dropdown ⇄ toggle symmetrical.
-  if (lemma === PARSING_SHUFFLE_ALL_VALUE) {
-    if (!runtime.parsingShuffleAll) toggleParsingShuffleAll();
-    return;
-  }
-  if (runtime.parsingShuffleAll) {
-    runtime.morphFocusedParadigm = lemma || null;
-    toggleParsingShuffleAll();
-    return;
-  }
-  runtime.morphFocusedParadigm = lemma || null;
-  host.resetMorphStepState();
-  host.rebuildMorphDeckForStepMode();
-  host.syncToggleButtons();
-  renderCard();
-  renderProgress();
-  renderReview();
-  host.saveState();
-}
 
 export function toggleShuffle() {
-  if (host.isReaderMode()) return;
   runtime.shuffled = !runtime.shuffled;
   runtime.flipsSinceReshuffle = 0;
   host.syncToggleButtons();
-
-  // Parsing owns its ordering (orderParsingPool: shown-fewest-first, then the
-  // status-weighted bias when shuffle is on; strict paradigm order when off).
-  // Rebuild through its canonical builder so the toggle applies the same way
-  // regardless of parsing's inherited spaced/unspaced flag.
-  if (host.isParsingMode()) {
-    host.rebuildParsingCycle();
-    runtime.isFlipped = false;
-    renderCard();
-    renderProgress();
-    renderReview();
-    host.saveState();
-    return;
-  }
 
   if (runtime.spacedRepetition) {
     runtime.deck = host.buildStudyDeck(runtime.originalDeck, { forceShuffle: runtime.shuffled });
@@ -746,44 +663,6 @@ export function toggleHardVocabReview() {
   loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
 }
 
-// Stem & declension notes (inline stems, principal-parts line, "declines
-// like" pointer) are render-only annotations on standard vocab cards —
-// flipping the toggle re-renders the current card; the deck is untouched.
-export function toggleStemNotes() {
-  runtime.stemNotes = runtime.stemNotes === false;
-  host.syncToggleButtons();
-  host.saveState();
-  renderCard();
-}
-
-// The "(aorist)" / "(future)" tense caption on derived irregular cards is a
-// render-only annotation (like stem notes) — flipping it just re-renders the
-// current card; the deck is untouched. When off, render.js shows a small
-// superscript star before the headword in its place.
-export function toggleIrregularTense() {
-  runtime.irregularTense = runtime.irregularTense === false;
-  host.syncToggleButtons();
-  host.saveState();
-  renderCard();
-}
-
-// Irregular forms as their own cards (e.g. εἶπον alongside λέγω, λέλυκα
-// alongside λύω). Unlike stem notes this changes the deck's contents, so it
-// rebuilds the deck the same way toggleRequiredOnly does. Clicking records an
-// explicit override (true/false) so the auto "on when the chapter is selected"
-// default no longer applies to that concept.
-export function toggleIrregularCards(tag) {
-  if (!runtime.irregularCards || typeof runtime.irregularCards !== 'object') runtime.irregularCards = {};
-  const current = isIrregularCardEnabled(tag, runtime.selectedKeys, runtime.irregularCards);
-  runtime.irregularCards[tag] = !current;
-  host.syncToggleButtons();
-  if (!runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
 
 export function toggleDirection() {
   runtime.directionToGreek = !runtime.directionToGreek;
@@ -865,463 +744,6 @@ export function toggleUnspacedDailyReset() {
   host.saveState();
 }
 
-export function toggleSplitSelection() {
-  runtime.splitSelection = !runtime.splitSelection;
-  if (runtime.splitSelection) {
-    // Seed both modes with the current selection; they diverge from here.
-    const snapshot = () => ({
-      selectedKeys: [...runtime.selectedKeys],
-      currentSessionId: runtime.currentSession ? runtime.currentSession.id : null
-    });
-    runtime.modeSelections = { vocab: snapshot(), morph: snapshot() };
-  } else {
-    runtime.modeSelections = {};
-  }
-  host.syncToggleButtons();
-  host.saveState();
-}
-
-export function toggleAspectStep() {
-  runtime.aspectStep = !runtime.aspectStep;
-  // Reset any in-flight step state so the next render rebuilds the walk
-  // with the new step set (otherwise the cached state still has the old
-  // step list with/without aspect).
-  runtime.morphStepState = { cardId: null, steps: [], stepIdx: 0, answers: [], completed: false };
-  host.syncToggleButtons();
-  renderCard();
-  host.saveState();
-}
-
-const DIM_TOGGLE_KEYS = new Set(['tense', 'voice', 'mood', 'person', 'number', 'case', 'gender']);
-
-// Toggles the parsing walk's step for one dimension on or off. Off →
-// step skipped, dim doesn't count toward stats, omitted from the
-// final parse summary, and the form lookup silently auto-fills the
-// canonical correct value. Aspect has its own toggle (toggleAspectStep)
-// since it predates this generic mechanism.
-export function toggleDimStep(dimKey) {
-  if (!DIM_TOGGLE_KEYS.has(dimKey)) return;
-  if (!runtime.dimToggles || typeof runtime.dimToggles !== 'object') {
-    runtime.dimToggles = {};
-  }
-  runtime.dimToggles[dimKey] = runtime.dimToggles[dimKey] === false;
-  runtime.morphStepState = { cardId: null, steps: [], stepIdx: 0, answers: [], completed: false };
-  host.syncToggleButtons();
-  renderCard();
-  host.saveState();
-}
-
-// Opt in/out of drilling LEMMA_INVENTORY.optionalFormGroups. Affects the
-// parsing card pool (not the fallback form-lookup, which always
-// consults extraForms). When the user is in parsing mode and has a
-// focused paradigm, the deck has to be reloaded so the newly-included
-// (or excluded) optional cards take effect; outside parsing mode the
-// flag still flips and persists but nothing visible changes until the
-// next parsing session.
-export function toggleOptionalForms() {
-  runtime.includeOptionalForms = !runtime.includeOptionalForms;
-  host.syncToggleButtons();
-  if (!runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// Drop any card whose last two parsing attempts are both correct (2/2)
-// from the parsing deck. The 1/1 "single right answer so far" state is
-// intentionally kept in the pool — the user has to demonstrate the form
-// twice before parsing mode skips it. Rebuilds the deck immediately so
-// the toggle takes effect mid-session; outside parsing mode the flag
-// still flips and persists but the deck isn't rebuilt (vocab/grammar
-// don't read it).
-export function toggleExcludeKnownMorphs() {
-  runtime.excludeKnownMorphs = !runtime.excludeKnownMorphs;
-  host.syncToggleButtons();
-  if (!runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// "Shuffle all paradigms": ignore the focused paradigm and draw the parsing
-// deck from every in-scope paradigm up to the current chapter gate, shuffled
-// together. Off by default. Only parsing mode reads it; outside parsing the
-// flag still flips and persists but no rebuild happens. Drops any in-flight
-// walk so the next card starts clean, hides the focused-paradigm dropdown
-// (handled in syncLayoutVisibility), then rebuilds the deck.
-export function toggleParsingShuffleAll() {
-  if (!host.isParsingMode()) return;
-  runtime.parsingShuffleAll = !runtime.parsingShuffleAll;
-  // Shuffle-all and the custom paradigm set are mutually exclusive deck
-  // sources — turning one on turns the other off.
-  if (runtime.parsingShuffleAll) runtime.parsingCustomReview = false;
-  host.resetMorphStepState();
-  host.resetMorphAnswerState();
-  host.syncToggleButtons();
-  host.syncLayoutVisibility();
-  if (!runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// "Custom paradigm set": ignore the single focused paradigm and draw the
-// parsing deck from the specific paradigms the user has ticked in the
-// checkbox selector, shuffled together. Off by default. Mutually exclusive
-// with shuffle-all. Only parsing mode reads it; outside parsing the flag
-// still flips and persists but no rebuild happens. Drops any in-flight walk,
-// swaps the focused-paradigm dropdown for the checklist (handled in
-// syncLayoutVisibility), then rebuilds the deck.
-export function toggleParsingCustomReview() {
-  if (!host.isParsingMode()) return;
-  runtime.parsingCustomReview = !runtime.parsingCustomReview;
-  if (runtime.parsingCustomReview) {
-    runtime.parsingShuffleAll = false;
-    // Expand the (collapsible) checklist fresh each time it's switched on.
-    const customRow = document.getElementById('parsingCustomParadigmsRow');
-    if (customRow) customRow.open = true;
-  }
-  host.resetMorphStepState();
-  host.resetMorphAnswerState();
-  host.syncToggleButtons();
-  host.syncLayoutVisibility();
-  if (!runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// Tick / untick one paradigm in the custom set. `checked` comes straight from
-// the checkbox. Writes the lemma → true into runtime.parsingCustomParadigms
-// (deleting on untick so the map stays minimal), then rebuilds the deck so
-// the change takes effect immediately. Only meaningful while the custom-set
-// toggle is on (the only time the checkboxes are visible), but guarded so a
-// stray call outside parsing mode just records the tick and persists.
-export function toggleParsingCustomParadigm(lemma, checked) {
-  if (!lemma) return;
-  if (!runtime.parsingCustomParadigms || typeof runtime.parsingCustomParadigms !== 'object') {
-    runtime.parsingCustomParadigms = {};
-  }
-  if (checked) runtime.parsingCustomParadigms[lemma] = true;
-  else delete runtime.parsingCustomParadigms[lemma];
-  host.resetMorphStepState();
-  host.resetMorphAnswerState();
-  host.syncToggleButtons();
-  if (!host.isParsingMode() || !runtime.parsingCustomReview || !runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// "Select all" / "Clear" for the custom set. `select` true ticks every
-// in-scope paradigm (so the set follows the current chapter scope); false
-// wipes the map. Then rebuilds the deck like a per-paradigm tick.
-export function setAllParsingCustomParadigms(select) {
-  if (select) {
-    const next = {};
-    host.listAvailableParadigmLemmas().forEach((lemma) => { if (lemma) next[lemma] = true; });
-    runtime.parsingCustomParadigms = next;
-  } else {
-    runtime.parsingCustomParadigms = {};
-  }
-  host.resetMorphStepState();
-  host.resetMorphAnswerState();
-  host.syncToggleButtons();
-  if (!host.isParsingMode() || !runtime.parsingCustomReview || !runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// English → Greek parsing direction. Flips parsing between the forward
-// dimensional walk and the reverse "pick the form for this parse" MC. Only
-// meaningful in parsing mode. Drops any in-flight walk / reverse cache /
-// answer feedback so the current card restarts cleanly in the new direction,
-// then rebuilds the deck (same focused-paradigm pool, rendered the other way).
-export function toggleParsingReverse() {
-  if (!host.isParsingMode()) return;
-  runtime.parsingReverse = !runtime.parsingReverse;
-  host.resetMorphStepState();
-  runtime.parsingReverseState = { cardId: null, options: [], correctForm: '' };
-  host.resetMorphAnswerState();
-  host.syncToggleButtons();
-  if (!runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// Lookup mode: turn the parsing surface into an interactive paradigm
-// reference. Instead of quizzing forms, the student picks a focused paradigm
-// and walks the dimension breadcrumbs to conjugate / decline any of its forms.
-// Off by default and parsing-only. Mutually exclusive with the reverse drill
-// and the multi-paradigm deck sources (shuffle-all / custom set) — turning
-// lookup on switches those off so the single focused-paradigm dropdown is
-// available. Rebuilds the deck so the render path swaps (renderCard routes to
-// the lookup card whenever the flag is on); on→off, the drill deck comes back.
-export function toggleParsingLookup() {
-  if (!host.isParsingMode()) return;
-  runtime.parsingLookup = !runtime.parsingLookup;
-  if (runtime.parsingLookup) {
-    runtime.parsingReverse = false;
-    runtime.parsingShuffleAll = false;
-    runtime.parsingCustomReview = false;
-    runtime.parsingReverseState = { cardId: null, options: [], correctForm: '' };
-    runtime.morphLookupState = { lemma: null, poolKey: '', pool: [], picks: {} };
-    host.prepareLookupFocus();
-  }
-  host.resetMorphStepState();
-  host.resetMorphAnswerState();
-  host.syncToggleButtons();
-  host.syncLayoutVisibility();
-  if (!runtime.selectedKeys.length) {
-    renderCard();
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// Toggle the curated accent/breathing look-alike distractors in the reverse
-// (English → Greek) drill. Off by default. Only the reverse drill reads it, so
-// flipping it just drops the cached MC options for the current card and
-// re-renders — no deck reload needed.
-export function toggleAccentLookalikes() {
-  runtime.accentLookalikes = !runtime.accentLookalikes;
-  runtime.parsingReverseState = { cardId: null, options: [], correctForm: '' };
-  host.resetMorphAnswerState();
-  host.syncToggleButtons();
-  renderCard();
-  host.saveState();
-}
-
-// Reset every form's per-form tally to 0/2 — drops the `recent` attempts
-// (and the seen count) on a lemma's forms map. Per-paradigm rolling
-// %, the completed bucket history, in-progress counters, and the
-// cross-paradigm overall are intentionally kept; "Clear parsing stats"
-// remains the option for wiping those too. Lets the user re-verify a
-// paradigm from scratch without losing the long-term performance record.
-// The parsing-mode "Reset known" button replaces vocab/grammar's
-// Reset-deck/Reset-required pair (neither applies in parsing: no SRS
-// state, no required-vs-supplemental split).
-//
-// The button opens a modal that scopes the reset: just the currently
-// focused paradigm, or every paradigm the user has drilled.
-export function resetKnownMorphs() {
-  openResetKnownModal();
-}
-
-function openResetKnownModal() {
-  const overlay = document.getElementById('resetKnownOverlay');
-  if (!overlay) {
-    // Fall back to the legacy single-confirm (all paradigms) if the modal
-    // markup isn't present (e.g. an older cached index.html on a PWA install).
-    if (window.confirm('Set every form back to 0/2 attempts? This clears the per-form "known" tally so parsing forms read as unseen again. Per-paradigm % and history are kept.')) {
-      performResetKnown('all');
-    }
-    return;
-  }
-  // Name the focused paradigm in the copy + on the button so "current
-  // paradigm only" is unambiguous. With nothing focused, hide that option
-  // and leave only the all-paradigms reset.
-  const focused = runtime.morphFocusedParadigm || '';
-  const lemmaEl = overlay.querySelector('#resetKnownFocusedLemma');
-  if (lemmaEl) lemmaEl.textContent = focused || 'the current paradigm';
-  const focusedRow = overlay.querySelector('#resetKnownFocusedRow');
-  if (focusedRow) focusedRow.style.display = focused ? '' : 'none';
-  const focusedBtn = overlay.querySelector('#resetKnownFocusedBtn');
-  if (focusedBtn) {
-    focusedBtn.style.display = focused ? '' : 'none';
-    focusedBtn.textContent = focused ? `Reset ${focused}` : 'Current paradigm only';
-  }
-  overlay.classList.add('show');
-  overlay.setAttribute('aria-hidden', 'false');
-  document.body.classList.add('modal-open');
-}
-
-export function closeResetKnownModal() {
-  const overlay = document.getElementById('resetKnownOverlay');
-  if (!overlay) return;
-  overlay.classList.remove('show');
-  overlay.setAttribute('aria-hidden', 'true');
-  const anyOtherOpen = document.querySelector('.consent-overlay.show');
-  if (!anyOtherOpen) document.body.classList.remove('modal-open');
-  shieldClicksBriefly();
-}
-
-export function confirmResetKnownFocused() {
-  closeResetKnownModal();
-  performResetKnown('focused');
-}
-
-export function confirmResetKnownAll() {
-  closeResetKnownModal();
-  performResetKnown('all');
-}
-
-// Clear per-form tallies. `scope === 'focused'` clears only the currently
-// focused paradigm's forms map; any other value clears every lemma's.
-function performResetKnown(scope) {
-  const stats = runtime.paradigmStepStats;
-  if (stats && stats.byLemma && typeof stats.byLemma === 'object') {
-    if (scope === 'focused') {
-      const focused = runtime.morphFocusedParadigm;
-      const entry = focused && stats.byLemma[focused];
-      if (entry && typeof entry === 'object') entry.forms = {};
-    } else {
-      Object.keys(stats.byLemma).forEach((lemma) => {
-        const entry = stats.byLemma[lemma];
-        if (entry && typeof entry === 'object') entry.forms = {};
-      });
-    }
-  }
-  host.resetMorphAnswerState();
-  // Round-trip through loadDeckFromKeys so any 2/2-known forms that the
-  // exclude-known-morphs filter dropped at deck-build time come back into
-  // scope now that they read as unseen again.
-  if (runtime.selectedKeys.length) {
-    const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-    loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-  } else {
-    renderCard();
-    renderProgress();
-    renderReview();
-  }
-  host.saveState();
-}
-
-// Wipe the parsing module's stats record completely — everything that
-// resetKnownMorphs intentionally keeps. Drops every lemma's rolling attempts
-// window and per-form recent tallies (and therefore every per-paradigm % and
-// the mood/tense breakdown) back to a fresh empty store. Scoped to parsing
-// only: it touches nothing but runtime.paradigmStepStats, so vocab/morphology/
-// reader stats, marks, spaced-review scheduling, achievements, and study-time
-// history are all left untouched (the global "Reset stats" never wrote paradigm
-// stats in the first place, so this is the only way to clear them). Rebuilds
-// the deck so any forms the exclude-known-morphs filter had dropped come back
-// into scope now that the record is empty.
-export function clearParsingStats() {
-  if (!window.confirm('Clear ALL parsing stats? This wipes every paradigm\'s accuracy %, the per-mood/tense breakdown, and per-form tallies. Only parsing stats are affected — vocab, morphology, and reader progress are kept. No undo.')) return;
-  runtime.paradigmStepStats = { byLemma: {} };
-  host.resetMorphAnswerState();
-  if (runtime.selectedKeys.length) {
-    const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-    loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-  } else {
-    renderCard();
-    renderProgress();
-    renderReview();
-  }
-  host.saveState();
-}
-
-const OPTIONAL_FILTER_KEYS = new Set(['imperative', 'subjunctive', 'optative', 'infinitive', 'participle', 'thirdPerson', 'futureTense', 'perfectTense']);
-
-// Per-category filter on the optional-form pool. Off → cards whose
-// canonical parse contains that category are excluded from the drill
-// deck. Filters do nothing when includeOptionalForms is off (no
-// optional cards in the pool to filter), and never affect the
-// always-on fallback form-lookup. Flipping a filter rebuilds the
-// deck so the change shows up immediately, mirroring how
-// toggleOptionalForms / toggleRequiredOnly behave.
-export function toggleOptionalFormFilter(filterKey) {
-  if (!OPTIONAL_FILTER_KEYS.has(filterKey)) return;
-  if (!runtime.optionalFormFilters || typeof runtime.optionalFormFilters !== 'object') {
-    runtime.optionalFormFilters = {};
-  }
-  runtime.optionalFormFilters[filterKey] = runtime.optionalFormFilters[filterKey] === false;
-  host.syncToggleButtons();
-  if (!runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
-
-// Canonical primary values for each dim's per-value sub-filter. Composite
-// values (e.g. 'continuous/undefined', 'middle/passive') and aorist
-// qualifiers ('first aorist'/'second aorist') aren't toggled independently
-// — they normalize to their primary component(s) for filter matching, so
-// disabling 'aorist' excludes both first- and second-aorist cards, and a
-// 'middle/passive' card stays in scope as long as 'middle' OR 'passive' is
-// enabled. Mirrors the structure of OPTIONAL_FILTER_KEYS but nested per
-// dim.
-//
-// Aspect's continuous + undefined are bundled behind a single
-// 'continuousUndefined' UI key (Duff treats the two as a unit — present
-// and future forms are aspectually ambiguous between them — so a single
-// toggle that flips both halves at once matches the pedagogy).
-const DIM_VALUE_FILTER_VALUES = {
-  aspect: ['continuousUndefined', 'completed'],
-  tense:  ['present', 'future', 'imperfect', 'aorist', 'perfect', 'pluperfect'],
-  voice:  ['active', 'middle', 'passive'],
-  mood:   ['indicative', 'subjunctive', 'optative', 'imperative', 'infinitive', 'participle'],
-  person: ['first', 'second', 'third'],
-  number: ['singular', 'plural'],
-  case:   ['nominative', 'accusative', 'genitive', 'dative', 'vocative'],
-  gender: ['masculine', 'feminine', 'neuter']
-};
-
-// Maps a UI filter key to the underlying canonical values it controls.
-// Most keys map 1:1; aspect's 'continuousUndefined' fans out to both
-// 'continuous' and 'undefined' so flipping the UI toggle once excludes
-// the whole imperfective/aoristic group together.
-function dimFilterUnderlyingValues(dimKey, value) {
-  if (dimKey === 'aspect' && value === 'continuousUndefined') {
-    return ['continuous', 'undefined'];
-  }
-  return [value];
-}
-
-// Per-value sub-filter under one parsing dim. Flipping a value off both
-// excludes cards whose parse resolves to that value (deck-pool) AND prunes
-// the value from the walk's MC distractor list (the correct value is
-// always kept regardless). Rebuilds the deck the same way
-// toggleOptionalFormFilter does so the change takes effect immediately
-// in parsing mode; outside parsing mode the rebuild is a no-op for the
-// dim filter but still re-syncs the UI.
-export function toggleDimValueFilter(dimKey, value) {
-  const allowed = DIM_VALUE_FILTER_VALUES[dimKey];
-  if (!allowed || !allowed.includes(value)) return;
-  if (!runtime.dimValueFilters || typeof runtime.dimValueFilters !== 'object') {
-    runtime.dimValueFilters = {};
-  }
-  if (!runtime.dimValueFilters[dimKey] || typeof runtime.dimValueFilters[dimKey] !== 'object') {
-    runtime.dimValueFilters[dimKey] = {};
-  }
-  const underlying = dimFilterUnderlyingValues(dimKey, value);
-  // Determine the new combined state from the first underlying key, then
-  // mirror it onto every member of the group so the bundled toggle never
-  // splits halfway (e.g. 'continuous' off + 'undefined' on).
-  const newState = runtime.dimValueFilters[dimKey][underlying[0]] === false;
-  underlying.forEach((u) => {
-    runtime.dimValueFilters[dimKey][u] = newState;
-  });
-  runtime.morphStepState = { cardId: null, steps: [], stepIdx: 0, answers: [], completed: false };
-  host.syncToggleButtons();
-  if (!runtime.selectedKeys.length) {
-    host.saveState();
-    return;
-  }
-  const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-  loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-}
 
 export function reshuffleEligible() {
   if (!runtime.selectedKeys.length) return;
@@ -1806,8 +1228,8 @@ export function confirmResetToStart() {
 function performResetStatsKeepSettings() {
   host.clearSpacedUndoSnapshot();
 
-  runtime.globalWordMarks = { g2e: {}, e2g: {}, morph: {} };
-  runtime.globalWordProgress = { g2e: {}, e2g: {}, morph: {} };
+  runtime.globalWordMarks = { g2e: {}, e2g: {} };
+  runtime.globalWordProgress = { g2e: {}, e2g: {} };
   runtime.deckStates = {};
   runtime.appUsageStats = {
     totalMs: 0,
@@ -1847,22 +1269,14 @@ function performResetToStart() {
   const storage = getStorage();
   if (storage) {
     // Every key the app writes — clearing only STORAGE_KEY would leave
-    // the disclaimer, theme, font, and "what's new" flags behind, so a
-    // reload wouldn't feel like a fresh first launch.
+    // the disclaimer, theme, and font flags behind, so a reload wouldn't
+    // feel like a fresh first launch.
     const keysToWipe = [
       STORAGE_KEY,
       CONSENT_STORAGE_KEY,
-      WHATS_NEW_V1_5_STORAGE_KEY,
       THEME_STORAGE_KEY,
       FONT_FAMILY_STORAGE_KEY,
-      TEXT_SIZE_STORAGE_KEY,
-      // Older save formats restoreState still reads as a migration path.
-      'greekFlashcardsStateV17',
-      'greekFlashcardsStateV15',
-      'greekFlashcardsStateV14',
-      'greekFlashcardsStateV12',
-      'greekFlashcardsStateV11',
-      'greekFlashcardsStateV10'
+      TEXT_SIZE_STORAGE_KEY
     ];
     for (const key of keysToWipe) {
       try { storage.removeItem(key); } catch (_err) { /* ignore */ }

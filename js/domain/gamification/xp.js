@@ -121,7 +121,7 @@ export function computeAchievements(usage, courseData, streaks, sessionCount, to
     earned.push({ id, icon, name, desc, earned: !!condition, group: group || 'milestone' });
   };
 
-  const totalConfirmed = courseData.allVocabConfirmed + courseData.allGrammarConfirmed;
+  const totalConfirmed = courseData.allVocabConfirmed;
   const reviewedToday = Number(todayStats?.reviewedToday) || 0;
   const newToday = Number(todayStats?.newToday) || 0;
   const firstCardTodayEarned = !!todayStats?.firstCardTodayEarned;
@@ -153,7 +153,6 @@ export function computeAchievements(usage, courseData, streaks, sessionCount, to
   // ── Completion awards (course-wide, persist across selection) ──
   check('req_vocab',     '♕', 'Required Lexicon','Confirm all required vocabulary',     courseData.reqVocabConfirmed >= courseData.reqVocabTotal && courseData.reqVocabTotal > 0);
   check('all_vocab',     '♛', 'Full Lexicon',    'Confirm every vocabulary card',       courseData.allVocabConfirmed >= courseData.allVocabTotal && courseData.allVocabTotal > 0);
-  check('all_grammar',   '♔', 'Grammar Master',  'Confirm all grammar cards',           courseData.allGrammarConfirmed >= courseData.allGrammarTotal && courseData.allGrammarTotal > 0);
 
   // ── Per-chapter awards (vocab, persist regardless of selection) ──
   // courseData.allVocabCards already holds every vocab card, so derive each

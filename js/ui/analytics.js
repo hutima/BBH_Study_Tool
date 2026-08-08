@@ -18,12 +18,9 @@ import {
 import { getConfidencePct } from '../domain/srs/confidence.js';
 import {
   getSelectedVocabCards,
-  getSelectedGrammarCards,
   getAllChapterKeys,
   getAllVocabCards,
-  getAllGrammarCards,
-  getChapterVocabCards,
-  getChapterGrammarCards
+  getChapterVocabCards
 } from '../domain/deck/filters.js';
 import {
   migrateLegacyXp as migrateLegacyXpPure,
@@ -33,15 +30,6 @@ import {
   computeAchievements as computeAchievementsPure,
   getRegressionProjection
 } from '../domain/gamification/xp.js';
-import {
-  getAllLemmaStats,
-  createValueBreakdownAcc,
-  accumulateValueBreakdown,
-  finalizeValueBreakdown,
-  summarizeLemmaValueBreakdown,
-  getParsingAccuracyBuckets,
-  PARSING_ACCURACY_BUCKET_SIZE
-} from '../domain/grammar/morph_steps.js';
 import {
   buildDailyCumulativeSeriesFromMap,
   buildCumulativeConfirmationSeries,
@@ -53,10 +41,7 @@ import {
   buildCircularProgressSvg,
   buildLevelBarHtml,
   buildTitleLadderHtml,
-  buildWordStatCardHtml,
-  buildDimValueBarsHtml,
-  buildParsingAccuracyBucketsSvg,
-  buildParsingOutcomeMixHtml
+  buildWordStatCardHtml
 } from './charts.js';
 import { showLevelToast, showBadgeToast } from './toast.js';
 import { buildDueHistogramHtml } from './progress.js';
@@ -64,10 +49,7 @@ import { buildDueHistogramHtml } from './progress.js';
 let host = {
   ensureUsageStats: () => runtime.appUsageStats,
   accumulateActiveStudyTime: () => {},
-  canAccessGrammarUi: () => true,
-  saveState: () => {},
-  getEnabledParsingDims: () => null,
-  getMorphCardsForLemma: () => []
+  saveState: () => {}
 };
 
 export function configureAnalytics(deps) {
@@ -143,9 +125,8 @@ function buildGamificationSnapshot() {
   const courseData = computeCourseWideData();
   const g2eProgressStore = runtime.globalWordProgress.g2e || {};
   const e2gProgressStore = runtime.globalWordProgress.e2g || {};
-  const morphProgressStore = runtime.globalWordProgress.morph || {};
   const mergedProgressStore = {};
-  [g2eProgressStore, e2gProgressStore, morphProgressStore].forEach(store => {
+  [g2eProgressStore, e2gProgressStore].forEach(store => {
     Object.entries(store).forEach(([cardId, entry]) => {
       const existing = mergedProgressStore[cardId] || {};
       mergedProgressStore[cardId] = {
@@ -156,8 +137,8 @@ function buildGamificationSnapshot() {
       };
     });
   });
-  const allCourseCards = [...courseData.allVocabCards, ...courseData.allGrammarCards];
-  const mergedMarks = { ...(runtime.globalWordMarks.g2e || {}), ...(runtime.globalWordMarks.e2g || {}), ...(runtime.globalWordMarks.morph || {}) };
+  const allCourseCards = courseData.allVocabCards;
+  const mergedMarks = { ...(runtime.globalWordMarks.g2e || {}), ...(runtime.globalWordMarks.e2g || {}) };
   const todayStats = computeTodayStats(usage.activeDailyMs, allCourseCards, mergedMarks, mergedProgressStore);
   const achievements = computeAchievements(usage, courseData, streaks, sessionHistory.length, todayStats);
   return { usage, sessionHistory, streaks, courseData, todayStats, achievements };
@@ -216,22 +197,18 @@ function getCourseCards() {
   if (!courseCardCache) {
     courseCardCache = {
       allVocab: getAllVocabCards(false),
-      reqVocab: getAllVocabCards(true),
-      allGrammar: getAllGrammarCards()
+      reqVocab: getAllVocabCards(true)
     };
   }
   return courseCardCache;
 }
 
 function computeCourseWideData() {
-  const { allVocab, reqVocab, allGrammar } = getCourseCards();
+  const { allVocab, reqVocab } = getCourseCards();
 
-  // Use g2e marks/progress as the canonical direction for course completion;
-  // grammar uses the morph store regardless of which mode is currently active.
+  // g2e marks/progress are the canonical direction for course completion.
   const g2eMarks = runtime.globalWordMarks.g2e || {};
-  const morphMarks = runtime.globalWordMarks.morph || {};
   const g2eProgress = runtime.globalWordProgress.g2e || {};
-  const morphProgress = runtime.globalWordProgress.morph || {};
 
   const isEffectivelyConfirmed = (card, marksMap, store) => {
     if (marksMap[card.id] === 'known') return true;
@@ -240,7 +217,6 @@ function computeCourseWideData() {
   };
   const allVocabConfirmed = allVocab.filter(c => isEffectivelyConfirmed(c, g2eMarks, g2eProgress)).length;
   const reqVocabConfirmed = reqVocab.filter(c => isEffectivelyConfirmed(c, g2eMarks, g2eProgress)).length;
-  const allGrammarConfirmed = allGrammar.filter(c => isEffectivelyConfirmed(c, morphMarks, morphProgress)).length;
 
   return {
     allVocabTotal: allVocab.length,
@@ -248,10 +224,7 @@ function computeCourseWideData() {
     allVocabCards: allVocab,
     reqVocabTotal: reqVocab.length,
     reqVocabConfirmed,
-    reqVocabCards: reqVocab,
-    allGrammarTotal: allGrammar.length,
-    allGrammarConfirmed,
-    allGrammarCards: allGrammar
+    reqVocabCards: reqVocab
   };
 }
 
@@ -294,14 +267,14 @@ function buildChapterGridHtml(mastery) {
   };
   const tile = (row) => {
     const pctRound = Math.round(row.pct * 100);
-    const label = `Ch. ${row.chapterKey}: ${pctRound}% avg confidence · ${row.confirmed} / ${row.total} confirmed — tap for word stats`;
+    const label = `Lesson ${row.chapterKey}: ${pctRound}% avg confidence · ${row.confirmed} / ${row.total} confirmed — tap for word stats`;
     let className = `chapter-tile ${bandClassFor(row.pct)}`;
     if (String(row.chapterKey) === expandedKey) className += ' chapter-tile-active';
     return `<button type="button" class="${className}" data-chapter="${escapeHtml(String(row.chapterKey))}" title="${escapeHtml(label)}" aria-expanded="${String(row.chapterKey) === expandedKey ? 'true' : 'false'}"><span class="chapter-tile-num">${escapeHtml(row.chapterKey)}</span><span class="chapter-tile-pct">${pctRound}%</span></button>`;
   };
   return `
     <div class="analytics-chart-card chapter-grid-card">
-      <div class="analytics-chart-title">Chapter map</div>
+      <div class="analytics-chart-title">Lesson map</div>
       <div class="chapter-grid">${mastery.map(tile).join('')}</div>
       <div class="stacked-legend">
         <span class="stacked-legend-item"><span class="stacked-legend-dot stacked-seg-b80"></span>80–100%</span>
@@ -324,13 +297,11 @@ function buildChapterDetailHtml(chapterKey) {
   if (!chapterKey) return '';
   const requiredOnly = isAnalyticsVocabRequiredOnly();
   const cards = getChapterVocabCards(String(chapterKey), requiredOnly);
-  if (!cards.length) return `<div class="analytics-empty">No ${requiredOnly ? 'required ' : ''}vocabulary for Ch. ${escapeHtml(String(chapterKey))} yet.</div>`;
+  if (!cards.length) return `<div class="analytics-empty">No ${requiredOnly ? 'required ' : ''}vocabulary for Lesson ${escapeHtml(String(chapterKey))} yet.</div>`;
   const marksMap = getAnalyticsVocabMarksStore();
   const store = getAnalyticsVocabProgressStore();
   const required = cards.filter(c => c.required).length;
-  const headwordOf = (card) => typeof window !== 'undefined' && typeof window.formatGreekHeadword === 'function'
-    ? window.formatGreekHeadword(card.g)
-    : (card.g || '—');
+  const headwordOf = (card) => escapeHtml(card.g || '—');
 
   // Each row reflects the rolling last-10-flips confidence (getConfidencePct),
   // independent of any "marked known" override — the user wants real signal,
@@ -392,7 +363,7 @@ function buildChapterDetailHtml(chapterKey) {
           aria-expanded="${expanded ? 'true' : 'false'}"
           data-word-id="${escapeHtml(String(r.card.id))}">
         <span class="chapter-detail-dot ${r.bandClass}" aria-hidden="true"></span>
-        <span class="chapter-detail-word">${headwordOf(r.card)}</span>
+        <span class="chapter-detail-word hebrew-text" dir="rtl" lang="he">${headwordOf(r.card)}</span>
         <span class="chapter-detail-gloss">${escapeHtml(r.card.e || '')}</span>
         <span class="chapter-detail-pct">${escapeHtml(r.pctText)}</span>
       </li>
@@ -406,11 +377,11 @@ function buildChapterDetailHtml(chapterKey) {
   };
   return `
     <div class="chapter-detail-head">
-      <div class="chapter-detail-title">Ch. ${escapeHtml(String(chapterKey))} — ${headlinePct}% avg confidence <span class="chapter-detail-meta">${confirmedCount} / ${cards.length} confirmed${required ? ` · ${required} required` : ''}</span></div>
+      <div class="chapter-detail-title">Lesson ${escapeHtml(String(chapterKey))} — ${headlinePct}% avg confidence <span class="chapter-detail-meta">${confirmedCount} / ${cards.length} confirmed${required ? ` · ${required} required` : ''}</span></div>
       <div class="chapter-detail-controls">
         <div class="chapter-detail-sort" role="group" aria-label="Sort words">
           ${sortBtn('confidence', 'Confidence')}
-          ${sortBtn('alphabetical', 'A–Ω')}
+          ${sortBtn('alphabetical', 'A–Z')}
         </div>
         <button type="button" class="chapter-detail-close" data-chapter-close="1" aria-label="Close chapter details">×</button>
       </div>
@@ -509,590 +480,6 @@ function setupChapterGridInteractivity(rootEl) {
   });
 }
 
-// ── Grammar chapter mastery ──────────────────────────────────────────
-// Mirrors computeChapterMastery (used by the vocab chapter map) but reads
-// from the morph progress/marks stores. The result feeds a chapter-tile
-// grid; tapping a tile expands a panel that breaks the chapter down by
-// concept (card.family). Chapter % = average of concept averages, where
-// each concept's average is the mean rolling confidence across its cards
-// (unseen = 0%, marked-known ignored). The "average of averages" structure
-// prevents a concept with many cards from drowning out smaller concepts.
-function computeGrammarChapterMastery() {
-  const marksMap = runtime.globalWordMarks.morph || {};
-  const store = runtime.globalWordProgress.morph || {};
-  return getAllChapterKeys().map(chKey => {
-    const cards = getChapterGrammarCards(chKey);
-    const total = cards.length;
-
-    const byFamily = new Map();
-    let confirmed = 0;
-    cards.forEach(card => {
-      const family = card.family || 'Other';
-      if (!byFamily.has(family)) byFamily.set(family, []);
-      byFamily.get(family).push(card);
-      const pct = getConfidencePct(store[card.id]);
-      if (marksMap[card.id] === 'known' || (pct !== null && pct >= 70)) confirmed++;
-    });
-
-    const conceptAvgs = [];
-    byFamily.forEach(familyCards => {
-      let sum = 0;
-      familyCards.forEach(card => {
-        const pct = getConfidencePct(store[card.id]);
-        sum += (pct !== null) ? pct : 0;
-      });
-      conceptAvgs.push(sum / familyCards.length);
-    });
-
-    const chapterAvg = conceptAvgs.length
-      ? conceptAvgs.reduce((s, v) => s + v, 0) / conceptAvgs.length
-      : 0;
-
-    return { chapterKey: chKey, total, confirmed, pct: chapterAvg / 100, avgPct: chapterAvg, conceptCount: conceptAvgs.length };
-  });
-}
-
-function computeGrammarChapterConcepts(chapterKey) {
-  const marksMap = runtime.globalWordMarks.morph || {};
-  const store = runtime.globalWordProgress.morph || {};
-  const cards = getChapterGrammarCards(chapterKey);
-  if (!cards.length) return [];
-
-  const byFamily = new Map();
-  cards.forEach(card => {
-    const family = card.family || 'Other';
-    if (!byFamily.has(family)) byFamily.set(family, []);
-    byFamily.get(family).push(card);
-  });
-
-  const concepts = [];
-  byFamily.forEach((familyCards, family) => {
-    let seen = 0;
-    let confirmed = 0;
-    let misses = 0;
-    let pctSum = 0;
-    let pctCount = 0;
-    // Concept avg confidence (matches chapter avg's per-concept term):
-    // unseen = 0%, otherwise rolling last-10-flips. Marked-known is
-    // ignored — the % is purely the recall signal.
-    let confidenceSum = 0;
-    familyCards.forEach(card => {
-      const p = store[card.id];
-      const pct = getConfidencePct(p);
-      const wasSeen = !!(p?.seenCount) || !!p?.lastReviewedAt;
-      if (wasSeen) seen++;
-      misses += Number(p?.failCount) || 0;
-      if (pct !== null) { pctSum += pct; pctCount++; }
-      if (marksMap[card.id] === 'known' || (pct !== null && pct >= 70)) confirmed++;
-      confidenceSum += (pct !== null) ? pct : 0;
-    });
-    const total = familyCards.length;
-    const avgPct = pctCount ? Math.round(pctSum / pctCount) : null;
-    // Keep unrounded so the chapter detail's "average of concept averages"
-    // matches the chapter tile's avg-of-avgs to the nearest percent; the
-    // row display rounds at the last moment.
-    const conceptAvg = total ? confidenceSum / total : 0;
-    let status;
-    if (seen === 0) status = 'unseen';
-    else if (confirmed >= total) status = 'strong';
-    else if ((avgPct ?? 0) >= 50) status = 'shaky';
-    else status = 'weak';
-    concepts.push({ family, total, confirmed, seen, misses, avgPct, conceptAvg, status, cards: familyCards });
-  });
-  return concepts;
-}
-
-const GRAMMAR_CONCEPT_STATUS_META = {
-  weak:   { dot: 'stacked-seg-b0',     label: 'Needs work' },
-  shaky:  { dot: 'stacked-seg-b40',    label: 'Shaky' },
-  strong: { dot: 'stacked-seg-b80',    label: 'Solid' },
-  unseen: { dot: 'stacked-seg-unseen', label: 'Not started' }
-};
-
-function buildGrammarChapterGridHtml(mastery) {
-  if (!mastery.length) {
-    return `<div class="analytics-chart-card"><div class="analytics-chart-title">Grammar mastery by chapter</div><div class="analytics-empty">No grammar drills are available yet.</div></div>`;
-  }
-  const expandedKey = runtime.analyticsGrammarExpandedChapter || '';
-
-  const bandClassFor = (pct, hasCards) => {
-    if (!hasCards) return 'tile-band-unseen';
-    if (pct <= 0) return 'tile-band-unseen';
-    if (pct < 0.20) return 'tile-band-b0';
-    if (pct < 0.40) return 'tile-band-b20';
-    if (pct < 0.60) return 'tile-band-b40';
-    if (pct < 0.80) return 'tile-band-b60';
-    return 'tile-band-b80';
-  };
-
-  const tile = (row) => {
-    const pctRound = row.total ? Math.round(row.pct * 100) : 0;
-    const label = row.total
-      ? `Ch. ${row.chapterKey}: ${pctRound}% avg confidence · ${row.confirmed} / ${row.total} confirmed — tap for concept breakdown`
-      : `Ch. ${row.chapterKey}: no grammar drills yet`;
-    let className = `chapter-tile ${bandClassFor(row.pct, row.total > 0)}`;
-    if (!row.total) className += ' chapter-tile-empty';
-    if (String(row.chapterKey) === expandedKey) className += ' chapter-tile-active';
-    const pctText = row.total ? `${pctRound}%` : '—';
-    return `<button type="button" class="${className}" data-grammar-chapter="${escapeHtml(String(row.chapterKey))}" title="${escapeHtml(label)}" aria-expanded="${String(row.chapterKey) === expandedKey ? 'true' : 'false'}"${row.total ? '' : ' disabled'}><span class="chapter-tile-num">${escapeHtml(row.chapterKey)}</span><span class="chapter-tile-pct">${escapeHtml(pctText)}</span></button>`;
-  };
-
-  return `
-    <div class="analytics-chart-card chapter-grid-card">
-      <div class="analytics-chart-title">Grammar mastery by chapter</div>
-      <div class="chapter-grid">${mastery.map(tile).join('')}</div>
-      <div class="stacked-legend">
-        <span class="stacked-legend-item"><span class="stacked-legend-dot stacked-seg-b80"></span>80–100%</span>
-        <span class="stacked-legend-item"><span class="stacked-legend-dot stacked-seg-b60"></span>60–80%</span>
-        <span class="stacked-legend-item"><span class="stacked-legend-dot stacked-seg-b40"></span>40–60%</span>
-        <span class="stacked-legend-item"><span class="stacked-legend-dot stacked-seg-b20"></span>20–40%</span>
-        <span class="stacked-legend-item"><span class="stacked-legend-dot stacked-seg-b0"></span>0–20%</span>
-        <span class="stacked-legend-item"><span class="stacked-legend-dot stacked-seg-unseen"></span>Unstarted</span>
-      </div>
-      <div class="chapter-detail-panel${expandedKey ? ' open' : ''}" id="grammarChapterDetailPanel">${expandedKey ? buildGrammarChapterDetailHtml(expandedKey) : ''}</div>
-    </div>
-  `;
-}
-
-function buildGrammarChapterDetailHtml(chapterKey) {
-  if (!chapterKey) return '';
-  const concepts = computeGrammarChapterConcepts(chapterKey);
-  if (!concepts.length) {
-    return `<div class="analytics-empty">No grammar concepts for Ch. ${escapeHtml(String(chapterKey))} yet.</div>`;
-  }
-  const sortMode = runtime.analyticsGrammarConceptSort === 'alphabetical' ? 'alphabetical' : 'confidence';
-  const statusRank = { weak: 0, shaky: 1, unseen: 2, strong: 3 };
-  const sorted = concepts.slice();
-  if (sortMode === 'alphabetical') {
-    sorted.sort((a, b) => a.family.localeCompare(b.family));
-  } else {
-    sorted.sort((a, b) => {
-      if (statusRank[a.status] !== statusRank[b.status]) return statusRank[a.status] - statusRank[b.status];
-      const ap = a.avgPct ?? -1;
-      const bp = b.avgPct ?? -1;
-      if (ap !== bp) return ap - bp;
-      return a.family.localeCompare(b.family);
-    });
-  }
-
-  const totalCards = concepts.reduce((sum, c) => sum + c.total, 0);
-  const confirmedCards = concepts.reduce((sum, c) => sum + c.confirmed, 0);
-  // Headline matches the tile: average of concept averages.
-  const conceptAvgSum = concepts.reduce((sum, c) => sum + (c.conceptAvg || 0), 0);
-  const headlinePct = concepts.length ? Math.round(conceptAvgSum / concepts.length) : 0;
-
-  const expandedFamily = runtime.analyticsGrammarExpandedConcept || '';
-
-  const conceptRow = (c) => {
-    const meta = GRAMMAR_CONCEPT_STATUS_META[c.status];
-    // Display the concept-wide average (marked-known = 100, unseen = 0) so the
-    // row's % is the same number that contributes to the chapter avg headline.
-    // `c.avgPct` (average of seen cards only) feeds status + sort ordering.
-    const pctText = c.status === 'unseen' ? '—' : `${Math.round(c.conceptAvg)}%`;
-    const detail = c.status === 'unseen'
-      ? `${c.total} card${c.total === 1 ? '' : 's'} · not started`
-      : `${c.confirmed}/${c.total} confirmed · ${c.misses} miss${c.misses === 1 ? '' : 'es'}`;
-    const expanded = c.family === expandedFamily;
-    const cardsHtml = expanded ? buildGrammarConceptCardsHtml(c.cards) : '';
-    return `
-      <li class="chapter-detail-row grammar-concept-row${expanded ? ' chapter-detail-row-active' : ''}"
-          role="button"
-          tabindex="0"
-          aria-expanded="${expanded ? 'true' : 'false'}"
-          data-grammar-concept="${escapeHtml(c.family)}">
-        <span class="chapter-detail-dot ${meta.dot}" aria-hidden="true" title="${escapeHtml(meta.label)}"></span>
-        <span class="grammar-review-concept">${escapeHtml(c.family)}</span>
-        <span class="grammar-review-detail">${escapeHtml(detail)}</span>
-        <span class="chapter-detail-pct">${escapeHtml(pctText)}</span>
-      </li>
-      ${expanded ? `<li class="chapter-detail-statcard-row grammar-concept-expansion-row" aria-hidden="false">${cardsHtml}</li>` : ''}`;
-  };
-
-  const sortBtn = (mode, label) => {
-    const active = sortMode === mode;
-    return `<button type="button" class="ctrl-btn chapter-detail-sort-btn${active ? ' active-toggle' : ''}" data-grammar-concept-sort="${mode}" aria-pressed="${active ? 'true' : 'false'}">${escapeHtml(label)}</button>`;
-  };
-
-  return `
-    <div class="chapter-detail-head">
-      <div class="chapter-detail-title">Ch. ${escapeHtml(String(chapterKey))} — ${headlinePct}% avg confidence <span class="chapter-detail-meta">${confirmedCards} / ${totalCards} confirmed · ${concepts.length} concept${concepts.length === 1 ? '' : 's'}</span></div>
-      <div class="chapter-detail-controls">
-        <div class="chapter-detail-sort" role="group" aria-label="Sort concepts">
-          ${sortBtn('confidence', 'Status')}
-          ${sortBtn('alphabetical', 'A–Z')}
-        </div>
-        <button type="button" class="chapter-detail-close" data-grammar-chapter-close="1" aria-label="Close chapter details">×</button>
-      </div>
-    </div>
-    <ol class="chapter-detail-list">${sorted.map(conceptRow).join('')}</ol>
-  `;
-}
-
-// ── Per-concept card breakdown (shown when a concept row is tapped) ──
-// Mirrors the vocab chapter-detail row format: each card row shows the
-// form + parsed answer + rolling confidence and can be tapped to reveal
-// the full card stat card (pass/fail counts, SRS stage, etc.).
-function buildGrammarConceptCardsHtml(cards) {
-  if (!cards || !cards.length) return '<div class="analytics-empty">No cards in this concept.</div>';
-  const marksMap = runtime.globalWordMarks.morph || {};
-  const store = runtime.globalWordProgress.morph || {};
-  const expandedCardId = runtime.analyticsGrammarExpandedCard || '';
-
-  const rowFor = (card) => {
-    const progress = store[card.id];
-    const isKnownMark = marksMap[card.id] === 'known';
-    const rawPct = getConfidencePct(progress);
-    const seen = !!(progress?.seenCount) || !!progress?.lastReviewedAt;
-    let bandClass;
-    let pctText;
-    let sortPct;
-    if (rawPct === null && !seen) {
-      bandClass = 'stacked-seg-unseen'; pctText = '—'; sortPct = -1;
-    } else {
-      const pct = rawPct ?? 0;
-      sortPct = pct;
-      pctText = `${pct}%`;
-      if (pct >= 80)      bandClass = 'stacked-seg-b80';
-      else if (pct >= 60) bandClass = 'stacked-seg-b60';
-      else if (pct >= 40) bandClass = 'stacked-seg-b40';
-      else if (pct >= 20) bandClass = 'stacked-seg-b20';
-      else                bandClass = 'stacked-seg-b0';
-    }
-    return { card, bandClass, pctText, sortPct, isKnownMark };
-  };
-  const rows = cards.map(rowFor);
-  rows.sort((a, b) => {
-    if (a.sortPct !== b.sortPct) return a.sortPct - b.sortPct;
-    return (a.card.form || '').localeCompare(b.card.form || '');
-  });
-
-  return `
-    <ol class="grammar-concept-card-list">
-      ${rows.map(r => {
-        const expanded = String(r.card.id) === expandedCardId;
-        const cardHtml = expanded
-          ? buildWordStatCardHtml(r.card, store[r.card.id], r.isKnownMark)
-          : '';
-        return `
-          <li class="chapter-detail-row grammar-card-row${expanded ? ' chapter-detail-row-active' : ''}"
-              role="button"
-              tabindex="0"
-              aria-expanded="${expanded ? 'true' : 'false'}"
-              data-grammar-card-id="${escapeHtml(String(r.card.id))}">
-            <span class="chapter-detail-dot ${r.bandClass}" aria-hidden="true"></span>
-            <span class="grammar-card-form">${escapeHtml(r.card.form || r.card.lemma || '—')}</span>
-            <span class="grammar-card-answer">${escapeHtml(r.card.answer || r.card.gloss || '')}</span>
-            <span class="chapter-detail-pct">${escapeHtml(r.pctText)}</span>
-          </li>
-          ${expanded ? `<li class="chapter-detail-statcard-row" aria-hidden="false">${cardHtml}</li>` : ''}
-        `;
-      }).join('')}
-    </ol>
-  `;
-}
-
-function renderGrammarChapterDetailPanel() {
-  const panel = document.getElementById('grammarChapterDetailPanel');
-  if (!panel) return;
-  if (!runtime.analyticsGrammarExpandedChapter) {
-    panel.innerHTML = '';
-    panel.classList.remove('open');
-    return;
-  }
-  panel.innerHTML = buildGrammarChapterDetailHtml(runtime.analyticsGrammarExpandedChapter);
-  panel.classList.add('open');
-}
-
-function renderGrammarReviewSection() {
-  const el = document.getElementById('analyticsGrammarReview');
-  if (!el) return;
-  if (!host.canAccessGrammarUi()) { el.innerHTML = ''; return; }
-  el.innerHTML = buildGrammarChapterGridHtml(computeGrammarChapterMastery());
-  setupGrammarReviewInteractivity(el);
-}
-
-// A "weakest: <value> <pct>%" pointer for a collapsed row — the headline
-// pct can read healthy while one mood/tense lags, so this surfaces the worst
-// seen value up front. Dot colour tracks the same 5-band gradient as the bars.
-function weakestValueTagHtml(weakest) {
-  if (!weakest) return '';
-  const band = weakest.pct < 20 ? 'stacked-seg-b0'
-    : weakest.pct < 40 ? 'stacked-seg-b20'
-    : weakest.pct < 60 ? 'stacked-seg-b40'
-    : weakest.pct < 80 ? 'stacked-seg-b60'
-    : 'stacked-seg-b80';
-  return `<span class="paradigm-stat-weakest"><span class="paradigm-stat-weakest-dot ${band}"></span>weakest: ${escapeHtml(weakest.label)} ${weakest.pct}%</span>`;
-}
-
-// Accuracy-over-guesses trend: bucket every recent parse into runs of ~20 and
-// chart the per-bucket "fully correct" rate, oldest → newest, so improvement
-// (or backsliding) over time is visible at a glance. Scoped to the user's
-// currently-enabled parse steps, like the per-paradigm rows below it. Returns
-// '' when there isn't enough history to be meaningful (a single short bucket).
-function buildParsingAccuracyTrendHtml(stats, enabledDims) {
-  const { buckets, totalParses, outcomes } = getParsingAccuracyBuckets(stats, enabledDims, PARSING_ACCURACY_BUCKET_SIZE);
-  if (!buckets.length || totalParses < 2) return '';
-  const latest = buckets[buckets.length - 1];
-  const prev = buckets.length > 1 ? buckets[buckets.length - 2] : null;
-  let trend = '';
-  if (prev) {
-    const delta = latest.fullPct - prev.fullPct;
-    const rounded = Math.abs(delta);
-    if (delta > 0) trend = ` · <span style="color:rgba(140,196,156,1)">▲ +${rounded}%</span> vs previous ${PARSING_ACCURACY_BUCKET_SIZE}`;
-    else if (delta < 0) trend = ` · <span style="color:rgba(208,128,128,1)">▼ −${rounded}%</span> vs previous ${PARSING_ACCURACY_BUCKET_SIZE}`;
-    else trend = ` · no change vs previous ${PARSING_ACCURACY_BUCKET_SIZE}`;
-  }
-  const caption = `Each bar = up to ${PARSING_ACCURACY_BUCKET_SIZE} parses · oldest → most recent · % of parses fully correct under your enabled steps`;
-  const trendCard = `
-    <div class="analytics-chart-card">
-      <div class="analytics-chart-title">Parsing accuracy over recent guesses</div>
-      ${buildParsingAccuracyBucketsSvg(buckets, { title: 'Parsing accuracy over recent guesses', bucketSize: PARSING_ACCURACY_BUCKET_SIZE })}
-      <div class="dim-value-caption">Latest run: <strong>${latest.fullPct}%</strong> (${latest.fulls}/${latest.count} clean)${trend}. ${escapeHtml(caption)}.</div>
-    </div>`;
-
-  // Outcome-mix: the latest run + every recorded parse, split into clean /
-  // reattempted / missed — the direct readout of the 3-tier scoring.
-  const mixRows = [
-    { label: `Latest run (${latest.count})`, clean: latest.clean, reattempted: latest.reattempted, missed: latest.missed }
-  ];
-  if (buckets.length > 1 && outcomes) {
-    mixRows.push({ label: `All recent (${totalParses})`, clean: outcomes.clean, reattempted: outcomes.reattempted, missed: outcomes.missed });
-  }
-  const mixCard = buildParsingOutcomeMixHtml(mixRows, { title: 'Parse outcome mix' });
-  return `${trendCard}${mixCard}`;
-}
-
-// Render the per-paradigm drill stats. Doesn't touch any other stat surface —
-// this is a separate, opt-in record. Each row is tappable: tapping expands the
-// per-value (mood / tense / voice …) proficiency breakdown for that paradigm,
-// so weakness in a specific value shows instead of averaging into one bar. The
-// "All paradigms" row aggregates the breakdown across every drilled paradigm.
-function renderParadigmStepStatsSection() {
-  const body = document.getElementById('analyticsParadigmStepStatsBody');
-  const status = document.getElementById('analyticsParadigmStepStatsStatus');
-  if (!body) return;
-  const stats = runtime.paradigmStepStats || {};
-  const enabledDims = host.getEnabledParsingDims();
-  const drilled = getAllLemmaStats(stats, enabledDims);
-  if (!drilled.length) {
-    body.innerHTML = `<p class="analytics-empty">Switch to Parsing mode and complete a parse to start seeing per-paradigm accuracy here.</p>`;
-    if (status) status.textContent = 'No drill attempts yet. Tap a row to break a paradigm down by mood, tense, and voice.';
-    return;
-  }
-
-  const expandedKey = runtime.analyticsParadigmExpanded;
-
-  // Build each paradigm's breakdown from its in-scope forms (up to two recent
-  // attempts per form), folding the same pool into the cross-paradigm
-  // accumulator so the "All paradigms" row matches the per-lemma rows. The
-  // headline % is now this per-form tally — not a capped rolling window — so
-  // it covers every form, consistent with the bars.
-  const overallAcc = createValueBreakdownAcc();
-  const rows = drilled.map((s) => {
-    const cards = host.getMorphCardsForLemma(s.lemma) || [];
-    accumulateValueBreakdown(overallAcc, stats, s.lemma, cards, enabledDims);
-    return { lemma: s.lemma, breakdown: summarizeLemmaValueBreakdown(stats, s.lemma, cards, enabledDims) };
-  });
-  // Worst-first: lowest per-form accuracy on top; paradigms with nothing seen
-  // yet (no recent attempts) sink to the bottom.
-  rows.sort((a, b) => {
-    const pa = a.breakdown.totals.pct, pb = b.breakdown.totals.pct;
-    if (pa == null && pb == null) return 0;
-    if (pa == null) return 1;
-    if (pb == null) return -1;
-    return pa - pb;
-  });
-
-  const lemmaRows = rows.map(({ lemma, breakdown }) => {
-    const { groups, weakest, totals } = breakdown;
-    const isExpanded = expandedKey === lemma;
-    const breakdownHtml = isExpanded ? buildDimValueBarsHtml(groups) : '';
-    return `
-      <div class="paradigm-stat-row${isExpanded ? ' paradigm-stat-row-active' : ''}"
-           role="button"
-           tabindex="0"
-           aria-expanded="${isExpanded ? 'true' : 'false'}"
-           data-paradigm-row="${escapeHtml(lemma)}">
-        <div class="paradigm-stat-header">
-          <span class="paradigm-stat-lemma">${escapeHtml(lemma)}</span>
-          <span class="paradigm-stat-pct">${totals.pct == null ? '—' : `${totals.pct}%`} · ${totals.seen}/${totals.scope} forms</span>
-        </div>
-        ${weakest ? `<div class="paradigm-stat-weakline">${weakestValueTagHtml(weakest)}</div>` : ''}
-        ${isExpanded ? `<div class="paradigm-stat-chart">${breakdownHtml}</div>` : ''}
-      </div>`;
-  }).join('');
-
-  // Overall row (rendered on top): cross-paradigm per-form headline + merged
-  // breakdown, so the single worst value across everything is the pointer.
-  const { groups: overallGroups, weakest: overallWeakest, totals: overallTotals } = finalizeValueBreakdown(overallAcc);
-  const overallExpanded = expandedKey === '__overall';
-  const paradigmCount = rows.length;
-  const overallRow = `
-    <div class="paradigm-stat-row paradigm-stat-row-overall${overallExpanded ? ' paradigm-stat-row-active' : ''}"
-         role="button"
-         tabindex="0"
-         aria-expanded="${overallExpanded ? 'true' : 'false'}"
-         data-paradigm-row="__overall">
-      <div class="paradigm-stat-header">
-        <span class="paradigm-stat-lemma paradigm-stat-lemma-overall">All paradigms</span>
-        <span class="paradigm-stat-pct">${overallTotals.pct == null ? '—' : `${overallTotals.pct}%`} · ${overallTotals.seen}/${overallTotals.scope} forms across ${paradigmCount} paradigm${paradigmCount === 1 ? '' : 's'}</span>
-      </div>
-      ${overallWeakest ? `<div class="paradigm-stat-weakline">${weakestValueTagHtml(overallWeakest)}</div>` : ''}
-      ${overallExpanded ? `<div class="paradigm-stat-chart">${buildDimValueBarsHtml(overallGroups, { caption: 'Per-dimension accuracy per value, across every paradigm · seen / in scope' })}</div>` : ''}
-    </div>`;
-
-  body.innerHTML = `${buildParsingAccuracyTrendHtml(stats, enabledDims)}<div class="paradigm-stat-list">${overallRow}${lemmaRows}</div>`;
-  setupParadigmStepStatsInteractivity(body);
-  if (status) status.textContent = `${paradigmCount} paradigm${paradigmCount === 1 ? '' : 's'} drilled · tap a row for the mood / tense breakdown.`;
-}
-
-// Same-row tap dedupe (see toggle below). Module-level so it survives the
-// section re-render, which can rebind the handler.
-let lastParadigmToggleKey = '';
-let lastParadigmToggleAt = 0;
-
-function setupParadigmStepStatsInteractivity(rootEl) {
-  if (!rootEl || rootEl.dataset.paradigmStatsBound === '1') return;
-  rootEl.dataset.paradigmStatsBound = '1';
-  const toggle = (key) => {
-    if (!key) return;
-    // Swallow the iOS Safari "ghost click": replacing the tapped row's subtree
-    // synchronously inside the click handler makes Safari re-dispatch a click
-    // to whatever now sits under the finger — the just-expanded row — instantly
-    // toggling it shut (the row flashes open then closed in one frame). Ignore
-    // a repeat tap of the same row within a short window so it stays put.
-    const now = Date.now();
-    if (key === lastParadigmToggleKey && now - lastParadigmToggleAt < 400) return;
-    lastParadigmToggleKey = key;
-    lastParadigmToggleAt = now;
-    runtime.analyticsParadigmExpanded = runtime.analyticsParadigmExpanded === key ? null : key;
-    renderParadigmStepStatsSection();
-  };
-  rootEl.addEventListener('click', (event) => {
-    const row = event.target.closest('[data-paradigm-row]');
-    if (!row || !rootEl.contains(row)) return;
-    toggle(row.dataset.paradigmRow || '');
-  });
-  rootEl.addEventListener('keydown', (event) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    const row = event.target.closest('[data-paradigm-row]');
-    if (!row || !rootEl.contains(row)) return;
-    event.preventDefault();
-    toggle(row.dataset.paradigmRow || '');
-  });
-}
-
-function setupGrammarReviewInteractivity(rootEl) {
-  if (!rootEl || rootEl.dataset.grammarReviewBound === '1') return;
-  rootEl.dataset.grammarReviewBound = '1';
-
-  // Tap a concept row → expand its card list. Mirrors the chapter-detail
-  // word-row scroll preservation: the panel re-renders in place, so we
-  // capture scroll offset against the tapped row's position before the
-  // re-render and restore it afterwards.
-  const handleConceptToggle = (row) => {
-    const family = row.dataset.grammarConcept || '';
-    if (!family) return;
-    const list = row.closest('.chapter-detail-list');
-    const prevScrollTop = list ? list.scrollTop : 0;
-    const prevRowTop = list ? row.offsetTop : 0;
-
-    runtime.analyticsGrammarExpandedConcept = runtime.analyticsGrammarExpandedConcept === family ? null : family;
-    runtime.analyticsGrammarExpandedCard = null;
-    renderGrammarChapterDetailPanel();
-
-    const newList = document.querySelector('#grammarChapterDetailPanel .chapter-detail-list');
-    if (!newList) return;
-    const newRow = newList.querySelector(`[data-grammar-concept="${CSS.escape(family)}"]`);
-    newList.scrollTop = newRow
-      ? prevScrollTop + (newRow.offsetTop - prevRowTop)
-      : prevScrollTop;
-  };
-
-  const handleCardToggle = (row) => {
-    const cardId = row.dataset.grammarCardId || '';
-    if (!cardId) return;
-    const list = row.closest('.grammar-concept-card-list');
-    const prevScrollTop = list ? list.scrollTop : 0;
-    const prevRowTop = list ? row.offsetTop : 0;
-
-    runtime.analyticsGrammarExpandedCard = runtime.analyticsGrammarExpandedCard === cardId ? null : cardId;
-    renderGrammarChapterDetailPanel();
-
-    const newList = document.querySelector('#grammarChapterDetailPanel .grammar-concept-card-list');
-    if (!newList) return;
-    const newRow = newList.querySelector(`[data-grammar-card-id="${CSS.escape(cardId)}"]`);
-    newList.scrollTop = newRow
-      ? prevScrollTop + (newRow.offsetTop - prevRowTop)
-      : prevScrollTop;
-  };
-
-  rootEl.addEventListener('click', (event) => {
-    const closeBtn = event.target.closest('[data-grammar-chapter-close]');
-    if (closeBtn && rootEl.contains(closeBtn)) {
-      runtime.analyticsGrammarExpandedChapter = null;
-      runtime.analyticsGrammarExpandedConcept = null;
-      runtime.analyticsGrammarExpandedCard = null;
-      rootEl.querySelectorAll('.chapter-tile').forEach(t => {
-        t.classList.remove('chapter-tile-active');
-        t.setAttribute('aria-expanded', 'false');
-      });
-      renderGrammarChapterDetailPanel();
-      return;
-    }
-    const sortToggle = event.target.closest('[data-grammar-concept-sort]');
-    if (sortToggle && rootEl.contains(sortToggle)) {
-      const nextMode = sortToggle.dataset.grammarConceptSort === 'alphabetical' ? 'alphabetical' : 'confidence';
-      if (runtime.analyticsGrammarConceptSort !== nextMode) {
-        runtime.analyticsGrammarConceptSort = nextMode;
-        renderGrammarChapterDetailPanel();
-      }
-      return;
-    }
-    const cardRow = event.target.closest('.grammar-card-row[data-grammar-card-id]');
-    if (cardRow && rootEl.contains(cardRow)) {
-      handleCardToggle(cardRow);
-      return;
-    }
-    const conceptRow = event.target.closest('.grammar-concept-row[data-grammar-concept]');
-    if (conceptRow && rootEl.contains(conceptRow)) {
-      handleConceptToggle(conceptRow);
-      return;
-    }
-    const tile = event.target.closest('[data-grammar-chapter]');
-    if (!tile || !rootEl.contains(tile)) return;
-    const key = tile.dataset.grammarChapter || '';
-    if (!key) return;
-    const nextKey = runtime.analyticsGrammarExpandedChapter === key ? null : key;
-    if (nextKey !== runtime.analyticsGrammarExpandedChapter) {
-      runtime.analyticsGrammarExpandedConcept = null;
-      runtime.analyticsGrammarExpandedCard = null;
-    }
-    runtime.analyticsGrammarExpandedChapter = nextKey;
-    rootEl.querySelectorAll('.chapter-tile').forEach(t => {
-      const active = t.dataset.grammarChapter === runtime.analyticsGrammarExpandedChapter;
-      t.classList.toggle('chapter-tile-active', active);
-      t.setAttribute('aria-expanded', active ? 'true' : 'false');
-    });
-    renderGrammarChapterDetailPanel();
-  });
-
-  rootEl.addEventListener('keydown', (event) => {
-    if (event.key !== 'Enter' && event.key !== ' ') return;
-    const cardRow = event.target.closest('.grammar-card-row[data-grammar-card-id]');
-    if (cardRow && rootEl.contains(cardRow)) {
-      event.preventDefault();
-      handleCardToggle(cardRow);
-      return;
-    }
-    const conceptRow = event.target.closest('.grammar-concept-row[data-grammar-concept]');
-    if (conceptRow && rootEl.contains(conceptRow)) {
-      event.preventDefault();
-      handleConceptToggle(conceptRow);
-    }
-  });
-}
-
 function computePersonalRecords(usage, sessionHistory, streaks, courseData) {
   const longestSessionMs = sessionHistory.reduce((max, s) => Math.max(max, s.durationMs || 0), 0);
 
@@ -1108,14 +495,13 @@ function computePersonalRecords(usage, sessionHistory, streaks, courseData) {
   };
   mergeFirstConfirmed(runtime.globalWordProgress.g2e);
   mergeFirstConfirmed(runtime.globalWordProgress.e2g);
-  mergeFirstConfirmed(runtime.globalWordProgress.morph);
   let bestDayCount = 0;
   let bestDayKey = '';
   Object.entries(byDay).forEach(([key, count]) => {
     if (count > bestDayCount) { bestDayCount = count; bestDayKey = key; }
   });
 
-  const totalConfirmed = courseData.allVocabConfirmed + (host.canAccessGrammarUi() ? courseData.allGrammarConfirmed : 0);
+  const totalConfirmed = courseData.allVocabConfirmed;
   return {
     longestSessionMs,
     bestStreak: streaks.longest || 0,
@@ -1262,107 +648,23 @@ function computeMostImprovedCards(cards, progressStore, limit = 50) {
   return improved.sort((a, b) => b.delta - a.delta).slice(0, limit);
 }
 
-// ── Grammar concept aggregates for stubborn / improved lists ──────────
-// Per the analytics structure: vocab lists drill down to individual words,
-// but grammar lists pivot to concept (card.family) totals. A learner who
-// keeps missing four cards of "Future indicative active" cares more about
-// "review that concept" than four near-identical rows.
-function computeStubbornGrammarConcepts(cards, progressStore) {
-  const byFamily = new Map();
-  (cards || []).forEach(card => {
-    const family = card.family || 'Other';
-    if (!byFamily.has(family)) byFamily.set(family, []);
-    byFamily.get(family).push(card);
-  });
-  const rows = [];
-  byFamily.forEach((familyCards, family) => {
-    let fails = 0;
-    let passes = 0;
-    let seen = 0;
-    familyCards.forEach(card => {
-      const p = progressStore?.[card.id];
-      if (!p) return;
-      fails += Number(p.failCount) || 0;
-      passes += Number(p.passCount) || 0;
-      seen += Number(p.seenCount) || 0;
-    });
-    const total = passes + fails;
-    if (total < 3) return;
-    // Same 1-pseudopass smoothing the per-card list uses, applied to the
-    // aggregate counts so a concept with one bad card and many good ones
-    // doesn't sort above a uniformly weak concept.
-    const smoothed = (passes + 1) / (total + 1);
-    if (smoothed > 0.5) return;
-    const failRate = fails / total;
-    rows.push({ family, fails, passes, seen, total, failRate, smoothed, totalCards: familyCards.length });
-  });
-  return rows.sort((a, b) => (a.smoothed - b.smoothed) || (b.fails - a.fails));
-}
-
-function computeMostImprovedGrammarConcepts(cards, progressStore, limit = 50) {
-  const byFamily = new Map();
-  (cards || []).forEach(card => {
-    const family = card.family || 'Other';
-    if (!byFamily.has(family)) byFamily.set(family, []);
-    byFamily.get(family).push(card);
-  });
-  const rows = [];
-  byFamily.forEach((familyCards, family) => {
-    let totalDelta = 0;
-    let totalOlder = 0;
-    let totalRecent = 0;
-    let qualifying = 0;
-    familyCards.forEach(card => {
-      const p = progressStore?.[card.id];
-      if (!p) return;
-      const hist = Array.isArray(p.confidenceHistory)
-        ? p.confidenceHistory.filter(v => Number.isFinite(v))
-        : [];
-      if (hist.length < 10) return;
-      const older = hist.slice(-10, -5);
-      const recent = hist.slice(-5);
-      const olderAvg = older.reduce((s, v) => s + v, 0) / older.length;
-      const recentAvg = recent.reduce((s, v) => s + v, 0) / recent.length;
-      totalDelta += (recentAvg - olderAvg);
-      totalOlder += olderAvg;
-      totalRecent += recentAvg;
-      qualifying++;
-    });
-    if (!qualifying) return;
-    const avgDelta = totalDelta / qualifying;
-    const avgOlder = totalOlder / qualifying;
-    const avgRecent = totalRecent / qualifying;
-    if (avgDelta < 0.15) return;
-    if (avgOlder >= 0.7) return;
-    rows.push({ family, avgDelta, avgOlder, avgRecent, qualifying, totalCards: familyCards.length });
-  });
-  return rows.sort((a, b) => b.avgDelta - a.avgDelta).slice(0, limit);
-}
-
 // ── Word-list row + collapsible builders ──────────────────────────────
 // Shared by slipping / stubborn / most-improved lists inside the Total &
 // Selected progress collapses. `primaryDisplay` is the right-most stat
-// (a percent, a delta, a fails-count …). For vocab, rows are tappable —
-// tapping expands a per-word stat card below the row, matching the chapter
-// map interaction model. Grammar lists pivot to concept aggregates
-// elsewhere; the grammar branch here only feeds the slipping list, which
-// stays per-card and isn't tappable.
+// (a percent, a delta, a fails-count …). Rows are tappable — tapping expands
+// a per-word stat card below the row, matching the chapter map interaction
+// model.
 function renderCardListRow(item, kind, primaryDisplay, opts = {}) {
   const { progressStore, marksStore, listKey } = opts;
   const card = item.card;
-  const headword = kind === 'grammar'
-    ? `${escapeHtml(card.form || card.lemma || '—')}${card.lemma && card.form && card.form !== card.lemma ? ` <span class="stubborn-lemma">(${escapeHtml(card.lemma)})</span>` : ''}`
-    : (typeof window !== 'undefined' && typeof window.formatGreekHeadword === 'function'
-        ? window.formatGreekHeadword(card.g)
-        : escapeHtml(card.g || '—'));
-  const gloss = kind === 'grammar' ? (card.answer || card.gloss || '') : (card.e || '');
+  const headword = escapeHtml(card.g || '—');
+  const gloss = card.e || '';
 
-  const tappable = kind === 'vocab' && listKey && progressStore;
-  const kindClass = kind === 'grammar' ? ' analytics-word-list-row-grammar' : '';
+  const tappable = listKey && progressStore;
   if (!tappable) {
     return `
-      <li class="analytics-word-list-row${kindClass}">
-        <span class="analytics-word-list-headword">${headword}</span>
+      <li class="analytics-word-list-row">
+        <span class="analytics-word-list-headword hebrew-text" dir="rtl" lang="he">${headword}</span>
         <span class="analytics-word-list-gloss">${escapeHtml(gloss)}</span>
         <span class="analytics-word-list-pct">${escapeHtml(primaryDisplay)}</span>
       </li>
@@ -1375,13 +677,13 @@ function renderCardListRow(item, kind, primaryDisplay, opts = {}) {
     ? `<li class="analytics-word-list-statcard-row" aria-hidden="false">${buildWordStatCardHtml(card, progressStore?.[card.id], marksStore?.[card.id] === 'known')}</li>`
     : '';
   return `
-    <li class="analytics-word-list-row analytics-word-list-row-tappable${kindClass}${isExpanded ? ' analytics-word-list-row-active' : ''}"
+    <li class="analytics-word-list-row analytics-word-list-row-tappable${isExpanded ? ' analytics-word-list-row-active' : ''}"
         role="button"
         tabindex="0"
         aria-expanded="${isExpanded ? 'true' : 'false'}"
         data-list-word-id="${escapeHtml(String(card.id))}"
         data-list-key="${escapeHtml(listKey)}">
-      <span class="analytics-word-list-headword">${headword}</span>
+      <span class="analytics-word-list-headword hebrew-text" dir="rtl" lang="he">${headword}</span>
       <span class="analytics-word-list-gloss">${escapeHtml(gloss)}</span>
       <span class="analytics-word-list-pct">${escapeHtml(primaryDisplay)}</span>
     </li>
@@ -1457,67 +759,6 @@ function buildImprovedCollapseHtml(improved, kind, collapseKey, opts = {}) {
 // Grammar variants: stubborn / improved aggregate per-concept (card.family).
 // Each row reports concept-level totals — no individual card drilldown here;
 // the chapter-mastery grid handles per-card detail.
-function buildStubbornConceptCollapseHtml(concepts, collapseKey) {
-  if (!concepts.length) return '';
-  const renderRow = (c) => {
-    const failRate = c.total ? Math.round(c.failRate * 100) : 0;
-    const stat = `${c.fails} miss${c.fails === 1 ? '' : 'es'} · ${failRate}% miss rate`;
-    const sub = `${c.totalCards} card${c.totalCards === 1 ? '' : 's'} · ${c.passes + c.fails} flip${c.passes + c.fails === 1 ? '' : 's'}`;
-    return `
-      <li class="analytics-word-list-row analytics-word-list-row-grammar">
-        <span class="analytics-word-list-headword">${escapeHtml(c.family)}</span>
-        <span class="analytics-word-list-gloss">${escapeHtml(sub)}</span>
-        <span class="analytics-word-list-pct">${escapeHtml(stat)}</span>
-      </li>
-    `;
-  };
-  return `
-    <details class="analytics-collapse analytics-sub-collapse" data-collapse-key="${escapeHtml(collapseKey)}">
-      <summary class="analytics-collapse-summary">
-        <span class="analytics-collapse-caret" aria-hidden="true">▾</span>
-        <div class="analytics-collapse-title-wrap">
-          <h4>Most stubborn grammar concepts <span class="analytics-collapse-meta">${concepts.length}</span></h4>
-        </div>
-      </summary>
-      <div class="analytics-collapse-body">
-        <ol class="analytics-word-list analytics-word-list-scrollable">
-          ${concepts.map(renderRow).join('')}
-        </ol>
-      </div>
-    </details>
-  `;
-}
-
-function buildImprovedConceptCollapseHtml(concepts, collapseKey) {
-  if (!concepts.length) return '';
-  const renderRow = (c) => {
-    const stat = `+${Math.round(c.avgDelta * 100)}% · ${c.qualifying} card${c.qualifying === 1 ? '' : 's'}`;
-    const sub = `${c.totalCards} card${c.totalCards === 1 ? '' : 's'} · prior ${Math.round(c.avgOlder * 100)}%`;
-    return `
-      <li class="analytics-word-list-row analytics-word-list-row-grammar">
-        <span class="analytics-word-list-headword">${escapeHtml(c.family)}</span>
-        <span class="analytics-word-list-gloss">${escapeHtml(sub)}</span>
-        <span class="analytics-word-list-pct">${escapeHtml(stat)}</span>
-      </li>
-    `;
-  };
-  return `
-    <details class="analytics-collapse analytics-sub-collapse" data-collapse-key="${escapeHtml(collapseKey)}">
-      <summary class="analytics-collapse-summary">
-        <span class="analytics-collapse-caret" aria-hidden="true">▾</span>
-        <div class="analytics-collapse-title-wrap">
-          <h4>Most improved grammar concepts <span class="analytics-collapse-meta">${concepts.length}</span></h4>
-        </div>
-      </summary>
-      <div class="analytics-collapse-body">
-        <ol class="analytics-word-list analytics-word-list-scrollable">
-          ${concepts.map(renderRow).join('')}
-        </ol>
-      </div>
-    </details>
-  `;
-}
-
 // Builds the inner content of a "Vocabulary/Grammar progress" collapse:
 // slipping count + collapsible list, cumulative line chart, projected
 // finish, stubborn collapsible, and a most-improved collapsible. Vocab
@@ -1539,23 +780,14 @@ function buildProgressInnerHtml(opts) {
     ? 'Complete'
     : (projection ? formatAnalyticsDate(projection.projectedTs) : '—');
   const projectedNote = projection
-    ? `${projection.cardsPerDay.toFixed(2)} ${kind === 'grammar' ? 'items' : 'words'}/day regression`
+    ? `${projection.cardsPerDay.toFixed(2)} words/day regression`
     : 'Needs more recent progress data';
 
   const rowOpts = { progressStore, marksStore };
-  let stubbornHtml;
-  let improvedHtml;
-  if (kind === 'grammar') {
-    const stubbornConcepts = computeStubbornGrammarConcepts(cards, progressStore);
-    const improvedConcepts = computeMostImprovedGrammarConcepts(cards, progressStore);
-    stubbornHtml = buildStubbornConceptCollapseHtml(stubbornConcepts, `${scopeKey}Stubborn`);
-    improvedHtml = buildImprovedConceptCollapseHtml(improvedConcepts, `${scopeKey}Improved`);
-  } else {
-    const stubborn = computeStubbornCards(cards, progressStore);
-    const improved = computeMostImprovedCards(cards, progressStore);
-    stubbornHtml = buildStubbornCollapseHtml(stubborn, kind, `${scopeKey}Stubborn`, rowOpts);
-    improvedHtml = buildImprovedCollapseHtml(improved, kind, `${scopeKey}Improved`, rowOpts);
-  }
+  const stubborn = computeStubbornCards(cards, progressStore);
+  const improved = computeMostImprovedCards(cards, progressStore);
+  const stubbornHtml = buildStubbornCollapseHtml(stubborn, kind, `${scopeKey}Stubborn`, rowOpts);
+  const improvedHtml = buildImprovedCollapseHtml(improved, kind, `${scopeKey}Improved`, rowOpts);
 
   return `
     <div class="analytics-metric-card analytics-progress-metric">
@@ -1590,31 +822,20 @@ export function renderAnalyticsOverlay() {
   if (usage.currentStudySession && usage.currentStudySession.startedAt) sessionHistory.push({ startedAt: usage.currentStudySession.startedAt, endedAt: usage.lastStudyCountedAt || Date.now(), durationMs: usage.currentStudySession.durationMs || 0, interactionCount: usage.currentStudySession.interactionCount || 0 });
   const latestSession = sessionHistory[sessionHistory.length - 1] || null;
 
-  // ── Per-direction progress stores. Analytics needs to read vocab progress
-  //    from the g2e/e2g store and grammar progress from the morph store
-  //    regardless of the current studyMode, otherwise getWordProgress()
-  //    (which is keyed on the active mode) reports every off-mode card as
-  //    "Unseen". The analytics page has its own direction + scope toggles
-  //    (runtime.analyticsVocabDirection / runtime.analyticsVocabScope) so
-  //    flipping the view never disturbs the study deck. ──
+  // ── Per-direction progress stores. The analytics page has its own
+  //    direction + scope toggles (runtime.analyticsVocabDirection /
+  //    runtime.analyticsVocabScope) so flipping the view never disturbs the
+  //    study deck. ──
   const g2eProgressStore = runtime.globalWordProgress.g2e || {};
   const e2gProgressStore = runtime.globalWordProgress.e2g || {};
-  const morphProgressStore = runtime.globalWordProgress.morph || {};
   const analyticsDirection = getAnalyticsVocabDirection();
   const analyticsRequiredOnly = isAnalyticsVocabRequiredOnly();
   const vocabProgressStore = getAnalyticsVocabProgressStore();
   const vocabMarks = getAnalyticsVocabMarksStore();
 
-  // ── Vocab & Grammar data (used by both gamification and section renders) ──
+  // ── Vocab data (used by both gamification and section renders) ──
   const vocabCards = runtime.selectedKeys.length ? getSelectedVocabCards(runtime.selectedKeys, analyticsRequiredOnly) : [];
   const vocabProgress = buildCumulativeConfirmationSeries(vocabCards, vocabMarks, vocabProgressStore);
-  const vocabProjection = getRegressionProjection(vocabProgress.series, vocabProgress.currentConfirmed, vocabProgress.total);
-  const vocabBuckets = buildConfirmationHistogram(vocabCards, vocabProgressStore);
-  const grammarCards = host.canAccessGrammarUi() && runtime.selectedKeys.length ? getSelectedGrammarCards(runtime.selectedKeys) : [];
-  const grammarMarks = runtime.globalWordMarks.morph;
-  const grammarProgress = buildCumulativeConfirmationSeries(grammarCards, grammarMarks, morphProgressStore);
-  const grammarProjection = getRegressionProjection(grammarProgress.series, grammarProgress.currentConfirmed, grammarProgress.total);
-  const grammarBuckets = buildConfirmationHistogram(grammarCards, morphProgressStore);
 
   // ── Course-wide data (selection-independent, represents full course) ──
   const courseData = computeCourseWideData();
@@ -1623,7 +844,7 @@ export function renderAnalyticsOverlay() {
   const streaks = computeStudyStreaks(usage.activeDailyMs);
   const xpData = computeXpAndLevel(usage);
   const mergedProgressStore = {};
-  [g2eProgressStore, e2gProgressStore, morphProgressStore].forEach(store => {
+  [g2eProgressStore, e2gProgressStore].forEach(store => {
     Object.entries(store).forEach(([cardId, entry]) => {
       const existing = mergedProgressStore[cardId] || {};
       mergedProgressStore[cardId] = {
@@ -1634,8 +855,8 @@ export function renderAnalyticsOverlay() {
       };
     });
   });
-  const allCourseCards = [...courseData.allVocabCards, ...courseData.allGrammarCards];
-  const mergedMarks = { ...(runtime.globalWordMarks.g2e || {}), ...(runtime.globalWordMarks.e2g || {}), ...(runtime.globalWordMarks.morph || {}) };
+  const allCourseCards = courseData.allVocabCards;
+  const mergedMarks = { ...(runtime.globalWordMarks.g2e || {}), ...(runtime.globalWordMarks.e2g || {}) };
   const todayStats = computeTodayStats(usage.activeDailyMs, allCourseCards, mergedMarks, mergedProgressStore);
   const achievements = computeAchievements(usage, courseData, streaks, sessionHistory.length, todayStats);
   const dailyAwards = achievements.filter(a => a.group === 'daily');
@@ -1685,7 +906,7 @@ export function renderAnalyticsOverlay() {
   renderVocabViewToggles();
 
   // ── Direction + scope labels reused across the vocab sections ──
-  const dirLabel = analyticsDirection === 'e2g' ? 'English → Greek' : 'Greek → English';
+  const dirLabel = analyticsDirection === 'e2g' ? 'English → Hebrew' : 'Hebrew → English';
   const scopeLabel = analyticsRequiredOnly ? 'Starred only' : 'All vocab';
   const isConfirmedFor = (store, marks) => (card) => {
     if (marks[card.id] === 'known') return true;
@@ -1788,98 +1009,6 @@ export function renderAnalyticsOverlay() {
     if (selectedVocabProgressStatus) selectedVocabProgressStatus.textContent = '';
   }
 
-  // ── Total Grammar: top histogram, chapter mastery, progress inner ──
-  const showGrammar = host.canAccessGrammarUi();
-  const totalGrammarCards = showGrammar ? courseData.allGrammarCards : [];
-  const totalGrammarBarEl = document.getElementById('analyticsTotalGrammarBar');
-  if (totalGrammarBarEl) {
-    if (!showGrammar || !totalGrammarCards.length) {
-      totalGrammarBarEl.innerHTML = '';
-    } else {
-      const buckets = buildConfirmationHistogram(totalGrammarCards, morphProgressStore);
-      const totalGrammarSeries = buildCumulativeConfirmationSeries(totalGrammarCards, grammarMarks, morphProgressStore);
-      totalGrammarBarEl.innerHTML = `
-        <div class="analytics-chart-card">
-          <div class="analytics-chart-title">${courseData.allGrammarConfirmed} / ${courseData.allGrammarTotal} confirmed</div>
-          ${buildHistogramSvg(buckets, { title: 'Course grammar confirmation' })}
-          ${buildConfidenceSummaryBox({ currentConfirmed: courseData.allGrammarConfirmed, total: courseData.allGrammarTotal, weeklyPct: totalGrammarSeries.weeklyPct })}
-        </div>
-      `;
-    }
-  }
-  // Grammar review (chapter mastery grid) renders into #analyticsGrammarReview
-  // which lives inside the Total Grammar > Chapter mastery collapse.
-  renderGrammarReviewSection();
-  renderParadigmStepStatsSection();
-  const totalGrammarBody = document.getElementById('analyticsTotalGrammarProgressBody');
-  if (totalGrammarBody) {
-    totalGrammarBody.innerHTML = buildProgressInnerHtml({
-      cards: totalGrammarCards,
-      progressStore: morphProgressStore,
-      marksStore: grammarMarks,
-      kind: 'grammar',
-      scopeKey: 'totalGrammar',
-      emptyMessage: showGrammar ? 'No grammar drills available yet.' : 'Grammar is not available in this profile.'
-    });
-  }
-  const totalGrammarStatusEl = document.getElementById('analyticsTotalGrammarSummaryStatus');
-  if (totalGrammarStatusEl) {
-    totalGrammarStatusEl.textContent = showGrammar
-      ? `${courseData.allGrammarConfirmed} / ${courseData.allGrammarTotal} confirmed`
-      : 'Grammar not available in this profile.';
-  }
-  const totalGrammarProgressStatus = document.getElementById('analyticsTotalGrammarProgressStatus');
-  if (totalGrammarProgressStatus) {
-    totalGrammarProgressStatus.textContent = showGrammar
-      ? `${courseData.allGrammarConfirmed} / ${courseData.allGrammarTotal} confirmed`
-      : '';
-  }
-
-  // ── Selected Grammar: bar + progress inner, all collapsed by default ──
-  const selectedGrammarBarEl = document.getElementById('analyticsSelectedGrammarBar');
-  const selectedGrammarBody = document.getElementById('analyticsSelectedGrammarProgressBody');
-  const selectedGrammarSummary = document.getElementById('analyticsSelectedGrammarSummaryStatus');
-  const selectedGrammarProgressStatus = document.getElementById('analyticsSelectedGrammarProgressStatus');
-  if (showGrammar && grammarCards.length) {
-    if (selectedGrammarBarEl) {
-      const buckets = buildConfirmationHistogram(grammarCards, morphProgressStore);
-      selectedGrammarBarEl.innerHTML = `
-        <div class="analytics-chart-card">
-          <div class="analytics-chart-title">Selected sets — ${grammarProgress.currentConfirmed} / ${grammarProgress.total || 0} confirmed</div>
-          ${buildHistogramSvg(buckets, { title: 'Selected grammar confirmation' })}
-          ${buildConfidenceSummaryBox({ currentConfirmed: grammarProgress.currentConfirmed, total: grammarProgress.total, weeklyPct: grammarProgress.weeklyPct })}
-        </div>
-      `;
-    }
-    if (selectedGrammarBody) {
-      selectedGrammarBody.innerHTML = buildProgressInnerHtml({
-        cards: grammarCards,
-        progressStore: morphProgressStore,
-        marksStore: grammarMarks,
-        kind: 'grammar',
-        scopeKey: 'selectedGrammar',
-      });
-    }
-    if (selectedGrammarSummary) {
-      selectedGrammarSummary.textContent = `${grammarProgress.currentConfirmed} / ${grammarProgress.total || 0} confirmed · ${runtime.selectedKeys.length} set${runtime.selectedKeys.length === 1 ? '' : 's'}`;
-    }
-    if (selectedGrammarProgressStatus) {
-      selectedGrammarProgressStatus.textContent = `${grammarProgress.currentConfirmed} / ${grammarProgress.total || 0} confirmed`;
-    }
-  } else {
-    const emptyMsg = showGrammar
-      ? '<div class="analytics-empty">Choose a session or chapter on the home screen to populate this view.</div>'
-      : '';
-    if (selectedGrammarBarEl) selectedGrammarBarEl.innerHTML = emptyMsg;
-    if (selectedGrammarBody) selectedGrammarBody.innerHTML = emptyMsg;
-    if (selectedGrammarSummary) {
-      selectedGrammarSummary.textContent = showGrammar
-        ? 'Pick a session or chapter on the home screen to populate.'
-        : 'Grammar not available in this profile.';
-    }
-    if (selectedGrammarProgressStatus) selectedGrammarProgressStatus.textContent = '';
-  }
-
   // ── Study activity (records, heatmap, time metrics, cumulative chart) ──
   const recordsEl = document.getElementById('analyticsRecords');
   if (recordsEl) {
@@ -1910,12 +1039,11 @@ export function renderAnalyticsOverlay() {
   const overallMetricsEl = document.getElementById('analyticsOverallMetrics');
   const overallChartEl = document.getElementById('analyticsTimeChart');
   const sessionEl = document.getElementById('analyticsSessionSummary');
-  // Total card-views: sum of seenCount across every directional progress
-  // store (g2e + e2g + morph). This is the raw "how many flips have I done
-  // across the whole course" stat that used to live in the per-deck
-  // progress frame.
+  // Total card-views: sum of seenCount across both directional progress
+  // stores (g2e + e2g). This is the raw "how many flips have I done across
+  // the whole course" stat that used to live in the per-deck progress frame.
   let totalCardViews = 0;
-  ['g2e', 'e2g', 'morph'].forEach(direction => {
+  ['g2e', 'e2g'].forEach(direction => {
     const store = (runtime.globalWordProgress && runtime.globalWordProgress[direction]) || {};
     Object.values(store).forEach(entry => {
       if (entry && Number.isFinite(entry.seenCount)) totalCardViews += entry.seenCount;
@@ -2057,8 +1185,8 @@ function renderVocabViewToggles() {
     <div class="analytics-view-toggle">
       <span class="analytics-view-toggle-label">Direction</span>
       <div class="analytics-view-toggle-group" role="group" aria-label="Vocabulary direction">
-        ${dirBtn('g2e', 'Greek → English')}
-        ${dirBtn('e2g', 'English → Greek')}
+        ${dirBtn('g2e', 'Hebrew → English')}
+        ${dirBtn('e2g', 'English → Hebrew')}
       </div>
     </div>
     <div class="analytics-view-toggle">
