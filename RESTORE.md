@@ -3,9 +3,16 @@
 ## Resume status
 
 - Date: 2026-08-08. Session 1 (Fable orchestrator).
-- Preflight 0 (PDF purge + clean `Main`) is **complete and verified**; this
-  file's commit is the first Phase 2 project commit.
-- Current phase: Phase 0 (audit and plan) — starting.
+- Preflight 0 (PDF purge + clean `Main`) is **complete and verified**.
+- Phase 0 (audit/plan/schemas) complete. **PR A merged** as
+  `7837ce2` (PR #3): GA removal, parsing validator, lesson-gate engine +
+  12 boundary tests, telemetry+PDF release checks, Phase 2 ledger.
+- Current phase: PR B — verified parsing inventory + Parsing mode.
+- User directives this session: (1) GitHub Pages is the primary deployment —
+  app must stay static/build-free/subpath-relative; merging to the default
+  branch deploys. (2) Optional lesson grouping by the textbook's 13
+  Reading blocks (see ledger addendum) — implement with PR B/C selectors
+  and PR E presets.
 
 ## Repository and PR state
 
@@ -24,8 +31,11 @@
   (old default, clean, deletable after the default-branch flip);
   `claude/bbh-study-tool-conversion-sly7kr` = `9b70811` (merged PR #1 head,
   clean, deletable).
-- Open PRs: none. Merged: PR #1 (Phase 1 conversion). PR #2 was the PDF
-  transport upload; its content is purged from all branches.
+- Open PRs: none. Merged: PR #1 (Phase 1 conversion), PR #3 (Phase 2 PR A,
+  merge commit `7837ce2`). PR #2 was the PDF transport upload; its content
+  is purged from all branches.
+- Feature branch for PR work: `claude/new-session-988x25` (recreated from
+  `Main` tip per PR).
 
 ## Scope and authorities
 
@@ -68,8 +78,14 @@
 
 ## Completed checkpoints
 
-- Preflight 0 (this commit): PDF quarantined and verified (title/ISBN match),
-  history cleaned, refs force-pushed, fresh-clone verified, guard added.
+- Preflight 0: PDF quarantined and verified (title/ISBN match), history
+  cleaned, refs force-pushed, fresh-clone verified, guard added (`0a5e8be`).
+- Phase 0 (`ae376c7`): ledger, Hebrew-axis schemas, OSHB v.2.2 pin
+  (`6a5db284c715c18b239422e57bb89684e6a19f00`, shallow checkout lives at
+  /workspace/openscriptures/morphhb in this container), PDF page maps —
+  lessons: printed=PDF 1:1 (pp. 21–137); appendix a-N = PDF 140+N; Reader
+  r-N = PDF 215+N. Full lesson→page TOC index verified.
+- PR A / PR #3 merged (`7837ce2`): see Resume status.
 
 ## PDF sanitation facts
 
@@ -108,10 +124,10 @@
 
 ## Tests last run
 
-- `node tools/check_no_pdf.mjs` → PASS (and fixture/real-PDF self-tests fail
-  as intended).
-- Phase 1 checks (`tools/validate_bbh_data.mjs`, `tools/check_release.mjs`):
-  not yet rerun this session — run at Phase 0 start.
+- `node tools/check_release.mjs` → all pass (11 reports, 0 failures; includes
+  telemetry scan, PDF guard, parsing validator).
+- `node tools/test_parsing_gates.mjs` → 12/12 pass.
+- `node tools/validate_bbh_data.mjs` → pass (191 cards / 50 lessons).
 
 ## Blockers and unresolved questions
 
@@ -128,14 +144,16 @@
 
 ## Next three actions
 
-1. Phase 0 audit: rerun Phase 1 validators on `Main`; inventory extension
-   seams (`js/ui/navigation.js` no-op hooks, `normalizeStudyMode`) and
-   `ad1547e` parsing behaviors via targeted `git show`.
-2. Pin OSHB (`openscriptures/morphhb`) release + license; record in
-   `source/bbh/reader/corpus-pin.json` draft.
-3. Draft parsing/grammar/reader schemas + lesson-gate map
-   (`source/bbh/parsing/lesson_gates.json`, `paradigms.json`) and extend
-   `docs/bbh-conversion-plan.md` with the Phase 2 ledger.
+1. PR B step 1 — transcription fan-out (Sonnet ×3, non-overlapping page
+   blocks): nominals/pronouns block, Qal verb block, derived-binyanim/later
+   block. Output = paradigms.json + lesson_gates.json content with per-form
+   source pages; independent verification pass before merge into source.
+2. PR B step 2 — `tools/gen_bbh_parsing_data.mjs` (deterministic
+   generator → `js/data/bbh_parsing.js`), then Parse/Build domain + UI on
+   the seams inventoried (navigation host `isParsingMode`,
+   `GLOBAL_CLICK_HANDLERS`, `normalizeStudyMode`), state-v2 additive
+   subtree + migration, parsing progress/analytics.
+3. Open PR B against `Main`, merge after gate passes, refresh this ledger.
 
 ## Resume prompt
 
