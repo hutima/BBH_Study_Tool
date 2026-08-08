@@ -17,14 +17,12 @@ import {
   sanitizeGamificationState,
   STORAGE_KEY,
   CONSENT_STORAGE_KEY,
-  WHATS_NEW_V1_5_STORAGE_KEY,
   THEME_STORAGE_KEY,
   FONT_FAMILY_STORAGE_KEY,
   TEXT_SIZE_STORAGE_KEY
 } from '../state/store.js';
 import { getStorage } from '../utils/storage.js';
 import { shieldClicksBriefly } from '../utils/clickShield.js';
-import { maybeShowAspectDefaultOffModal } from './modals.js';
 import { renderCard } from './render.js';
 import { renderProgress, renderReview } from './progress.js';
 import {
@@ -546,11 +544,6 @@ export function setStudyMode(mode) {
   host.ensureDirectionalStores();
   runtime.marks = host.getDirectionalMarksStore();
   host.syncToggleButtons();
-
-  // Entering parsing: one-time heads-up for returning users that the Aspect
-  // step now defaults off (and where to switch it back on). No-op for fresh
-  // installs and after it's been dismissed once.
-  if (nextMode === 'parsing') maybeShowAspectDefaultOffModal();
 
   if (host.isReaderMode()) {
     host.renderReaderModule();
@@ -1841,22 +1834,14 @@ function performResetToStart() {
   const storage = getStorage();
   if (storage) {
     // Every key the app writes — clearing only STORAGE_KEY would leave
-    // the disclaimer, theme, font, and "what's new" flags behind, so a
-    // reload wouldn't feel like a fresh first launch.
+    // the disclaimer, theme, and font flags behind, so a reload wouldn't
+    // feel like a fresh first launch.
     const keysToWipe = [
       STORAGE_KEY,
       CONSENT_STORAGE_KEY,
-      WHATS_NEW_V1_5_STORAGE_KEY,
       THEME_STORAGE_KEY,
       FONT_FAMILY_STORAGE_KEY,
-      TEXT_SIZE_STORAGE_KEY,
-      // Older save formats restoreState still reads as a migration path.
-      'greekFlashcardsStateV17',
-      'greekFlashcardsStateV15',
-      'greekFlashcardsStateV14',
-      'greekFlashcardsStateV12',
-      'greekFlashcardsStateV11',
-      'greekFlashcardsStateV10'
+      TEXT_SIZE_STORAGE_KEY
     ];
     for (const key of keysToWipe) {
       try { storage.removeItem(key); } catch (_err) { /* ignore */ }

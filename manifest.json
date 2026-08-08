@@ -1,8 +1,9 @@
 {
   "id": "./",
-  "name": "Elementary NT Greek Flashcards",
-  "short_name": "Greek Cards",
-  "description": "Offline flashcard app for Elementary New Testament Greek vocabulary.",
+  "name": "Beginning Biblical Hebrew — Study Tool",
+  "short_name": "BBH Study Tool",
+  "description": "Unofficial vocabulary flashcards and reference for Cook & Holmstedt's Beginning Biblical Hebrew",
+  "lang": "en",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

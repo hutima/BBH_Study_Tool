@@ -646,7 +646,7 @@ function createProgressExportBundle() {
   return {
     payload,
     jsonText,
-    filename: `greek-flashcards-progress-${stamp}.json`
+    filename: `bbh-study-tool-progress-${stamp}.json`
   };
 }
 
@@ -753,8 +753,8 @@ async function tryShareProgressJsonFile(jsonText, filename) {
     const file = new File([jsonText], filename, { type: 'application/json' });
     if (navigator.canShare && !navigator.canShare({ files: [file] })) return false;
     await navigator.share({
-      title: 'Greek flashcards progress export',
-      text: 'Progress backup exported from the Greek flashcards app.',
+      title: 'BBH Study Tool progress export',
+      text: 'Progress backup exported from the BBH Study Tool app.',
       files: [file]
     });
     return true;
@@ -815,6 +815,13 @@ export async function exportProgressJson() {
 // Throws when the payload is not a recognizable progress export.
 function importProgressFromJsonText(rawText, options = {}) {
   const parsed = JSON.parse(String(rawText || '{}'));
+  // This is a fresh deployment with a new export format id and no migration
+  // path from the old Greek-app export — refuse it outright with a clear
+  // message rather than trying (and likely failing/corrupting) a shape-based
+  // import of Greek-flashcards data.
+  if (typeof parsed?.format === 'string' && parsed.format.startsWith('greek-flashcards')) {
+    throw new Error('This file is a progress export from the old Greek flashcards app and cannot be imported into BBH Study Tool.');
+  }
   const wrappedState = parsed?.format === PROGRESS_EXPORT_FORMAT && isPlainObject(parsed.appState)
     ? parsed.appState
     : parsed;
@@ -901,7 +908,7 @@ export function triggerImportProgress() {
         closeTransferModal();
         window.alert(`Progress imported successfully. ${formatPersistedStateSummary(summary)}`);
       } catch (err) {
-        window.alert('Import failed. Please paste a valid progress JSON exported from this app.');
+        window.alert(err?.message || 'Import failed. Please paste a valid progress JSON exported from this app.');
       }
     },
     secondaryAction: () => {
@@ -926,7 +933,7 @@ function handleImportedProgressFile(event) {
         window.alert(`Progress imported successfully. ${formatPersistedStateSummary(summary)}`);
       }
     } catch (err) {
-      window.alert('Import failed. Please choose a valid progress JSON exported from this app.');
+      window.alert(err?.message || 'Import failed. Please choose a valid progress JSON exported from this app.');
     } finally {
       if (event?.target) event.target.value = '';
     }
@@ -971,34 +978,6 @@ export function markActiveDeckRef() {
   };
 }
 
-// Obsolete localStorage keys from earlier save formats. restoreState reads
-// them once as a migration fallback (see the fallback chain below); left in
-// place afterwards they are pure dead weight against the small iOS Safari
-// quota, which is what eventually makes setItem throw.
-const LEGACY_STORAGE_KEYS = [
-  'greekFlashcardsStateV17',
-  'greekFlashcardsStateV15',
-  'greekFlashcardsStateV14',
-  'greekFlashcardsStateV12',
-  'greekFlashcardsStateV11',
-  'greekFlashcardsStateV10'
-];
-
-function clearLegacySaves(storage) {
-  let cleared = false;
-  for (const key of LEGACY_STORAGE_KEYS) {
-    try {
-      if (storage.getItem(key) !== null) {
-        storage.removeItem(key);
-        cleared = true;
-      }
-    } catch (err) {
-      // A removeItem failure just means we couldn't reclaim that one key.
-    }
-  }
-  return cleared;
-}
-
 export function saveCurrentDeckStateToBank() {
   const ref = runtime.activeDeckRef;
   if (!ref || !runtime.deck.length) return;
@@ -1040,20 +1019,14 @@ export function saveState() {
   try {
     storage.setItem(STORAGE_KEY, JSON.stringify(buildPersistedStatePayload()));
   } catch (err) {
-    // Almost always QuotaExceededError on iOS. Reclaim space by dropping
-    // obsolete legacy-format saves, then retry; if it still won't fit, drop
-    // the deck-state bank (a pure resume convenience) and try once more.
-    clearLegacySaves(storage);
+    // Almost always QuotaExceededError on iOS. Drop the deck-state bank (a
+    // pure resume convenience) and try once more.
     try {
-      storage.setItem(STORAGE_KEY, JSON.stringify(buildPersistedStatePayload()));
+      const payload = buildPersistedStatePayload();
+      payload.deckStates = {};
+      storage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch (err2) {
-      try {
-        const payload = buildPersistedStatePayload();
-        payload.deckStates = {};
-        storage.setItem(STORAGE_KEY, JSON.stringify(payload));
-      } catch (err3) {
-        console.warn('saveState: unable to persist progress to localStorage.', err3);
-      }
+      console.warn('saveState: unable to persist progress to localStorage.', err2);
     }
   }
 }
@@ -1087,32 +1060,9 @@ export function restoreState() {
   const storage = getStorage();
   if (!storage) return false;
 
+  // Fresh deployment, new key namespace — no fallback to any older
+  // Greek-app save format (see store.js STORAGE_KEY comment).
   let raw = storage.getItem(STORAGE_KEY);
-  // One-time fallback: if no V16 data exists yet, load older saved data and migrate it.
-  if (!raw) {
-    const legacyV17 = storage.getItem('greekFlashcardsStateV17');
-    if (legacyV17) raw = legacyV17;
-  }
-  if (!raw) {
-    const legacyV15 = storage.getItem('greekFlashcardsStateV15');
-    if (legacyV15) raw = legacyV15;
-  }
-  if (!raw) {
-    const legacyV14 = storage.getItem('greekFlashcardsStateV14');
-    if (legacyV14) raw = legacyV14;
-  }
-  if (!raw) {
-    const legacyV12 = storage.getItem('greekFlashcardsStateV12');
-    if (legacyV12) raw = legacyV12;
-  }
-  if (!raw) {
-    const legacyV11 = storage.getItem('greekFlashcardsStateV11');
-    if (legacyV11) raw = legacyV11;
-  }
-  if (!raw) {
-    const legacyV10 = storage.getItem('greekFlashcardsStateV10');
-    if (legacyV10) raw = legacyV10;
-  }
   if (!raw) return false;
 
   try {
@@ -1132,10 +1082,6 @@ export function restoreState() {
     // so an oversized legacy save shrinks on first load instead of repeatedly
     // failing to persist.
     saved = compactPersistedState(saved);
-    // Once the current-format save exists, the obsolete legacy-format keys are
-    // pure dead weight against the iOS quota — reclaim that space. Guarded so
-    // we never drop a legacy save still being used as the load source.
-    if (storage.getItem(STORAGE_KEY) !== null) clearLegacySaves(storage);
 
     runtime.selectedKeys = Array.isArray(saved.selectedKeys) ? sortSetKeys(migrateSelectionKeys(saved.selectedKeys.map(String))) : [];
     runtime.requiredOnly = saved.requiredOnly !== false;

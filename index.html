@@ -19,15 +19,15 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=343">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=343">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=343">
+<link rel="manifest" href="manifest.json?v=1">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=1">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=1">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=343">
+<link rel="stylesheet" href="styles.css?v=1">
 <script>
 (function(){
   try {
-    var mode = localStorage.getItem("greekFlashcardsThemeMode") || "system";
+    var mode = localStorage.getItem("bbhStudyToolThemeMode") || "system";
     var prefersDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
     var resolved = mode === "system" ? (prefersDark ? "dark" : "light") : mode;
     document.documentElement.setAttribute("data-theme", resolved);
@@ -35,10 +35,10 @@
     document.documentElement.setAttribute("data-theme", "dark");
   }
   try {
-    var fontFamily = localStorage.getItem("greekFlashcardsFontFamily");
+    var fontFamily = localStorage.getItem("bbhStudyToolFontFamily");
     if (fontFamily === "sans") document.documentElement.setAttribute("data-font-family", "sans");
     else document.documentElement.setAttribute("data-font-family", "serif");
-    var textSize = localStorage.getItem("greekFlashcardsTextSize");
+    var textSize = localStorage.getItem("bbhStudyToolTextSize");
     var allowed = { medium: 1, large: 1, "x-large": 1 };
     document.documentElement.setAttribute("data-text-size", allowed[textSize] ? textSize : "medium");
   } catch (err) {
@@ -596,9 +596,9 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=343"></script>
-<script defer src="js/data/bbh_reference_data.js?v=343"></script>
-<script defer src="js/logic/pos_logic.js?v=343"></script>
-<script type="module" src="js/app/main.js?v=343"></script>
+<script defer src="js/data/bbh_vocab.js?v=1"></script>
+<script defer src="js/data/bbh_reference_data.js?v=1"></script>
+<script defer src="js/logic/pos_logic.js?v=1"></script>
+<script type="module" src="js/app/main.js?v=1"></script>
 </body>
 </html>

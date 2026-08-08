@@ -292,14 +292,14 @@ function buildChapterGridHtml(mastery) {
   };
   const tile = (row) => {
     const pctRound = Math.round(row.pct * 100);
-    const label = `Ch. ${row.chapterKey}: ${pctRound}% avg confidence · ${row.confirmed} / ${row.total} confirmed — tap for word stats`;
+    const label = `Lesson ${row.chapterKey}: ${pctRound}% avg confidence · ${row.confirmed} / ${row.total} confirmed — tap for word stats`;
     let className = `chapter-tile ${bandClassFor(row.pct)}`;
     if (String(row.chapterKey) === expandedKey) className += ' chapter-tile-active';
     return `<button type="button" class="${className}" data-chapter="${escapeHtml(String(row.chapterKey))}" title="${escapeHtml(label)}" aria-expanded="${String(row.chapterKey) === expandedKey ? 'true' : 'false'}"><span class="chapter-tile-num">${escapeHtml(row.chapterKey)}</span><span class="chapter-tile-pct">${pctRound}%</span></button>`;
   };
   return `
     <div class="analytics-chart-card chapter-grid-card">
-      <div class="analytics-chart-title">Chapter map</div>
+      <div class="analytics-chart-title">Lesson map</div>
       <div class="chapter-grid">${mastery.map(tile).join('')}</div>
       <div class="stacked-legend">
         <span class="stacked-legend-item"><span class="stacked-legend-dot stacked-seg-b80"></span>80–100%</span>
@@ -322,7 +322,7 @@ function buildChapterDetailHtml(chapterKey) {
   if (!chapterKey) return '';
   const requiredOnly = isAnalyticsVocabRequiredOnly();
   const cards = getChapterVocabCards(String(chapterKey), requiredOnly);
-  if (!cards.length) return `<div class="analytics-empty">No ${requiredOnly ? 'required ' : ''}vocabulary for Ch. ${escapeHtml(String(chapterKey))} yet.</div>`;
+  if (!cards.length) return `<div class="analytics-empty">No ${requiredOnly ? 'required ' : ''}vocabulary for Lesson ${escapeHtml(String(chapterKey))} yet.</div>`;
   const marksMap = getAnalyticsVocabMarksStore();
   const store = getAnalyticsVocabProgressStore();
   const required = cards.filter(c => c.required).length;
@@ -404,11 +404,11 @@ function buildChapterDetailHtml(chapterKey) {
   };
   return `
     <div class="chapter-detail-head">
-      <div class="chapter-detail-title">Ch. ${escapeHtml(String(chapterKey))} — ${headlinePct}% avg confidence <span class="chapter-detail-meta">${confirmedCount} / ${cards.length} confirmed${required ? ` · ${required} required` : ''}</span></div>
+      <div class="chapter-detail-title">Lesson ${escapeHtml(String(chapterKey))} — ${headlinePct}% avg confidence <span class="chapter-detail-meta">${confirmedCount} / ${cards.length} confirmed${required ? ` · ${required} required` : ''}</span></div>
       <div class="chapter-detail-controls">
         <div class="chapter-detail-sort" role="group" aria-label="Sort words">
           ${sortBtn('confidence', 'Confidence')}
-          ${sortBtn('alphabetical', 'A–Ω')}
+          ${sortBtn('alphabetical', 'A–Z')}
         </div>
         <button type="button" class="chapter-detail-close" data-chapter-close="1" aria-label="Close chapter details">×</button>
       </div>

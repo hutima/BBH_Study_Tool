@@ -260,7 +260,7 @@ export function renderReview() {
       <span class="review-sort-label">Sort</span>
       <div class="review-sort-group" role="group" aria-label="Sort cards">
         ${btn('lastSeen', 'Last seen')}
-        ${btn('alphabetical', 'A–Ω')}
+        ${btn('alphabetical', 'A–Z')}
         ${btn('confidence', 'Confidence')}
       </div>`;
   }

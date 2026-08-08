@@ -17,7 +17,7 @@ import { getStorage, isLikelyIOS } from '../utils/storage.js';
 // cached importer paired with a new module that lacks the export → SyntaxError;
 // see CLAUDE.md). Keep duff's own namespace distinct from Mounce's so the two
 // apps (shared username.github.io origin) never read each other's flag.
-const INSTALL_PROMPT_DISMISSED_KEY = 'greekFlashcardsInstallPromptDismissed';
+const INSTALL_PROMPT_DISMISSED_KEY = 'bbhStudyToolInstallPromptDismissed';
 
 // The captured beforeinstallprompt event (Android/Chromium). Stashed so we can
 // fire .prompt() later from a user gesture. Null on iOS Safari and anywhere the

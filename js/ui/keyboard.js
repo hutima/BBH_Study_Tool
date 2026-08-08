@@ -14,10 +14,6 @@ export function installKeyboardShortcuts(deps) {
     closeStudySelector,
     isShortcutsModalOpen,
     closeShortcutsModal,
-    isWhatsNewV1_5ModalOpen,
-    closeWhatsNewV1_5Modal,
-    isAspectDefaultOffModalOpen,
-    closeAspectDefaultOffModal,
     isToggleInfoModalOpen,
     closeToggleInfoModal,
     isContactAuthorModalOpen,
@@ -50,11 +46,9 @@ export function installKeyboardShortcuts(deps) {
     // cross-version safety: an old cached main.js won't pass these in its deps.
     if (e.key === 'Escape' && typeof isInstallInstructionsOpen === 'function' && isInstallInstructionsOpen()) { closeInstallInstructions(); return; }
     if (e.key === 'Escape' && isShortcutsModalOpen()) { closeShortcutsModal(); return; }
-    if (e.key === 'Escape' && isWhatsNewV1_5ModalOpen()) { closeWhatsNewV1_5Modal(); return; }
-    if (e.key === 'Escape' && isAspectDefaultOffModalOpen()) { closeAspectDefaultOffModal(); return; }
     if (e.key === 'Escape' && isToggleInfoModalOpen()) { closeToggleInfoModal(); return; }
     if (e.key === 'Escape' && isTransferModalOpen()) { closeTransferModal(); return; }
-    if (isDisclaimerModalOpen() || isTransferModalOpen() || isAnalyticsModalOpen() || isStudySelectorOpen() || isShortcutsModalOpen() || isWhatsNewV1_5ModalOpen() || isAspectDefaultOffModalOpen() || isToggleInfoModalOpen() || isContactAuthorModalOpen() || (typeof isInstallInstructionsOpen === 'function' && isInstallInstructionsOpen())) return;
+    if (isDisclaimerModalOpen() || isTransferModalOpen() || isAnalyticsModalOpen() || isStudySelectorOpen() || isShortcutsModalOpen() || isToggleInfoModalOpen() || isContactAuthorModalOpen() || (typeof isInstallInstructionsOpen === 'function' && isInstallInstructionsOpen())) return;
     if (!isReviewDeckMode() || !getSelectedKeys().length) return;
 
     if (isMorphologyMode()) {

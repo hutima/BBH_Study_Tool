@@ -110,13 +110,10 @@ footer p { max-width: 700px; margin: 4px auto; }
 <script>
 
 (function () {
-  var NEW_KEY = 'bbhStudyToolThemeMode';
-  var OLD_KEY = 'greekFlashcardsThemeMode';
+  var THEME_KEY = 'bbhStudyToolThemeMode';
   function readMode() {
     try {
-      var v = localStorage.getItem(NEW_KEY);
-      if (v) return v;
-      v = localStorage.getItem(OLD_KEY);
+      var v = localStorage.getItem(THEME_KEY);
       if (v) return v;
     } catch (err) {}
     return 'system';
@@ -135,7 +132,7 @@ footer p { max-width: 700px; margin: 4px auto; }
       if (!input.checked) return;
       var mode = id === 'theme-light' ? 'light' : 'dark';
       document.documentElement.setAttribute('data-bbh-theme', mode);
-      try { localStorage.setItem(NEW_KEY, mode); } catch (err) {}
+      try { localStorage.setItem(THEME_KEY, mode); } catch (err) {}
     });
   });
 })();
@@ -365,7 +362,7 @@ footer p { max-width: 700px; margin: 4px auto; }
 <p>Content on this page is derived from a user-supplied lesson-by-lesson revision guide for <em>Beginning Biblical Hebrew: A Grammar and Illustrated Reader</em> by John A. Cook and Robert D. Holmstedt (Baker Academic). This tool and its content are not affiliated with, endorsed by, or reviewed by the authors or publisher.</p>
 </footer>
 </div>
-<script src="../js/data/bbh_reference_data.js?v=343"></script>
+<script src="../js/data/bbh_reference_data.js?v=1"></script>
 <script>
 
 (function () {
