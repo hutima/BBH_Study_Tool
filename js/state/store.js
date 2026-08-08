@@ -12,6 +12,11 @@ export const ASPECT_DEFAULT_OFF_NOTICE_STORAGE_KEY = 'greekFlashcardsAspectDefau
 export const THEME_STORAGE_KEY = 'greekFlashcardsThemeMode';
 export const FONT_FAMILY_STORAGE_KEY = 'greekFlashcardsFontFamily';
 export const TEXT_SIZE_STORAGE_KEY = 'greekFlashcardsTextSize';
+// New Hebrew-conversion display prefs use the bbhStudyTool* namespace already
+// (unlike the greekFlashcards* keys above, which keep their legacy names for
+// now — a later task renames that namespace repo-wide).
+export const SHOW_POINTS_STORAGE_KEY = 'bbhStudyToolShowPoints';
+export const SHOW_TRANSLIT_STORAGE_KEY = 'bbhStudyToolShowTranslit';
 export const PROGRESS_EXPORT_FORMAT = 'greek-flashcards-progress-export';
 export const PROGRESS_EXPORT_VERSION = 2;
 export const STUDY_IDLE_MS = 90 * 1000;

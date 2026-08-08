@@ -73,6 +73,12 @@ export const runtime = {
   themeMode: 'system',
   fontFamily: 'serif',  // 'serif' | 'sans'
   textSize: 'medium',   // 'small' | 'medium' | 'large' | 'x-large'
+  // Hebrew display prefs (Task 3). showPoints controls whether card.g is
+  // rendered pointed (as authored) or with stripHebrewPoints() applied at
+  // render time — the underlying data/ids are never touched. showTranslit
+  // toggles the .card-translit line via a CSS attribute (see styles.css).
+  showPoints: 'pointed',    // 'pointed' | 'unpointed'
+  showTranslit: 'show',     // 'show' | 'hide'
 
   // ── Study mode / morphology answer state ────────────────────────────
   studyMode: 'vocab',

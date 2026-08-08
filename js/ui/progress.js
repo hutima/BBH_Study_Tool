@@ -4,7 +4,7 @@
 // runtime.currentIdx via buildStudyDeck and the unspaced-pile manipulations.
 
 import { runtime } from '../state/runtime.js';
-import { compareGreekAlphabetical } from '../utils/greekSort.js';
+import { compareHebrew } from '../utils/hebrewText.js';
 import { getConfidencePct } from '../domain/srs/confidence.js';
 import { formatRemainingForTable, getSrsStage } from '../domain/srs/scheduler.js';
 import { getCardReviewLeft, getCardReviewRight, getCardMetaLine } from '../domain/deck/filters.js';
@@ -16,6 +16,13 @@ import { buildDimValueBarsHtml } from './charts.js';
 // js/domain/grammar/morph_steps.js, deleted in the Hebrew conversion
 // (Vocabulary + Reference only for this phase — see CLAUDE.md). It's dead
 // code, gated behind host.isParsingMode() which always returns false now.
+
+// Alphabetical sort for vocab review rows — compares by the pointed Hebrew
+// headword (card.g) using Hebrew collation (see js/utils/hebrewText.js).
+// A missing/empty headword sorts first rather than throwing.
+function compareCardsHebrew(a, b) {
+  return compareHebrew((a && a.g) || '', (b && b.g) || '');
+}
 
 let host = {
   accumulateUsageTime: () => {},
@@ -278,7 +285,7 @@ export function renderReview() {
       const va = pa === null ? -1 : pa;
       const vb = pb === null ? -1 : pb;
       if (va !== vb) return va - vb;
-      return compareGreekAlphabetical(a.card, b.card);
+      return compareCardsHebrew(a.card, b.card);
     });
   } else if (sortMode === 'lastSeen') {
     // Most recently reviewed first, so the card just answered tops the list.
@@ -288,10 +295,10 @@ export function renderReview() {
       const ta = host.getWordProgress(a.card.id).lastReviewedAt || 0;
       const tb = host.getWordProgress(b.card.id).lastReviewedAt || 0;
       if (ta !== tb) return tb - ta;
-      return compareGreekAlphabetical(a.card, b.card);
+      return compareCardsHebrew(a.card, b.card);
     });
   } else {
-    visibleRows.sort((a, b) => compareGreekAlphabetical(a.card, b.card));
+    visibleRows.sort((a, b) => compareCardsHebrew(a.card, b.card));
   }
 
   visibleRows.forEach(({ card }) => {
@@ -691,10 +698,10 @@ function buildLemmaTestableFormsHtml(lemma) {
   if (!cards.length) {
     return `<div class="parsing-review-forms parsing-review-forms-empty">No forms in scope for this paradigm at your current chapter selection.</div>`;
   }
-  // Pass the card objects, not bare form strings: the comparator derives its
-  // sort key from card.kind/card.form, so a plain string degrades to an empty
-  // key and the whole sort becomes a no-op.
-  const sorted = cards.slice().sort(compareGreekAlphabetical);
+  // Pass the card objects, not bare strings: the comparator derives its sort
+  // key from card.g (the Hebrew headword), so a plain string would sort as
+  // if it had no headword at all.
+  const sorted = cards.slice().sort(compareCardsHebrew);
   const stats = runtime.paradigmStepStats || {};
   const enabledDims = host.getEnabledParsingDims();
   const counts = { known: 0, right: 0, partial: 0, wrong: 0, uncertain: 0, unseen: 0 };

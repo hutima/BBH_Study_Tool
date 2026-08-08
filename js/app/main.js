@@ -135,7 +135,6 @@
 import { clamp, isPlainObject, shuffleArray, escapeHtml, cloneForUndo } from '../utils/helpers.js';
 import { formatUsageDuration, formatAnalyticsDate, formatAnalyticsDateTime, getUsageDayKey, getUnspacedArchiveDayKey } from '../utils/time.js';
 import { getStorage, isLikelyIOS } from '../utils/storage.js';
-import { compareGreekAlphabetical } from '../utils/greekSort.js';
 
 // Domain — SRS
 import { SRS_NEAR_WINDOW_MS, SRS_CYCLE_ADVANCE_MS, SESSION_IDLE_RESET_MS, getCadencePreset,
@@ -350,6 +349,8 @@ import {
   THEME_STORAGE_KEY,
   FONT_FAMILY_STORAGE_KEY,
   TEXT_SIZE_STORAGE_KEY,
+  SHOW_POINTS_STORAGE_KEY,
+  SHOW_TRANSLIT_STORAGE_KEY,
   PROGRESS_EXPORT_FORMAT,
   PROGRESS_EXPORT_VERSION,
   STUDY_IDLE_MS,
@@ -1564,6 +1565,68 @@ function initializeTextSize() {
   applyTextSize(runtime.textSize, false);
 }
 
+// ── Hebrew display prefs: vowel points + transliteration ───────────────────
+// Same standalone-localStorage-key pattern as theme/font/text-size above
+// (not part of the STATE_KEY JSON blob) — see SHOW_POINTS_STORAGE_KEY /
+// SHOW_TRANSLIT_STORAGE_KEY in js/state/store.js.
+const SHOW_POINTS_OPTIONS = ['pointed', 'unpointed'];
+const SHOW_TRANSLIT_OPTIONS = ['show', 'hide'];
+
+function applyShowPoints(value = runtime.showPoints, persist = true) {
+  runtime.showPoints = SHOW_POINTS_OPTIONS.includes(value) ? value : 'pointed';
+  const storage = getStorage();
+  if (persist && storage) storage.setItem(SHOW_POINTS_STORAGE_KEY, runtime.showPoints);
+  syncShowPointsButtons();
+}
+
+function syncShowPointsButtons() {
+  const pointedBtn = document.getElementById('pointsShowBtn');
+  const unpointedBtn = document.getElementById('pointsHideBtn');
+  if (pointedBtn) pointedBtn.classList.toggle('active', runtime.showPoints === 'pointed');
+  if (unpointedBtn) unpointedBtn.classList.toggle('active', runtime.showPoints === 'unpointed');
+}
+
+function setShowPoints(value) {
+  applyShowPoints(value, true);
+  // Points affect the rendered headword text itself (stripHebrewPoints is
+  // applied in render.js), so the current card must be redrawn immediately
+  // — unlike font/text-size, which are pure CSS and update reactively.
+  renderCard();
+}
+
+function initializeShowPoints() {
+  const storage = getStorage();
+  const saved = storage ? storage.getItem(SHOW_POINTS_STORAGE_KEY) : null;
+  runtime.showPoints = SHOW_POINTS_OPTIONS.includes(saved) ? saved : 'pointed';
+  applyShowPoints(runtime.showPoints, false);
+}
+
+function applyShowTranslit(value = runtime.showTranslit, persist = true) {
+  runtime.showTranslit = SHOW_TRANSLIT_OPTIONS.includes(value) ? value : 'show';
+  document.documentElement.setAttribute('data-show-translit', runtime.showTranslit);
+  const storage = getStorage();
+  if (persist && storage) storage.setItem(SHOW_TRANSLIT_STORAGE_KEY, runtime.showTranslit);
+  syncShowTranslitButtons();
+}
+
+function syncShowTranslitButtons() {
+  const showBtn = document.getElementById('translitShowBtn');
+  const hideBtn = document.getElementById('translitHideBtn');
+  if (showBtn) showBtn.classList.toggle('active', runtime.showTranslit === 'show');
+  if (hideBtn) hideBtn.classList.toggle('active', runtime.showTranslit === 'hide');
+}
+
+function setShowTranslit(value) {
+  applyShowTranslit(value, true);
+}
+
+function initializeShowTranslit() {
+  const storage = getStorage();
+  const saved = storage ? storage.getItem(SHOW_TRANSLIT_STORAGE_KEY) : null;
+  runtime.showTranslit = SHOW_TRANSLIT_OPTIONS.includes(saved) ? saved : 'show';
+  applyShowTranslit(runtime.showTranslit, false);
+}
+
 // Populate the parsing-mode chapter dropdown (1..20) and reflect the
 // current runtime.parsingChapter. Only relevant in parsing mode — the
 // row is hidden elsewhere by syncLayoutVisibility.
@@ -2081,9 +2144,7 @@ function syncToggleButtons() {
   if (directionToggle) {
     const directionLabel = directionToggle.querySelector('.toggle-text');
     if (directionLabel) {
-      directionLabel.textContent = isMorphologyMode()
-        ? 'English → Greek'
-        : 'Eng → Gk';
+      directionLabel.textContent = 'English → Hebrew';
     }
   }
   if (modeVocabBtn)    modeVocabBtn.classList.toggle('active', runtime.studyMode === 'vocab');
@@ -4026,6 +4087,7 @@ const GLOBAL_CLICK_HANDLERS = {
   reshuffleEligible,
   fastForwardOneDay, fastForwardOneWeek,
   restoreSpacedUndo, setAppProfile, setStudyMode, setThemeMode, setFontFamily, setTextSize,
+  setShowPoints, setShowTranslit,
   showDisclaimerModal, startStudying, toggleDirection, toggleMorphSelfCheck,
   toggleMorphStepByStep, setMorphFocusedParadigm, setParsingChapter, goToStemDrillFromParsing,
   toggleRequiredOnly, toggleHardVocabReview, toggleStemNotes, toggleIrregularCards, toggleIrregularTense, toggleShuffle, toggleSpacedRepetition, toggleSpacingCadence, toggleSplitSelection, toggleAspectStep, toggleDimStep, toggleOptionalForms, toggleOptionalFormFilter, toggleDimValueFilter, toggleExcludeKnownMorphs, toggleParsingShuffleAll, toggleParsingCustomReview, toggleParsingCustomParadigm, setAllParsingCustomParadigms, toggleParsingReverse, toggleParsingLookup, pickLookupDimension, editLookupDimension, resetLookup, toggleAccentLookalikes, resetKnownMorphs, closeResetKnownModal, confirmResetKnownFocused, confirmResetKnownAll, clearParsingStats, toggleUnspacedDailyReset, triggerImportProgress,
@@ -4040,6 +4102,8 @@ installToggleInfoButtons(); // add (i) info buttons to Advanced-settings toggles
 initializeThemeMode();
 initializeFontFamily();
 initializeTextSize();
+initializeShowPoints();
+initializeShowTranslit();
 // Initial build with default state (needed so restoreState can find DOM elements)
 buildSessions();
 buildChapterSelector();

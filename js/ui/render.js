@@ -7,6 +7,7 @@
 
 import { runtime } from '../state/runtime.js';
 import { renderProgress, renderReview } from './progress.js';
+import { stripHebrewPoints } from '../utils/hebrewText.js';
 
 // NOTE: this module still contains a large amount of Grammar/Parsing-mode
 // rendering code below (step-by-step paradigm walk, lookup mode, reverse
@@ -438,7 +439,13 @@ export function renderCard() {
   // the prompt; both faces always show the Hebrew headword so the answer
   // face doubles as the reveal.
   const sourceLabelDisplay = card.sourceLabel || '';
-  const hebrewDisplay = escapeHtml(card.g || '—');
+  // Vowel-points display toggle (runtime.showPoints, default 'pointed') only
+  // affects this rendered text — card.g itself, ids, and the underlying data
+  // are never touched, so switching the toggle mid-session doesn't disturb
+  // SRS/mark bookkeeping keyed on the original pointed headword.
+  const rawHebrew = card.g || '—';
+  const hebrewSource = runtime.showPoints === 'unpointed' ? stripHebrewPoints(rawHebrew) : rawHebrew;
+  const hebrewDisplay = escapeHtml(hebrewSource);
   const englishDisplay = escapeHtml(card.e || '—');
   const translitHtml = card.translit
     ? `<div class="card-translit">${escapeHtml(card.translit)}</div>`

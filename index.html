@@ -101,6 +101,20 @@
           <button class="theme-btn" id="textSizeXLargeBtn" type="button" onclick="setTextSize('x-large')">X-Large</button>
         </div>
       </div>
+      <div class="display-prefs-row">
+        <span class="display-prefs-label">Vowel points</span>
+        <div class="theme-switcher" role="group" aria-label="Vowel points display">
+          <button class="theme-btn" id="pointsShowBtn" type="button" onclick="setShowPoints('pointed')">Pointed</button>
+          <button class="theme-btn" id="pointsHideBtn" type="button" onclick="setShowPoints('unpointed')">Unpointed</button>
+        </div>
+      </div>
+      <div class="display-prefs-row">
+        <span class="display-prefs-label">Transliteration</span>
+        <div class="theme-switcher" role="group" aria-label="Transliteration display">
+          <button class="theme-btn" id="translitShowBtn" type="button" onclick="setShowTranslit('show')">Show</button>
+          <button class="theme-btn" id="translitHideBtn" type="button" onclick="setShowTranslit('hide')">Hide</button>
+        </div>
+      </div>
     </div>
 <div class="controls-bar" id="controlsBar">
 <button class="toggle-label" id="shuffleToggle" type="button" role="switch" aria-checked="false" onclick="toggleShuffle()" title="Shuffle the deck order. Off keeps a fixed order (by lesson); on randomises the order each time the deck is built or reshuffled.">
