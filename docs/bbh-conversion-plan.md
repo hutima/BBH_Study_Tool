@@ -201,3 +201,16 @@ content audit, (3) final release audit. Used so far: 0.
   precache/`?v=` sync, Greek scans, data counts
 - Browser smoke: mode switching, gates at N-1/N boundaries, Parse/Build paths,
   export/import v1→v2, offline reload, cached-v1 upgrade
+
+## Addendum (user request, 2026-08-08): optional lesson grouping
+
+The Greek app grouped chapters by syllabus weeks; BBH has no syllabus. Add
+OPTIONAL lesson-group presets using the textbook's own unit structure — the
+13 illustrated-Reading breakpoints from the TOC: 1–9 (R1), 10–14 (R2),
+15–18 (R3), 19–22 (R4), 23–26 (R5), 27–30 (R6), 31–34 (R7), 35–38 (R8),
+39–41 (R9), 42–44 (R10), 45–46 (R11), 47–48 (R12), 49–50 (R13). Keep the
+existing decade ranges; add these as a second preset group ("Units" /
+"Reading blocks") in the vocab lesson picker, and reuse the same shortcuts in
+the Parsing/Grammar current-lesson selectors. Implemented via
+`tools/gen_bbh_data.mjs` presets (PR E scope; UI shortcuts land with PR B/C
+selectors as they're built).
