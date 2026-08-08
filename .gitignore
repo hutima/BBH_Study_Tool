@@ -1,0 +1,5 @@
+# Recontamination guard: the copyrighted textbook PDF was uploaded once as a
+# temporary transport (PR #2) and purged from history in Phase 2 Preflight 0.
+# It must never be committed again. Exact path only — legitimate project PDFs
+# (none currently tracked) are not blocked by a broad *.pdf rule.
+/Hebrew.pdf
