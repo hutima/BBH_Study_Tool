@@ -141,6 +141,7 @@ const swSrc = readText('sw.js');
   };
   collectVersions('index.html', indexHtml);
   collectVersions('sw.js', swSrc);
+  collectVersions('styles.css', readText('styles.css'));
   const pagesDir = path.join(ROOT, 'pages');
   if (existsSync(pagesDir)) {
     for (const f of readDirSafe(pagesDir)) {

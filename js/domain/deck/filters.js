@@ -26,6 +26,7 @@ const DERIVED_ID_SUFFIX_RE = new RegExp(`::(?:${IRREGULAR_TAGS.join('|')})(?:::\
 
 export function progressCardId(cardId) {
   const id = String(cardId == null ? '' : cardId);
+  if (!IRREGULAR_TAGS.length) return id;
   return id.replace(DERIVED_ID_SUFFIX_RE, '');
 }
 

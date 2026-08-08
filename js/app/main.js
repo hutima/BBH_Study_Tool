@@ -113,8 +113,9 @@
 // │   ~1,450 lines; loading it for a small change wastes tokens.        │
 // │                                                                     │
 // │ DEPLOY                                                              │
-// │   Bump CACHE_NAME in sw.js (e.g. v64 → v65) AND every ?v=64 in      │
-// │   sw.js + index.html. New js/* files must be added to                │
+// │   Bump the version in CACHE_NAME in sw.js (e.g. v1 → v2) AND every  │
+// │   ?v=1 in sw.js + index.html + pages/*.html + styles.css. New js/*  │
+// │   files must be added to                                            │
 // │   APP_SHELL_PATHS in sw.js.                                         │
 // │                                                                     │
 // │ VERIFICATION                                                        │
