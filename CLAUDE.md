@@ -80,9 +80,13 @@ Regenerating with no source changes should be a no-op
   the guide only partially prints (full alphabet chart, complete Qal
   Imperfect, binyan pattern tables) needs verification against the physical
   textbook before it can be added — see `docs/bbh-content-gaps.md`.
-- **Google Analytics property id.** `index.html`'s `gtag` snippet
-  (`G-YH11KQB6QX`) still points at the predecessor Greek app's GA property.
-  Flagged for the repo owner to swap in a BBH-specific property id.
+- **Google Analytics removed (Phase 2).** The inherited `gtag`/GA snippet
+  (`G-YH11KQB6QX`, the predecessor Greek app's property) was deleted from
+  `index.html` outright, with no replacement. The app ships telemetry-free;
+  `tools/check_release.mjs` fails the release if any GA/gtag string
+  reappears in the live load graph. No replacement analytics tool is
+  permitted — "analytics" in this app means the local, on-device progress
+  dashboard only.
 
 ## Navigation
 

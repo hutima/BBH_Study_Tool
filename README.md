@@ -113,9 +113,6 @@ covers both scripts.
   source guide describes only partially (full alphabet chart, complete Qal
   Imperfect forms, binyan pattern tables) — intentionally left out of the
   app rather than invented.
-- The Google Analytics property id wired into `index.html`
-  (`G-YH11KQB6QX`) still belongs to the predecessor Greek app — flagged in
-  `CLAUDE.md` for the repo owner to replace.
 - Grammar, Parsing, a Reader mode over primary Hebrew text, and full
   paradigm tables (pending verification against the physical textbook) are
   deferred to a later phase — see `docs/bbh-conversion-plan.md`.

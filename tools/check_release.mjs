@@ -16,10 +16,14 @@
 //   5. js/data/bbh_vocab.js registers exactly 50 lessons and 191 cards
 //      (light regex parse — no execution of the generated file).
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
+//   7. Zero case-insensitive 'googletagmanager', 'google-analytics',
+//      'gtag(', or 'G-YH11KQB6QX' in the live load graph — the app ships
+//      telemetry-free (Phase 2 architecture decision 8).
 //
 // Also documents (see bottom of file / README) running
-// tools/validate_bbh_data.mjs, which this script invokes as a subprocess so
-// a single `node tools/check_release.mjs` covers both.
+// tools/validate_bbh_data.mjs, tools/check_no_pdf.mjs, and
+// tools/validate_bbh_parsing_data.mjs, which this script invokes as
+// subprocesses so a single `node tools/check_release.mjs` covers all of them.
 //
 // Usage: node tools/check_release.mjs
 // Exits nonzero on any failure; prints a pass summary otherwise.
@@ -193,7 +197,9 @@ function readDirSafe(dir) {
 
   let greekHits = 0;
   let bannedHits = 0;
+  let gaHits = 0;
   const greekLocations = [];
+  const GA_RE = /googletagmanager|google-analytics|gtag\(|G-YH11KQB6QX/i;
   // Bare 'greek' is never a hard failure — this codebase intentionally keeps
   // a handful of legacy identifiers/CSS hooks with "greek" in the name
   // (runtime.directionToGreek, .card-greek, the old-export-format rejection
@@ -218,6 +224,10 @@ function readDirSafe(dir) {
       } else if (/greek/i.test(line)) {
         bareGreekLocations.push(`${rel}:${idx + 1}`);
       }
+      if (GA_RE.test(line)) {
+        gaHits++;
+        fail(`check7: GA/gtag term at ${rel}:${idx + 1}: ${line.trim().slice(0, 120)}`);
+      }
     });
   }
   if (bareGreekLocations.length) {
@@ -229,6 +239,7 @@ function readDirSafe(dir) {
     report(`check3: 0 Greek-Unicode hits across ${filesToScan.length} live-graph files (pass)`);
   }
   if (!bannedHits) report('check4: 0 duff/koine/greekFlashcards hits (pass)');
+  if (!gaHits) report(`check7: 0 googletagmanager/google-analytics/gtag(/G-YH11KQB6QX hits across ${filesToScan.length} live-graph files (pass)`);
 }
 
 // ── Check 5: bbh_vocab.js registers 50 lessons / 191 cards ──────────────
@@ -270,6 +281,28 @@ function readDirSafe(dir) {
   } catch (err) {
     const out = (err.stdout ? err.stdout.toString() : '') + (err.stderr ? err.stderr.toString() : '');
     fail(`validate_bbh_data.mjs failed:\n${out.trim()}`);
+  }
+}
+
+// ── Also run tools/check_no_pdf.mjs ─────────────────────────────────────
+{
+  try {
+    execFileSync(process.execPath, [path.join(ROOT, 'tools/check_no_pdf.mjs')], { cwd: ROOT, stdio: 'pipe' });
+    report('check_no_pdf.mjs: pass');
+  } catch (err) {
+    const out = (err.stdout ? err.stdout.toString() : '') + (err.stderr ? err.stderr.toString() : '');
+    fail(`check_no_pdf.mjs failed:\n${out.trim()}`);
+  }
+}
+
+// ── Also run tools/validate_bbh_parsing_data.mjs ────────────────────────
+{
+  try {
+    execFileSync(process.execPath, [path.join(ROOT, 'tools/validate_bbh_parsing_data.mjs')], { cwd: ROOT, stdio: 'pipe' });
+    report('validate_bbh_parsing_data.mjs: pass');
+  } catch (err) {
+    const out = (err.stdout ? err.stdout.toString() : '') + (err.stderr ? err.stderr.toString() : '');
+    fail(`validate_bbh_parsing_data.mjs failed:\n${out.trim()}`);
   }
 }
 
