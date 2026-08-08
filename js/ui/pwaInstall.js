@@ -15,8 +15,8 @@ import { getStorage, isLikelyIOS } from '../utils/storage.js';
 // ⚠️ Module-local string literal on purpose — NOT a store.js export. A brand-new
 // cross-module export risks the "frozen on update" SW failure mode (an old
 // cached importer paired with a new module that lacks the export → SyntaxError;
-// see CLAUDE.md). Keep duff's own namespace distinct from Mounce's so the two
-// apps (shared username.github.io origin) never read each other's flag.
+// see CLAUDE.md). Uses the app's own bbhStudyTool* storage-key namespace so it
+// never collides with another app sharing the same origin.
 const INSTALL_PROMPT_DISMISSED_KEY = 'bbhStudyToolInstallPromptDismissed';
 
 // The captured beforeinstallprompt event (Android/Chromium). Stashed so we can

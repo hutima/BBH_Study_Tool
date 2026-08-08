@@ -64,8 +64,8 @@ Verified: lessons 1–50 contiguous; 39 lessons with vocab, 11 without
 | 3 | Hebrew presentation (RTL, fonts, pointed toggle, sort, translit) | sonnet | `js/utils/hebrewText.js`, `styles.css`, `fonts/`, render card-face bits | done |
 | 4 | Reference page rewrite | sonnet | `pages/memorization.html`, `docs/bbh-content-gaps.md` | done |
 | 5 | State/export/analytics/manifest/sw | sonnet | `js/state/*`, `manifest.json`, `sw.js`, cache-bust | done |
-| 6 | Checks + smoke test + docs sync | haiku+sonnet | `tools/checks`, `docs/index-structure.md`, README, CLAUDE.md | done |
-| 7 | Final semantic audit | opus | diffs/summaries only | done |
+| 6 | Dead-code excision + `tools/check_release.mjs` + smoke test + docs sync | sonnet | `js/ui/*`, `js/app/main.js`, `js/state/*`, `js/domain/deck/*`, `js/domain/gamification/*`, `tools/check_release.mjs`, `docs/index-structure.md`, README.md, CLAUDE.md, `docs/bbh-conversion-plan.md` | done |
+| 7 | Final semantic audit | opus | diffs/summaries only | pending |
 
 Sequencing: 1 → 2 → (3 ∥ 4) → 5 → 6 → 7. Tasks 3 and 4 touch disjoint files.
 

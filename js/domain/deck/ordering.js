@@ -9,17 +9,6 @@ export function isChapterKey(key) {
   return /^\d+$/.test(String(key));
 }
 
-// Legacy pseudo-key predicates from the Greek app (ADV#, NTB::...). Nothing
-// in the BBH data ever produces these, so they always return false — kept
-// only because a couple of call sites still reference them defensively.
-export function isAdvancedKey(key) {
-  return /^ADV\d+$/i.test(String(key || ''));
-}
-
-export function isBookKey(key) {
-  return /^NTB::/.test(String(key || ''));
-}
-
 // Lesson keys are plain numeric strings ("1".."50") — sort numerically.
 export function sortSetKeys(keys) {
   return [...keys].sort((a, b) => {

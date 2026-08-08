@@ -9,7 +9,7 @@ export const HARD_VOCAB_MIN_FAILS = 10;
 export const HARD_VOCAB_MAX_CONFIDENCE = 40;
 
 // Irregular "split cards" configs (second aorist / liquid future / aorist
-// passive / perfect active / μι-verb principal parts) were a Greek-grammar
+// passive / perfect active / mi-verb principal parts) were a Greek-grammar
 // concept — BBH has no equivalent, so this stays an empty list. It's kept
 // exported (rather than removed) because js/state/persistence.js and
 // js/app/main.js still iterate/import it; an empty array makes every
@@ -110,12 +110,6 @@ export function derivedCardFaceKey(card) {
   return null;
 }
 
-export function getSelectedGrammarCards(keys) {
-  const morphCards = window.buildMorphologyCardsForKeys ? window.buildMorphologyCardsForKeys(keys || []) : [];
-  const grammarCards = window.buildGrammarCardsForKeys ? window.buildGrammarCardsForKeys(keys || []) : [];
-  return [...morphCards, ...grammarCards];
-}
-
 export function getAllVocabKeys() {
   return Object.keys(getSets());
 }
@@ -128,19 +122,8 @@ export function getAllVocabCards(requiredFlag = false) {
   return getSelectedVocabCards(getAllVocabKeys(), requiredFlag);
 }
 
-export function getAllGrammarCards() {
-  const allKeys = getAllVocabKeys();
-  const morphCards = window.buildMorphologyCardsForKeys ? window.buildMorphologyCardsForKeys(allKeys) : [];
-  const grammarCards = window.buildGrammarCardsForKeys ? window.buildGrammarCardsForKeys(allKeys) : [];
-  return [...morphCards, ...grammarCards];
-}
-
 export function getChapterVocabCards(chapterKey, requiredFlag = false) {
   return getSelectedVocabCards([String(chapterKey)], requiredFlag);
-}
-
-export function getChapterGrammarCards(chapterKey) {
-  return getSelectedGrammarCards([String(chapterKey)]);
 }
 
 export function getCardReviewLeft(card) {
@@ -153,8 +136,4 @@ export function getCardReviewRight(card) {
 
 export function getCardMetaLine(card) {
   return card.notes || '';
-}
-
-export function getCardAuxLine(card) {
-  return card.translit || '';
 }

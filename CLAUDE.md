@@ -2,96 +2,87 @@
 
 ---
 
-# ⚠ READ FIRST — this repo is a Greek app mid-conversion to Hebrew
+# Status: Phase 1 (Vocab + Reference) conversion COMPLETE — as of 2026-08-08
 
-**Everything below the "Inherited notes" divider describes the *Greek* app and
-is still literally true of the code — none of it has been converted yet.**
+`BBH_Study_Tool` is a Beginning Biblical Hebrew study tool, converted from an
+existing Koine Greek study tool
+([`hutima/duff_study_tool`](https://github.com/hutima/duff_study_tool) @
+`6f13b00`, imported as commit `1ac74a9`). **The Greek→Hebrew conversion for
+Phase 1 (Vocabulary + Reference) is done on this branch**: the live app is a
+Hebrew vocabulary flashcard PWA for lessons 1–50 of John A. Cook & Robert D.
+Holmstedt, *Beginning Biblical Hebrew: A Grammar and Illustrated Reader*
+(Baker Academic), plus a static Reference page. Grammar, Parsing, and a
+Reader mode were part of the inherited Greek app and remain **deferred** —
+see "Deferred work" below.
 
-## What this repo is
+For the task-by-task history of how this was built (generator → shell prune →
+Hebrew presentation → reference page → state/export → this checks/docs pass),
+see `docs/bbh-conversion-plan.md`. For known content gaps in the Reference
+page (paradigms the source guide only partially prints), see
+`docs/bbh-content-gaps.md`.
 
-`BBH_Study_Tool` is a Beginning Biblical Hebrew study tool being built by
-converting an existing Koine Greek study tool.
+## What's live right now
 
-- **Base:** verbatim copy of the working tree of
-  [`hutima/duff_study_tool`](https://github.com/hutima/duff_study_tool) @ `6f13b00`.
-- **Imported as:** commit `1ac74a9` on `claude/biblical-hebrew-study-tool-w3khq0`.
-  Upstream git history was **not** carried over (this repo had no commits, so
-  the import is a single squashed snapshot). To diff against or pull fixes from
-  upstream later, clone it separately — there is no shared ancestry to merge.
-- **Target textbook:** John A. Cook & Robert D. Holmstedt, *Beginning Biblical
-  Hebrew: A Grammar and Illustrated Reader* (Baker Academic).
+- **Data:** `js/data/bbh_vocab.js` (50 lessons, 191 cards, generated from
+  `source/bbh/Beginning_Biblical_Hebrew_Vocabulary_by_Lesson.csv`) and
+  `js/data/bbh_reference_data.js` / `js/data/setMeta.js` (generated from
+  `source/bbh/Beginning_Biblical_Hebrew_Revision_Guide.md`).
+- **Study modes:** Vocabulary only. `runtime.studyMode` is locked to
+  `'vocab'` (`normalizeStudyMode()` in `js/app/main.js` always returns
+  `'vocab'`; `isVocabOnlyProfile()` always returns `true`) — Grammar,
+  Parsing, and Reader are not reachable from the UI, and their code paths
+  have been **excised from the live module graph** (not just hidden), per
+  the Task 6 cleanup in `docs/bbh-conversion-plan.md`.
+- **Presentation:** RTL Hebrew card faces (`dir="rtl" lang="he"`), a
+  pointed/unpointed vowel-points toggle, a transliteration show/hide toggle,
+  Hebrew alphabetical sort (`js/utils/hebrewText.js`), and bundled Noto
+  Serif/Sans Hebrew webfonts (`fonts/`, OFL-licensed).
+- **State/export:** storage key `bbhStudyToolStateV1` (+ `bbhStudyTool*` aux
+  keys), export format id `bbh-study-tool-progress-export`. No migration
+  from the old Greek-app storage keys — this is treated as a fresh install.
+- **PWA:** `CACHE_NAME` = `bbh-flashcards-pwa-v1-github-pages`, all asset
+  URLs at `?v=1`.
+- **Checks:** `node tools/validate_bbh_data.mjs` (data-shape checks) and
+  `node tools/check_release.mjs` (consolidated release gate — precache
+  paths, single `?v=` value, zero Greek Unicode / zero duff-koine-
+  greekFlashcards in the live load graph, 50-lesson/191-card count,
+  `source/bbh/` untouched). Run both before tagging a release.
 
-## Status as of the last session (2026-08-08)
+## Data-regeneration rule
 
-**Nothing has been converted. The app is 100% Greek.** The only change from
-upstream is this CLAUDE.md section. The user paused work here to research how
-they want the app restructured, so **do not start bulk conversion without
-checking in** — the restructure may change the data model.
+**Never hand-edit the generated files** `js/data/bbh_vocab.js`,
+`js/data/bbh_reference_data.js`, or `js/data/setMeta.js`. They are
+deterministic output of `tools/gen_bbh_data.mjs`. To change vocabulary,
+lesson titles, or reference content: edit the source file under
+`source/bbh/` (the two files there are the **authoritative, user-supplied**
+content — never generate into or hand-massage them from tooling), then run:
 
-Measured conversion surface at import:
-- 48 files reference "Greek"/"greek"; 25 reference "Duff"
-- ~53k LOC of JS across `js/`
-- `CACHE_NAME` is at `greek-flashcards-pwa-v343-github-pages`
+```sh
+node tools/gen_bbh_data.mjs
+```
 
-## Decisions already made
+Regenerating with no source changes should be a no-op
+(`git diff --exit-code js/data/`).
 
-- **Sequencing follows Cook & Holmstedt.** Its structure (confirmed from the
-  publisher's description, *not* from the book itself): **50 short grammar
-  lessons** paginated left-to-right, plus a **14-reading illustrated reader**
-  bound at the back and paginated right-to-left. This replaces Duff's
-  "Ch 0–20 + 8 course weeks" model — the preset-session and chapter-selector
-  scheme in `js/data/setMeta.js` will need reshaping, not just relabeling.
-- **Phase 1 scope: Vocab + Paradigms only.** Get the alphabet, vocab decks, and
-  paradigm reference tables working in Hebrew first. Grammar, Parsing, and
-  Reader modes are deferred — hide or stub them rather than shipping Greek
-  content under Hebrew labels.
+## Deferred work
 
-## Open questions — get these from the user before building content
-
-- The lesson-by-lesson breakdown (titles + per-lesson vocab) could **not** be
-  obtained. The publisher sites (`bakeracademic.com`, `christianbook.com`) are
-  blocked by this environment's egress proxy and `beginningbiblicalhebrew.com`
-  did not resolve. Only lessons 2–4 are known secondhand (Vowels, Sheva,
-  Dagesh). **This has to come from the user or the book.**
-- Whether the 14 reader selections map onto lessons, and how.
-- Which text to use for a future Reader mode (WLC / Leningrad?), and whether
-  it should be pointed.
-
-## Conversion surface — engine vs. content
-
-**Language-agnostic, should carry over mostly intact:** `js/domain/srs/`,
-`js/domain/deck/`, `js/domain/gamification/`, `js/state/`, `js/ui/charts.js`,
-`js/ui/analytics.js`, the PWA shell (`sw.js`, `manifest.json`).
-
-**Needs full replacement or rework:**
-- `js/data/**` — all vocab, morphology, grammar, reader, paradigms. Wholesale.
-- `js/domain/grammar/morph_steps.js` + `js/logic/pos_logic.js` — the Parsing
-  walk is built on Greek axes (aspect → tense → voice → mood → person → number
-  → case → gender). Hebrew needs a different axis set entirely: stem/binyan,
-  conjugation, person/gender/number, state, pronominal suffixes. This is the
-  single biggest structural rewrite, and it's deferred to a later phase.
-- `js/utils/greekSort.js` — replace with Hebrew alphabetical collation.
-- **RTL.** The app is LTR throughout. Hebrew needs `dir="rtl"` handling on card
-  faces, reader text, and paradigm tables — and Hebrew vowel points and
-  cantillation marks are combining characters, so naive string slicing,
-  truncation, and `.length` checks on Hebrew text will corrupt it.
-- **Vowel pointing** should probably be a display toggle (pointed / unpointed),
-  which is a data-model decision worth settling before writing vocab files.
-- **Fonts.** `fonts/` bundles Gentium Plus and Noto Sans in **Latin + Greek
-  subsets only — neither has any Hebrew coverage.** Both families need a
-  Hebrew-capable replacement (SBL Hebrew, Ezra SIL, Noto Serif/Sans Hebrew,
-  Taamey) bundled as woff2 for offline use, and the Serif/Sans font-family
-  switch in settings rewired to them.
-
-## Landmines inherited from the base
-
-Read the maintenance rules below before touching `index.html` or module
-boundaries — the cache-bust scheme and the ES-module cross-version hazard are
-real and have bitten this codebase before. They apply unchanged to this fork.
-
----
-
-# Inherited notes (from the Greek app — still accurate for the current code)
+- **Hebrew Grammar/Parsing.** The inherited Greek Parsing walk was built on
+  Greek axes (aspect → tense → voice → mood → person → number → case →
+  gender). Hebrew needs a different axis set entirely — stem/binyan,
+  conjugation, person/gender/number, state, pronominal suffixes. This is a
+  from-scratch design, not a port, and has no code to build on now that the
+  Greek Parsing/Grammar module graph has been removed (Task 6).
+- **Reader mode** over primary Hebrew text (WLC / Leningrad?, pointed or
+  not?) — not started; the old Greek Reader UI/code is gone.
+- **Full paradigm tables** — `pages/memorization.html` only prints paradigms
+  that are complete in `source/bbh/Beginning_Biblical_Hebrew_Revision_Guide.md`
+  (pronouns, לְ-possession, Qal Perfect singular, interrogatives). Anything
+  the guide only partially prints (full alphabet chart, complete Qal
+  Imperfect, binyan pattern tables) needs verification against the physical
+  textbook before it can be added — see `docs/bbh-content-gaps.md`.
+- **Google Analytics property id.** `index.html`'s `gtag` snippet
+  (`G-YH11KQB6QX`) still points at the predecessor Greek app's GA property.
+  Flagged for the repo owner to swap in a BBH-specific property id.
 
 ## Navigation
 
@@ -107,41 +98,44 @@ real and have bitten this codebase before. They apply unchanged to this fork.
   - an overlay (`consent-overlay`) is added or removed
   - an `id` referenced by JS is added, removed, or renamed
   - the script load order / grouping changes
-  - the `?v=NNN` cache-bust scheme changes
+  - the `?v=N` cache-bust scheme changes
 - Line numbers in the doc are approximate — don't chase a few lines of drift,
   but do refresh them when a section moves significantly.
 
 ## Cache-bust
 
-Every asset URL in `index.html` ends in `?v=NNN`. The same number lives in
-`sw.js` (`CACHE_NAME` + precache list). Bump both together on release.
+Every asset URL in `index.html` ends in `?v=1`. The same number lives in
+`sw.js` (`CACHE_NAME` + `APP_SHELL_PATHS`). Bump both together on release —
+`tools/check_release.mjs` checks that exactly one `?v=` value is in use and
+that it's reflected in `CACHE_NAME`.
 
-### ⚠ ES-module imports are NOT cache-busted — don't break cross-version mixing
+### ⚠ ES-module imports are NOT cache-busted — this hazard is ACTIVE again
 
-The `?v=NNN` only stamps the `<script>`/`<link>` URLs in `index.html`. The
+This rule didn't constrain the BBH-conversion commits themselves (pre-launch,
+no shipped clients yet), but **now that v1 has shipped, it applies to every
+future release** exactly as it did in the inherited Greek app:
+
+The `?v=N` only stamps the `<script>`/`<link>` URLs in `index.html`. The
 relative `import ... from '../ui/foo.js'` specifiers **inside** the JS modules
 carry no `?v=`, so they're fetched bare. During a service-worker update the
-browser can momentarily pair a **new** `main.js?v=NNN` (from the network) with an
+browser can momentarily pair a **new** `main.js?v=N` (from the network) with an
 **old cached** sibling module (the bare import resolves via `ignoreSearch`).
 If the new importer references an export the old module doesn't have yet, the
 module throws a `SyntaxError` at load → `main.js` never runs → the whole app
 freezes (no click handlers, and the update prompt — which lives in `main.js` —
-never shows). This is the Safari "frozen on update" failure mode; it would bite
-when `PARSING_SHUFFLE_ALL_VALUE` was added as a new `navigation.js` export and
-imported into `main.js`.
+never shows). This is the Safari "frozen on update" failure mode.
 
 Rules of thumb when changing module boundaries:
 - **Avoid importing a brand-new export across modules** if you can define the
   value locally instead (e.g. a sentinel string constant — keep a mirrored copy
-  and a sync comment, as `PARSING_SHUFFLE_ALL_VALUE` now does in both
-  `navigation.js` and `main.js`).
+  and a sync comment in both places).
 - **Never remove an export that an older shipped `main.js` still imports** —
   keep it around (even if unused by the new code) so an old importer paired with
   the new module doesn't `SyntaxError`.
 - Runtime wiring (deps objects passed to `configure*(...)`, `GLOBAL_CLICK_HANDLERS`
-  / `window` handler assignments) degrades to `undefined`, not a module-load
-  `SyntaxError`, so it's safe across versions — prefer it for new cross-module
-  hooks.
+  / `window` handler assignments) degrades to `undefined` (or a module's own
+  no-op default in its `host` object), not a module-load `SyntaxError`, so
+  it's safe across versions — prefer it for new cross-module hooks.
 
 ## Changelog
 

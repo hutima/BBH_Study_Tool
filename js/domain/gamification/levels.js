@@ -13,7 +13,7 @@ export const XP_LEVELS = [
   { level: 10, threshold: 7500,    title: 'Herm\u0113neut\u0113s', flav: 'Actually understands some of this' },
   { level: 11, threshold: 10500,   title: 'Grammatikos',    flav: 'Parses in their sleep' },
   { level: 12, threshold: 14000,   title: 'Ex\u0113g\u0113t\u0113s', flav: 'Draws out hidden meaning' },
-  { level: 13, threshold: 18000,   title: 'Rh\u0113t\u014Dr',   flav: 'Argues in Greek for fun' },
+  { level: 13, threshold: 18000,   title: 'Rh\u0113t\u014Dr',   flav: 'Argues about grammar for fun' },
   { level: 14, threshold: 23000,   title: 'Didaskalos',     flav: 'Others come to you now' },
   { level: 15, threshold: 29000,   title: 'Sophos',         flav: 'Wisdom achieved (allegedly)' },
   { level: 16, threshold: 36000,   title: 'Chrysostomos',   flav: 'Golden-tongued' },

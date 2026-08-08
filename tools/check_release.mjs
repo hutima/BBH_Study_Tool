@@ -1,0 +1,285 @@
+#!/usr/bin/env node
+// Consolidated release check for the BBH Study Tool. Dependency-free (Node
+// built-ins only). Run before every release/tag.
+//
+// Checks:
+//   1. Every sw.js precache path resolves to a real file on disk.
+//   2. Exactly one ?v= value is used across index.html / pages/*.html / sw.js,
+//      and that value appears in sw.js's CACHE_NAME version segment.
+//   3. Zero Greek Unicode codepoints (U+0370-03FF, U+1F00-1FFF) in the live
+//      load graph: index.html, pages/*.html, styles.css, sw.js,
+//      manifest.json, and every js/ file reachable from index.html's
+//      <script> tags plus main.js's transitive static imports.
+//   4. Zero case-insensitive 'duff' / 'koine' / 'greekflashcards' in that same
+//      graph. Bare 'greek' is allowed ONLY inside a `//` or `/* */` comment
+//      line; every such occurrence is printed as a non-fatal report.
+//   5. js/data/bbh_vocab.js registers exactly 50 lessons and 191 cards
+//      (light regex parse — no execution of the generated file).
+//   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
+//
+// Also documents (see bottom of file / README) running
+// tools/validate_bbh_data.mjs, which this script invokes as a subprocess so
+// a single `node tools/check_release.mjs` covers both.
+//
+// Usage: node tools/check_release.mjs
+// Exits nonzero on any failure; prints a pass summary otherwise.
+
+import { readFileSync, existsSync, readdirSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(__dirname, '..');
+
+const failures = [];
+const reports = [];
+
+function fail(msg) {
+  failures.push(msg);
+}
+function report(msg) {
+  reports.push(msg);
+}
+function readText(relPath) {
+  return readFileSync(path.join(ROOT, relPath), 'utf8');
+}
+
+// ── Reachable live-load-graph file list ─────────────────────────────────
+// Seed from index.html's <script src="..."> tags (classic + module), then
+// walk main.js's static `import ... from '...'` specifiers transitively,
+// resolving relative paths. Regex-based (no bundler / AST parser available).
+
+function extractScriptSrcs(html) {
+  const out = [];
+  const re = /<script[^>]*\ssrc=["']([^"']+)["']/g;
+  let m;
+  while ((m = re.exec(html))) out.push(m[1]);
+  return out;
+}
+
+function stripQuery(p) {
+  return p.split('?')[0];
+}
+
+function extractImportSpecifiers(jsSrc) {
+  const out = [];
+  const patterns = [
+    /import\s+[^'"]*?from\s+['"]([^'"]+)['"]/g,
+    /import\s+['"]([^'"]+)['"]/g,
+    /export\s+[^'"]*?from\s+['"]([^'"]+)['"]/g
+  ];
+  for (const re of patterns) {
+    let m;
+    while ((m = re.exec(jsSrc))) out.push(m[1]);
+  }
+  return out;
+}
+
+function buildReachableJsGraph(entryRelPaths) {
+  const seen = new Set();
+  const queue = [...entryRelPaths];
+  while (queue.length) {
+    const rel = queue.shift();
+    if (seen.has(rel)) continue;
+    seen.add(rel);
+    const abs = path.join(ROOT, rel);
+    if (!existsSync(abs) || !rel.endsWith('.js')) continue;
+    const src = readFileSync(abs, 'utf8');
+    const specs = extractImportSpecifiers(src);
+    for (const spec of specs) {
+      if (!spec.startsWith('.')) continue; // skip bare/external specifiers
+      const resolved = path.relative(ROOT, path.resolve(path.dirname(abs), spec));
+      if (!seen.has(resolved)) queue.push(resolved);
+    }
+  }
+  return [...seen];
+}
+
+const indexHtml = readText('index.html');
+const scriptSrcs = extractScriptSrcs(indexHtml).map(stripQuery);
+const jsEntryPoints = scriptSrcs.filter((s) => s.endsWith('.js'));
+const reachableJs = buildReachableJsGraph(jsEntryPoints);
+
+// ── Check 1: sw.js precache paths exist ─────────────────────────────────
+const swSrc = readText('sw.js');
+{
+  const listMatch = swSrc.match(/APP_SHELL_PATHS\s*=\s*\[([\s\S]*?)\];/);
+  if (!listMatch) {
+    fail('check1: could not locate APP_SHELL_PATHS array in sw.js');
+  } else {
+    const entries = [...listMatch[1].matchAll(/['"]([^'"]+)['"]/g)].map((m) => m[1]);
+    if (!entries.length) fail('check1: APP_SHELL_PATHS parsed as empty');
+    let missing = 0;
+    for (const entry of entries) {
+      if (entry === './') continue; // resolves to index.html, checked separately
+      const rel = stripQuery(entry);
+      const abs = path.join(ROOT, rel);
+      if (!existsSync(abs)) {
+        fail(`check1: precache path does not exist on disk: ${entry}`);
+        missing++;
+      }
+    }
+    if (!missing) report(`check1: all ${entries.length} precache paths resolve (pass)`);
+  }
+}
+
+// ── Check 2: exactly one ?v= value across index.html/pages/*.html/sw.js ──
+{
+  const versionsSeen = new Map(); // value -> [locations]
+  const collectVersions = (relPath, text) => {
+    // Only match inside quoted string literals / attribute values (a
+    // `?v=N` appearing in a prose comment, e.g. documenting the cache-bust
+    // scheme itself, is not an actual asset reference).
+    const re = /["']([^"']*?\?v=([A-Za-z0-9._-]+))["']/g;
+    let m;
+    while ((m = re.exec(text))) {
+      const v = m[2];
+      if (!versionsSeen.has(v)) versionsSeen.set(v, []);
+      versionsSeen.get(v).push(relPath);
+    }
+  };
+  collectVersions('index.html', indexHtml);
+  collectVersions('sw.js', swSrc);
+  const pagesDir = path.join(ROOT, 'pages');
+  if (existsSync(pagesDir)) {
+    for (const f of readDirSafe(pagesDir)) {
+      if (!f.endsWith('.html')) continue;
+      collectVersions(`pages/${f}`, readText(`pages/${f}`));
+    }
+  }
+  const values = [...versionsSeen.keys()];
+  if (values.length === 0) {
+    fail('check2: no ?v= cache-bust markers found in index.html/pages/sw.js');
+  } else if (values.length > 1) {
+    fail(`check2: multiple ?v= values in use: ${values.join(', ')} (expected exactly one)`);
+  } else {
+    const v = values[0];
+    const cacheNameMatch = swSrc.match(/CACHE_NAME\s*=\s*['"]([^'"]+)['"]/);
+    const cacheName = cacheNameMatch ? cacheNameMatch[1] : '';
+    if (!cacheName.includes(`v${v}`) && !cacheName.includes(v)) {
+      fail(`check2: ?v=${v} does not appear in sw.js CACHE_NAME ("${cacheName}")`);
+    } else {
+      report(`check2: single ?v=${v} in use, consistent with CACHE_NAME "${cacheName}" (pass)`);
+    }
+  }
+}
+
+function readDirSafe(dir) {
+  try {
+    return readdirSync(dir);
+  } catch {
+    return [];
+  }
+}
+
+// ── Checks 3 & 4: Greek Unicode + banned words across the live load graph ──
+{
+  const GREEK_RE = /[Ͱ-Ͽἀ-῿]/;
+  const filesToScan = [
+    'index.html',
+    'styles.css',
+    'sw.js',
+    'manifest.json',
+    ...reachableJs
+  ];
+  const pagesDir = path.join(ROOT, 'pages');
+  if (existsSync(pagesDir)) {
+    for (const f of readDirSafe(pagesDir)) {
+      if (f.endsWith('.html')) filesToScan.push(`pages/${f}`);
+    }
+  }
+
+  let greekHits = 0;
+  let bannedHits = 0;
+  const greekLocations = [];
+  // Bare 'greek' is never a hard failure — this codebase intentionally keeps
+  // a handful of legacy identifiers/CSS hooks with "greek" in the name
+  // (runtime.directionToGreek, .card-greek, the old-export-format rejection
+  // string, etc. — see CLAUDE.md "adapter over legacy fields, documented not
+  // renamed"). Every occurrence is collected here and printed as one
+  // summary report line (with a location list) so a human can eyeball it
+  // each release without failing the build.
+  const bareGreekLocations = [];
+  for (const rel of filesToScan) {
+    const abs = path.join(ROOT, rel);
+    if (!existsSync(abs)) continue;
+    const text = readFileSync(abs, 'utf8');
+    const lines = text.split('\n');
+    lines.forEach((line, idx) => {
+      if (GREEK_RE.test(line)) {
+        greekHits++;
+        greekLocations.push(`${rel}:${idx + 1}`);
+      }
+      if (/duff|koine|greekflashcards/i.test(line)) {
+        bannedHits++;
+        fail(`check4: banned term (duff/koine/greekFlashcards) at ${rel}:${idx + 1}: ${line.trim().slice(0, 120)}`);
+      } else if (/greek/i.test(line)) {
+        bareGreekLocations.push(`${rel}:${idx + 1}`);
+      }
+    });
+  }
+  if (bareGreekLocations.length) {
+    report(`check4: ${bareGreekLocations.length} bare 'greek' mention(s), non-fatal (intentional legacy identifiers/CSS hooks) — see: ${bareGreekLocations.slice(0, 8).join(', ')}${bareGreekLocations.length > 8 ? `, ... (+${bareGreekLocations.length - 8} more)` : ''}`);
+  }
+  if (greekHits) {
+    fail(`check3: ${greekHits} Greek-Unicode hit(s) in live load graph: ${greekLocations.slice(0, 10).join(', ')}${greekLocations.length > 10 ? ', ...' : ''}`);
+  } else {
+    report(`check3: 0 Greek-Unicode hits across ${filesToScan.length} live-graph files (pass)`);
+  }
+  if (!bannedHits) report('check4: 0 duff/koine/greekFlashcards hits (pass)');
+}
+
+// ── Check 5: bbh_vocab.js registers 50 lessons / 191 cards ──────────────
+{
+  const vocabPath = 'js/data/bbh_vocab.js';
+  if (!existsSync(path.join(ROOT, vocabPath))) {
+    fail(`check5: ${vocabPath} not found`);
+  } else {
+    const src = readText(vocabPath);
+    const lessonCount = [...src.matchAll(/window\.SETS\[["']\d+["']\]\s*=/g)].length;
+    const cardCount = [...src.matchAll(/"id":\s*"[^"]+"/g)].length;
+    if (lessonCount !== 50) fail(`check5: expected 50 lessons registered, found ${lessonCount}`);
+    if (cardCount !== 191) fail(`check5: expected 191 cards, found ${cardCount}`);
+    if (lessonCount === 50 && cardCount === 191) {
+      report('check5: 50 lessons / 191 cards registered in bbh_vocab.js (pass)');
+    }
+  }
+}
+
+// ── Check 6: source/bbh/ unchanged vs git HEAD ──────────────────────────
+{
+  try {
+    execFileSync('git', ['diff', '--quiet', '--', 'source/bbh/'], { cwd: ROOT });
+    report('check6: source/bbh/ unchanged vs git HEAD (pass)');
+  } catch (err) {
+    if (err.status === 1) {
+      fail('check6: source/bbh/ has uncommitted changes vs git HEAD');
+    } else {
+      fail(`check6: git diff failed to run (${err.message})`);
+    }
+  }
+}
+
+// ── Also run tools/validate_bbh_data.mjs ────────────────────────────────
+{
+  try {
+    execFileSync(process.execPath, [path.join(ROOT, 'tools/validate_bbh_data.mjs')], { cwd: ROOT, stdio: 'pipe' });
+    report('validate_bbh_data.mjs: pass');
+  } catch (err) {
+    const out = (err.stdout ? err.stdout.toString() : '') + (err.stderr ? err.stderr.toString() : '');
+    fail(`validate_bbh_data.mjs failed:\n${out.trim()}`);
+  }
+}
+
+// ── Summary ──────────────────────────────────────────────────────────────
+console.log('── BBH release check ──');
+for (const r of reports) console.log('  ' + r);
+if (failures.length) {
+  console.log('\nFAILURES:');
+  for (const f of failures) console.log('  ✗ ' + f);
+  console.log(`\n${failures.length} failure(s).`);
+  process.exitCode = 1;
+} else {
+  console.log(`\nAll checks passed (${reports.length} reports, 0 failures).`);
+}

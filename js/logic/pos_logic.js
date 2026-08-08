@@ -1,6 +1,6 @@
 // Classic <script> (not a module) — see index.html script order.
 //
-// This used to carry a large set of Koine Greek part-of-speech / headword-
+// This used to carry a large set of Greek part-of-speech / headword-
 // formatting heuristics (transliteration, declension detection, multi-case
 // preposition tagging, etc.). None of that applies to Hebrew, so this file
 // is now a small shim: it keeps only the generic, language-agnostic id
