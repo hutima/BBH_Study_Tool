@@ -51,14 +51,15 @@ const CONJUGATION_VALUES = new Set([
 ]);
 
 // Parse-feature whitelist per pos (Phase 2 architecture decision 1: Hebrew
-// axes only, no tense/voice/mood/case). `particle` is deliberately empty —
-// a particle's acceptedParses entries must be bare `{}` objects.
+// axes only, no tense/voice/mood/case). `particle` allows only `suffix` —
+// prepositions/object-marker with attached pronouns (Appendix B 5c/5d);
+// a bare particle's acceptedParses entries are `{}` objects.
 const FEATURES_BY_POS = {
   verb: new Set(['binyan', 'conjugation', 'person', 'gender', 'number', 'suffix']),
   noun: new Set(['gender', 'number', 'state', 'suffix', 'definite']),
   adjective: new Set(['gender', 'number', 'state']),
   pronoun: new Set(['person', 'gender', 'number', 'deixis']),
-  particle: new Set([]),
+  particle: new Set(['suffix']),
   numeral: new Set(['gender', 'number', 'state'])
 };
 
