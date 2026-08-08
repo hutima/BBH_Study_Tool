@@ -120,7 +120,16 @@
 ## Content counts
 
 - Vocabulary: 50 lessons, 191 cards (target 203 after reconciliation).
-- Parsing forms/paradigms: 0. Grammar questions: 0. Reader passages: 0.
+- Parsing: 58 paradigms, 429 forms, 36 lesson-gate entries — transcribed
+  from page images and independently re-verified form-by-form (commit
+  `fb5e012`). 24 uncertainties/source-notes carried in scratchpad +
+  commit message (key: L27-vs-a-16 niqqud discrepancy; no printed Hofal
+  form exists; physical-book spot-checks recommended for a few
+  scan-resolution cells).
+- Grammar questions: 0. Reader passages: 0.
+- Deployment posture: every merge to the default branch deploys via GitHub
+  Pages, so each live-graph-changing PR bumps `?v=` + `CACHE_NAME`
+  (PR B: 1→2) and updates the sw precache in the same PR.
 
 ## Tests last run
 
