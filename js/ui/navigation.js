@@ -30,10 +30,7 @@ import { renderProgress, renderReview } from './progress.js';
 import {
   loadDeckFromKeys,
   buildSessions,
-  buildChapterSelector,
-  buildSupplementalSelector,
-  buildAdvancedSelector,
-  buildBookVocabSelector
+  buildChapterSelector
 } from './selectors.js';
 
 let host = {
@@ -598,9 +595,6 @@ export function setAppProfile(profile) {
   runtime.marks = host.getDirectionalMarksStore();
   buildSessions();
   buildChapterSelector();
-  buildSupplementalSelector();
-  buildAdvancedSelector();
-  buildBookVocabSelector();
   host.syncToggleButtons();
 
   if (!runtime.selectedKeys.length) {

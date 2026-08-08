@@ -33,15 +33,13 @@ import {
   computeAchievements as computeAchievementsPure,
   getRegressionProjection
 } from '../domain/gamification/xp.js';
-import {
-  getAllLemmaStats,
-  createValueBreakdownAcc,
-  accumulateValueBreakdown,
-  finalizeValueBreakdown,
-  summarizeLemmaValueBreakdown,
-  getParsingAccuracyBuckets,
-  PARSING_ACCURACY_BUCKET_SIZE
-} from '../domain/grammar/morph_steps.js';
+// NOTE: this module still contains Grammar/Parsing analytics sections
+// (renderParadigmStepStatsSection, renderGrammarReviewSection, etc.) that
+// used to import from js/domain/grammar/morph_steps.js, deleted in the
+// Hebrew conversion (Vocabulary + Reference only for this phase — see
+// CLAUDE.md). They're dead: their DOM containers no longer exist in
+// index.html, and each is guarded by an `if (!el) return;` / host.canAccessGrammarUi()
+// check that's always false now.
 import {
   buildDailyCumulativeSeriesFromMap,
   buildCumulativeConfirmationSeries,

@@ -163,24 +163,20 @@ import {
 
 // Domain — Deck
 import { isChapterKey, isAdvancedKey, sortSetKeys, sourceHint, expandSessionSets } from '../domain/deck/ordering.js';
+import { SESSION_WEEK_META } from '../data/setMeta.js';
 import { getSelectedVocabCards, getSelectedGrammarCards, getAllVocabKeys, getAllChapterKeys,
          getAllVocabCards, getAllGrammarCards, getChapterVocabCards, expandIrregularCards, irregularEnabledTags, isIrregularCardEnabled, IRREGULAR_CARD_CONFIGS, progressCardId, derivedCardFaceKey,
          getCardReviewLeft, getCardReviewRight, getCardMetaLine, getCardAuxLine } from '../domain/deck/filters.js';
 
-// Domain — Grammar
-import { buildGrammarSupportHtml } from '../domain/grammar/explanations.js';
-import { recordParadigmAttempt, inferredFollowupDims, buildInferredStep, structuralImpossibilityReason, paradigmGapReason, lemmaInventoryGapReason, isLemmaFormKnown, getLemmaFormStatus, weightedRecentMissScore, parseAnswerDimensions, isPartialCompositePick, PARTIAL_COMPOSITE_CREDIT } from '../domain/grammar/morph_steps.js';
-import { listAvailableParadigms, listAvailableParadigmsByCategory, getCardsForFocusedParadigm, getCardsForParadigmCategory, getCardsForParadigmLemmas, getAllParsingCards, parseCategoryShuffleValue, makeCategoryShuffleValue, chooseDefaultFocusedParadigm, isParsingIncompatibleLemma } from '../domain/grammar/paradigm_focus.js';
-import { buildLookupPool, truncatePicksFrom } from '../domain/grammar/morph_lookup.js';
+// Domain — Grammar/Parsing/Reader modules were deleted in the Hebrew
+// conversion (Vocabulary + Reference only for this phase — see CLAUDE.md /
+// docs/bbh-conversion-plan.md). A large amount of morph/parsing/reader code
+// below still references the names these used to import
+// (recordParadigmAttempt, listAvailableParadigms, renderReaderModule, etc.);
+// it is unreachable dead code gated behind isMorphologyMode()/isParsingMode()
+// /isReaderMode(), which now always return false, so it never executes.
 
 // UI
-import {
-  configureReader,
-  renderReaderModule,
-  advanceReaderDrill,
-  selectReaderDrillChoice,
-  openReaderTab
-} from '../ui/reader.js';
 import { installKeyboardShortcuts } from '../ui/keyboard.js';
 import { showLevelToast, showBadgeToast } from '../ui/toast.js';
 import {
@@ -237,19 +233,11 @@ import {
   setActiveSetButtons,
   buildSessions,
   buildChapterSelector,
-  buildSupplementalSelector,
-  buildAdvancedSelector,
-  buildBookVocabSelector,
-  deselectAllSupplementals,
-  deselectAllAdvanced,
-  deselectAllBooks,
   deselectAllChapters,
   deselectAll,
-  toggleAdvancedSubGroup,
   loadDeckFromKeys,
   loadSession,
   toggleSession,
-  getParadigmBaseKey,
   toggleSet
 } from '../ui/selectors.js';
 import {
@@ -372,14 +360,10 @@ import {
 // Wire UI modules with the host helpers they call back into.
 // Function declarations are hoisted; getter/setter closures defer reads to
 // invocation time, so let-binding values are valid by the time they're called.
-configureReader({ noteStudyInteraction, setStudyMode });
 configureModals({
   renderAnalyticsOverlay: () => renderAnalyticsOverlay(),
   buildSessions: () => buildSessions(),
   buildChapterSelector: () => buildChapterSelector(),
-  buildSupplementalSelector: () => buildSupplementalSelector(),
-  buildAdvancedSelector: () => buildAdvancedSelector(),
-  buildBookVocabSelector: () => buildBookVocabSelector(),
   getHasAcceptedDisclaimer: () => runtime.hasAcceptedDisclaimer,
   setHasAcceptedDisclaimer: (v) => { runtime.hasAcceptedDisclaimer = v; },
   getDisclaimerModalRequiresAgreement: () => runtime.disclaimerModalRequiresAgreement,
@@ -541,7 +525,6 @@ configureNavigation({
   saveCurrentDeckStateToBank: () => saveCurrentDeckStateToBank(),
   markActiveDeckRef: () => markActiveDeckRef(),
   saveState: () => saveState(),
-  renderReaderModule: () => renderReaderModule(),
   getDeckStateKey: (keys, req, spaced) => getDeckStateKey(keys, req, spaced),
   getSessions: () => getSessions(),
   getSelectedCards: (keys) => getSelectedCards(keys),
@@ -597,7 +580,6 @@ configurePersistence({
   syncLayoutVisibility: () => syncLayoutVisibility(),
   getDirectionalProgressStore: () => getDirectionalProgressStore(),
   isReaderMode: () => isReaderMode(),
-  renderReaderModule: () => renderReaderModule(),
   maybeAutoResetUnspacedArchives: () => maybeAutoResetUnspacedArchives()
 });
 
@@ -710,26 +692,34 @@ function isReviewDeckMode() {
   return runtime.studyMode === 'vocab' || runtime.studyMode === 'morph' || runtime.studyMode === 'parsing';
 }
 
+// Phase 1 of the Hebrew conversion is Vocabulary + Reference only (see
+// CLAUDE.md / docs/bbh-conversion-plan.md) — Grammar, Parsing, and Reader
+// modes are deferred, so this app is permanently vocab-only.
 function isVocabOnlyProfile() {
-  return false;
+  return true;
 }
 
 function canAccessGrammarUi() {
   return !isVocabOnlyProfile();
 }
 
+// Sessions are the six lesson-range presets (Lessons 1-10 / 11-20 / … / All)
+// from js/data/setMeta.js, not a legacy window.SESSIONS data-file global.
 function getSessions() {
-  return Array.isArray(window.SESSIONS) ? window.SESSIONS : [];
+  return Object.keys(SESSION_WEEK_META).map(id => {
+    const meta = SESSION_WEEK_META[id] || {};
+    const lessons = Array.isArray(meta.lessons) ? meta.lessons : [];
+    const tag = id === 'all' ? 'All' : `${lessons[0]}–${lessons[lessons.length - 1]}`;
+    return { id, tag, label: meta.label || id, sets: lessons.map(String), special: false };
+  });
 }
 
 function getProfileDescription() {
-  return 'Full layout with vocabulary, grammar, reader, and memorization. Time totals stay shared, while progress remains separate by module.';
+  return 'Vocabulary flashcards for Cook & Holmstedt, Beginning Biblical Hebrew.';
 }
 
+// Only 'vocab' exists in this phase — Grammar/Parsing/Reader are deferred.
 function normalizeStudyMode(mode) {
-  if (mode === 'morph' && canAccessGrammarUi()) return 'morph';
-  if (mode === 'parsing' && canAccessGrammarUi()) return 'parsing';
-  if (mode === 'reader') return 'reader';
   return 'vocab';
 }
 
@@ -4023,7 +4013,7 @@ const GLOBAL_CLICK_HANDLERS = {
   returnSeenCardToDeck, clearParsingMorph,
   closeAnalyticsOverlay, closeTransferModal, exportProgressJson,
   closeShortcutsModal, closeStudySelector,
-  deselectAllChapters, deselectAllSupplementals, deselectAllAdvanced, deselectAllBooks, deselectAll,
+  deselectAllChapters, deselectAll,
   handleConsentAction, handleTransferPrimaryAction, handleTransferSecondaryAction,
   openShortcutsModal, openStudySelector,
   openAnalyticsOverlay, resetAllStats, resetCurrentDeck, resetRequiredOnly,
@@ -4039,7 +4029,6 @@ const GLOBAL_CLICK_HANDLERS = {
   showDisclaimerModal, startStudying, toggleDirection, toggleMorphSelfCheck,
   toggleMorphStepByStep, setMorphFocusedParadigm, setParsingChapter, goToStemDrillFromParsing,
   toggleRequiredOnly, toggleHardVocabReview, toggleStemNotes, toggleIrregularCards, toggleIrregularTense, toggleShuffle, toggleSpacedRepetition, toggleSpacingCadence, toggleSplitSelection, toggleAspectStep, toggleDimStep, toggleOptionalForms, toggleOptionalFormFilter, toggleDimValueFilter, toggleExcludeKnownMorphs, toggleParsingShuffleAll, toggleParsingCustomReview, toggleParsingCustomParadigm, setAllParsingCustomParadigms, toggleParsingReverse, toggleParsingLookup, pickLookupDimension, editLookupDimension, resetLookup, toggleAccentLookalikes, resetKnownMorphs, closeResetKnownModal, confirmResetKnownFocused, confirmResetKnownAll, clearParsingStats, toggleUnspacedDailyReset, triggerImportProgress,
-  openReaderTab, selectReaderDrillChoice, advanceReaderDrill,
   closeWhatsNewV1_5Modal, closeAspectDefaultOffModal, closeToggleInfoModal, onDueHistogramToggle,
   openContactAuthorModal, closeContactAuthorModal, openExternalLink,
   triggerInstall, closeInstallInstructions, dontShowInstallAgain
@@ -4054,33 +4043,14 @@ initializeTextSize();
 // Initial build with default state (needed so restoreState can find DOM elements)
 buildSessions();
 buildChapterSelector();
-buildSupplementalSelector();
-buildAdvancedSelector();
-buildBookVocabSelector();
 if (!restoreState()) {
   syncToggleButtons(); // reflect default controls on load
 }
 // Rebuild after restore: runtime.appProfile may have changed, affecting grammar summary text
 buildSessions();
 buildChapterSelector();
-buildSupplementalSelector();
-buildAdvancedSelector();
-buildBookVocabSelector();
 initPwaInstall();
 initializeConsentGate();
-if (isReaderMode()) renderReaderModule();
-
-window.addEventListener('greekSupplementalDataChanged', () => {
-  buildSessions();
-  buildChapterSelector();
-  buildSupplementalSelector();
-  buildAdvancedSelector();
-  buildBookVocabSelector();
-  if (runtime.selectedKeys.length && runtime.selectedKeys.some(key => window.SETS?.[key]?.type === 'other')) {
-    const keysToLoad = runtime.currentSession ? expandSessionSets(runtime.currentSession) : runtime.selectedKeys;
-    loadDeckFromKeys(keysToLoad, runtime.currentSession ? runtime.currentSession.id : null);
-  }
-});
 
 const cardArea = document.getElementById('cardArea');
 if (cardArea) {

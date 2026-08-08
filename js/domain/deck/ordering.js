@@ -9,46 +9,28 @@ export function isChapterKey(key) {
   return /^\d+$/.test(String(key));
 }
 
+// Legacy pseudo-key predicates from the Greek app (ADV#, NTB::...). Nothing
+// in the BBH data ever produces these, so they always return false — kept
+// only because a couple of call sites still reference them defensively.
 export function isAdvancedKey(key) {
   return /^ADV\d+$/i.test(String(key || ''));
 }
 
-// NT Book Vocab pseudo-keys: "NTB::<BOOK>" (whole book) and
-// "NTB::<BOOK>::g::<N>" (frequency group of 50). These never live in
-// window.SETS — they resolve to existing cards at deck-build time.
 export function isBookKey(key) {
   return /^NTB::/.test(String(key || ''));
 }
 
+// Lesson keys are plain numeric strings ("1".."50") — sort numerically.
 export function sortSetKeys(keys) {
-  function score(key) {
-    const raw = String(key);
-    if (/^\d+$/.test(raw)) return Number(raw);
-    const m = raw.match(/^W(\d+)O$/);
-    if (m) return 100 + Number(m[1]);
-    const supplemental = raw.match(/^W(\d+)_/);
-    if (supplemental) return 200 + Number(supplemental[1]);
-    const adv = raw.match(/^ADV(\d+)$/i);
-    if (adv) return 1000 + Number(adv[1]);
-    if (/^NTB::/.test(raw)) return 2000; // book-vocab pseudo-keys sort last
-    return 999;
-  }
   return [...keys].sort((a, b) => {
-    const diff = score(a) - score(b);
+    const diff = Number(a) - Number(b);
     return diff || String(a).localeCompare(String(b));
   });
 }
 
-export function displaySetShortLabel(key) {
-  const raw = String(key);
-  if (/^\d+$/.test(raw)) return `Ch. ${raw}`;
-  const sets = getSets();
-  return sets[raw]?.label || raw;
-}
-
 export function sourceHint(key) {
   const raw = String(key);
-  if (/^\d+$/.test(raw)) return `Ch. ${raw}`;
+  if (/^\d+$/.test(raw)) return `Lesson ${raw}`;
   const sets = getSets();
   return sets[raw]?.label || raw;
 }
@@ -65,27 +47,9 @@ export function getChapterForKey(key) {
   return isChapterKey(raw) ? Number(raw) : null;
 }
 
-export function getOtherKeysForWeeks(weeks) {
-  const weekSet = new Set((weeks || []).map(Number).filter(Boolean));
-  const sets = getSets();
-  return Object.keys(sets).filter(key => {
-    const set = sets[key];
-    return set && (set.type === 'other' || set.type === 'supplemental' || set.supplemental) && weekSet.has(Number(set.week));
-  });
-}
-
-function isOddSupplementalKey(key) {
-  return /^W\d+O$/.test(String(key));
-}
-
+// A "session" is a range preset (see SESSION_WEEK_META) whose `sets` list is
+// lesson numbers — the BBH data has no odd/special-week supplemental concept.
 export function expandSessionSets(session) {
   const rawSets = (session?.sets || []).map(String);
-  const chapters = rawSets.filter(isChapterKey);
-  // Special sessions (Mid-Term, Final Exam Prep) also pull in the per-week
-  // odd supplemental vocab listed in the session, but never the paradigm
-  // breakdown sets — those are opt-in via the supplemental selector.
-  const oddSupplementals = session?.special
-    ? rawSets.filter(isOddSupplementalKey)
-    : [];
-  return sortSetKeys([...new Set([...chapters, ...oddSupplementals])]);
+  return sortSetKeys([...new Set(rawSets.filter(isChapterKey))]);
 }

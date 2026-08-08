@@ -9,17 +9,13 @@ import { getConfidencePct } from '../domain/srs/confidence.js';
 import { formatRemainingForTable, getSrsStage } from '../domain/srs/scheduler.js';
 import { getCardReviewLeft, getCardReviewRight, getCardMetaLine } from '../domain/deck/filters.js';
 import { isAnalyticsModalOpen } from './modals.js';
-import {
-  getAllLemmaStats,
-  getLemmaFormStatus,
-  clearLemmaFormRecent,
-  isLemmaFormKnown,
-  createValueBreakdownAcc,
-  accumulateValueBreakdown,
-  finalizeValueBreakdown,
-  summarizeLemmaValueBreakdown
-} from '../domain/grammar/morph_steps.js';
 import { buildDimValueBarsHtml } from './charts.js';
+
+// NOTE: this module still contains a Grammar/Parsing review-panel renderer
+// (renderParsingReviewPanel) that used to import from
+// js/domain/grammar/morph_steps.js, deleted in the Hebrew conversion
+// (Vocabulary + Reference only for this phase — see CLAUDE.md). It's dead
+// code, gated behind host.isParsingMode() which always returns false now.
 
 let host = {
   accumulateUsageTime: () => {},
