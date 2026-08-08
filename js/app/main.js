@@ -165,13 +165,29 @@ import {
 import { SESSION_WEEK_META } from '../data/setMeta.js';
 import { getSelectedVocabCards, expandIrregularCards, irregularEnabledTags, progressCardId, derivedCardFaceKey } from '../domain/deck/filters.js';
 
-// Domain — Grammar/Parsing/Reader modules were deleted in the Hebrew
-// conversion (Vocabulary + Reference only for this phase — see CLAUDE.md /
-// docs/bbh-conversion-plan.md). A large amount of morph/parsing/reader code
-// below still references the names these used to import
-// (recordParadigmAttempt, listAvailableParadigms, renderReaderModule, etc.);
-// it is unreachable dead code gated behind isMorphologyMode()/isParsingMode()
-// /isReaderMode(), which now always return false, so it never executes.
+// Domain — Grammar/Reader modules were deleted in the Hebrew conversion
+// (Vocabulary + Reference only for Phase 1 — see CLAUDE.md /
+// docs/bbh-conversion-plan.md). A large amount of morph/reader code below
+// still references the names these used to import (recordParadigmAttempt,
+// listAvailableParadigms, renderReaderModule, etc.); it is unreachable dead
+// code gated behind isMorphologyMode()/isReaderMode(), which always return
+// false, so it never executes. Parsing (Phase 2 PR B) is a NEW, separate,
+// self-contained module (js/ui/parsing.js) — see below.
+
+// UI — Parsing (Phase 2 PR B). New file; imports ONLY from
+// js/domain/parsing/{gates,drill}.js. Configured like every other UI module
+// via configureParsing(deps); its click/change handlers are added to
+// GLOBAL_CLICK_HANDLERS below, same as every other onclick="..." surface.
+import {
+  configureParsing,
+  renderParsingPanel,
+  renderParsingAnalytics,
+  parsingSetLesson, parsingSetParadigm,
+  parsingToggleShuffleAll, parsingToggleCustomSet, parsingToggleCustomSetParadigm,
+  parsingToggleExcludeKnown, parsingToggleAppendix, parsingSetDirection, parsingToggleDim,
+  parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice, parsingNextCard,
+  parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt
+} from '../ui/parsing.js';
 
 // UI
 import { installKeyboardShortcuts } from '../ui/keyboard.js';
@@ -323,6 +339,13 @@ import {
   MAX_STUDY_SESSION_HISTORY
 } from '../state/store.js';
 
+// A single seed captured once at session init — never Math.random, never a
+// fresh `Date.now()` at individual call sites (see CLAUDE.md-adjacent note
+// in js/domain/parsing/drill.js). Used only as a deterministic shuffle seed
+// for js/ui/parsing.js's drill-pool ordering and Build-mode choice sets;
+// never persisted.
+const PARSING_SESSION_SEED = Date.now() & 0x7fffffff;
+
 // Wire UI modules with the host helpers they call back into.
 // Function declarations are hoisted; getter/setter closures defer reads to
 // invocation time, so let-binding values are valid by the time they're called.
@@ -387,6 +410,7 @@ configureSelectors({
 configureNavigation({
   noteStudyInteraction: () => noteStudyInteraction(),
   normalizeStudyMode: (m) => normalizeStudyMode(m),
+  isParsingMode: () => isParsingMode(),
   ensureDirectionalStores: () => ensureDirectionalStores(),
   getDirectionalMarksStore: () => getDirectionalMarksStore(),
   getDirectionalProgressStore: () => getDirectionalProgressStore(),
@@ -420,6 +444,22 @@ configureNavigation({
 configureAnalytics({
   ensureUsageStats: () => ensureUsageStats(),
   accumulateActiveStudyTime: () => accumulateActiveStudyTime(),
+  saveState: () => saveState(),
+  renderParsingSection: () => renderParsingAnalytics()
+});
+configureParsing({
+  getState: () => runtime.parsing,
+  // The live vocab selection: parsing mode's own setStudyMode transition
+  // (js/ui/navigation.js) always stashes the outgoing vocab selection into
+  // modeSelections.vocab before overwriting runtime.selectedKeys with its
+  // own chapter scope, so that (not the live selectedKeys, which parsing
+  // mode reuses for unrelated legacy bookkeeping) is the source of truth
+  // for "highest selected vocab lesson" on first-ever-use.
+  getSelectedVocabKeys: () => (
+    isPlainObject(runtime.modeSelections?.vocab) && Array.isArray(runtime.modeSelections.vocab.selectedKeys)
+  ) ? runtime.modeSelections.vocab.selectedKeys
+    : (runtime.studyMode === 'vocab' ? runtime.selectedKeys : []),
+  getSessionSeed: () => PARSING_SESSION_SEED,
   saveState: () => saveState()
 });
 configurePersistence({
@@ -504,8 +544,15 @@ function isCardStudyMode() {
   return runtime.studyMode === 'vocab' || runtime.studyMode === 'morph' || runtime.studyMode === 'parsing' || runtime.studyMode === 'reader';
 }
 
+// Parsing is deliberately NOT a "review deck" mode: it never uses
+// runtime.deck/navigate()/markCard() (its own step-walk/build UI in
+// js/ui/parsing.js owns its own flow), so it must stay out of this list —
+// otherwise the keyboard shortcuts in installKeyboardShortcuts (arrows,
+// space, 1/2/3, k, r) would fire vocab-deck card semantics against the
+// (unused, hidden) legacy per-mode deck parsing mode still carries for
+// backward-compat bookkeeping — see setStudyMode in js/ui/navigation.js.
 function isReviewDeckMode() {
-  return runtime.studyMode === 'vocab' || runtime.studyMode === 'morph' || runtime.studyMode === 'parsing';
+  return runtime.studyMode === 'vocab' || runtime.studyMode === 'morph';
 }
 
 // Phase 1 of the Hebrew conversion is Vocabulary + Reference only (see
@@ -537,13 +584,15 @@ function getProfileDescription() {
   return 'Vocabulary flashcards for Cook & Holmstedt, Beginning Biblical Hebrew.';
 }
 
-// Only 'vocab' exists in this phase — Grammar/Parsing/Reader are deferred.
+// Phase 2 PR B: Parsing is now a real, selectable mode. Grammar/Reader
+// remain deferred (no UI reaches 'morph'/'reader', so this never returns
+// them) — see CLAUDE.md / docs/bbh-conversion-plan.md.
 function normalizeStudyMode(mode) {
-  return 'vocab';
+  return mode === 'parsing' ? 'parsing' : 'vocab';
 }
 
 function getModeDescription() {
-  return 'Vocabulary Flashcards';
+  return runtime.studyMode === 'parsing' ? 'Parsing Practice' : 'Vocabulary Flashcards';
 }
 
 
@@ -922,6 +971,8 @@ function syncToggleButtons() {
     }
   }
   if (modeShortcutVocabBtn) modeShortcutVocabBtn.classList.toggle('active', runtime.studyMode === 'vocab');
+  const modeShortcutParsingBtn = document.getElementById('modeShortcutParsingBtn');
+  if (modeShortcutParsingBtn) modeShortcutParsingBtn.classList.toggle('active', runtime.studyMode === 'parsing');
   syncThemeButtons();
   if (resetDeckBtn) {
     resetDeckBtn.textContent = runtime.spacedRepetition ? 'Reset spaced' : 'Reset unspaced';
@@ -937,6 +988,35 @@ function syncToggleButtons() {
 }
 
 function syncLayoutVisibility() {
+  // Phase 2 PR B: Parsing mode owns an entirely separate UI (js/ui/parsing.js)
+  // and never touches runtime.deck/navigate()/markCard() — short-circuit here
+  // before any of the vocab-specific layout below runs, so vocab behavior
+  // stays pixel-identical when studyMode==='vocab' (the only path that falls
+  // through past this block).
+  const parsingSectionEl = document.getElementById('parsingSection');
+  if (isParsingMode()) {
+    const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
+    const resetActionsEl = document.getElementById('resetActionsDetails');
+    const cardAreaEl = document.getElementById('cardArea');
+    const navRowEl = document.getElementById('navRow');
+    const markRowEl = document.getElementById('markRow');
+    const ffRowEl = document.getElementById('ffRow');
+    const reviewShellEl = document.querySelector('.review-shell');
+    if (parsingSectionEl) parsingSectionEl.style.display = '';
+    if (advancedSettingsEl) advancedSettingsEl.style.display = 'none';
+    if (resetActionsEl) resetActionsEl.style.display = 'none';
+    if (cardAreaEl) cardAreaEl.style.display = 'none';
+    if (navRowEl) navRowEl.style.display = 'none';
+    if (markRowEl) markRowEl.style.display = 'none';
+    if (ffRowEl) ffRowEl.style.display = 'none';
+    if (reviewShellEl) reviewShellEl.style.display = 'none';
+    renderParsingPanel();
+    return;
+  }
+  if (parsingSectionEl) parsingSectionEl.style.display = 'none';
+  const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
+  if (advancedSettingsEl) advancedSettingsEl.style.display = '';
+
   const controlsBar = document.getElementById('controlsBar');
   const navRow = document.getElementById('navRow');
   const markRow = document.getElementById('markRow');
@@ -2304,7 +2384,13 @@ const GLOBAL_CLICK_HANDLERS = {
   toggleRequiredOnly, toggleHardVocabReview, toggleShuffle, toggleSpacedRepetition, toggleSpacingCadence, toggleUnspacedDailyReset, triggerImportProgress,
   closeToggleInfoModal, onDueHistogramToggle,
   openContactAuthorModal, closeContactAuthorModal, openExternalLink,
-  triggerInstall, closeInstallInstructions, dontShowInstallAgain
+  triggerInstall, closeInstallInstructions, dontShowInstallAgain,
+  // Phase 2 PR B: Parsing mode (js/ui/parsing.js) click/change handlers.
+  parsingSetLesson, parsingSetParadigm,
+  parsingToggleShuffleAll, parsingToggleCustomSet, parsingToggleCustomSetParadigm,
+  parsingToggleExcludeKnown, parsingToggleAppendix, parsingSetDirection, parsingToggleDim,
+  parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice, parsingNextCard,
+  parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt
 };
 if (typeof globalThis !== 'undefined') Object.assign(globalThis, GLOBAL_CLICK_HANDLERS);
 if (typeof window !== 'undefined' && window !== globalThis) Object.assign(window, GLOBAL_CLICK_HANDLERS);
@@ -2352,7 +2438,7 @@ function preventDoubleTapZoom(el) {
   }, false);
 }
 
-['shuffleToggle','directionToggle','spacedToggle','unspacedDailyResetToggle','modeShortcutVocabBtn','themeSystemBtn','themeDarkBtn','themeLightBtn'].forEach(id => {
+['shuffleToggle','directionToggle','spacedToggle','unspacedDailyResetToggle','modeShortcutVocabBtn','modeShortcutParsingBtn','themeSystemBtn','themeDarkBtn','themeLightBtn'].forEach(id => {
   const el = document.getElementById(id);
   if (el) preventDoubleTapZoom(el);
 });

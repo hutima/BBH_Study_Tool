@@ -126,6 +126,75 @@ function sanitizeIrregularCards(candidate) {
   return out;
 }
 
+// ── Parsing state sanitize (Phase 2 PR B) ─────────────────────────────────
+// runtime.parsing is owned/mutated by js/ui/parsing.js, but persistence.js
+// (like every other persisted subtree) is responsible for validating it on
+// the way in from localStorage or an imported JSON file — never trust
+// disk/import data structurally. Backward compatible: a v2 export or a save
+// from before this landed has no `parsing` key at all, which sanitizes to
+// the v1 default shape below (see store.js PROGRESS_EXPORT_VERSION comment).
+const PARSING_DIM_KEYS = ['binyan', 'conjugation', 'person', 'gender', 'number', 'suffix', 'state'];
+
+function sanitizeParsingDims(input) {
+  const src = isPlainObject(input) ? input : {};
+  const out = {};
+  PARSING_DIM_KEYS.forEach((key) => { out[key] = src[key] !== false; }); // default ON
+  return out;
+}
+
+function sanitizeParsingCustomSet(input) {
+  const src = isPlainObject(input) ? input : {};
+  const out = {};
+  Object.keys(src).forEach((paradigmId) => {
+    if (src[paradigmId] === true) out[paradigmId] = true;
+  });
+  return out;
+}
+
+function sanitizeParsingAttemptEntries(list, cap) {
+  return (Array.isArray(list) ? list : [])
+    .filter((entry) => isPlainObject(entry) && isPlainObject(entry.dims))
+    .map((entry) => ({
+      at: Number.isFinite(entry.at) ? entry.at : 0,
+      dims: { ...entry.dims }
+    }))
+    .slice(-cap);
+}
+
+function sanitizeParsingAttempts(input) {
+  const src = isPlainObject(input) ? input : {};
+  const out = {};
+  Object.keys(src).forEach((formId) => {
+    const rec = src[formId];
+    if (!isPlainObject(rec)) return;
+    out[formId] = {
+      seen: Number.isFinite(rec.seen) ? rec.seen : 0,
+      recent: sanitizeParsingAttemptEntries(rec.recent, 2),
+      history: sanitizeParsingAttemptEntries(rec.history, 50)
+    };
+  });
+  return out;
+}
+
+function sanitizeParsingState(candidate) {
+  const src = isPlainObject(candidate) ? candidate : {};
+  const lesson = Number.isInteger(src.lesson) && src.lesson >= 1 && src.lesson <= 50 ? src.lesson : 1;
+  return {
+    schemaVersion: 1,
+    lesson,
+    focusedParadigmId: (typeof src.focusedParadigmId === 'string' && src.focusedParadigmId) ? src.focusedParadigmId : null,
+    direction: src.direction === 'build' ? 'build' : 'parse',
+    shuffleAll: !!src.shuffleAll,
+    customSetOn: !!src.customSetOn,
+    customSet: sanitizeParsingCustomSet(src.customSet),
+    excludeKnown: !!src.excludeKnown,
+    includeAppendix: !!src.includeAppendix,
+    dims: sanitizeParsingDims(src.dims),
+    attempts: sanitizeParsingAttempts(src.attempts),
+    initializedFromVocab: !!src.initializedFromVocab
+  };
+}
+
 // ── Persisted-state payload + sanitization for import ────────────────────
 
 export function buildPersistedStatePayload(options = {}) {
@@ -199,7 +268,11 @@ export function buildPersistedStatePayload(options = {}) {
     // unspaced (unspacedMiddleIds tracks the *middle* half).
     lastStudyActivityAt: Number(runtime.lastStudyActivityAt) || 0,
     spacedActiveIds: Array.isArray(runtime.spacedActiveIds) ? runtime.spacedActiveIds.slice(0, 1000) : [],
-    unspacedMiddleIds: runtime.unspacedMiddleIds ? Array.from(runtime.unspacedMiddleIds).slice(0, 1000) : []
+    unspacedMiddleIds: runtime.unspacedMiddleIds ? Array.from(runtime.unspacedMiddleIds).slice(0, 1000) : [],
+    // Parsing mode (Phase 2 PR B) — fully independent subtree, never touches
+    // vocab SRS/marks/progress fields above. Re-sanitized on the way out so
+    // a save is never persisted in a structurally-broken shape.
+    parsing: sanitizeParsingState(runtime.parsing)
   }, options);
 }
 
@@ -235,6 +308,9 @@ function sanitizeImportedState(candidate) {
   // Irregular "… as cards" overrides: explicit true/false only; missing keys
   // stay auto. Migrates the legacy secondAoristCards boolean.
   state.irregularCards = sanitizeIrregularCards(candidate);
+  // Parsing mode (Phase 2 PR B). A v2 export predates this field entirely —
+  // sanitizeParsingState defaults it, matching a fresh install.
+  state.parsing = sanitizeParsingState(candidate.parsing);
 
   const usage = host.ensureUsageStats(candidate.appUsageStats);
   state.appUsageStats = {
@@ -878,6 +954,11 @@ export function restoreState() {
     if (hadSavedAchievementSnapshot && !Array.isArray(runtime.appGamification.lastEarnedAchievementIds)) {
       runtime.appGamification.lastEarnedAchievementIds = [];
     }
+
+    // Parsing mode (Phase 2 PR B) — fully independent of the vocab deck
+    // below, so it restores unconditionally, before the "nothing selected"
+    // early return that only concerns the vocab deck/cursor.
+    runtime.parsing = sanitizeParsingState(saved.parsing);
 
     if (!runtime.selectedKeys.length) {
       host.clearSpacedUndoSnapshot();

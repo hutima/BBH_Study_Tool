@@ -49,7 +49,11 @@ import { buildDueHistogramHtml } from './progress.js';
 let host = {
   ensureUsageStats: () => runtime.appUsageStats,
   accumulateActiveStudyTime: () => {},
-  saveState: () => {}
+  saveState: () => {},
+  // Phase 2 PR B: renders the Parsing analytics section (js/ui/parsing.js)
+  // into its own container inside #analyticsOverlay. Kept as a host hook
+  // (not a direct import) so analytics.js never depends on parsing.js.
+  renderParsingSection: () => {}
 };
 
 export function configureAnalytics(deps) {
@@ -1113,6 +1117,10 @@ export function renderAnalyticsOverlay() {
   applyAnalyticsCollapsedState(overlay);
   setupAnalyticsCollapseHandlers(overlay);
   setupAnalyticsListRowInteractivity(overlay);
+
+  // Phase 2 PR B: Parsing progress section — no-op host default until
+  // main.js wires it to js/ui/parsing.js via configureAnalytics.
+  host.renderParsingSection();
 }
 
 // Single delegated handler for the tappable rows inside the stubborn /

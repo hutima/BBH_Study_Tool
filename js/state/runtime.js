@@ -72,6 +72,30 @@ export const runtime = {
   // ── Study mode ───────────────────────────────────────────────────
   studyMode: 'vocab',
 
+  // ── Parsing mode (Phase 2 PR B) ─────────────────────────────────────
+  // Fully independent of the vocab deck/SRS machinery above — see
+  // docs/bbh-conversion-plan.md "Phase 2 architecture decisions" #6 and
+  // js/ui/parsing.js. Owned/mutated only by js/ui/parsing.js (via the live
+  // reference handed back from configureParsing's getState hook) and
+  // restored/persisted by js/state/persistence.js's sanitizeParsingState.
+  parsing: {
+    schemaVersion: 1,
+    lesson: 1,
+    focusedParadigmId: null,
+    direction: 'parse',       // 'parse' | 'build'
+    shuffleAll: false,
+    customSetOn: false,       // whether customSet (below) actually scopes the pool
+    customSet: {},            // { [paradigmId]: true }
+    excludeKnown: false,
+    includeAppendix: false,   // off by default — appendix forms are opt-in
+    dims: {
+      binyan: true, conjugation: true, person: true, gender: true,
+      number: true, suffix: true, state: true
+    },
+    attempts: {},             // { [formId]: { seen, recent, history } }
+    initializedFromVocab: false
+  },
+
   // ── Persisted directional stores (rebuilt from localStorage) ────────
   deckStates: {},
   globalWordMarks: {},

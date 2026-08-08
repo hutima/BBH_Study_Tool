@@ -12,11 +12,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=1">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=1">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=1">
+<link rel="manifest" href="manifest.json?v=2">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=2">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=2">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=1">
+<link rel="stylesheet" href="styles.css?v=2">
 <script>
 (function(){
   try {
@@ -68,6 +68,7 @@
     <button class="quick-btn quick-primary" type="button" onclick="startStudying()">Start studying</button>
     <div class="mode-group app-profile-group" role="group" aria-label="Study mode shortcut">
       <button class="mode-btn active" id="modeShortcutVocabBtn" type="button" onclick="setStudyMode('vocab')">Vocab</button>
+      <button class="mode-btn" id="modeShortcutParsingBtn" type="button" onclick="setStudyMode('parsing')">Parsing</button>
     </div>
     <button class="quick-btn" type="button" onclick="openAnalyticsOverlay()">Progress</button>
     <button class="quick-btn" type="button" onclick="openShortcutsModal()">User guide</button>
@@ -152,6 +153,14 @@
       <button class="ctrl-btn" type="button" onclick="openResetStatsModal()">Reset stats</button>
     </div>
   </details>
+
+  <section class="parsing-section" id="parsingSection" style="display:none">
+    <details class="utility-section" id="parsingOptionsDetails" open>
+      <summary>Parsing options</summary>
+      <div id="parsingOptionsPanel"></div>
+    </details>
+    <div class="parsing-area" id="parsingArea"></div>
+  </section>
 
   <div class="card-area" id="cardArea">
     <div class="empty-state">
@@ -325,6 +334,19 @@
           <div id="analyticsTimeChart"></div>
         </div>
         <div class="analytics-session-summary" id="analyticsSessionSummary"></div>
+      </div>
+    </details>
+
+    <details class="analytics-collapse" id="analyticsParsingCollapse" data-collapse-key="parsingSection" style="display:none">
+      <summary class="analytics-collapse-summary">
+        <span class="analytics-collapse-caret" aria-hidden="true">▾</span>
+        <div class="analytics-collapse-title-wrap">
+          <h3>Parsing</h3>
+          <p class="analytics-collapse-summary-status" id="analyticsParsingSummaryStatus">Parse/Build drill progress.</p>
+        </div>
+      </summary>
+      <div class="analytics-collapse-body">
+        <div id="analyticsParsingBody"></div>
       </div>
     </details>
 
@@ -589,9 +611,10 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=1"></script>
-<script defer src="js/data/bbh_reference_data.js?v=1"></script>
-<script defer src="js/logic/pos_logic.js?v=1"></script>
-<script type="module" src="js/app/main.js?v=1"></script>
+<script defer src="js/data/bbh_vocab.js?v=2"></script>
+<script defer src="js/data/bbh_reference_data.js?v=2"></script>
+<script defer src="js/data/bbh_parsing.js?v=2"></script>
+<script defer src="js/logic/pos_logic.js?v=2"></script>
+<script type="module" src="js/app/main.js?v=2"></script>
 </body>
 </html>

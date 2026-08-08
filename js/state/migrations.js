@@ -34,7 +34,20 @@ const VOCAB_ID_UNINDEXED = /^([^-]+)-(.+)$/u;
 
 function parseVocabId(id) {
   const s = String(id || '');
-  if (s.startsWith('grammar-') || s.startsWith('morph-')) return null;
+  // Pre-existing bug fix (found via the Phase 2 PR B export/import smoke
+  // test, unrelated to Parsing itself): this whole migration is inherited
+  // from the Greek app and assumes the legacy `${rawKey}-${idx}-${stableKey}`
+  // id shape. BBH ids are `bbh-l<lesson>-<slug>` (docs/bbh-conversion-plan.md
+  // decision #3) — e.g. "bbh-l20-אהל" — which VOCAB_ID_UNINDEXED
+  // below still "matches" (rawKey="bbh", stableKey="l20-אהל"),
+  // but that stableKey never appears in getCurrentVocabCardIds()'s
+  // byStableKey map (built from the legacy scheme), so
+  // vocab-orphans-cleanup-and-merge finds zero merge targets and silently
+  // DELETES the mark/progress entry on every restore/import. BBH ids are
+  // always current-by-construction (deterministic output of
+  // tools/gen_bbh_data.mjs) and never need this legacy reconciliation, so
+  // exclude them the same way grammar-/morph- ids already are.
+  if (s.startsWith('grammar-') || s.startsWith('morph-') || s.startsWith('bbh-')) return null;
   let m = s.match(VOCAB_ID_INDEXED);
   if (m) return { rawKey: m[1], stableKey: m[3] };
   m = s.match(VOCAB_ID_UNINDEXED);
@@ -729,6 +742,39 @@ export const STATE_MIGRATIONS = [
           if (isStaleLastSpacedOutcome(entry)) delete entry.lastSpacedOutcome;
         });
       });
+      return saved;
+    }
+  },
+
+  {
+    // Phase 2 PR B: introduces runtime.parsing. Any save/export from before
+    // this landed has no `parsing` key at all; seed the v1 default shape so
+    // downstream restore code (persistence.js sanitizeParsingState) always
+    // sees a well-formed object. A save that already has SOME `parsing`
+    // object (even a malformed one from a future version) is left alone —
+    // sanitizeParsingState fills in per-field defaults for anything odd.
+    name: 'parsing-state-v1-init',
+    match(saved) {
+      return !isPlainObject(saved.parsing);
+    },
+    migrate(saved) {
+      saved.parsing = {
+        schemaVersion: 1,
+        lesson: 1,
+        focusedParadigmId: null,
+        direction: 'parse',
+        shuffleAll: false,
+        customSetOn: false,
+        customSet: {},
+        excludeKnown: false,
+        includeAppendix: false,
+        dims: {
+          binyan: true, conjugation: true, person: true, gender: true,
+          number: true, suffix: true, state: true
+        },
+        attempts: {},
+        initializedFromVocab: false
+      };
       return saved;
     }
   }
