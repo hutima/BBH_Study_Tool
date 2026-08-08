@@ -214,3 +214,14 @@ existing decade ranges; add these as a second preset group ("Units" /
 the Parsing/Grammar current-lesson selectors. Implemented via
 `tools/gen_bbh_data.mjs` presets (PR E scope; UI shortcuts land with PR B/C
 selectors as they're built).
+
+## Addendum (user request, 2026-08-08): Lesson 0 — Alphabet practice
+
+Add a "Lesson 0 · Alphabet" flashcard practice deck, COMPLETELY separate from
+the vocabulary machinery: own source/generated data (letters, names, sound
+values, final forms — transcribed from Lesson 1 pp. 21–26 + Appendix A
+a-3..a-6), own state subtree (no SRS, no XP/streaks/achievements, excluded
+from presets, vocab stats, and export vocab counts), unaffected by vocab
+toggles. UI: entry in the lesson area launching a lightweight flip/shuffle
+loop with local again/got-it marking. Closes the "full alphabet chart" gap in
+docs/bbh-content-gaps.md. Scope: PR E (content completion), first item.

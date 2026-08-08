@@ -13,7 +13,10 @@ export const TEXT_SIZE_STORAGE_KEY = 'bbhStudyToolTextSize';
 export const SHOW_POINTS_STORAGE_KEY = 'bbhStudyToolShowPoints';
 export const SHOW_TRANSLIT_STORAGE_KEY = 'bbhStudyToolShowTranslit';
 export const PROGRESS_EXPORT_FORMAT = 'bbh-study-tool-progress-export';
-export const PROGRESS_EXPORT_VERSION = 2;
+// v2 -> v3: added the `parsing` state subtree (Phase 2 PR B). Import stays
+// backward compatible — a v2 payload has no `parsing` key and sanitizes to
+// the defaults (see persistence.js sanitizeParsingState).
+export const PROGRESS_EXPORT_VERSION = 3;
 export const STUDY_IDLE_MS = 90 * 1000;
 export const STUDY_SESSION_BREAK_MS = 30 * 60 * 1000;
 export const MAX_STUDY_SESSION_HISTORY = 500;
@@ -67,7 +70,10 @@ export const ANALYTICS_COLLAPSED_DEFAULTS = {
   // Achievements sub-collapsibles
   achievementsDaily: true,
   achievementsMilestones: true,
-  achievementsChapters: true
+  achievementsChapters: true,
+  // Parsing (Phase 2 PR B) — only shown once there's at least one attempt;
+  // default open like the other top-level sections it sits alongside.
+  parsingSection: false
 };
 
 // ── Sanitize gamification state ──

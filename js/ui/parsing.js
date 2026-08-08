@@ -1,0 +1,850 @@
+// Parsing mode UI (Phase 2 PR B) — Cook & Holmstedt, Beginning Biblical
+// Hebrew. Renders the Parsing options panel, the Parse/Build drill flow, and
+// the Parsing analytics section; owns click/change handling for all of it.
+//
+// Hard boundary: this module imports ONLY from ../domain/parsing/gates.js
+// and ../domain/parsing/drill.js — no runtime.js, no utils/helpers.js, no
+// DOM helpers from elsewhere. Everything else (the live runtime.parsing
+// reference, the vocab lesson selection, persistence, a one-time session
+// seed) comes in via configureParsing(deps), same "runtime dependency
+// injection" pattern CLAUDE.md documents for navigation.js's host hooks.
+// Parsing never touches vocab SRS/marks/progress — see
+// docs/bbh-conversion-plan.md "Phase 2 architecture decisions" #6.
+//
+// Reads its inventory from window.BBH_PARSING (classic script global, same
+// idiom as window.SETS for vocab — see js/data/bbh_parsing.js's header).
+
+import {
+  availableForms,
+  availableParadigms,
+  availableDimensionValues,
+  firstLessonWithMaterial
+} from '../domain/parsing/gates.js';
+import {
+  applicableDimensions,
+  buildDrillPool,
+  orderDrillPool,
+  evaluateParse,
+  recordAttempt,
+  isFormKnown,
+  buildFormChoices,
+  formStatus
+} from '../domain/parsing/drill.js';
+
+// ─── Host (runtime dependency injection) ───────────────────────────────────
+let host = {
+  // Returns the LIVE runtime.parsing object (mutated in place, same pattern
+  // every other UI module uses for its slice of runtime.*).
+  getState: () => null,
+  // Vocab lesson selection (runtime.selectedKeys) — read once, for the
+  // "initialize from highest selected vocab lesson" first-use rule.
+  getSelectedVocabKeys: () => [],
+  // A single integer captured once at session init (`new Date()` at
+  // startup, never at call sites) — used only as a deterministic shuffle
+  // seed, never persisted, never Math.random.
+  getSessionSeed: () => 0,
+  saveState: () => {}
+};
+
+export function configureParsing(deps) {
+  host = { ...host, ...deps };
+}
+
+// ─── Small local utilities (no imports allowed beyond gates/drill) ────────
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function isPlainObject(v) {
+  return !!v && typeof v === 'object' && !Array.isArray(v);
+}
+
+function capitalize(s) {
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : s;
+}
+
+function hashStringToInt(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i += 1) h = (Math.imul(31, h) + str.charCodeAt(i)) | 0;
+  return h >>> 0;
+}
+
+// Mirrors drill.js's private dimensionValuesEqual — used ONLY to render the
+// "picks vs every acceptedParse" comparison table. The actual pass/fail
+// verdict recorded to attempts always comes from drill.evaluateParse; this
+// is a presentation-only re-derivation for displaying every accepted parse
+// (evaluateParse only returns the single best-matching one).
+function dimensionValuesEqualLocal(pickValue, parseValue) {
+  if (parseValue === null) return pickValue === null;
+  if (parseValue && typeof parseValue === 'object') {
+    if (!pickValue || typeof pickValue !== 'object') return false;
+    return pickValue.person === parseValue.person && pickValue.gender === parseValue.gender && pickValue.number === parseValue.number;
+  }
+  return pickValue === parseValue;
+}
+
+function parseSuffixSerialized(serialized) {
+  const parts = String(serialized).split('-');
+  if (parts.length !== 3) return null;
+  return { person: parts[0], gender: parts[1], number: parts[2] };
+}
+
+const PARSING_DIM_KEYS = ['binyan', 'conjugation', 'person', 'gender', 'number', 'suffix', 'state'];
+const DIM_TOGGLE_LABELS = {
+  binyan: 'Binyan', conjugation: 'Conjugation', person: 'Person', gender: 'Gender',
+  number: 'Number', suffix: 'Suffix', state: 'State', deixis: 'Deixis'
+};
+const CATEGORY_ORDER = ['verb', 'noun', 'adjective', 'pronoun', 'particle', 'numeral'];
+const CATEGORY_LABELS = { verb: 'Verb', noun: 'Noun', adjective: 'Adjective', pronoun: 'Pronoun', particle: 'Particle', numeral: 'Numeral' };
+
+const DIM_VALUE_LABELS = {
+  binyan: { qal: 'Qal', nifal: 'Nifal', piel: 'Piel', pual: 'Pual', hitpael: 'Hitpael', hifil: 'Hifil', hofal: 'Hofal' },
+  conjugation: {
+    perfect: 'Perfect', imperfect: 'Imperfect', 'past-narrative': 'Past narrative',
+    imperative: 'Imperative', jussive: 'Jussive', infinitive: 'Infinitive',
+    'adverbial-infinitive': 'Adverbial infinitive', participle: 'Participle'
+  },
+  person: { 1: '1st', 2: '2nd', 3: '3rd', '1': '1st', '2': '2nd', '3': '3rd' },
+  gender: { masculine: 'masc.', feminine: 'fem.', common: 'common' },
+  number: { singular: 'sing.', plural: 'plural', dual: 'dual' },
+  state: { absolute: 'absolute', construct: 'construct' },
+  deixis: { near: 'near', far: 'far' }
+};
+
+function formatDimValue(dim, value) {
+  if (dim === 'suffix') {
+    if (value === null || value === undefined) return '(no suffix)';
+    if (isPlainObject(value)) {
+      const p = (DIM_VALUE_LABELS.person && DIM_VALUE_LABELS.person[value.person]) || value.person;
+      const g = (DIM_VALUE_LABELS.gender && DIM_VALUE_LABELS.gender[value.gender]) || value.gender;
+      const n = (DIM_VALUE_LABELS.number && DIM_VALUE_LABELS.number[value.number]) || value.number;
+      return `${p} ${g} ${n} suffix`;
+    }
+    return String(value);
+  }
+  const map = DIM_VALUE_LABELS[dim] || {};
+  return map[value] !== undefined ? map[value] : String(value);
+}
+
+function formatParseLabel(parse, dims) {
+  const parts = (Array.isArray(dims) ? dims : [])
+    .filter((d) => parse && typeof parse === 'object' && d in parse)
+    .map((d) => formatDimValue(d, parse[d]));
+  return parts.join(' · ');
+}
+
+function formatSourceRef(form) {
+  const src = form && form.source;
+  if (!src) return '';
+  if (form.appendixOnly && src.appendix) return `Appendix ${src.appendix}, p. ${src.page}`;
+  if (src.lesson) return `Lesson ${src.lesson}, p. ${src.page}`;
+  if (src.appendix) return `Appendix ${src.appendix}, p. ${src.page}`;
+  return '';
+}
+
+function toggleHtml({ id, label, checked, onclick, title }) {
+  return `<button class="toggle-label" id="${id}" type="button" role="switch" aria-checked="${checked ? 'true' : 'false'}" onclick="${onclick}"${title ? ` title="${escapeHtml(title)}"` : ''}>
+    <span class="toggle-text">${escapeHtml(label)}</span>
+    <span class="toggle-switch${checked ? ' on' : ''}" aria-hidden="true"></span>
+  </button>`;
+}
+
+// ─── Inventory access ───────────────────────────────────────────────────
+function getParadigms() {
+  return (window.BBH_PARSING && Array.isArray(window.BBH_PARSING.paradigms)) ? window.BBH_PARSING.paradigms : [];
+}
+
+function getFormById(formId) {
+  const paradigms = getParadigms();
+  for (const p of paradigms) {
+    const forms = Array.isArray(p.forms) ? p.forms : [];
+    for (const f of forms) {
+      if (f.id === formId) return { ...f, paradigmId: p.id };
+    }
+  }
+  return null;
+}
+
+function getEnabledDims(state) {
+  return PARSING_DIM_KEYS.filter((d) => state && state.dims && state.dims[d] !== false);
+}
+
+function getGatedPool(state) {
+  return availableForms(getParadigms(), state.lesson, { includeAppendix: state.includeAppendix });
+}
+
+function getScopedPool(state, { excludeKnown }) {
+  const customIds = (state.customSetOn && Object.keys(state.customSet || {}).some((id) => state.customSet[id]))
+    ? Object.keys(state.customSet).filter((id) => state.customSet[id])
+    : null;
+  return buildDrillPool(getParadigms(), {
+    lesson: state.lesson,
+    includeAppendix: state.includeAppendix,
+    focusParadigmId: state.focusedParadigmId || null,
+    customParadigmIds: customIds,
+    shuffleAll: !!state.shuffleAll,
+    excludeKnown,
+    attempts: state.attempts,
+    enabledDims: getEnabledDims(state)
+  });
+}
+
+// A stale focused paradigm / custom-set selection (no longer available at
+// the current lesson+appendix gate) is pruned so the UI never shows "None"
+// selected while a hidden id silently still narrows the pool to nothing.
+function pruneStaleScope(state) {
+  const gated = availableParadigms(getParadigms(), state.lesson, { includeAppendix: state.includeAppendix });
+  const gatedIds = new Set(gated.map((p) => p.id));
+  if (state.focusedParadigmId && !gatedIds.has(state.focusedParadigmId)) state.focusedParadigmId = null;
+  const nextCustom = {};
+  Object.keys(state.customSet || {}).forEach((id) => {
+    if (gatedIds.has(id)) nextCustom[id] = true;
+  });
+  state.customSet = nextCustom;
+}
+
+function seedForForm(formId) {
+  return (hashStringToInt(String(formId)) ^ (host.getSessionSeed() >>> 0)) >>> 0;
+}
+
+// ─── Module-local (non-persisted) walk state ───────────────────────────────
+let currentForm = null;   // the form currently being asked about (full record)
+let avoidFormId = null;   // set by Next so the reordered pool doesn't repeat it
+let lastResult = null;    // graded result driving the summary render
+
+let parseSteps = [];
+let parseStepIndex = 0;
+let parsePicks = {};
+
+let buildChoiceIds = null;
+let buildAcceptedIds = null;
+
+function applyAttempt(state, formId, perDim) {
+  state.attempts = recordAttempt(state.attempts, formId, perDim, { at: Date.now() });
+  host.saveState();
+}
+
+function finishParse(state) {
+  const enabledDims = getEnabledDims(state);
+  const { perDim } = evaluateParse(currentForm, parsePicks, enabledDims);
+  applyAttempt(state, currentForm.id, perDim);
+  lastResult = { mode: 'parse', form: currentForm, picks: { ...parsePicks }, perDim };
+}
+
+function startCardFor(form, state) {
+  currentForm = form;
+  lastResult = null;
+  if (state.direction === 'build') {
+    buildChoiceIds = null;
+    buildAcceptedIds = null;
+    const enabledDims = getEnabledDims(state);
+    const gradedDims = applicableDimensions(form).filter((d) => enabledDims.includes(d));
+    const { choices, acceptedIds } = buildFormChoices(getParadigms(), form, {
+      lesson: state.lesson,
+      includeAppendix: state.includeAppendix,
+      count: 4,
+      rngSeedInt: seedForForm(form.id)
+    });
+    buildChoiceIds = choices;
+    buildAcceptedIds = acceptedIds;
+    // Kept for readability at call sites even though unused directly here.
+    void gradedDims;
+  } else {
+    const enabledDims = getEnabledDims(state);
+    parseSteps = applicableDimensions(form).filter((d) => enabledDims.includes(d));
+    parseStepIndex = 0;
+    parsePicks = {};
+    if (!parseSteps.length) finishParse(state);
+  }
+}
+
+function pickAndStart(pool, state) {
+  const ordered = orderDrillPool(pool, state.attempts, host.getSessionSeed());
+  let pick = ordered[0];
+  if (avoidFormId && pick && pick.id === avoidFormId && ordered.length > 1) pick = ordered[1];
+  avoidFormId = null;
+  startCardFor(pick, state);
+}
+
+// ─── Rendering: options panel ───────────────────────────────────────────
+function renderParsingOptionsPanel() {
+  const panel = document.getElementById('parsingOptionsPanel');
+  const state = host.getState();
+  if (!panel || !state) return;
+
+  let lessonOptions = '';
+  for (let l = 1; l <= 50; l += 1) {
+    lessonOptions += `<option value="${l}"${state.lesson === l ? ' selected' : ''}>${l}</option>`;
+  }
+
+  const gatedParadigms = availableParadigms(getParadigms(), state.lesson, { includeAppendix: state.includeAppendix });
+  const byCategory = {};
+  gatedParadigms.forEach((p) => {
+    if (!byCategory[p.category]) byCategory[p.category] = [];
+    byCategory[p.category].push(p);
+  });
+  let paradigmOptions = `<option value=""${state.focusedParadigmId ? '' : ' selected'}>None (use scope below)</option>`;
+  CATEGORY_ORDER.forEach((cat) => {
+    const list = byCategory[cat];
+    if (!list || !list.length) return;
+    paradigmOptions += `<optgroup label="${escapeHtml(CATEGORY_LABELS[cat] || cat)}">`;
+    list.forEach((p) => {
+      paradigmOptions += `<option value="${escapeHtml(p.id)}"${state.focusedParadigmId === p.id ? ' selected' : ''}>${escapeHtml(p.label)}</option>`;
+    });
+    paradigmOptions += '</optgroup>';
+  });
+
+  const customChecklist = gatedParadigms.map((p) => `
+    <label class="parsing-custom-item">
+      <input type="checkbox" onchange="parsingToggleCustomSetParadigm('${escapeHtml(p.id)}', this.checked)"${state.customSet[p.id] ? ' checked' : ''}>
+      <span>${escapeHtml(p.label)}</span>
+    </label>`).join('');
+
+  const gatedForms = getGatedPool(state);
+  const applicableDimSet = new Set();
+  gatedForms.forEach((f) => applicableDimensions(f).forEach((d) => applicableDimSet.add(d)));
+  const dimToggles = PARSING_DIM_KEYS.filter((d) => applicableDimSet.has(d)).map((d) => toggleHtml({
+    id: `parsingDim${capitalize(d)}Toggle`,
+    label: DIM_TOGGLE_LABELS[d] || d,
+    checked: state.dims[d] !== false,
+    onclick: `parsingToggleDim('${d}')`,
+    title: `Grade the ${(DIM_TOGGLE_LABELS[d] || d).toLowerCase()} dimension when it applies to a form.`
+  })).join('');
+
+  panel.innerHTML = `
+    <div class="parsing-options-row">
+      <label class="parsing-field-label" for="parsingLessonSelect">Current lesson</label>
+      <select id="parsingLessonSelect" class="parsing-select" onchange="parsingSetLesson(this.value)">${lessonOptions}</select>
+    </div>
+    <div class="parsing-options-row">
+      <label class="parsing-field-label" for="parsingParadigmSelect">Focused paradigm</label>
+      <select id="parsingParadigmSelect" class="parsing-select" onchange="parsingSetParadigm(this.value)">${paradigmOptions}</select>
+    </div>
+    <div class="parsing-toggle-grid">
+      ${toggleHtml({ id: 'parsingShuffleAllToggle', label: 'Shuffle all', checked: !!state.shuffleAll, onclick: 'parsingToggleShuffleAll()', title: 'Draw from every form available through this lesson, not just what this lesson newly introduces.' })}
+      ${toggleHtml({ id: 'parsingExcludeKnownToggle', label: 'Exclude known', checked: !!state.excludeKnown, onclick: 'parsingToggleExcludeKnown()', title: 'Hide forms already answered correctly twice in a row under the current dimension toggles.' })}
+      ${toggleHtml({ id: 'parsingAppendixToggle', label: 'Appendix forms', checked: !!state.includeAppendix, onclick: 'parsingToggleAppendix()', title: 'Include forms that only appear in the textbook appendixes (off by default).' })}
+    </div>
+    <details class="parsing-options-section" open>
+      ${toggleHtml({ id: 'parsingCustomSetToggle', label: 'Custom set', checked: !!state.customSetOn, onclick: 'parsingToggleCustomSet()', title: 'Limit practice to the paradigms checked below instead of the full lesson scope.' })}
+      <div class="parsing-custom-set-list" id="parsingCustomSetList">${customChecklist || '<div class="parsing-empty-note">No paradigms available at this lesson yet.</div>'}</div>
+    </details>
+    <div class="parsing-options-row">
+      <span class="parsing-field-label">Direction</span>
+      <div class="theme-switcher" id="parsingDirectionToggle" role="group" aria-label="Parse or build the form">
+        <button class="theme-btn${state.direction === 'parse' ? ' active' : ''}" type="button" onclick="parsingSetDirection('parse')">Parse</button>
+        <button class="theme-btn${state.direction === 'build' ? ' active' : ''}" type="button" onclick="parsingSetDirection('build')">Build the Form</button>
+      </div>
+    </div>
+    ${dimToggles ? `<div class="parsing-toggle-grid parsing-dim-toggles">${dimToggles}</div>` : ''}
+    <div class="parsing-options-row parsing-danger-row">
+      <button class="ctrl-btn" id="parsingResetKnownBtn" type="button" onclick="parsingResetKnownForms()">Reset known forms</button>
+      <button class="ctrl-btn" id="parsingClearStatsBtn" type="button" onclick="parsingClearStats()">Clear parsing statistics</button>
+    </div>
+  `;
+}
+
+// ─── Rendering: empty / all-known states ───────────────────────────────
+function renderEmptyState(state) {
+  const paradigms = getParadigms();
+  const cumulativePool = getGatedPool(state);
+  let guidance;
+  if (!cumulativePool.length) {
+    const nextLesson = firstLessonWithMaterial(paradigms, state.lesson);
+    guidance = nextLesson
+      ? `Nothing has been introduced for parsing practice yet at Lesson ${state.lesson} — the first paradigm arrives in Lesson ${nextLesson}. Advance the Lesson selector above once you get there.`
+      : 'No parsing material is available yet.';
+  } else {
+    const nextLesson = firstLessonWithMaterial(paradigms, state.lesson + 1);
+    guidance = nextLesson
+      ? `Lesson ${state.lesson} doesn't introduce new parsing material of its own — the next new paradigm arrives in Lesson ${nextLesson}. Meanwhile, turn on Shuffle all or pick a Focused paradigm above to review what's already been covered.`
+      : `Lesson ${state.lesson} doesn't introduce new parsing material of its own. Turn on Shuffle all or pick a Focused paradigm above to review what's already been covered.`;
+  }
+  return `<div class="empty-state parsing-empty-state"><div class="big hebrew-text" dir="rtl" lang="he">אבג</div>${escapeHtml(guidance)}</div>`;
+}
+
+function renderAllKnownState() {
+  return `<div class="empty-state parsing-empty-state"><div class="big hebrew-text" dir="rtl" lang="he">✓</div>Every form in this scope is already marked known under the current dimension toggles. Turn off "Exclude known" to keep drilling them, or widen the scope above.</div>`;
+}
+
+// ─── Rendering: Parse step walk ─────────────────────────────────────────
+function renderDimensionChoices(dim, gatedPool) {
+  const rawValues = availableDimensionValues(gatedPool, dim);
+  const hasNullOption = dim === 'suffix' && gatedPool.some((f) =>
+    (f.acceptedParses || []).some((p) => p && typeof p === 'object' && 'suffix' in p && p.suffix === null));
+  const buttons = [];
+  if (hasNullOption) {
+    buttons.push(`<button class="ctrl-btn parsing-choice-btn" type="button" onclick="parsingPickDimensionValue('${dim}','__null__')">(no suffix)</button>`);
+  }
+  rawValues.forEach((serialized) => {
+    const value = dim === 'suffix' ? parseSuffixSerialized(serialized) : serialized;
+    const label = formatDimValue(dim, value);
+    const encoded = encodeURIComponent(serialized);
+    buttons.push(`<button class="ctrl-btn parsing-choice-btn" type="button" onclick="parsingPickDimensionValue('${dim}','${encoded}')">${escapeHtml(label)}</button>`);
+  });
+  return buttons.join('');
+}
+
+function renderParseStep(state) {
+  const form = currentForm;
+  const dim = parseSteps[parseStepIndex];
+  const gatedPool = getGatedPool(state);
+  const stepButtons = dim ? renderDimensionChoices(dim, gatedPool) : '';
+  const progress = parseSteps.length
+    ? `Step ${parseStepIndex + 1} of ${parseSteps.length}${dim ? `: ${DIM_TOGGLE_LABELS[dim] || dim}` : ''}`
+    : '';
+  return `
+    <div class="parsing-card">
+      <div class="big hebrew-text" dir="rtl" lang="he">${escapeHtml(form.display)}</div>
+      <div class="parsing-progress">${escapeHtml(progress)}</div>
+      <div class="parsing-step-grid">${stepButtons}</div>
+      <button class="ctrl-btn parsing-dontknow-btn" type="button" onclick="parsingSubmitDontKnow()">I don't know</button>
+    </div>`;
+}
+
+// ─── Rendering: Build the Form ──────────────────────────────────────────
+function renderBuildQuestion(state) {
+  const target = currentForm;
+  const enabledDims = getEnabledDims(state);
+  const gradedDims = applicableDimensions(target).filter((d) => enabledDims.includes(d));
+  const parse = (target.acceptedParses || [])[0] || {};
+  const promptLabel = gradedDims.length ? formatParseLabel(parse, gradedDims) : '(no graded dimensions under current toggles)';
+  const choiceButtons = (buildChoiceIds || []).map((id) => {
+    const f = getFormById(id);
+    if (!f) return '';
+    return `<button class="ctrl-btn parsing-choice-btn parsing-build-choice" type="button" onclick="parsingPickBuildChoice('${escapeHtml(id)}')" dir="rtl" lang="he">${escapeHtml(f.display)}</button>`;
+  }).join('');
+  return `
+    <div class="parsing-card">
+      <div class="parsing-build-prompt">${escapeHtml(promptLabel)}</div>
+      <div class="parsing-progress">Build the form</div>
+      <div class="parsing-step-grid">${choiceButtons}</div>
+    </div>`;
+}
+
+// ─── Rendering: summary (both modes) ────────────────────────────────────
+function renderSummary(state) {
+  const r = lastResult;
+  const form = r.form;
+  const enabledDims = getEnabledDims(state);
+  const gradedDims = applicableDimensions(form).filter((d) => enabledDims.includes(d));
+
+  let body;
+  if (r.mode === 'parse') {
+    const pickRows = gradedDims.length
+      ? gradedDims.map((d) => `<div class="parsing-summary-pick-row"><span>${escapeHtml(DIM_TOGGLE_LABELS[d] || d)}</span><span>${escapeHtml(formatDimValue(d, d in r.picks ? r.picks[d] : undefined))}</span></div>`).join('')
+      : '<div class="parsing-summary-pick-row"><span>(no answer given)</span></div>';
+    let table = `<table class="parsing-summary-table"><thead><tr><th>Accepted parse</th>${gradedDims.map((d) => `<th>${escapeHtml(DIM_TOGGLE_LABELS[d] || d)}</th>`).join('')}</tr></thead><tbody>`;
+    (form.acceptedParses || []).forEach((parse, idx) => {
+      table += `<tr><td>${escapeHtml(formatParseLabel(parse, gradedDims) || `#${idx + 1}`)}</td>`;
+      gradedDims.forEach((d) => {
+        const has = parse && typeof parse === 'object' && d in parse;
+        const ok = has && dimensionValuesEqualLocal(r.picks[d], parse[d]);
+        table += `<td class="${ok ? 'parsing-cell-right' : 'parsing-cell-wrong'}">${has ? (ok ? '✓' : '✗') : '—'}</td>`;
+      });
+      table += '</tr>';
+    });
+    table += '</tbody></table>';
+    body = `<div class="parsing-summary-picks">${pickRows}</div>${table}`;
+  } else {
+    const pickedForm = getFormById(r.pickedId);
+    const legit = (r.choiceIds || []).map((id) => {
+      const f = getFormById(id);
+      if (!f) return '';
+      const ok = (r.acceptedIds || []).includes(id);
+      return `<li class="${ok ? 'parsing-cell-right' : ''}" dir="rtl" lang="he">${ok ? '✓ ' : ''}${escapeHtml(f.display)}</li>`;
+    }).join('');
+    body = `
+      <div class="parsing-build-result ${r.correct ? 'parsing-result-correct' : 'parsing-result-wrong'}">${r.correct ? 'Correct' : 'Not quite'}</div>
+      <div class="parsing-summary-pick-row"><span>You picked</span><span dir="rtl" lang="he">${escapeHtml(pickedForm ? pickedForm.display : '')}</span></div>
+      <div class="parsing-build-legit">
+        <div class="parsing-summary-pick-row-header">Legitimate answers among the choices shown</div>
+        <ul class="parsing-build-legit-list">${legit}</ul>
+      </div>`;
+  }
+
+  const noteHtml = form.note ? `<div class="parsing-summary-note">${escapeHtml(form.note)}</div>` : '';
+  const ambigHtml = form.ambiguityNote ? `<div class="parsing-summary-note parsing-summary-ambiguity">${escapeHtml(form.ambiguityNote)}</div>` : '';
+  const lemmaHtml = form.lemma
+    ? `<div class="parsing-summary-lemma">Lemma: <span dir="rtl" lang="he">${escapeHtml(form.lemma)}</span>${form.root ? ` · Root: <span dir="rtl" lang="he">${escapeHtml(form.root)}</span>` : ''}</div>`
+    : '';
+  const sourceHtml = `<div class="parsing-summary-source">${escapeHtml(formatSourceRef(form))}</div>`;
+
+  return `
+    <div class="parsing-card parsing-summary">
+      <div class="big hebrew-text" dir="rtl" lang="he">${escapeHtml(form.display)}</div>
+      ${body}
+      ${noteHtml}${ambigHtml}${lemmaHtml}${sourceHtml}
+      <button class="ctrl-btn quick-primary parsing-next-btn" type="button" onclick="parsingNextCard()">Next →</button>
+    </div>`;
+}
+
+// ─── Rendering: card area top-level ─────────────────────────────────────
+function renderParsingArea() {
+  const area = document.getElementById('parsingArea');
+  const state = host.getState();
+  if (!area || !state) return;
+
+  const paradigms = getParadigms();
+  if (!paradigms.length) {
+    area.innerHTML = '<div class="empty-state parsing-empty-state">Parsing data isn\'t available yet.</div>';
+    currentForm = null;
+    return;
+  }
+
+  const scopedPool = getScopedPool(state, { excludeKnown: false });
+  if (!scopedPool.length) {
+    area.innerHTML = renderEmptyState(state);
+    currentForm = null;
+    return;
+  }
+
+  const finalPool = state.excludeKnown ? getScopedPool(state, { excludeKnown: true }) : scopedPool;
+  if (!finalPool.length) {
+    area.innerHTML = renderAllKnownState();
+    currentForm = null;
+    return;
+  }
+
+  if (!currentForm || !finalPool.some((f) => f.id === currentForm.id)) {
+    pickAndStart(finalPool, state);
+  }
+
+  if (lastResult) {
+    area.innerHTML = renderSummary(state);
+  } else if (state.direction === 'build') {
+    area.innerHTML = renderBuildQuestion(state);
+  } else {
+    area.innerHTML = renderParseStep(state);
+  }
+}
+
+function render() {
+  renderParsingOptionsPanel();
+  renderParsingArea();
+}
+
+// ─── First-ever-use lesson initialization ───────────────────────────────
+function ensureInitializedFromVocab() {
+  const state = host.getState();
+  if (!state || state.initializedFromVocab) return;
+  const keys = host.getSelectedVocabKeys ? host.getSelectedVocabKeys() : [];
+  let maxLesson = 0;
+  (Array.isArray(keys) ? keys : []).forEach((k) => {
+    const n = parseInt(k, 10);
+    if (Number.isInteger(n) && n >= 1 && n <= 50 && n > maxLesson) maxLesson = n;
+  });
+  state.lesson = maxLesson >= 1 ? maxLesson : 1;
+  state.initializedFromVocab = true;
+  host.saveState();
+}
+
+// ─── Public entry point (called by main.js on every mode-visibility sync) ──
+export function renderParsingPanel() {
+  ensureInitializedFromVocab();
+  render();
+}
+
+// ─── Click/change handlers (wired onto GLOBAL_CLICK_HANDLERS by main.js) ──
+export function parsingSetLesson(value) {
+  const state = host.getState();
+  if (!state) return;
+  const n = parseInt(value, 10);
+  state.lesson = (Number.isInteger(n) && n >= 1 && n <= 50) ? n : 1;
+  pruneStaleScope(state);
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingSetParadigm(value) {
+  const state = host.getState();
+  if (!state) return;
+  state.focusedParadigmId = value || null;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingToggleShuffleAll() {
+  const state = host.getState();
+  if (!state) return;
+  state.shuffleAll = !state.shuffleAll;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingToggleCustomSet() {
+  const state = host.getState();
+  if (!state) return;
+  state.customSetOn = !state.customSetOn;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingToggleCustomSetParadigm(paradigmId, checked) {
+  const state = host.getState();
+  if (!state) return;
+  const next = { ...state.customSet };
+  if (checked) next[paradigmId] = true;
+  else delete next[paradigmId];
+  state.customSet = next;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingToggleExcludeKnown() {
+  const state = host.getState();
+  if (!state) return;
+  state.excludeKnown = !state.excludeKnown;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingToggleAppendix() {
+  const state = host.getState();
+  if (!state) return;
+  state.includeAppendix = !state.includeAppendix;
+  pruneStaleScope(state);
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingSetDirection(direction) {
+  const state = host.getState();
+  if (!state) return;
+  state.direction = direction === 'build' ? 'build' : 'parse';
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingToggleDim(dim) {
+  const state = host.getState();
+  if (!state) return;
+  const wasOn = state.dims[dim] !== false;
+  state.dims = { ...state.dims, [dim]: !wasOn };
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingPickDimensionValue(dim, encodedValue) {
+  const state = host.getState();
+  if (!state || !currentForm) return;
+  let value;
+  if (encodedValue === '__null__') {
+    value = null;
+  } else {
+    const raw = decodeURIComponent(encodedValue);
+    value = dim === 'suffix' ? parseSuffixSerialized(raw) : raw;
+  }
+  parsePicks[dim] = value;
+  parseStepIndex += 1;
+  if (parseStepIndex >= parseSteps.length) finishParse(state);
+  render();
+}
+
+export function parsingSubmitDontKnow() {
+  const state = host.getState();
+  if (!state || !currentForm) return;
+  parsePicks = {};
+  finishParse(state);
+  render();
+}
+
+export function parsingPickBuildChoice(pickedId) {
+  const state = host.getState();
+  if (!state || !currentForm) return;
+  const enabledDims = getEnabledDims(state);
+  const gradedDims = applicableDimensions(currentForm).filter((d) => enabledDims.includes(d));
+  const correct = (buildAcceptedIds || []).includes(pickedId);
+  const perDim = {};
+  gradedDims.forEach((d) => { perDim[d] = correct ? 1 : 0; });
+  applyAttempt(state, currentForm.id, perDim);
+  lastResult = {
+    mode: 'build', form: currentForm, pickedId, correct,
+    choiceIds: buildChoiceIds, acceptedIds: buildAcceptedIds, perDim
+  };
+  render();
+}
+
+export function parsingNextCard() {
+  avoidFormId = currentForm ? currentForm.id : null;
+  currentForm = null;
+  lastResult = null;
+  render();
+}
+
+export function parsingResetKnownForms() {
+  const state = host.getState();
+  if (!state) return;
+  if (!window.confirm('Reset known forms? Forms currently marked "known" lose their history and come back into rotation. Other recorded progress is kept.')) return;
+  const pool = getGatedPool(state);
+  const enabledDims = getEnabledDims(state);
+  const next = { ...state.attempts };
+  pool.forEach((f) => {
+    const dims = applicableDimensions(f).filter((d) => enabledDims.includes(d));
+    if (dims.length && isFormKnown(state.attempts, f.id, dims)) delete next[f.id];
+  });
+  state.attempts = next;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingClearStats() {
+  const state = host.getState();
+  if (!state) return;
+  if (!window.confirm('Clear all parsing statistics? This permanently erases every recorded parsing attempt.')) return;
+  state.attempts = {};
+  currentForm = null;
+  lastResult = null;
+  host.saveState();
+  render();
+}
+
+export function parsingClearFormAttempt(formId) {
+  const state = host.getState();
+  if (!state) return;
+  const next = { ...state.attempts };
+  delete next[formId];
+  state.attempts = next;
+  host.saveState();
+  render();
+}
+
+// ─── Analytics section (rendered via analytics.js's renderParsingSection host hook) ──
+export function renderParsingAnalytics() {
+  const container = document.getElementById('analyticsParsingBody');
+  const collapse = document.getElementById('analyticsParsingCollapse');
+  const statusEl = document.getElementById('analyticsParsingSummaryStatus');
+  const state = host.getState();
+  if (!container || !collapse || !state) return;
+
+  const attempts = state.attempts || {};
+  const formIds = Object.keys(attempts);
+  if (!formIds.length) {
+    collapse.style.display = 'none';
+    return;
+  }
+  collapse.style.display = '';
+
+  const paradigms = getParadigms();
+  const paradigmLabelById = {};
+  paradigms.forEach((p) => { paradigmLabelById[p.id] = p.label; });
+
+  let totalDimAttempts = 0;
+  let totalDimCorrect = 0;
+  const perDim = {};
+  const perParadigm = {};
+  const allEntries = [];
+
+  formIds.forEach((formId) => {
+    const form = getFormById(formId);
+    const rec = attempts[formId] || {};
+    (rec.history || []).forEach((entry) => {
+      const dims = entry && entry.dims ? entry.dims : {};
+      const vals = Object.values(dims);
+      Object.entries(dims).forEach(([dim, val]) => {
+        totalDimAttempts += 1;
+        if (val === 1) totalDimCorrect += 1;
+        if (!perDim[dim]) perDim[dim] = { right: 0, total: 0 };
+        perDim[dim].total += 1;
+        if (val === 1) perDim[dim].right += 1;
+        if (form) {
+          const pid = form.paradigmId;
+          if (!perParadigm[pid]) perParadigm[pid] = { right: 0, total: 0 };
+          perParadigm[pid].total += 1;
+          if (val === 1) perParadigm[pid].right += 1;
+        }
+      });
+      const allRight = vals.length > 0 && vals.every((v) => v === 1);
+      const anyRight = vals.some((v) => v === 1);
+      allEntries.push({ at: entry.at || 0, formId, ok: allRight ? 1 : (anyRight ? 0.5 : 0) });
+    });
+  });
+
+  const overallPct = totalDimAttempts ? Math.round((totalDimCorrect / totalDimAttempts) * 100) : 0;
+  if (statusEl) statusEl.textContent = `${formIds.length} form${formIds.length === 1 ? '' : 's'} attempted · ${overallPct}% overall accuracy`;
+
+  const enabledDims = getEnabledDims(state);
+  const gatedPool = getGatedPool(state);
+  const counts = { known: 0, right: 0, partial: 0, wrong: 0, unseen: 0 };
+  gatedPool.forEach((f) => {
+    const dims = applicableDimensions(f).filter((d) => enabledDims.includes(d));
+    const status = dims.length ? formStatus(attempts, f.id, dims) : 'unseen';
+    counts[status] = (counts[status] || 0) + 1;
+  });
+
+  allEntries.sort((a, b) => a.at - b.at);
+  const last20 = allEntries.slice(-20);
+  const groups = [];
+  for (let i = 0; i < last20.length; i += 5) groups.push(last20.slice(i, i + 5));
+  const trendHtml = groups.length
+    ? groups.map((g) => {
+        const avg = g.reduce((s, e) => s + e.ok, 0) / g.length;
+        return avg >= 0.8 ? '\u{1F7E9}' : avg >= 0.4 ? '\u{1F7E8}' : '\u{1F7E5}';
+      }).join(' ')
+    : '(no attempts recorded yet)';
+
+  const recentForms = formIds
+    .map((formId) => ({
+      formId,
+      lastAt: (attempts[formId].history || []).reduce((m, e) => Math.max(m, e.at || 0), 0)
+    }))
+    .sort((a, b) => b.lastAt - a.lastAt)
+    .slice(0, 10);
+
+  const perDimHtml = Object.keys(perDim).sort().map((d) => {
+    const { right, total } = perDim[d];
+    const pct = total ? Math.round((right / total) * 100) : 0;
+    return `<div class="parsing-summary-pick-row"><span>${escapeHtml(DIM_TOGGLE_LABELS[d] || d)}</span><span>${pct}% (${right}/${total})</span></div>`;
+  }).join('') || '<div class="parsing-empty-note">No dimension attempts recorded yet.</div>';
+
+  const perParadigmHtml = Object.keys(perParadigm)
+    .sort((a, b) => (paradigmLabelById[a] || a).localeCompare(paradigmLabelById[b] || b))
+    .map((pid) => {
+      const { right, total } = perParadigm[pid];
+      const pct = total ? Math.round((right / total) * 100) : 0;
+      return `<div class="parsing-summary-pick-row"><span>${escapeHtml(paradigmLabelById[pid] || pid)}</span><span>${pct}% (${right}/${total})</span></div>`;
+    }).join('') || '<div class="parsing-empty-note">No paradigm attempts recorded yet.</div>';
+
+  const countsHtml = ['known', 'right', 'partial', 'wrong', 'unseen']
+    .map((k) => `<div class="parsing-count-chip parsing-count-${k}">${capitalize(k)}: ${counts[k] || 0}</div>`)
+    .join('');
+
+  const recentListHtml = recentForms.map(({ formId }) => {
+    const form = getFormById(formId);
+    const dims = form ? applicableDimensions(form).filter((d) => enabledDims.includes(d)) : [];
+    const status = dims.length ? formStatus(attempts, formId, dims) : 'unseen';
+    return `<div class="parsing-recent-row">
+      <span class="parsing-recent-form" dir="rtl" lang="he">${escapeHtml(form ? form.display : formId)}</span>
+      <span class="parsing-recent-status parsing-status-${status}">${escapeHtml(status)}</span>
+      <button class="ctrl-btn parsing-recent-clear" type="button" onclick="parsingClearFormAttempt('${escapeHtml(formId)}')">Clear</button>
+    </div>`;
+  }).join('') || '<div class="parsing-empty-note">No forms attempted yet.</div>';
+
+  container.innerHTML = `
+    <div class="parsing-summary-pick-row parsing-analytics-overall"><span>Overall accuracy</span><span>${overallPct}% (${totalDimCorrect}/${totalDimAttempts} graded dimensions)</span></div>
+    <div class="parsing-count-row">${countsHtml}</div>
+    <h4 class="parsing-analytics-subhead">Per dimension</h4>
+    ${perDimHtml}
+    <h4 class="parsing-analytics-subhead">Per paradigm</h4>
+    ${perParadigmHtml}
+    <h4 class="parsing-analytics-subhead">Recent trend (last ${last20.length} attempt${last20.length === 1 ? '' : 's'}, grouped by 5)</h4>
+    <div class="parsing-trend-line">${trendHtml}</div>
+    <h4 class="parsing-analytics-subhead">Recently attempted forms</h4>
+    <div class="parsing-recent-list">${recentListHtml}</div>
+  `;
+}

@@ -6,5 +6,569 @@
     "Entry shape: {\"lesson\": N, \"introduces\": [{\"summary\": \"...\", \"paradigmIds\": [\"...\"], \"source\": {\"lesson\": N, \"page\": N}}]}. Lessons with no parseable material are simply absent.",
     "Populated in Phase 2 PR B from verified page images. Empty in PR A by design."
   ],
-  "lessons": []
+  "lessons": [
+    {
+      "lesson": 5,
+      "introduces": [
+        {
+          "summary": "Independent subject pronouns, singular set (3ms/3fs/2ms/2fs/1cs).",
+          "paradigmIds": [
+            "pron-subject"
+          ],
+          "source": {
+            "lesson": 5,
+            "page": 32
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 7,
+      "introduces": [
+        {
+          "summary": "Nouns build from a triconsonantal root; fem. singular usually ends ־ה/־ת; masc. singular has no ending. Several common nouns (father/son/daughter) are irregular and must be memorized.",
+          "paradigmIds": [
+            "noun-endings",
+            "noun-irregular"
+          ],
+          "source": {
+            "lesson": 7,
+            "page": 36
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 8,
+      "introduces": [
+        {
+          "summary": "Definite article (ה + דגש חזק) and interrogative ה (marks yes/no questions) are the same letter with different function/vocalization; no drillable form inventory is printed.",
+          "paradigmIds": [],
+          "source": {
+            "lesson": 8,
+            "page": 38
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 9,
+      "introduces": [
+        {
+          "summary": "ל + attached pronoun expresses possession in a copular clause ('X belongs to Y'); singular-referent forms.",
+          "paradigmIds": [
+            "particle-l-possession"
+          ],
+          "source": {
+            "lesson": 9,
+            "page": 39
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 10,
+      "introduces": [
+        {
+          "summary": "Plural (־ים/־ות) and dual (־ַיִם) noun endings; naturally-paired body parts use the dual and are feminine; more irregular nouns (brother/sister/head).",
+          "paradigmIds": [
+            "noun-endings",
+            "noun-dual-bodyparts",
+            "noun-irregular"
+          ],
+          "source": {
+            "lesson": 10,
+            "page": 41
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 11,
+      "introduces": [
+        {
+          "summary": "Independent pronoun set completed with the plural persons (3mp/3fp/2mp/2fp/1cp).",
+          "paradigmIds": [
+            "pron-subject"
+          ],
+          "source": {
+            "lesson": 11,
+            "page": 44
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 12,
+      "introduces": [
+        {
+          "summary": "Existential copulas יֵשׁ (is/are) and אֵין (isn't/aren't); examples in the lesson show them combined with attached prepositions (e.g. יֶשׁ־לִי) only inside example sentences, not as a printed suffix inventory.",
+          "paradigmIds": [
+            "particle-yesh-ayin"
+          ],
+          "source": {
+            "lesson": 12,
+            "page": 46
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 13,
+      "introduces": [
+        {
+          "summary": "Conjunction ו and prepositions ב/כ/ל/מן attach directly to the following word (or connect via maqqef); the lesson states the rule but prints no attached-pronoun inventory itself — that only appears in Appendix B.5c.",
+          "paradigmIds": [
+            "particle-prep-attached-mn",
+            "particle-prep-attached-kmo"
+          ],
+          "source": {
+            "lesson": 13,
+            "page": 48
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 14,
+      "introduces": [
+        {
+          "summary": "Full inventory table of question words (דִּבְרֵי שְׁאֵלָה): who/what/why/how/how-much/when/where/from-where/to-where; מִי and מָה are cross-referenced as already taught at L6/L8, the rest are new.",
+          "paradigmIds": [
+            "particle-interrogative-words"
+          ],
+          "source": {
+            "lesson": 14,
+            "page": 51
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 15,
+      "introduces": [
+        {
+          "summary": "Introduces triconsonantal root (שרש) and binyan (בנין) concept; overview of 7 primary binyanim and the Perfect/Imperfect aspect distinction. Conceptual gate only, no drillable forms.",
+          "paradigmIds": [],
+          "source": {
+            "lesson": 15,
+            "page": 53
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 16,
+      "introduces": [
+        {
+          "summary": "Qal Perfect singular paradigm (3ms-1cs) introduced with paradigm verb שמר; irregular היה Perfect singular given alongside for comparison.",
+          "paradigmIds": [
+            "verb-qal-perfect",
+            "verb-haya-perfect"
+          ],
+          "source": {
+            "lesson": 16,
+            "page": 55
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 17,
+      "introduces": [
+        {
+          "summary": "Plural-referent forms of ל-of-possession (their/your-pl/our), completing the set from L9.",
+          "paradigmIds": [
+            "particle-l-possession"
+          ],
+          "source": {
+            "lesson": 17,
+            "page": 58
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 19,
+      "introduces": [
+        {
+          "summary": "Qal Perfect plural forms (3cp, 2mp, 2fp, 1cp) added for שמר and היה, completing the Perfect paradigm.",
+          "paradigmIds": [
+            "verb-qal-perfect",
+            "verb-haya-perfect"
+          ],
+          "source": {
+            "lesson": 19,
+            "page": 62
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 20,
+      "introduces": [
+        {
+          "summary": "Bound (construct/נסמך) vs. absolute (סומך) noun state expresses 'of'-relationships; a construct noun cannot itself take the definite article.",
+          "paradigmIds": [
+            "noun-bound-construct"
+          ],
+          "source": {
+            "lesson": 20,
+            "page": 64
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 21,
+      "introduces": [
+        {
+          "summary": "Irreal (non-real) use of the Perfect: marks conditional/purpose/result clauses, instructions/commands, and habitual events, typically via Verb-Subject word order and a vav-prefix. Interpretive/semantic gate only, no new forms.",
+          "paradigmIds": [],
+          "source": {
+            "lesson": 21,
+            "page": 66
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 22,
+      "introduces": [
+        {
+          "summary": "Pronouns attach directly to nouns (and to prepositions) to mark possession and make the noun definite; singular-referent set, with distinct forms depending on whether the host noun is singular or plural.",
+          "paradigmIds": [
+            "noun-attached-sg",
+            "noun-attached-pl"
+          ],
+          "source": {
+            "lesson": 22,
+            "page": 68
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 23,
+      "introduces": [
+        {
+          "summary": "Qal Imperfect singular paradigm introduced with שמר, including the 2ms/3fs written-form syncretism (תִּשְׁמֹר).",
+          "paradigmIds": [
+            "verb-qal-imperfect"
+          ],
+          "source": {
+            "lesson": 23,
+            "page": 71
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 24,
+      "introduces": [
+        {
+          "summary": "The (construct) Infinitive: one uninflected form per binyan; Qal example שְׁמֹר; functions as clause subject/object or purpose-result, may take an attached pronoun.",
+          "paradigmIds": [
+            "verb-qal-infinitive"
+          ],
+          "source": {
+            "lesson": 24,
+            "page": 74
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 25,
+      "introduces": [
+        {
+          "summary": "The Adverbial Infinitive (infinitive absolute): pairs with a finite verb of the same root/binyan for modal emphasis (doubt, necessity, possibility); Qal example שָׁמוֹר.",
+          "paradigmIds": [
+            "verb-qal-adverbial-infinitive"
+          ],
+          "source": {
+            "lesson": 25,
+            "page": 77
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 26,
+      "introduces": [
+        {
+          "summary": "Direct objects are either a bare noun or a preposition+noun (memorize per verb); e.g. נגע 'touch' takes a ב-phrase as its object. No inventoried forms are printed here; the direct-object marker אֵת/אֶת itself was already vocab at L15.",
+          "paradigmIds": [],
+          "source": {
+            "lesson": 26,
+            "page": 79
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 27,
+      "introduces": [
+        {
+          "summary": "Qal Imperfect plural forms complete the paradigm for שמר, including the 3fp/2fp written-form syncretism (תִּשְׁמֹרְנָה).",
+          "paradigmIds": [
+            "verb-qal-imperfect"
+          ],
+          "source": {
+            "lesson": 27,
+            "page": 81
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 28,
+      "introduces": [
+        {
+          "summary": "Full Qal Imperfect paradigm of irregular היה (singular and plural), parallel in structure to the L23/27 שמר paradigm, including the same syncretisms.",
+          "paradigmIds": [
+            "verb-haya-imperfect"
+          ],
+          "source": {
+            "lesson": 28,
+            "page": 83
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 29,
+      "introduces": [
+        {
+          "summary": "Piel marked by dagesh in R2 (blocked by gutturals/ר); Hifil marked by ה prefix + i-class theme vowel; meanings often idiosyncratic per root.",
+          "paradigmIds": [
+            "verb-piel-recognition",
+            "verb-hifil-recognition"
+          ],
+          "source": {
+            "lesson": 29,
+            "page": 85
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 31,
+      "introduces": [
+        {
+          "summary": "Plural-referent attached pronouns (their/your-pl/our) complete the set from L22, on both singular- and plural-noun hosts.",
+          "paradigmIds": [
+            "noun-attached-sg",
+            "noun-attached-pl"
+          ],
+          "source": {
+            "lesson": 31,
+            "page": 91
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 32,
+      "introduces": [
+        {
+          "summary": "Adjectives inflect like nouns (gender/number, absolute/construct); Hebrew has no comparative/superlative endings — context, מן, or a סמיכות phrase expresses these.",
+          "paradigmIds": [
+            "adjective-inflection"
+          ],
+          "source": {
+            "lesson": 32,
+            "page": 93
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 33,
+      "introduces": [
+        {
+          "summary": "Near demonstratives (זה/זאת/אלה) are dedicated forms; far demonstratives reuse the 3rd-person independent pronouns (sg.) plus dedicated הֵמָּה/הֵנָּה (pl.).",
+          "paradigmIds": [
+            "pron-demonstrative"
+          ],
+          "source": {
+            "lesson": 33,
+            "page": 96
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 34,
+      "introduces": [
+        {
+          "summary": "Segolate nouns stress the first syllable in the singular (unless a fem. ending shifts stress to the final syllable); their plurals follow regular patterns.",
+          "paradigmIds": [
+            "noun-segolate"
+          ],
+          "source": {
+            "lesson": 34,
+            "page": 98
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 35,
+      "introduces": [
+        {
+          "summary": "Past Narrative conjugation: archaic narrative-past verb form distinguished from the Imperfect by a vav-conjunction plus dagesh forte prefix (absent in 1cs and in Piel-type roots); triggers Verb-Subject word order.",
+          "paradigmIds": [
+            "verb-past-narrative"
+          ],
+          "source": {
+            "lesson": 35,
+            "page": 100
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 36,
+      "introduces": [
+        {
+          "summary": "וַיְהִי, the extremely frequent 3ms Past Narrative of היה: means \"was/became/came\" or simply marks the opening of a narrative episode.",
+          "paradigmIds": [
+            "verb-past-narrative"
+          ],
+          "source": {
+            "lesson": 36,
+            "page": 102
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 37,
+      "introduces": [
+        {
+          "summary": "Nifal marked by נ prefix (Perfect/Participle) or dagesh+hireq prefix (Imperfect/Imperative); Hitpael marked by התּ/ת prefix + dagesh in R2; meanings often idiosyncratic.",
+          "paradigmIds": [
+            "verb-nifal-recognition",
+            "verb-hitpael-recognition"
+          ],
+          "source": {
+            "lesson": 37,
+            "page": 104
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 38,
+      "introduces": [
+        {
+          "summary": "Dynamic vs. stative verb classification: stative Qal verbs use distinct Perfect/Imperfect vowel patterns, rarely form participles, and share their Perfect 3ms form with the corresponding adjective.",
+          "paradigmIds": [
+            "verb-qal-stative"
+          ],
+          "source": {
+            "lesson": 38,
+            "page": 106
+          }
+        },
+        {
+          "summary": "Dynamic vs. stative Qal verbs differ in vowel pattern (שָׁמַר vs. כָּבֵד); stative 3ms Perfect doubles as the ms adjective. Not this agent's binyan/volitive scope, no forms captured here.",
+          "paradigmIds": [],
+          "source": {
+            "lesson": 38,
+            "page": 106
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 39,
+      "introduces": [
+        {
+          "summary": "Jussive = Imperfect shape; 1st-person (Cohortative) adds ה-, 2nd/3rd can shorten the theme vowel; negated with אַל never לֹא. Imperative = Jussive minus prefix, 2nd person only, never negated.",
+          "paradigmIds": [
+            "verb-qal-jussive",
+            "verb-hifil-jussive",
+            "verb-qal-imperative",
+            "verb-nifal-imperative",
+            "verb-piel-imperative",
+            "verb-hitpael-imperative",
+            "verb-hifil-imperative"
+          ],
+          "source": {
+            "lesson": 39,
+            "page": 109
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 40,
+      "introduces": [
+        {
+          "summary": "Object pronouns attach directly to verbs (Perfect uses a-class linking vowel, Imperfect/Imperative/Past-Narrative use i-class); summary suffix chart, full paradigm in Appendix C.2.",
+          "paradigmIds": [
+            "verb-attached-object-suffixes",
+            "verb-attached-qal-example"
+          ],
+          "source": {
+            "lesson": 40,
+            "page": 112
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 42,
+      "introduces": [
+        {
+          "summary": "Participles are binyan-specific adjectives: Qal Active/Passive decline like adjectives with a distinct pattern; other binyanim's participles use a מ prefix and mirror the Imperfect vowel pattern.",
+          "paradigmIds": [
+            "verb-qal-participle",
+            "verb-nifal-participle",
+            "verb-piel-participle",
+            "verb-hitpael-participle",
+            "verb-hifil-participle"
+          ],
+          "source": {
+            "lesson": 42,
+            "page": 116
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 44,
+      "introduces": [
+        {
+          "summary": "Pure consolidation chart of the whole verbal system (Real: Perfect/Past-Narrative/Imperfect; Irreal: Irreal-Perfect/Irreal-Imperfect/Jussive/Imperative) plus a semantic-overlap Venn diagram; reuses שָׁמַר/יִשְׁמֹר forms already gated earlier. No new forms per the hard 'gate only' rule for this lesson.",
+          "paradigmIds": [],
+          "source": {
+            "lesson": 44,
+            "page": 122
+          }
+        }
+      ]
+    },
+    {
+      "lesson": 45,
+      "introduces": [
+        {
+          "summary": "Numerals: cardinals (1 = adjective; 2-10 = nouns, opposite gender from the modified noun, absolute/construct) and ordinals (1st-10th, m/f only, no state distinction); teens, tens, and hundreds formation.",
+          "paradigmIds": [
+            "numeral-cardinal-1-10",
+            "numeral-ordinal-1-10",
+            "numeral-11-19",
+            "numeral-tens",
+            "numeral-hundreds"
+          ],
+          "source": {
+            "lesson": 45,
+            "page": 125
+          }
+        }
+      ]
+    }
+  ]
 }
