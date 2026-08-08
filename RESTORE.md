@@ -7,7 +7,13 @@
 - Phase 0 (audit/plan/schemas) complete. **PR A merged** as
   `7837ce2` (PR #3): GA removal, parsing validator, lesson-gate engine +
   12 boundary tests, telemetry+PDF release checks, Phase 2 ledger.
-- Current phase: PR B — verified parsing inventory + Parsing mode.
+- **PR B merged** as `4f09df4` (PR #4): verified parsing inventory
+  (58 paradigms / 429 forms / 36 gates, independently re-verified against
+  page images), Parse/Build UI, state v2 (+export v3, v2 imports OK),
+  parsing analytics, cache `?v=2`. Also fixed a SHIPPED Phase 1 data-loss
+  bug (orphan-cleanup migration deleted bbh-* vocab marks on
+  import/restore). Playwright smoke steps a–j green, rerun by orchestrator.
+- Current phase: PR C — Grammar Quiz bank + mode.
 - User directives this session: (1) GitHub Pages is the primary deployment —
   app must stay static/build-free/subpath-relative; merging to the default
   branch deploys. (2) Optional lesson grouping by the textbook's 13
@@ -153,16 +159,22 @@
 
 ## Next three actions
 
-1. PR B step 1 — transcription fan-out (Sonnet ×3, non-overlapping page
-   blocks): nominals/pronouns block, Qal verb block, derived-binyanim/later
-   block. Output = paradigms.json + lesson_gates.json content with per-form
-   source pages; independent verification pass before merge into source.
-2. PR B step 2 — `tools/gen_bbh_parsing_data.mjs` (deterministic
-   generator → `js/data/bbh_parsing.js`), then Parse/Build domain + UI on
-   the seams inventoried (navigation host `isParsingMode`,
-   `GLOBAL_CLICK_HANDLERS`, `normalizeStudyMode`), state-v2 additive
-   subtree + migration, parsing progress/analytics.
-3. Open PR B against `Main`, merge after gate passes, refresh this ledger.
+1. PR C — Grammar Quiz: author `source/bbh/grammar/questions.json` in
+   lesson-block batches (Sonnet, ≥4 per lesson + ≥10 per 5-lesson
+   cumulative block, target ≥300 reviewed); build
+   `tools/validate_bbh_grammar_data.mjs` (anti-giveaway lints: length/
+   position balance, category-parallel distractors, no all/none-of-above,
+   T/F ≤55/45, no leak past gate) + `tools/gen_bbh_grammar_data.mjs`;
+   BLIND semantic review by separate agents (prompt+shuffled choices, no
+   stored answer); Grammar mode UI on the same seams as Parsing
+   (normalizeStudyMode 'grammar', new js/ui/grammar.js, cache `?v=3`).
+2. PR D — Reader: `tools/import_oshb_reader.mjs` over the pinned checkout
+   (/workspace/openscriptures/morphhb @ v.2.2), OSHB-morph→BBH gate map,
+   Strict/Guided/Challenge scoring, curated Genesis-first selections,
+   Reader UI + attribution.
+3. PR E — content completion: vocab 191→203 (IDs preserved), Lesson 0
+   alphabet deck (user request), Reference tables, guidance text; then
+   PR F release hardening + Opus final audit + PDF temp-dir deletion.
 
 ## Resume prompt
 
