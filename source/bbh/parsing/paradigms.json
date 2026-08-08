@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "notes": [
+    "Authoritative parsing inventory for the BBH Study Tool. Hand-maintained against Cook & Holmstedt (page images); never generated. js/data/bbh_parsing.js is generated FROM this file by tools/gen_bbh_parsing_data.mjs.",
+    "Every form: exactly one of introducedLesson (1-50) or appendixOnly:true. Cumulative lesson gate; appendix-only forms sit behind an off-by-default toggle.",
+    "acceptedParses is always an array; every morphologically legitimate parse of the written form that the source supports must be listed. ambiguityNote explains context-dependence.",
+    "Hebrew axes only. Verb: binyan, conjugation, person, gender, number, suffix. Nominal: gender, number, state, suffix. Pronoun: person, gender, number (+ deixis for demonstratives). No tense/voice/mood/case keys - the validator hard-fails on them.",
+    "display is the pointed form and is authoritative; compare/unpointed fields are derived at generation time only.",
+    "source: {\"lesson\": N, \"page\": N} for lesson-introduced material, {\"appendix\": \"A|B|C\", \"page\": \"a-N\"} for appendix material. PDF mapping: printed page = PDF page (lessons); a-N = PDF 140+N.",
+    "Populated in Phase 2 PR B from verified page images. Empty in PR A by design (schema + engine land before content)."
+  ],
+  "paradigms": []
+}

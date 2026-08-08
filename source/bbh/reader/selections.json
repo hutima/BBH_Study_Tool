@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "notes": [
+    "Curated Reader passages: verse references selected by reproducible gate scoring (tools/import_oshb_reader.mjs) from the pinned OSHB corpus, grouped by lesson gate and tier.",
+    "Entry shape: {\"id\": \"...\", \"ref\": \"Gen 1:1\", \"osisRef\": \"Gen.1.1\", \"gateLesson\": N, \"tier\": \"strict\"|\"guided\"|\"challenge\", \"scores\": {...reproducible metrics...}, \"rationale\": \"...\"}.",
+    "Tiers: strict = all graded morphology in scope, <=1 unknown non-proper content lexeme; guided = all morphology in scope, <=3 unknown non-proper content lexemes (marked); challenge = exactly one identified near-future feature, never shown by default.",
+    "Populated in Phase 2 PR D. Empty in PR A by design."
+  ],
+  "selections": []
+}

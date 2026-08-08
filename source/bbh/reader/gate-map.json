@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "notes": [
+    "Maps OSHB morphology codes (pinned corpus in corpus-pin.json) to the earliest BBH lesson whose material covers that grammatical feature, or marks them unmapped.",
+    "Entry shape: {\"morphPattern\": \"<OSHB code or prefix>\", \"bbhLesson\": N | null, \"unmapped\": true?, \"note\": \"...\"}. A token whose morphology is unmapped or future-lesson can never enter Strict or Guided decks.",
+    "Populated in Phase 2 PR D alongside tools/import_oshb_reader.mjs. Empty in PR A by design."
+  ],
+  "mappings": []
+}

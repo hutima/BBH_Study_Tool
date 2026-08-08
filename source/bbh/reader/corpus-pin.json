@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "corpus": "Open Scriptures Hebrew Bible (OSHB)",
+  "repository": "https://github.com/openscriptures/morphhb",
+  "tag": "v.2.2",
+  "commit": "6a5db284c715c18b239422e57bb89684e6a19f00",
+  "releaseDate": "2024-12-13",
+  "licenses": {
+    "hebrewText": "Public domain (Westminster Leningrad Codex text as distributed by OSHB)",
+    "lemmaAndMorphology": "CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/"
+  },
+  "attribution": "Hebrew text and morphology from the Open Scriptures Hebrew Bible Project (https://github.com/openscriptures/morphhb), OSHB version 2.2. Lemma and morphology data licensed under CC BY 4.0.",
+  "notes": [
+    "Display text must be preserved byte-for-byte from the source; OSHB warns against NFC-normalizing its Hebrew. Derived comparison/search keys live in separate fields only.",
+    "Do not mix in BHSA/ETCBC annotations (CC BY-NC) or call Tanach.us UXLC text 'WLC'.",
+    "Import is development-time only (tools/import_oshb_reader.mjs reads a checkout pinned to this commit); the app ships only the curated generated subset."
+  ]
+}

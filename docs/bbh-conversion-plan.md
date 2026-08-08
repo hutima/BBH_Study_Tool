@@ -85,3 +85,132 @@ Sequencing: 1 → 2 → (3 ∥ 4) → 5 → 6 → 7. Tasks 3 and 4 touch disjoin
 - `docs/index-structure.md` must be updated in the same commit as `index.html` edits (Task 6
   consolidates; interim commits note the deferral).
 - Icons (`icon-192.png` etc.) — check for Greek glyphs in Task 5; replace or note gap.
+
+---
+
+# Phase 2 Ledger — Lesson-Gated Parsing, Grammar, Reader, Content Completion
+
+Started 2026-08-08 on clean `Main` (`0a5e8be`, after Preflight 0 PDF purge — see
+`RESTORE.md`). Base for all Phase 2 PRs: `Main` (exact case). Deployment note:
+**GitHub Pages is the primary deployment**; the app must stay static/build-free,
+subpath-relative, and merging to the default branch deploys it.
+
+## Content authorities
+
+- Cook & Holmstedt, *Beginning Biblical Hebrew* (ISBN 978-0-8010-4886-9) — the
+  user's PDF, held OUTSIDE the repo (private verification source; page images
+  are authoritative, the scan's OCR layer is garbage — never trust extracted text).
+- Baker eSources all-lessons flashcards (203 lesson terms) — cross-check only.
+- OSHB `openscriptures/morphhb` tag `v.2.2` = `6a5db284c715c18b239422e57bb89684e6a19f00`
+  (WLC text public domain; lemma/morph CC BY 4.0; no NFC normalization of display
+  text) — see `source/bbh/reader/corpus-pin.json`.
+
+## PDF page mapping (verified visually)
+
+| Book section | Printed pages | PDF page formula |
+|---|---|---|
+| Grammar lessons 1–50 | 21–137 | PDF page = printed page (1:1) |
+| Appendixes/glossaries | a-3 … a-51+ | PDF page = 140 + N (a-12 → 152; verified) |
+| Illustrated Reader | r-1 … | PDF page = 215 + N (r-55 → 270; verified) |
+
+Appendix paradigm tables carry their own lesson references (e.g. "Personal
+Pronouns (LL5, 11)", "Demonstrative Pronouns (L33)", "Attached Pronouns with
+Singular Nouns (LL9, 22)") — use them to cross-check `introducedLesson`, but the
+lesson pages remain the primary authority for gate values.
+
+## Phase 2 architecture decisions
+
+1. **Hebrew axes only.** Verb parse features: `binyan` (qal|nifal|piel|pual|
+   hitpael|hifil|hofal), `conjugation` (perfect|imperfect|past-narrative|
+   imperative|jussive|infinitive|adverbial-infinitive|participle), `person`
+   (1|2|3), `gender` (m|f|c), `number` (s|p|d), `suffix` (null or
+   {person,gender,number}). Nominal: `pos`, `gender`, `number`, `state`
+   (absolute|construct), `suffix`. Pronoun: `person/gender/number` (+ demonstr.
+   near/far). NO tense/voice/mood/case axes; no graded "aspect" step; Lesson 49
+   semantic case relations are reference prose only.
+2. **`acceptedParses` is an array** on every form; grading accepts any member.
+   Ambiguity notes (`ambiguityNote`) explain context-dependence; no form-only
+   question may depend on syntax/discourse.
+3. **Gates**: every form carries `introducedLesson` (1–50) or
+   `appendixOnly: true` (never both). Cumulative gate: lesson N exposes
+   `introducedLesson <= N` across forms, paradigms, dimension values, hints,
+   and distractors. Appendix-only forms sit behind an off-by-default toggle.
+   Staged paradigms gate per-form, not per-paradigm.
+4. **Source data layout** (`source/bbh/` is authoritative, generated `js/data/`
+   is never hand-edited — same rule as Phase 1):
+   - `source/bbh/parsing/paradigms.json` (paradigms → forms → acceptedParses,
+     each form: id, display (pointed), lemma/root, pos, introducedLesson |
+     appendixOnly, source {lesson,page}|{appendix,page}, note, translit?)
+   - `source/bbh/parsing/lesson_gates.json` (lesson → newly introduced
+     material, summary + source page; drives validator cross-check + UI
+     "what's new"/empty states)
+   - `source/bbh/grammar/questions.json` + `examples.json` (per orchestration
+     prompt spec: 4 choices, correctIndex, provenance, reviewStatus, tags)
+   - `source/bbh/reader/corpus-pin.json`, `gate-map.json`, `selections.json`
+   - Generators/validators: `tools/gen_bbh_parsing_data.mjs`,
+     `tools/validate_bbh_parsing_data.mjs`, `tools/validate_bbh_grammar_data.mjs`,
+     `tools/import_oshb_reader.mjs` (dev-time; reads pinned checkout)
+   - Generated: `js/data/bbh_parsing.js`, `js/data/bbh_grammar.js`,
+     `js/data/bbh_reader.js` — deterministic, byte-identical on re-run.
+5. **Comparison keys**: display Hebrew is stored authoritative (no NFC
+   mutation); unpointed/comparison forms are derived fields via
+   `js/utils/hebrewText.js` at generation time, tested to never overwrite
+   display text.
+6. **State**: keep `bbhStudyToolStateV1` storage key; add additive subtrees
+   `parsing`, `grammar`, `reader` each with their own `schemaVersion`.
+   Migration = fill defaults when absent; vocabulary SRS untouched. Export
+   format id unchanged with bumped `version` + back-compatible import.
+   Parsing "known" rule: 2 consecutive fully-acceptable recent attempts under
+   currently-graded dimensions, recomputed from structured attempt records.
+7. **Module-graph safety** (post-launch rules from CLAUDE.md apply): new modes
+   load via NEW script files + runtime wiring (deps objects /
+   `GLOBAL_CLICK_HANDLERS`), never new cross-module named exports from
+   existing shipped modules. Never remove an export v1 `main.js` imports.
+   Single `?v=` bump (1 → 2) with `CACHE_NAME` at release.
+8. **Telemetry zero**: GA snippet removed; release check fails on
+   `googletagmanager|google-analytics|gtag(|G-YH11KQB6QX` in the live graph.
+   "Analytics" means local progress dashboards only.
+9. **GitHub Pages compatibility** (user requirement): no build step, no
+   server-side anything, all URLs relative (site lives under
+   `/BBH_Study_Tool/`), `.nojekyll` preserved, new data ships as static JS
+   files added to the sw precache.
+
+## Phase 2 task ledger
+
+| PR | Scope | Model | Owned files | Status |
+|----|-------|-------|-------------|--------|
+| A | GA removal, guard wiring, schemas, validators, gate engine + tests, ledger, corpus pin | sonnet (impl) | `index.html`, `tools/check_release.mjs`, `tools/check_no_pdf.mjs` (wiring), `source/bbh/{parsing,grammar,reader}/*.json` (schema skeletons), `tools/validate_bbh_parsing_data.mjs`, `js/domain/parsing/gates.js` + tests, docs | in progress |
+| B | Verified parsing inventory (PDF), Parse/Build domain+UI, state v2, parsing analytics | sonnet (transcription+impl), fable (review) | `source/bbh/parsing/*`, `tools/gen_bbh_parsing_data.mjs`, `js/data/bbh_parsing.js`, `js/domain/parsing/*`, `js/ui/*` (parsing seams), `js/state/*`, `index.html` | pending |
+| C | Grammar bank (≥300 reviewed Qs), anti-giveaway validator, Grammar UI | sonnet ×2 (author/review split) | `source/bbh/grammar/*`, `tools/validate_bbh_grammar_data.mjs`, `js/data/bbh_grammar.js`, `js/domain/grammar2/*`, UI seams | pending |
+| D | OSHB import/scorer, curated selections, Reader UI, attribution | sonnet | `tools/import_oshb_reader.mjs`, `source/bbh/reader/*`, `js/data/bbh_reader.js`, `js/ui/reader2/*` | pending |
+| E | Vocab 191→203 (IDs preserved), Reference tables, guidance text | sonnet | `source/bbh/*.csv`, `tools/gen_bbh_data.mjs` counts, `pages/memorization.html`, `docs/bbh-content-gaps.md` | pending |
+| F | Release hardening: cached-v1 upgrade test, offline, `?v=2`, docs, final audit | sonnet + opus (audit) | `sw.js`, `index.html`, README, CLAUDE.md, docs | pending |
+
+Opus budget: 3 calls max — (1) schema/gate review pre-PR-B, (2) mid-project
+content audit, (3) final release audit. Used so far: 0.
+
+## Phase 2 acceptance commands
+
+- `node tools/check_no_pdf.mjs` — recontamination guard (every commit)
+- `node tools/validate_bbh_parsing_data.mjs` — parsing source integrity
+  (unique stable ids, gate xor appendixOnly, source refs present, Hebrew-axis
+  whitelist, acceptedParses non-empty, no future-lesson leak in distractor pools)
+- `node tools/gen_bbh_parsing_data.mjs && git diff --exit-code js/data/` —
+  determinism
+- `node tools/check_release.mjs` — extended: telemetry scan, PDF guard,
+  precache/`?v=` sync, Greek scans, data counts
+- Browser smoke: mode switching, gates at N-1/N boundaries, Parse/Build paths,
+  export/import v1→v2, offline reload, cached-v1 upgrade
+
+## Addendum (user request, 2026-08-08): optional lesson grouping
+
+The Greek app grouped chapters by syllabus weeks; BBH has no syllabus. Add
+OPTIONAL lesson-group presets using the textbook's own unit structure — the
+13 illustrated-Reading breakpoints from the TOC: 1–9 (R1), 10–14 (R2),
+15–18 (R3), 19–22 (R4), 23–26 (R5), 27–30 (R6), 31–34 (R7), 35–38 (R8),
+39–41 (R9), 42–44 (R10), 45–46 (R11), 47–48 (R12), 49–50 (R13). Keep the
+existing decade ranges; add these as a second preset group ("Units" /
+"Reading blocks") in the vocab lesson picker, and reuse the same shortcuts in
+the Parsing/Grammar current-lesson selectors. Implemented via
+`tools/gen_bbh_data.mjs` presets (PR E scope; UI shortcuts land with PR B/C
+selectors as they're built).

@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "notes": [
+    "Lesson-gate map: what parsing-relevant material each lesson newly introduces, verified against Cook & Holmstedt lesson pages (primary) and appendix cross-references like 'Personal Pronouns (LL5, 11)' (secondary).",
+    "Used by tools/validate_bbh_parsing_data.mjs to cross-check every form's introducedLesson, and by the UI for 'what's new at lesson N' and empty-state messages.",
+    "Entry shape: {\"lesson\": N, \"introduces\": [{\"summary\": \"...\", \"paradigmIds\": [\"...\"], \"source\": {\"lesson\": N, \"page\": N}}]}. Lessons with no parseable material are simply absent.",
+    "Populated in Phase 2 PR B from verified page images. Empty in PR A by design."
+  ],
+  "lessons": []
+}
