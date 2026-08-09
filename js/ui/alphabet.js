@@ -1,5 +1,9 @@
-// Lesson 0 — Alphabet (0A) + Vowel marks (0B) practice (Phase 2 PR E,
-// user-requested addendum; split into two decks by PR H punch-list item 3).
+// Lesson 0 — Alphabet + Vowel marks practice (Phase 2 PR E, user-requested
+// addendum; split into two decks by PR H punch-list item 3). Displayed to
+// users as "Lesson 1 · Alphabet" / "Lesson 2 · Vowel marks" (matching the
+// textbook's own Lesson 1 "The Consonants" / Lesson 2 "The Vowels") since
+// task #16's display rename — internal naming (module/file name, deckKind
+// 'letters'/'vowels', runtime.alphabet.letters/vowels, ids) is unchanged.
 // A lightweight, standalone flip/shuffle practice pair, COMPLETELY separate
 // from the vocabulary flashcard machinery: own overlay, own module-local
 // view state, own runtime.alphabet subtree (schemaVersion 1,
@@ -46,36 +50,48 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-// ─── Grapheme-cluster splitting (consonant + its trailing combining marks)
+// ─── Grapheme-cluster splitting (task #16 — the addendum's root-cause
+// hypothesis for the "misplaced vowel marks" report was that span-splitting
+// could orphan a combining mark from its base; the confirmed cause turned
+// out to be a highlight decoration colliding visually with sub-linear
+// niqqud (see the .alphabet-vowel-cluster-hit comment in styles.css), but
+// this module still switches to true Unicode grapheme segmentation per the
+// addendum, so a span can never split mid-grapheme in ANY browser/font, now
+// or in the future.
+// Uses the platform's Unicode grapheme-cluster algorithm (Intl.Segmenter)
+// when available — this is what correctly keeps a base consonant fused
+// with ALL of its trailing combining marks (niqqud, dagesh, cantillation,
+// sin/shin dots) as one indivisible unit, and also keeps every OTHER
+// character (spaces, maqaf, parens, …) as its own cluster instead of the
+// old custom split's behavior of silently DROPPING any character that was
+// neither a consonant nor a recognized mark. Falls back to an equivalent
+// regex for browsers without Intl.Segmenter.
 // SYNC: tools/gen_bbh_alphabet_data.mjs has the authoritative copy of this
 // same split (used at generation time to compute each vowel's stored
-// clusterIndex) — keep the two in sync if either changes. This module can't
-// import that generator (no cross-module imports allowed here), so the
-// logic is duplicated deliberately.
-const CONSONANT_RE = /[\u05D0-\u05EA]/;
-const MARK_RE = /[\u0591-\u05AF\u05B0-\u05BC\u05C1\u05C2\u05C7]/;
-function splitHebrewClusters(word) {
-  const clusters = [];
-  let current = null;
-  for (const ch of String(word)) {
-    if (CONSONANT_RE.test(ch)) {
-      current = { base: ch, marks: '' };
-      clusters.push(current);
-    } else if (current && MARK_RE.test(ch)) {
-      current.marks += ch;
-    } else {
-      current = null;
-    }
-  }
-  return clusters;
+// clusterIndex) — keep the two in sync if either changes. This module
+// can't import that generator (no cross-module imports allowed here), so
+// the logic is duplicated deliberately.
+const HEBREW_SEGMENTER = (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function')
+  ? (() => { try { return new Intl.Segmenter('he', { granularity: 'grapheme' }); } catch (e) { return null; } })()
+  : null;
+// Fallback: a Hebrew consonant plus any trailing combining marks (full
+// niqqud/cantillation/dagesh block, U+0591-U+05C7) as one cluster, OR any
+// single other character (space, maqaf, punctuation, Latin, …) as its own
+// one-character cluster — so nothing is ever silently dropped.
+const GRAPHEME_FALLBACK_RE = /[\u05D0-\u05EA][\u0591-\u05C7]*|[\s\S]/gu;
+function splitGraphemes(word) {
+  const str = String(word ?? '');
+  if (!str) return [];
+  if (HEBREW_SEGMENTER) return Array.from(HEBREW_SEGMENTER.segment(str), (s) => s.segment);
+  return str.match(GRAPHEME_FALLBACK_RE) || [];
 }
 
 function renderClusterSpans(word, highlightIdx) {
-  const clusters = splitHebrewClusters(word);
+  const clusters = splitGraphemes(word);
   if (!clusters.length) return escapeHtml(word);
   return clusters
     .map((cl, i) => {
-      const text = escapeHtml(cl.base + cl.marks);
+      const text = escapeHtml(cl);
       return i === highlightIdx
         ? `<span class="alphabet-vowel-cluster-hit">${text}</span>`
         : `<span>${text}</span>`;
@@ -217,13 +233,15 @@ function renderVowelCardFace(vowel, state) {
         <span class="alphabet-name-hebrew hebrew-text" dir="rtl" lang="he">${escapeHtml(vowel.nameHebrew)}</span>
         <span class="alphabet-name-english">${escapeHtml(vowel.nameEnglish)}</span>
       </div>
-      <div class="alphabet-vowel-meta-row">
-        <span class="alphabet-vowel-meta-label">Sound class</span>
-        <span class="alphabet-vowel-meta-value">${escapeHtml(vowel.soundClass)}</span>
-      </div>
-      <div class="alphabet-vowel-meta-row">
-        <span class="alphabet-vowel-meta-label">Length</span>
-        <span class="alphabet-vowel-meta-value">${escapeHtml(vowel.length)}</span>
+      <div class="alphabet-vowel-meta-grid">
+        <div class="alphabet-vowel-meta-cell">
+          <span class="alphabet-vowel-meta-label">Sound class</span>
+          <span class="alphabet-vowel-meta-value">${escapeHtml(vowel.soundClass)}</span>
+        </div>
+        <div class="alphabet-vowel-meta-cell">
+          <span class="alphabet-vowel-meta-label">Length</span>
+          <span class="alphabet-vowel-meta-value">${escapeHtml(vowel.length)}</span>
+        </div>
       </div>
       <div class="alphabet-sound">${escapeHtml(vowel.sound)}</div>
       ${vowel.notes ? `<div class="alphabet-notes">${escapeHtml(vowel.notes)}</div>` : ''}
@@ -276,7 +294,12 @@ function render() {
   if (cardArea) cardArea.innerHTML = renderCardFace(currentItem(), state);
   if (progressEl) progressEl.textContent = renderProgressLine(state);
   if (titleEl) titleEl.textContent = deckKind === 'vowels' ? 'Vowel marks practice' : 'Alphabet practice';
-  if (labelEl) labelEl.textContent = deckKind === 'vowels' ? 'Lesson 0B' : 'Lesson 0A';
+  // Display-only labels: these decks ARE the textbook's own Lesson 1 (The
+  // Consonants) and Lesson 2 (The Vowels) content, so they're now labeled
+  // "Lesson 1"/"Lesson 2" to match — internal naming (deckKind
+  // 'letters'/'vowels', runtime.alphabet.letters/vowels, ids) is unchanged
+  // (coordinator addendum to task #16, display-rename only).
+  if (labelEl) labelEl.textContent = deckKind === 'vowels' ? 'Lesson 2' : 'Lesson 1';
   renderShevaFooter();
 }
 
@@ -351,7 +374,7 @@ export function alphabetShuffle() {
 }
 
 export function alphabetResetProgress() {
-  const label = deckKind === 'vowels' ? 'Lesson 0B vowel marks' : 'Lesson 0A alphabet';
+  const label = deckKind === 'vowels' ? 'Lesson 2 vowel marks' : 'Lesson 1 alphabet';
   if (!confirm(`Reset all ${label} progress? This clears every ${deckKind === 'vowels' ? 'vowel' : 'letter'} marked known.`)) return;
   const state = getDeckState();
   if (!state) return;

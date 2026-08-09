@@ -88,9 +88,17 @@ export function buildSessions() {
   setActiveSessionButton();
 }
 
-// Lesson selector — data-driven off window.SETS + CHAPTER_TITLES. Every
-// lesson 1..50 is shown, including the 11 with no vocabulary yet (their
-// count reads "0 vocab") so the whole course stays browsable/selectable.
+// Lesson selector — data-driven off window.SETS + CHAPTER_TITLES. Lessons
+// 3..50 are shown, including the 9 with no vocabulary yet (their count
+// reads "0 vocab") so the rest of the course stays browsable/selectable.
+// Lessons 1-2 are deliberately EXCLUDED from this vocab chapter grid (user
+// addendum to task #16): they have zero vocab cards, and their textbook
+// content (The Consonants / The Vowels) is now the "Lesson 1 · Alphabet"
+// and "Lesson 2 · Vowel marks" practice decks surfaced by the buttons
+// above this grid (js/ui/alphabet.js), not a vocab chapter. This filter is
+// scoped to THIS grid only — Parsing/Grammar/Reader's own lesson selects
+// and the Units session presets are untouched and still start at lesson 1.
+const VOCAB_CHAPTER_GRID_EXCLUDED_LESSONS = new Set(['1', '2']);
 export function buildChapterSelector() {
   const grid = document.getElementById('chaptersGrid');
   if (!grid) return;
@@ -98,7 +106,10 @@ export function buildChapterSelector() {
   grid.classList.add('chapters-grid');
 
   const sets = window.SETS && typeof window.SETS === 'object' ? window.SETS : {};
-  const chapterKeys = Object.keys(sets).filter(isChapterKey).sort((a, b) => Number(a) - Number(b));
+  const chapterKeys = Object.keys(sets)
+    .filter(isChapterKey)
+    .filter((key) => !VOCAB_CHAPTER_GRID_EXCLUDED_LESSONS.has(key))
+    .sort((a, b) => Number(a) - Number(b));
 
   const deselectBtn = document.createElement('button');
   deselectBtn.type = 'button';

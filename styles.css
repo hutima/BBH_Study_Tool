@@ -10,7 +10,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=9') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=10') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -18,7 +18,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=9') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=10') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -26,7 +26,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=9') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=10') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -34,7 +34,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=9') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=10') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -42,7 +42,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=9') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=10') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -50,7 +50,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=9') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=10') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -58,7 +58,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=9') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=10') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -66,7 +66,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=9') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=10') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -91,7 +91,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-normal.woff2?v=9') format('woff2');
+    src: url('fonts/noto-sans-latin-normal.woff2?v=10') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -102,7 +102,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=9') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=10') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -113,7 +113,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-italic.woff2?v=9') format('woff2');
+    src: url('fonts/noto-sans-latin-italic.woff2?v=10') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -124,7 +124,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=9') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=10') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -140,7 +140,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-serif-hebrew.woff2?v=9') format('woff2');
+    src: url('fonts/noto-serif-hebrew.woff2?v=10') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
   @font-face {
@@ -148,7 +148,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-sans-hebrew.woff2?v=9') format('woff2');
+    src: url('fonts/noto-sans-hebrew.woff2?v=10') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
 
@@ -6471,10 +6471,32 @@
 .alphabet-intro { color: var(--muted); font-size: calc((13.5px) * var(--text-scale)); line-height: 1.5; margin-bottom: 16px; }
 
 .alphabet-card-area { margin-bottom: 16px; }
+/* Task #16 — second, deeper readability finding beyond the addendum's own
+   hypothesis: this card's background was hardcoded to a fixed dark-navy
+   gradient regardless of page theme, while every glyph/text color inside
+   it (var(--cream), var(--gold-light), var(--muted), …) is a THEME TOKEN
+   that flips to a DARK color in light mode (light theme's --cream is near-
+   black, meant for text on a light page). The result: in light theme, the
+   card's own big letter/vowel glyph and representative word rendered as
+   near-black text on a near-black card — effectively invisible, and very
+   plausibly the actual "hard to read" root cause if the reporting
+   screenshots were taken in light mode (confirmed via Playwright + a
+   computed-style check: text color #2b2418 on a #1e2035/#161820 card).
+   Fix: swap the hardcoded literals for the app's own --card-front/
+   --card-back tokens (already defined for exactly this dark/light pair,
+   just never wired up anywhere) so the card's background follows the
+   active theme the same way its text colors already do. In dark theme
+   these tokens are within a shade of the old literals (#1b1d26/#1a1f2e vs
+   #1e2035/#161820) — visually unchanged there — while light theme now
+   gets a light card (#fffdf7/#f8f2e6) that the *existing* dark-in-light
+   text tokens read correctly against. Scoped to .alphabet-card only (this
+   module's own class) — the vocab flashcard's .card-front/.card-back have
+   the identical hardcoded-gradient pattern but are out of this task's
+   scope (shared, high-blast-radius, not part of the reported 0B bug). */
 .alphabet-card {
   border: 1px solid var(--border);
   border-radius: 14px;
-  background: radial-gradient(ellipse at 30% 30%, #1e2035 0%, #161820 100%);
+  background: radial-gradient(ellipse at 30% 30%, var(--card-front) 0%, var(--card-back) 100%);
   box-shadow: var(--shadow);
   padding: 32px 24px;
   min-height: 220px;
@@ -6492,9 +6514,11 @@
 .alphabet-final-form { font-size: calc(clamp(36px, 9vw, 56px) * var(--text-scale)); color: var(--gold-dim); line-height: 1; opacity: 0.85; }
 .alphabet-front-hint { font-style: italic; font-size: calc((12.5px) * var(--text-scale)); color: var(--muted); }
 .alphabet-back { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+/* Task #16: name row is the most prominent element on the answer face —
+   bumped up and bolded so it reads first, before the secondary meta. */
 .alphabet-name-row { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; justify-content: center; }
-.alphabet-name-hebrew { font-size: calc((26px) * var(--text-scale)); color: var(--gold-light); }
-.alphabet-name-english { font-size: calc((18px) * var(--text-scale)); color: var(--cream); text-transform: capitalize; }
+.alphabet-name-hebrew { font-size: calc((30px) * var(--text-scale)); color: var(--gold-light); font-weight: 600; }
+.alphabet-name-english { font-size: calc((20px) * var(--text-scale)); color: var(--cream); text-transform: capitalize; font-weight: 600; }
 .alphabet-sound { font-size: calc((14px) * var(--text-scale)); color: var(--muted); max-width: 320px; }
 .alphabet-badge-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
 .alphabet-badge {
@@ -6508,15 +6532,39 @@
 }
 .alphabet-badge-on { color: var(--gold); border-color: var(--gold-dim); }
 .alphabet-badge-off { color: var(--muted); }
-.alphabet-notes { font-size: calc((12px) * var(--text-scale)); color: var(--muted); font-style: italic; max-width: 340px; }
+/* Task #16: book-note italic — kept as full text (no line-clamp truncation
+   of source-verified content) but sized down for a tighter answer-face
+   hierarchy, per the addendum's "simpler: keep full text but reduce size"
+   guidance. */
+.alphabet-notes { font-size: calc((11px) * var(--text-scale)); line-height: 1.4; color: var(--muted); font-style: italic; max-width: 320px; }
 .alphabet-empty-state { color: var(--muted); font-style: italic; padding: 24px; }
 
 /* PR H item 2: the Again/Got-it row reuses the vocab card's own .mark-row/
-   .mark-btn/.mark-again/.mark-easy classes verbatim (see index.html
-   #markRow) for identical layout/placement/styling — .alphabet-mark-row
-   only exists as a scoping hook, it carries no layout of its own beyond
-   what .mark-row already provides. */
-.alphabet-mark-row { margin-bottom: 12px; }
+   .mark-btn/.mark-again/.mark-easy classes for identical BUTTON styling
+   (colors/borders) — but see task #16: .alphabet-mark-row now overrides
+   the inherited row LAYOUT (flex-direction, sizing) so 0A/0B get their own
+   one-handed stacked layout without touching #markRow's 3-button row,
+   which stays exactly as it was (same specificity, .alphabet-mark-row's
+   rules simply come later in the cascade and only ever match the Lesson 0
+   overlay's #alphabetMarkRow element).
+   Task #16: STACKED full-width buttons for one-handed phone use — Got-it
+   (positive) on top, Again (negative) below, via `order` so the DOM/markup
+   order (Again first, matching index.html) doesn't need to change. Each
+   button is >= 48px tall, the standard touch-target minimum. */
+.alphabet-mark-row {
+  margin-bottom: 12px;
+  flex-direction: column;
+  gap: 10px;
+}
+.alphabet-mark-row .mark-btn {
+  width: 100%;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc((15px) * var(--text-scale));
+}
+.alphabet-mark-row .mark-easy { order: -1; }
 
 .alphabet-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .alphabet-progress-line { font-size: calc((12.5px) * var(--text-scale)); color: var(--muted); }
@@ -6530,18 +6578,37 @@
    these are the additions specific to the vowel-card front (sign + a
    highlighted representative vocab word) and the sheva-rules footer. */
 .alphabet-vowel-glyph { font-size: calc(clamp(48px, 14vw, 84px) * var(--text-scale)); }
+/* Task #16 — root-cause fix for the "misplaced vowel marks" report: the old
+   highlight style added `box-shadow: inset 0 -3px 0 var(--gold)` as an
+   underline directly beneath the highlighted grapheme cluster's own text
+   box. Most Hebrew vowel points (patach, segol, chireq, sheva, qamets…)
+   sit BELOW the consonant they belong to, in that same lower strip — so
+   the underline visually fused with the vowel dot/dash into one blob,
+   reading as a mark that had detached from its letter and drifted into a
+   bracket/smile shape (confirmed via Playwright screenshots — see repro
+   notes in the task ledger). Fix: highlight by COLOR + WEIGHT ONLY, no
+   background/border/shadow decoration anywhere near the glyph baseline.
+   Also: the representative word is now >=1.6x its old size and every
+   cluster (not just the highlighted one) renders in the full foreground
+   color instead of a dim 0.55-opacity grey, since low-contrast text was
+   the other half of the "hard to read" report. */
 .alphabet-vowel-example {
-  font-size: calc(clamp(22px, 6vw, 34px) * var(--text-scale));
+  font-size: calc(clamp(36px, 10vw, 54px) * var(--text-scale));
   color: var(--cream);
-  line-height: 1.3;
+  line-height: 1.6;
+  letter-spacing: 0.5px;
 }
-.alphabet-vowel-example span { opacity: 0.55; }
+/* No explicit `.alphabet-vowel-example span` color rule — every span
+   inherits `color: var(--cream)` from the parent above by default. That
+   redundant rule used to exist here and, at (0,1,1) specificity, silently
+   beat `.alphabet-vowel-cluster-hit`'s (0,1,0) `color: var(--gold-light)`
+   regardless of cascade order — the highlighted cluster was rendering in
+   the same color as the rest of the word (verified via computed-style
+   checks: both read rgb(240,230,200) in dark theme). Leaving color
+   unset here lets the cluster-hit rule below win normally. */
 .alphabet-vowel-cluster-hit {
-  opacity: 1 !important;
   color: var(--gold-light);
-  border-radius: 4px;
-  box-shadow: inset 0 -3px 0 var(--gold);
-  padding: 0 1px;
+  font-weight: 600;
 }
 .alphabet-vowel-example-none {
   font-size: calc((12.5px) * var(--text-scale));
@@ -6549,11 +6616,20 @@
   font-style: italic;
   max-width: 300px;
 }
-.alphabet-vowel-meta-row {
+/* Compact two-column meta row (sound class + length side by side) instead
+   of two stacked full-width rows — tightens the answer-face hierarchy. */
+.alphabet-vowel-meta-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 18px;
+  width: 100%;
+  max-width: 320px;
+}
+.alphabet-vowel-meta-cell {
   display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 8px;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
   font-size: calc((13px) * var(--text-scale));
 }
 .alphabet-vowel-meta-label {

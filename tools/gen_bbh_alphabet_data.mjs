@@ -48,28 +48,34 @@ const EXPECTED_VOWEL_COUNT = 12;
 const REQUIRED_FIELDS = ['order', 'letter', 'nameHebrew', 'nameEnglish', 'sound'];
 const REQUIRED_VOWEL_FIELDS = ['order', 'sign', 'nameHebrew', 'nameEnglish', 'soundClass', 'length', 'sound'];
 
-// ─── Grapheme-cluster splitting (consonant + its trailing combining marks)
+// ─── Grapheme-cluster splitting (task #16 — true Unicode grapheme
+// segmentation, matching js/ui/alphabet.js's client-side split exactly, so
+// the clusterIndex stored here always means the same thing the UI computes
+// at render time. Node always has Intl.Segmenter, so this side never needs
+// the regex fallback in practice, but the fallback is kept byte-identical
+// to the UI copy for clarity/parity.
 // SYNC: js/ui/alphabet.js re-implements this same split client-side to
 // locate/highlight the stored clusterIndex at render time (that module may
 // not import anything — see its header) — keep the two in sync if either
 // changes. Ranges match tools/gen_bbh_data.mjs's own POINTS_RE.
-const CONSONANT_RE = /[\u05D0-\u05EA]/;
-const MARK_RE = /[\u0591-\u05AF\u05B0-\u05BC\u05C1\u05C2\u05C7]/;
+const HEBREW_SEGMENTER = (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function')
+  ? (() => { try { return new Intl.Segmenter('he', { granularity: 'grapheme' }); } catch (e) { return null; } })()
+  : null;
+const GRAPHEME_FALLBACK_RE = /[\u05D0-\u05EA][\u0591-\u05C7]*|[\s\S]/gu;
 
+function splitGraphemes(word) {
+  const str = String(word ?? '');
+  if (!str) return [];
+  if (HEBREW_SEGMENTER) return Array.from(HEBREW_SEGMENTER.segment(str), (s) => s.segment);
+  return str.match(GRAPHEME_FALLBACK_RE) || [];
+}
+
+// Back-compat shape for findVowelExample below: { base, marks } per
+// cluster, where `marks` is every codepoint after the first (the base is
+// always the cluster's first codepoint — true for every real BBH headword,
+// which never opens on a combining mark).
 function splitHebrewClusters(word) {
-  const clusters = [];
-  let current = null;
-  for (const ch of String(word)) {
-    if (CONSONANT_RE.test(ch)) {
-      current = { base: ch, marks: '' };
-      clusters.push(current);
-    } else if (current && MARK_RE.test(ch)) {
-      current.marks += ch;
-    } else {
-      current = null;
-    }
-  }
-  return clusters;
+  return splitGraphemes(word).map((cl) => ({ base: cl[0] ?? '', marks: cl.slice(1) }));
 }
 
 // order (1..12, matching source/bbh/vowels.json's own row order) -> match
