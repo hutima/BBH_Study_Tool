@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "notes": [
     "Grammar Quiz question bank. Hand-authored + independently reviewed; never generated. js/data/bbh_grammar.js is generated FROM this file.",
-    "Question shape: {id, introducedLesson, reviewThroughLesson?, type, difficulty, prompt, choices: [exactly 4 strings], correctIndex: 0-3, explanation, source: {lesson,page}|{appendix,page}, conceptTags: [..], exampleProvenance: 'textbook-fact'|'original-example'|'public-mt' (+ verseRef for public-mt), reviewStatus: 'draft'|'reviewed'}.",
+    "Question shape: {id, introducedLesson, reviewThroughLesson?, type, difficulty, prompt, choices: [exactly 4 strings; exactly 2 for type true-false], correctIndex: 0-3, explanation, source: {lesson,page}|{appendix,page}, conceptTags: [..], exampleProvenance: 'textbook-fact'|'original-example'|'public-mt' (+ verseRef for public-mt), reviewStatus: 'draft'|'reviewed'}.",
     "Cumulative gating: a question is in scope at lesson N iff introducedLesson <= N. No later-lesson grammar, vocabulary, terminology, or distractors may appear in an earlier-gated question.",
     "Anti-giveaway rules enforced by tools/validate_bbh_grammar_data.mjs (length/position balance, category-parallel distractors, no all/none-of-the-above, etc.).",
     "Populated in Phase 2 PR C. Empty in PR A by design."

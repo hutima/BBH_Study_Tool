@@ -72,8 +72,8 @@ const APP_SHELL_PATHS = [
   'js/utils/helpers.js?v=6',
   'js/utils/storage.js?v=6',
   'js/utils/time.js?v=6',
-  'icons/icon-192.png',
-  'icons/icon-512.png',
+  'icons/icon-192.png?v=6',
+  'icons/icon-512.png?v=6',
   'icons/apple-touch-icon.png?v=6'
 ];
 

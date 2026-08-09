@@ -2,67 +2,22 @@
 
 ## Resume status
 
-- Date: 2026-08-08. Session 1 (Fable orchestrator).
-- Preflight 0 (PDF purge + clean `Main`) is **complete and verified**.
-- Phase 0 (audit/plan/schemas) complete. **PR A merged** as
-  `7837ce2` (PR #3): GA removal, parsing validator, lesson-gate engine +
-  12 boundary tests, telemetry+PDF release checks, Phase 2 ledger.
-- **PR B merged** as `4f09df4` (PR #4): verified parsing inventory
-  (58 paradigms / 429 forms / 36 gates, independently re-verified against
-  page images), Parse/Build UI, state v2 (+export v3, v2 imports OK),
-  parsing analytics, cache `?v=2`. Also fixed a SHIPPED Phase 1 data-loss
-  bug (orphan-cleanup migration deleted bbh-* vocab marks on
-  import/restore). Playwright smoke steps a–j green, rerun by orchestrator.
-- **Hotfix merged** as `e6a36f2` (PR #5, `?v=3`): user hit a frozen app on
-  the v1→v2 update. Update prompt was NOT dropped — it was structurally
-  fragile (tail of main.js module body). Now extracted to
-  `js/pwa/swUpdate.js` (classic script, outside the module graph) + a
-  mixed-version guard fills `runtime.parsing` defaults after restore
-  (mirrored shape, sync comments both sides). Also carried the grammar
-  validator/generator tools (inert).
-- **PR C merged** as `2976b6a` (PR #6, `?v=4`): Grammar Quiz mode with the
-  full 300-question bank (5 authors → 5 blind reviewers with 300/300 answer
-  agreement → 31-defect fix pass → lint pass 131→0 → re-blind of all 125
-  edited questions 125/125, zero defects; all reviewStatus=reviewed with
-  page provenance), plus the user-requested parsing UX round (grouped
-  custom-set picker, 6-choice/all-that-apply Build, contrast panel, Mixed
-  direction). Export format v4.
-- **PR D merged** as `ba9d39c` (PR #7, `?v=5`): OSHB v2.2 Reader — 60-entry
-  gate map (0 unmatched segments / 20,612 Genesis tokens), byte-exact
-  importer, 52 curated selections (32 strict / 20 guided; 0 natural
-  challenge verses in Genesis — documented), Reader UI with token popovers
-  (all 109 morph codes decode), CC-BY attribution, export v5.
-- Current phase: PR E — content completion. Inputs banked in repo:
-  docs/bbh-vocab-reconciliation.md (decision: glossary-faithful 209 unless
-  user says otherwise — Baker/Quizlet egress-blocked), source/bbh/
-  alphabet.json, source/bbh/vowels.json, verified paradigms for Reference
-  tables, Reading-block preset spec in ledger addendum.
-- In-flight at pause (all Sonnet agents; results NOT yet landed):
-  (1) OSHB importer/gate-map/selections/generator agent — had begun editing
-  `source/bbh/reader/gate-map.json` (uncommitted partial edit deliberately
-  left in the worktree); if its completion notification never arrives,
-  discard that dirty file and RE-RUN the task (fully specified in this
-  session's brief: data-driven gate map per the mapping policy, importer
-  over /workspace/openscriptures/morphhb wlc/Gen.xml with byte-exact
-  display preservation, tier scoring, 30-60 curated selections,
-  gen/validate tools, no UI wiring).
-  (2) Vocabulary 191→203 reconciliation report agent (read-only; writes
-  scratchpad/vocab-reconciliation.md — not yet written at pause; re-run if
-  absent). Confirmed vocab facts so far: L5 שָׁלוֹם omission; glossary L#
-  markers are the authoritative cross-check; glossary PDF location was
-  still being probed.
-- Landed just before pause: verified alphabet inventory committed at
-  `source/bbh/alphabet.json` (23 letters, 5 finals, book-faithful nulls);
-  PDF page map preserved at `docs/bbh-page-index.md`.
-- NOTE for a FRESH container: the PDF quarantine copy lives only in this
-  session's container (/tmp path known to this session). If the container
-  was reclaimed, ask the user to re-supply the PDF via a non-repository
-  channel before any further content verification. Never re-commit it.
-- User directives this session: (1) GitHub Pages is the primary deployment —
-  app must stay static/build-free/subpath-relative; merging to the default
-  branch deploys. (2) Optional lesson grouping by the textbook's 13
-  Reading blocks (see ledger addendum) — implement with PR B/C selectors
-  and PR E presets.
+- Date: 2026-08-09. Sessions 1-2 (Fable orchestrator). Phase 2 COMPLETE
+  through PR F pending final merge; this refresh is the release-state ledger.
+- Merged to Main: PR #3 (A, 7837ce2), #4 (B, 4f09df4), #5 (hotfix, e6a36f2),
+  #6 (C, 2976b6a), #7 (D, ba9d39c), #8 (E, 901ed30). PR F carries the
+  cached-upgrade smoke, release-gate extensions, and final-audit fixes.
+- The app ships FIVE practice surfaces: Vocabulary (209 cards), Lesson 0
+  Alphabet (23 letters, separate from vocab), Parsing (Parse/Build/Mixed),
+  Grammar Quiz (300 reviewed questions), Reader (52 OSHB passages) + the
+  extended Reference page (42 generated sections). Telemetry-free.
+- Opus final audit (1 of 3 budgeted Opus calls used): RELEASE-READY yes,
+  zero blockers; its should-fix items (stale ledger D1, quarantine deletion
+  D2, release-gate coverage N1, gate-term plurals N2, false comment N3,
+  nits) are all closed in PR F except D2 which is executed at PR F merge.
+- Next work: user follow-up task — parsing-vs-Greek depth review,
+  root-journey cross-lesson drills, mobile-first parsing UI simplification
+  (see ledger addendum 2026-08-09).
 
 ## Repository and PR state
 
@@ -165,62 +120,61 @@
 
 ## Current work and file ownership
 
-- Orchestrator only; no agents spawned yet. No files owned by agents.
+- No agents in flight. Working tree = PR F release candidate.
 
 ## Content counts
 
-- Vocabulary: 50 lessons, 191 cards (target 203 after reconciliation).
-- Parsing: 58 paradigms, 429 forms, 36 lesson-gate entries — transcribed
-  from page images and independently re-verified form-by-form (commit
-  `fb5e012`). 24 uncertainties/source-notes carried in scratchpad +
-  commit message (key: L27-vs-a-16 niqqud discrepancy; no printed Hofal
-  form exists; physical-book spot-checks recommended for a few
-  scan-resolution cells).
-- Grammar questions: 300 (all reviewed, deterministic generated bank live).
-- Reader passages: 0.
-- Deployment posture: every merge to the default branch deploys via GitHub
-  Pages, so each live-graph-changing PR bumps `?v=` + `CACHE_NAME`
-  (PR B: 1→2) and updates the sw precache in the same PR.
+- Vocabulary: 50 lessons, 209 cards (191 legacy ids preserved; adon/adonai
+  split keeps its id; 17 glossary-tagged adds; 209-vs-Baker-203 residual
+  documented in docs/bbh-vocab-reconciliation.md).
+- Alphabet: 23 letters (5 finals). Vowels: 12 entries + 4 sheva rules.
+- Parsing: 58 paradigms / 429 forms / 36 lesson gates (all page-sourced,
+  independently re-verified; known textbook-internal discrepancy L27 p.81
+  holam vs Appendix a-16 patach — lesson page primacy; no printed Hofal
+  form exists anywhere in the book — recorded, nothing fabricated).
+- Grammar: 300 questions, all reviewStatus=reviewed (300/300 + 125/125
+  blind answer agreement across two rounds; anti-giveaway lint zero).
+- Reader: 52 passages / 406 tokens (32 strict / 20 guided; 0 natural
+  challenge verses in Genesis under policy — documented).
+- Reference: 42 generated sections / 398 rows.
 
-## Tests last run
+## Tests last run (PR F head)
 
-- `node tools/check_release.mjs` → all pass (11 reports, 0 failures; includes
-  telemetry scan, PDF guard, parsing validator).
-- `node tools/test_parsing_gates.mjs` → 12/12 pass.
-- `node tools/validate_bbh_data.mjs` → pass (191 cards / 50 lessons).
+- node tools/check_release.mjs → 19 reports / 0 failures (now also runs the
+  grammar+reader validators and both engine test suites; data-count checks
+  300/52/23/≥40; telemetry + PDF guards).
+- Playwright: smoke_parsing (a-o), smoke_grammar (a-i), smoke_reader (a-j),
+  smoke_pr_e (22 steps), smoke_upgrade (24 asserts: v4 client → v6 deploy,
+  mixed-version window clean, update prompt, cache swap, state survival,
+  offline reload) — all green, rerun by the orchestrator.
 
-## Blockers and unresolved questions
+## Blockers and unresolved questions (all user-action or documented)
 
-- Default-branch flip to `Main`: user action (see Repository state).
-- GitHub Support request for PR #2 ref/cached views: user action.
-- GitHub Pages: merging to the default branch likely auto-deploys (repo has
-  `.nojekyll`, cache name says `github-pages`). Recorded as a consequence of
-  merges; user's prompt acknowledges this.
+- USER: flip GitHub default branch to Main (Settings → General) — no API
+  path from this session.
+- USER (optional): GitHub Support request to drop refs/pull/2 + cached PR
+  #2 views still holding the purged PDF server-side; copyright may not
+  meet their sensitive-data criteria — document outcome either way.
+- Baker/Quizlet egress-blocked → 209-card decision stands unless the user
+  supplies the official 203 list (trim is a small, id-preserving change).
+- Paradigms.pdf (73KB predecessor artifact) remains in pre-Phase-1 history;
+  purging it was outside the authorized exact scope.
 
 ## Model/token budget
 
-- Opus escalations used: 0 of 3.
-- Session 1 budget state: healthy at Preflight 0 completion.
+- Opus: 1 of 3 calls used (final release audit; schema + mid-project audits
+  were covered by multi-agent blind-review redundancy at Sonnet tier).
+- Session 2 hit one token-limit pause (resumed via send_later); safety
+  resume trigger trig_018AcruuPX1b9Tc9jXBDT9ZU may still fire at 07:42Z —
+  if Phase 2 is merged when it fires, proceed directly to the follow-up task.
 
 ## Next three actions
 
-1. PR D — Reader: `tools/import_oshb_reader.mjs` over the pinned checkout
-   (/workspace/openscriptures/morphhb @ v.2.2, verified HEAD =
-   6a5db284c715c18b239422e57bb89684e6a19f00), OSHB-morph→BBH gate map
-   (`source/bbh/reader/gate-map.json`), Strict/Guided/Challenge scoring
-   per the tier definitions in selections.json notes, curated
-   Genesis-first selections, Reader UI on the same seams (fourth mode or
-   distinct entry), OSHB CC-BY attribution in-app, display text preserved
-   byte-for-byte (no NFC), `?v=5`.
-2. PR E — content completion: vocab 191→203 (IDs preserved; Baker 203-term
-   cross-check; restore L5 שלום), Lesson 0 alphabet deck (user request,
-   separate from vocab machinery), Reference tables from the PDF,
-   guidance-text audit, Reading-block lesson-group presets (user request).
-3. PR F — release hardening: cached-v4 upgrade smoke, offline reload,
-   README/CLAUDE.md/changelog updates, extended release checks, Opus final
-   audit (0 of 3 Opus calls used so far), delete the PDF quarantine
-   temp dir, final report incl. default-branch flip + GitHub Support
-   follow-ups still owed by the user.
+1. Merge PR F (release hardening + audit fixes) into Main; verify deploy.
+2. Delete the PDF quarantine dir (/tmp/bbh-pdf-quarantine.4rfHYP) and
+   verify absence; deliver the final Phase 2 handoff report.
+3. Begin user follow-up: parsing-vs-Greek review, root-journey drills,
+   mobile-first parsing UI simplification (ledger addendum 2026-08-09).
 
 ## Resume prompt
 

@@ -84,7 +84,7 @@ export const runtime = {
     schemaVersion: 1,
     lesson: 1,
     focusedParadigmId: null,
-    direction: 'parse',       // 'parse' | 'build'
+    direction: 'parse',       // 'parse' | 'build' | 'mixed'
     shuffleAll: false,
     customSetOn: false,       // whether customSet (below) actually scopes the pool
     customSet: {},            // { [paradigmId]: true }
