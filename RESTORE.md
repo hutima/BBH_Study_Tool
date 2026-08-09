@@ -92,17 +92,16 @@
 - Intended default/base branch: **`Main`** (exact case) at
   `b70eee8282459ab367d29c2b2f6310ec8345b70d` (the Phase 1 merge, PR #1) plus
   Phase 2 checkpoint commits on top. All Phase 2 PRs target `Main`.
-- **USER ACTION REQUIRED:** flip the GitHub default branch to `Main`
-  (Settings → General → Default branch, or
-  `gh repo edit hutima/BBH_Study_Tool --default-branch Main`). This session's
-  GitHub App proxy exposes no repo-settings API, so the cutover could not be
-  performed from here. Until flipped, GitHub reports
-  `claude/biblical-hebrew-study-tool-w3khq0` as default; it points at the same
-  clean commit `b70eee8`, so no contaminated history is default.
-- Other branches: `claude/biblical-hebrew-study-tool-w3khq0` = `b70eee8`
-  (old default, clean, deletable after the default-branch flip);
-  `claude/bbh-study-tool-conversion-sly7kr` = `9b70811` (merged PR #1 head,
-  clean, deletable).
+- **Default branch: DONE** — user flipped it; verified 2026-08-09
+  (`git ls-remote origin HEAD` → Main; local origin/HEAD updated).
+- **GitHub Support follow-up (PR #2 cached refs): CLOSED per user decision
+  2026-08-09** — no further action; residual server-side exposure of the
+  purged PDF via refs/pull/2 remains documented and accepted.
+- Stale clean branches `claude/biblical-hebrew-study-tool-w3khq0`
+  (b70eee8) and `claude/bbh-study-tool-conversion-sly7kr` (9b70811) are
+  fully merged ancestors of Main; the session git proxy refuses ref
+  deletions, so removing them is an optional one-click GitHub-UI cleanup
+  for the user.
 - Open PRs: none. Merged: PR #1 (Phase 1 conversion), PR #3 (Phase 2 PR A,
   merge commit `7837ce2`). PR #2 was the PDF transport upload; its content
   is purged from all branches.
