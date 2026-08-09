@@ -1,9 +1,451 @@
 {
   "schemaVersion": 1,
   "notes": [
-    "Maps OSHB morphology codes (pinned corpus in corpus-pin.json) to the earliest BBH lesson whose material covers that grammatical feature, or marks them unmapped.",
-    "Entry shape: {\"morphPattern\": \"<OSHB code or prefix>\", \"bbhLesson\": N | null, \"unmapped\": true?, \"note\": \"...\"}. A token whose morphology is unmapped or future-lesson can never enter Strict or Guided decks.",
+    "Maps OSHB morphology codes (pinned corpus in corpus-pin.json) to the earliest BBH lesson whose material covers that grammatical feature, or marks them unmapped. Populated in Phase 2 PR D per the mapping policy given to the importer-authoring agent (derived from source/bbh/parsing/lesson_gates.json's verified gates — never invented ad hoc).",
+    "PATTERN SYNTAX. A token's morph attribute (e.g. \"HTd/Ncmsa\") has its language prefix (H=Hebrew, A=Aramaic — Genesis is entirely Hebrew) stripped, then is split on '/' into an ordered list of morpheme segments (e.g. [\"Td\",\"Ncmsa\"]). The importer forms two kinds of test strings per token: WINDOW 1 = a single segment; WINDOW 2 = two adjacent segments joined by '/' (used only for pronominal-suffix host detection). `morphPattern` is an UNANCHORED regex body — the importer tests it as `new RegExp('^(?:' + morphPattern + ')$')` against the relevant window string(s), per the entry's `window` field (1 or 2; default 1). Every window-1 string in a token MUST match some entry (mapped, unmapped, or neutral) — the generic single-letter-POS catch-all entries below (priority 1) guarantee this; window-2 strings are optional/additive and may match nothing.",
+    "ENTRY FIELDS beyond the task's baseline {morphPattern,bbhLesson,unmapped,note}: `window` (1|2, default 1) — which window size this pattern is tested against. `priority` (int, default 0) — when multiple entries match the same window string, the importer picks the highest-priority match; ties are resolved by preferring a mapped match over an unmapped one, then the higher bbhLesson, and are logged as a non-fatal warning by validate_bbh_reader_data.mjs (none are expected to occur with this entry set). `neutral` (bool) — matched, not unmapped, contributes no lesson and does not count toward unmappedCount; used for the bare Sp segment, which is only meaningful when combined with its host via a window-2 rule. `lemmaStrongs` (array of Strong's-number strings) — entry only applies if the window's ALIGNED lemma segment (lemma.split('/')[segmentIndex], with any trailing homonym letter like ' a'/' b' stripped) has this Strong's number; used for the numeral and haya(1961)-imperfect overrides. `isProperName` (bool) — token gets isProperName:true in the emitted data and is excluded from unknown-content-lexeme counts. `vocabLinked` (bool) — this entry's real gate is NOT the literal bbhLesson field; instead the importer resolves it per-token from that token's own vocabLesson match (see the D|Ta|Te|Tj|Tm|Tn|To entry below and tools/import_oshb_reader.mjs for the resolution code).",
+    "STEM-FLOOR ENCODING. Per the task policy, Nifal/Hitpael verb forms floor at L37 and Piel/Hifil floor at L29 regardless of their conjugation's own base lesson (e.g. Piel imperfect: base L23 imperfect, but max(23,29)=29). Rather than have the importer compute max() at runtime, every verb entry below already encodes the PRE-COMPUTED max(conjugationBaseLesson, stemFloor) as its bbhLesson — each entry's `note` states both the base lesson and the floor for traceability. Pual/Hofal (stem codes P/H) are UNMAPPED at any conjugation (appendix-only) — no floor applies because there is no ceiling to raise, they are simply out of scope.",
+    "SEQUENTIAL PERFECT (weqatal, OSHB conjugation letter 'q') is folded into the ordinary perfect entries (conjugation-letter class '[pq]') — the book treats it as the Perfect form gated by number (L16/L19), not as a separate paradigm; do not add a distinct weqatal gate.",
+    "PRIORITY TIERS in use: 100 = numeral lemma override (beats every other N/A rule); 90 = היה imperfect lemma override; 50/40/30 = the three suffix host-detection rules (verb-host / plural-noun-host / fallback-any-host), highest-specificity first; 20 = the main per-POS grammar rules; 1 = per-POS-letter safety-net catch-alls (unmapped) that guarantee every window-1 segment resolves to something even if a real Genesis form was missed when this table was authored.",
     "Populated in Phase 2 PR D alongside tools/import_oshb_reader.mjs. Empty in PR A by design."
   ],
-  "mappings": []
+  "mappings": [
+    {
+      "morphPattern": "Vq[pq]\\d[mfc]s",
+      "window": 1,
+      "bbhLesson": 16,
+      "priority": 20,
+      "note": "qal perfect (incl. sequential/weqatal) singular (base L16 -> L16)"
+    },
+    {
+      "morphPattern": "Vq[pq]\\d[mfc]p",
+      "window": 1,
+      "bbhLesson": 19,
+      "priority": 20,
+      "note": "qal perfect (incl. sequential/weqatal) plural (base L19 -> L19)"
+    },
+    {
+      "morphPattern": "Vqi\\d[mfc]s",
+      "window": 1,
+      "bbhLesson": 23,
+      "priority": 20,
+      "note": "qal imperfect singular (base L23 -> L23)"
+    },
+    {
+      "morphPattern": "Vqi\\d[mfc]p",
+      "window": 1,
+      "bbhLesson": 27,
+      "priority": 20,
+      "note": "qal imperfect plural (base L27 -> L27)"
+    },
+    {
+      "morphPattern": "Vqw\\d[mfc][sp]",
+      "window": 1,
+      "bbhLesson": 35,
+      "priority": 20,
+      "note": "qal wayyiqtol/past-narrative (base L35 -> L35)"
+    },
+    {
+      "morphPattern": "Vqv2[mf][sp]",
+      "window": 1,
+      "bbhLesson": 39,
+      "priority": 20,
+      "note": "qal imperative (base L39 -> L39)"
+    },
+    {
+      "morphPattern": "Vq[hj]\\d[mfc][sp]",
+      "window": 1,
+      "bbhLesson": 39,
+      "priority": 20,
+      "note": "qal jussive/cohortative (base L39 -> L39)"
+    },
+    {
+      "morphPattern": "Vqc",
+      "window": 1,
+      "bbhLesson": 24,
+      "priority": 20,
+      "note": "qal infinitive construct (base L24 -> L24)"
+    },
+    {
+      "morphPattern": "Vqa",
+      "window": 1,
+      "bbhLesson": 25,
+      "priority": 20,
+      "note": "qal infinitive absolute (base L25 -> L25)"
+    },
+    {
+      "morphPattern": "Vq[rs][mf][sdp][acd]",
+      "window": 1,
+      "bbhLesson": 42,
+      "priority": 20,
+      "note": "qal participle (active/passive) (base L42 -> L42)"
+    },
+    {
+      "morphPattern": "V[Nt][pq]\\d[mfc]s",
+      "window": 1,
+      "bbhLesson": 37,
+      "priority": 20,
+      "note": "nifal/hitpael perfect (incl. sequential/weqatal) singular (base L16, stem floor L37 -> L37)"
+    },
+    {
+      "morphPattern": "V[Nt][pq]\\d[mfc]p",
+      "window": 1,
+      "bbhLesson": 37,
+      "priority": 20,
+      "note": "nifal/hitpael perfect (incl. sequential/weqatal) plural (base L19, stem floor L37 -> L37)"
+    },
+    {
+      "morphPattern": "V[Nt]i\\d[mfc]s",
+      "window": 1,
+      "bbhLesson": 37,
+      "priority": 20,
+      "note": "nifal/hitpael imperfect singular (base L23, stem floor L37 -> L37)"
+    },
+    {
+      "morphPattern": "V[Nt]i\\d[mfc]p",
+      "window": 1,
+      "bbhLesson": 37,
+      "priority": 20,
+      "note": "nifal/hitpael imperfect plural (base L27, stem floor L37 -> L37)"
+    },
+    {
+      "morphPattern": "V[Nt]w\\d[mfc][sp]",
+      "window": 1,
+      "bbhLesson": 37,
+      "priority": 20,
+      "note": "nifal/hitpael wayyiqtol/past-narrative (base L35, stem floor L37 -> L37)"
+    },
+    {
+      "morphPattern": "V[Nt]v2[mf][sp]",
+      "window": 1,
+      "bbhLesson": 39,
+      "priority": 20,
+      "note": "nifal/hitpael imperative (base L39, stem floor L37 -> L39)"
+    },
+    {
+      "morphPattern": "V[Nt][hj]\\d[mfc][sp]",
+      "window": 1,
+      "bbhLesson": 39,
+      "priority": 20,
+      "note": "nifal/hitpael jussive/cohortative (base L39, stem floor L37 -> L39)"
+    },
+    {
+      "morphPattern": "V[Nt]c",
+      "window": 1,
+      "bbhLesson": 37,
+      "priority": 20,
+      "note": "nifal/hitpael infinitive construct (base L24, stem floor L37 -> L37)"
+    },
+    {
+      "morphPattern": "V[Nt]a",
+      "window": 1,
+      "bbhLesson": 37,
+      "priority": 20,
+      "note": "nifal/hitpael infinitive absolute (base L25, stem floor L37 -> L37)"
+    },
+    {
+      "morphPattern": "V[Nt][rs][mf][sdp][acd]",
+      "window": 1,
+      "bbhLesson": 42,
+      "priority": 20,
+      "note": "nifal/hitpael participle (active/passive) (base L42, stem floor L37 -> L42)"
+    },
+    {
+      "morphPattern": "V[ph][pq]\\d[mfc]s",
+      "window": 1,
+      "bbhLesson": 29,
+      "priority": 20,
+      "note": "piel/hifil perfect (incl. sequential/weqatal) singular (base L16, stem floor L29 -> L29)"
+    },
+    {
+      "morphPattern": "V[ph][pq]\\d[mfc]p",
+      "window": 1,
+      "bbhLesson": 29,
+      "priority": 20,
+      "note": "piel/hifil perfect (incl. sequential/weqatal) plural (base L19, stem floor L29 -> L29)"
+    },
+    {
+      "morphPattern": "V[ph]i\\d[mfc]s",
+      "window": 1,
+      "bbhLesson": 29,
+      "priority": 20,
+      "note": "piel/hifil imperfect singular (base L23, stem floor L29 -> L29)"
+    },
+    {
+      "morphPattern": "V[ph]i\\d[mfc]p",
+      "window": 1,
+      "bbhLesson": 29,
+      "priority": 20,
+      "note": "piel/hifil imperfect plural (base L27, stem floor L29 -> L29)"
+    },
+    {
+      "morphPattern": "V[ph]w\\d[mfc][sp]",
+      "window": 1,
+      "bbhLesson": 35,
+      "priority": 20,
+      "note": "piel/hifil wayyiqtol/past-narrative (base L35, stem floor L29 -> L35)"
+    },
+    {
+      "morphPattern": "V[ph]v2[mf][sp]",
+      "window": 1,
+      "bbhLesson": 39,
+      "priority": 20,
+      "note": "piel/hifil imperative (base L39, stem floor L29 -> L39)"
+    },
+    {
+      "morphPattern": "V[ph][hj]\\d[mfc][sp]",
+      "window": 1,
+      "bbhLesson": 39,
+      "priority": 20,
+      "note": "piel/hifil jussive/cohortative (base L39, stem floor L29 -> L39)"
+    },
+    {
+      "morphPattern": "V[ph]c",
+      "window": 1,
+      "bbhLesson": 29,
+      "priority": 20,
+      "note": "piel/hifil infinitive construct (base L24, stem floor L29 -> L29)"
+    },
+    {
+      "morphPattern": "V[ph]a",
+      "window": 1,
+      "bbhLesson": 29,
+      "priority": 20,
+      "note": "piel/hifil infinitive absolute (base L25, stem floor L29 -> L29)"
+    },
+    {
+      "morphPattern": "V[ph][rs][mf][sdp][acd]",
+      "window": 1,
+      "bbhLesson": 42,
+      "priority": 20,
+      "note": "piel/hifil participle (active/passive) (base L42, stem floor L29 -> L42)"
+    },
+    {
+      "morphPattern": "V[PH]",
+      "window": 1,
+      "unmapped": true,
+      "priority": 20,
+      "note": "Pual/Hofal stem (any conjugation) — appendix-only per task policy, never gated to a lesson."
+    },
+    {
+      "morphPattern": "Vqi",
+      "window": 1,
+      "bbhLesson": 28,
+      "priority": 90,
+      "lemmaStrongs": [
+        "1961"
+      ],
+      "note": "היה (lemma 1961) qal imperfect, any PGN — gated flat to L28 (irregular היה imperfect paradigm), overriding the regular qal imperfect sg/pl split."
+    },
+    {
+      "morphPattern": "V",
+      "window": 1,
+      "unmapped": true,
+      "priority": 1,
+      "note": "Verb stem outside the 7 primary binyanim taught (qal/nifal/piel/pual/hifil/hofal/hitpael) — e.g. polel/poal/palel/pulal/hithpolel/etc. Not covered by any BBH lesson; safety-net catch-all."
+    },
+    {
+      "morphPattern": "N[cg][bfm]sa",
+      "window": 1,
+      "bbhLesson": 7,
+      "priority": 20,
+      "note": "Common/gentilic noun, singular, absolute state — L7 noun endings."
+    },
+    {
+      "morphPattern": "N[cg][bfm][pd]a",
+      "window": 1,
+      "bbhLesson": 10,
+      "priority": 20,
+      "note": "Common/gentilic noun, plural or dual, absolute state — L10 plural/dual endings."
+    },
+    {
+      "morphPattern": "N[cg][bfm][spd]c",
+      "window": 1,
+      "bbhLesson": 20,
+      "priority": 20,
+      "note": "Common/gentilic noun, any number, construct state — L20 bound/construct state (supersedes the abs. sg/pl gates for this token; construct is taught as its own category regardless of number)."
+    },
+    {
+      "morphPattern": "Np",
+      "window": 1,
+      "bbhLesson": 5,
+      "priority": 20,
+      "isProperName": true,
+      "note": "Proper noun (name) — names appear in readings from the earliest lessons (L5 independent-pronoun lesson introduces the first narrative material); marked isProperName so it is excluded from unknown-content-lexeme counts."
+    },
+    {
+      "morphPattern": "N",
+      "window": 1,
+      "unmapped": true,
+      "priority": 1,
+      "note": "Noun form not matched by the common/gentilic/proper rules above (e.g. Aramaic 'determined' state, which does not occur in Genesis but is guarded here). Safety-net catch-all."
+    },
+    {
+      "morphPattern": "A[acgo][bfm][spd][acd]",
+      "window": 1,
+      "bbhLesson": 32,
+      "priority": 20,
+      "note": "Adjective (any type/gender/number/state) — L32 adjective inflection. Construct-state adjectives still land here: max(L32 adjective, L20 construct) = L32, so no separate construct rule is needed for adjectives."
+    },
+    {
+      "morphPattern": "A",
+      "window": 1,
+      "unmapped": true,
+      "priority": 1,
+      "note": "Adjective form not matched by the rule above. Safety-net catch-all."
+    },
+    {
+      "morphPattern": "[AN]",
+      "window": 1,
+      "bbhLesson": 45,
+      "priority": 100,
+      "lemmaStrongs": [
+        "259",
+        "8147",
+        "7969",
+        "702",
+        "2568",
+        "8337",
+        "7651",
+        "8083",
+        "8672",
+        "6235"
+      ],
+      "note": "Numerals 1-10 (Strong's 259 אחד, 8147 שניים, 7969 שלוש, 702 ארבע, 2568 חמש, 8337 שש, 7651 שבע, 8083 שמונה, 8672 תשע, 6235 עשר), tagged by OSHB as noun or adjective — overridden to L45 (numerals lesson) regardless of the underlying N/A morph shape. Priority 100 beats every other N/A rule."
+    },
+    {
+      "morphPattern": "Pp[123][mfc]s",
+      "window": 1,
+      "bbhLesson": 5,
+      "priority": 20,
+      "note": "Personal (independent) pronoun, singular — L5 singular subject pronouns."
+    },
+    {
+      "morphPattern": "Pp[123][mfc]p",
+      "window": 1,
+      "bbhLesson": 11,
+      "priority": 20,
+      "note": "Personal (independent) pronoun, plural — L11 plural subject pronouns."
+    },
+    {
+      "morphPattern": "Pd\\w*",
+      "window": 1,
+      "bbhLesson": 33,
+      "priority": 20,
+      "note": "Demonstrative pronoun (near/far) — L33 demonstratives."
+    },
+    {
+      "morphPattern": "Pi\\w*",
+      "window": 1,
+      "bbhLesson": 14,
+      "priority": 20,
+      "note": "Interrogative pronoun — L14 interrogative-words table is the grammar gate (מי/מה individually enter vocab earlier at L6/L8, tracked separately via vocabLesson)."
+    },
+    {
+      "morphPattern": "P",
+      "window": 1,
+      "unmapped": true,
+      "priority": 1,
+      "note": "Pronoun type not covered above (indefinite Pf, relative Pr, or malformed) — not taught as a dedicated paradigm in this course. Safety-net catch-all."
+    },
+    {
+      "morphPattern": "Td",
+      "window": 1,
+      "bbhLesson": 8,
+      "priority": 20,
+      "note": "Definite article (as its own particle segment) — L8 article."
+    },
+    {
+      "morphPattern": "Ti",
+      "window": 1,
+      "bbhLesson": 14,
+      "priority": 20,
+      "note": "Interrogative particle (ה‐ yes/no question marker family) — L14 interrogatives table."
+    },
+    {
+      "morphPattern": "Tr",
+      "window": 1,
+      "bbhLesson": 30,
+      "priority": 20,
+      "note": "Relative particle אשר — L30 (Main and Subordinate Clauses). Checked against the vocab CSV per the task brief: אשר is NOT present as its own vocab row anywhere in source/bbh/Beginning_Biblical_Hebrew_Vocabulary_by_Lesson.csv, so there is no earlier vocab lesson to defer to — the L30 grammar gate stands as authored."
+    },
+    {
+      "morphPattern": "D|Ta|Te|Tj|Tm|Tn|To",
+      "window": 1,
+      "vocabLinked": true,
+      "bbhLesson": 1,
+      "priority": 20,
+      "note": "Adverbs (D) and the closed-class particles affirmation/emphasis (Ta), entreaty 'נא' (Te), interjection (Tj), demonstrative/existential particles e.g. הנה/כן/יש (Tm), negative לא (Tn), and the direct-object marker את/אות (To) have no dedicated syntax paradigm lesson in this course — per the task brief's explicit instruction for adverbs ('gate by vocabulary presence only, grammar gate 1'), extended uniformly to this whole closed-class-particle family for the same reason (each is either core vocabulary taught from an early lesson, e.g. לא/את/כן at L5, יש at L12, or has no in-course paradigm at all). vocabLinked:true tells the importer to resolve this token's grammar contribution from its OWN vocabLesson match: found-in-CSV -> flat L1 (always in scope, effectively ungated); not found -> unmapped. See gate-map.json notes and tools/import_oshb_reader.mjs for the resolution code."
+    },
+    {
+      "morphPattern": "T",
+      "window": 1,
+      "unmapped": true,
+      "priority": 1,
+      "note": "Particle type not covered above. Safety-net catch-all."
+    },
+    {
+      "morphPattern": "Rd?",
+      "window": 1,
+      "bbhLesson": 13,
+      "priority": 20,
+      "note": "Preposition, with or without the fused article (Rd) — L13 (ו/ב/כ/ל/מן attach directly to the following word)."
+    },
+    {
+      "morphPattern": "R",
+      "window": 1,
+      "unmapped": true,
+      "priority": 1,
+      "note": "Preposition form not matched by Rd? above. Should not fire in practice; safety-net catch-all."
+    },
+    {
+      "morphPattern": "C",
+      "window": 1,
+      "bbhLesson": 13,
+      "priority": 20,
+      "note": "Conjunction ו — L13 (taught alongside the attaching prepositions)."
+    },
+    {
+      "morphPattern": "Sd|Sn|Sh",
+      "window": 1,
+      "unmapped": true,
+      "priority": 20,
+      "note": "Directional he (Sd), paragogic nun (Sn), paragogic he (Sh) — task policy: directional/paragogic suffixes are UNMAPPED (appendix-only). Sh grouped in with Sd/Sn as the same paragogic-suffix family though not separately named in the task brief."
+    },
+    {
+      "morphPattern": "Sp\\d[mfc][sp]",
+      "window": 1,
+      "neutral": true,
+      "priority": 20,
+      "note": "Bare pronominal suffix segment, standalone. Never scored on its own — always co-occurs with a preceding host segment, which is what the window:2 host+suffix rules below actually score. neutral:true means: matched, not unmapped, contributes no lesson (prevents the generic 'S' catch-all from wrongly flagging every suffixed word as unmapped)."
+    },
+    {
+      "morphPattern": "S",
+      "window": 1,
+      "unmapped": true,
+      "priority": 1,
+      "note": "Suffix type not covered above. Safety-net catch-all."
+    },
+    {
+      "morphPattern": "V[^/]*/Sp\\d[mfc][sp]",
+      "window": 2,
+      "bbhLesson": 40,
+      "priority": 50,
+      "note": "Pronominal suffix on a verb host (any stem/conjugation) — L40 object pronouns attached to verbs. Highest priority among the three suffix-host rules."
+    },
+    {
+      "morphPattern": "N[cg][bfm][pd][ac]/Sp\\d[mfc][sp]",
+      "window": 2,
+      "bbhLesson": 31,
+      "priority": 40,
+      "note": "Pronominal suffix on a plural/dual noun host — L31 (attached pronouns, plural-host set, completing L22)."
+    },
+    {
+      "morphPattern": "[^/]+/Sp\\d[mfc][sp]",
+      "window": 2,
+      "bbhLesson": 22,
+      "priority": 30,
+      "note": "Pronominal suffix on any other host (singular noun, preposition R/Rd, direct-object marker To, etc.) — L22 (attached pronouns, singular-host set). Lowest-priority fallback among the three suffix-host rules — fires only when neither the verb-host nor plural-noun-host rule above matched."
+    }
+  ]
 }
