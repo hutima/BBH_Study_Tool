@@ -641,6 +641,30 @@ book (canonical order) since it only links existing cards; per-book
 coverage rises with the larger advanced pool. check_release check5c
 counts update accordingly.
 
+**Status: implemented, uncommitted** (2026-08-09). `FULL_TANAKH_BOOK_LIST`
+(39 codes, canonical Leningrad-Codex/BHS print order sourced from the
+pinned checkout's own `structure/OshbVerse/Script/Books.js`) added to
+`tools/gen_bbh_advanced_vocab.mjs`, passed into `importReaderCorpus({
+books })`; `BOOK_META` grew from 8 to 39 entries in the same order
+(existing 8 slugs kept stable), guarded by an `assertBookMetaMatchesFullList()`
+drift check. No changes to `tools/import_oshb_reader.mjs`'s own 8-book
+`BOOK_LIST` (Reader is untouched — still 8 curated books) or to
+`source/bbh/`. Results: 39 buckets / 3,880 advanced cards (was 18/1,726),
+5,820/5,820 Strong's glosses resolved (0 missing, well under the 2% miss
+budget), Book Vocab 39 books at 78.7–98.7% per-book coverage. Verified
+zero of the 1,726 pre-existing `bbh-adv-*` ids dropped (Strong's-keyed ids
+are frequency-invariant; script-checked, not eyeballed) and their lemma
+text is byte-identical. Generator reruns byte-identical (sha1 x2).
+`check_release.mjs` check5c now asserts exact counts (39/3880/39, matching
+check5's `=== N` style) — 24 reports, 0 failures. `?v=18`.
+index.html/docs/index-structure.md copy updated (whole-Tanakh scope,
+3,800+ cards). `scratchpad/smoke_book_vocab.mjs` (39-book-section
+assertion added) and `scratchpad/smoke_pr_h.mjs` rerun green (only the
+documented env-only GA console-error check fails in both). Spot-check: a
+lemma absent from the old 8-book corpus (מְדִינָה "province", Strong
+4082) now ranks #6 in Esther's Book Vocab. See `RESTORE.md`'s task-23
+entry for the full numbers.
+
 ## Addendum (user request, 2026-08-09): task #24 — Reader: more prose + poetry challenge
 
 "Expand reader to other prose books to allow for more variety, maybe

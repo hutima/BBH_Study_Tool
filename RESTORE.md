@@ -165,7 +165,51 @@
   translation labeled unofficial + still-draft; tier-clarity captions;
   challenge toggle hidden when none at gate; surface the new `gent` flag
   ("gentilic name" label, distinct from a personal/place name).
-- **Queue**: task #15 advanced vocab + vocab-by-book decks.
+- **Task #23 IMPLEMENTED, UNCOMMITTED** (whole-Tanakh advanced vocab, user
+  request: "Advanced vocab should cover every OT book just as a general
+  memorization tool"): `tools/gen_bbh_advanced_vocab.mjs` now feeds on all
+  39 OSHB `wlc/*.xml` books (same pinned commit `6a5db284...`, dev-time
+  only) instead of the Reader's 8-book subset — `FULL_TANAKH_BOOK_LIST`
+  (canonical Leningrad-Codex/BHS print order, verified against the pinned
+  checkout's own `structure/OshbVerse/Script/Books.js`), passed into
+  `importReaderCorpus({ books: ... })`. Every existing rule unchanged
+  (content-class filter N/V/A non-proper/gentilic, min corpus freq 2,
+  buckets of 100/sub-groups of 25, `bbh-adv-<strongs>` ids, excluded from
+  course totals). New numbers: 39 buckets / **3,880** advanced cards (was
+  18/1,726), Strong's glosses **5,820/5,820 resolved (0 missing)**, Book
+  Vocab now **39 books** (was 8) at 78–98% per-book coverage (worst: Daniel
+  78.7%/Ezra 83.2%, both due to the Aramaic sections' distinct lemma set
+  diluting a smaller per-book distinct-lexeme denominator — not a bug).
+  Verified: all 1,726 pre-existing `bbh-adv-*` ids present in the new file
+  with byte-identical lemma (`g`) text — **zero drops**, confirming no
+  migration is needed (Strong's-keyed ids are frequency-invariant).
+  Generator reruns byte-identical (sha1-verified twice). `?v=17` → `?v=18`
+  across `index.html`/`sw.js`/`styles.css`/`pages/memorization.html`/
+  `docs/index-structure.md` (CACHE_NAME synced). `check_release.mjs`
+  check5c rewritten to exact counts (39 buckets / 3880 cards / 39 Book
+  Vocab entries, matching check5's `=== N` style) — **24 reports, 0
+  failures**. index.html's advanced-section blurbs + user-guide copy
+  updated ("1,700+" → "3,800+", "8-book"/"OSHB corpus (8 books)" → "whole
+  Hebrew Bible (all 39 OSHB Tanakh books)"); `docs/index-structure.md`
+  synced. `scratchpad/smoke_book_vocab.mjs` gained an explicit "exactly 39
+  Book Vocab book sections render" assertion and reruns green (only the
+  known env-only GA `ERR_TUNNEL_CONNECTION_FAILED` console-error check
+  fails, as documented); `scratchpad/smoke_pr_h.mjs` reruns green (same
+  single known failure). Spot-checked a rare-book lemma NOT reachable
+  under the old 8-book corpus: מְדִינָה "province" (Strong 4082,
+  `bbh-adv-4082`) now ranks #6 in Esther's own Book Vocab list — Esther's
+  signature "127 provinces" term, invisible to the old Genesis/Ruth/Jonah/
+  Exod/Deut/Judg/1-2Sam corpus. Files touched: `tools/
+  gen_bbh_advanced_vocab.mjs`, `js/data/bbh_advanced_vocab.js`
+  (regenerated), `tools/check_release.mjs`, `index.html`, `sw.js`,
+  `styles.css`, `pages/memorization.html`, `docs/index-structure.md`,
+  `docs/bbh-conversion-plan.md` (task-23 addendum status note),
+  `scratchpad/smoke_book_vocab.mjs`. NOT committed per orchestrator
+  instruction — working tree left for the orchestrator to review/commit.
+  Task #24 (Reader prose/poetry expansion) remains queued, untouched by
+  this pass.
+- **Queue**: task #24 (Reader: more prose books + simple-poetry challenge
+  tier), addendum already drafted in docs/bbh-conversion-plan.md.
 
 ## Repository and PR state
 

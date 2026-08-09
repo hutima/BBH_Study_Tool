@@ -5,9 +5,9 @@
 // bookVocabSection — see docs/bbh-conversion-plan.md's task-20 addendum):
 //
 //   1. Advanced vocabulary: EVERY content lemma (noun/verb/adjective,
-//      non-proper, non-gentilic) across the 8-book OSHB corpus that is NOT
-//      one of the 209 lesson-vocab cards, min corpus frequency 2, ordered
-//      by descending corpus frequency. Bucketed in groups of 100 ("Advanced
+//      non-proper, non-gentilic) across the corpus that is NOT one of the
+//      209 lesson-vocab cards, min corpus frequency 2, ordered by
+//      descending corpus frequency. Bucketed in groups of 100 ("Advanced
 //      1-100", "101-200", ...), each with sub-groups of 25 (a `sub` field
 //      on every card, e.g. "1-25") for the study-selector UI. Each becomes
 //      a REAL new card (id `bbh-adv-<strongs>`) — own id namespace, so
@@ -27,6 +27,23 @@
 //      advanced frequency floor, or excluded as proper/gentilic/numeral)
 //      is simply absent from every book's list.
 //
+// TASK #23 (user request, 2026-08-09) — "Advanced vocab should cover every
+// OT book just as a general memorization tool": the corpus scope widened
+// from the Reader's 8-book curated set to ALL 39 OSHB books (the whole
+// Tanakh), at the SAME pinned commit. Only the corpus INPUT changed — every
+// rule above (content-class filter, proper/gentilic exclusion, min
+// frequency 2, bucket/sub-group sizes, id scheme, exclusion-from-course-
+// totals) is unchanged. Two things follow mechanically from a bigger
+// corpus: more distinct qualifying lemmas (more/bigger buckets) and higher
+// per-book link coverage (a book's own rare words are now far more likely
+// to also clear the freq>=2 floor GLOBALLY, since "globally" now means the
+// whole Bible instead of 8 books). Book Vocab's BOOK_META below grew from
+// 8 books to all 39, in a fixed canonical (Leningrad-Codex/BHS print)
+// order — see FULL_TANAKH_BOOK_LIST below for the source of that order.
+// The Reader itself (`tools/import_oshb_reader.mjs`'s own BOOK_LIST,
+// `js/data/bbh_reader.js`) is UNCHANGED — it still ships 8 curated books;
+// this task only widens the vocab-frequency corpus, not the Reader.
+//
 // REUSE, NOT REIMPLEMENTATION (per the task brief):
 //   - tools/gen_bbh_data.mjs: buildLessons() for the exact same 209 real
 //     lesson cards (with their real, already-shipped ids) this file needs
@@ -45,8 +62,14 @@
 //     `translit`.
 //
 // Sources (hand-maintained/pinned, authoritative — never generated into):
-//   - source/bbh/reader/corpus-pin.json (OSHB + Strong's pins)
-//   - source/bbh/reader/gate-map.json (numeral-lemma exclusion list)
+//   - source/bbh/reader/corpus-pin.json (OSHB + Strong's pins; task #23
+//     reads the SAME pin, all 39 wlc/*.xml books at that one commit — no
+//     new pin, no new checkout)
+//   - source/bbh/reader/gate-map.json (numeral-lemma exclusion list; also
+//     supplies the sole isProperName gate-map entry (bare morph pattern
+//     "Np", no lemmaStrongs restriction) that importReaderCorpus()'s
+//     classifyToken() needs — that entry is morphology-only, so it applies
+//     identically to every book, not just the original 8)
 //   - source/bbh/Beginning_Biblical_Hebrew_Vocabulary_by_Lesson.csv (via
 //     buildLessons(), the 209-card exclusion/linking set)
 //   - tools/import_oshb_reader.mjs's LEMMA_OVERRIDES
@@ -118,16 +141,73 @@ const ADV_SUB_SIZE = 25;
 const ADV_MIN_FREQUENCY = 2;
 const BOOK_GROUP_SIZE = 50;
 
-// ─── Book display metadata (fixed, documented order — mirrors BOOK_LIST) ──
+// ─── Whole-Tanakh corpus scope (task #23) ──────────────────────────────────
+// All 39 OSHB wlc/*.xml basenames, in the canonical Hebrew-Bible PRINT
+// order the corpus's own source uses: the Leningrad Codex / BHS order —
+// Torah, then Nevi'im Rishonim (Former Prophets), then Nevi'im Acharonim
+// (Latter Prophets: the three major books, then the Twelve in their
+// traditional sequence), then Ketuvim (Writings, Chronicles-first order —
+// this is the WLC/Leningrad Codex's OWN book order, verified against the
+// pinned checkout's structure/OshbVerse/Script/Books.js manifest, i.e. not
+// hand-guessed). This is a strict superset (by content, re-ordered) of the
+// 8 books tools/import_oshb_reader.mjs's Reader-scoped BOOK_LIST already
+// uses — this list is intentionally separate from that one: the Reader
+// stays 8 curated books; only this generator's corpus widens.
+export const FULL_TANAKH_BOOK_LIST = [
+  // Torah
+  'Gen', 'Exod', 'Lev', 'Num', 'Deut',
+  // Nevi'im Rishonim (Former Prophets)
+  'Josh', 'Judg', '1Sam', '2Sam', '1Kgs', '2Kgs',
+  // Nevi'im Acharonim (Latter Prophets): the three, then the Twelve
+  'Isa', 'Jer', 'Ezek',
+  'Hos', 'Joel', 'Amos', 'Obad', 'Jonah', 'Mic', 'Nah', 'Hab', 'Zeph', 'Hag', 'Zech', 'Mal',
+  // Ketuvim (Writings), Leningrad-Codex order
+  'Ps', 'Prov', 'Job', 'Song', 'Ruth', 'Lam', 'Eccl', 'Esth', 'Dan', 'Ezra', 'Neh', '1Chr', '2Chr'
+];
+
+// ─── Book display metadata (fixed, canonical order — see
+// FULL_TANAKH_BOOK_LIST above; existing 8 books keep their PRE-EXISTING
+// slugs unchanged so nothing keyed to them breaks) ──────────────────────
 const BOOK_META = [
   { code: 'Gen', slug: 'gen', display: 'Genesis' },
-  { code: 'Ruth', slug: 'ruth', display: 'Ruth' },
-  { code: 'Jonah', slug: 'jonah', display: 'Jonah' },
   { code: 'Exod', slug: 'exod', display: 'Exodus' },
+  { code: 'Lev', slug: 'lev', display: 'Leviticus' },
+  { code: 'Num', slug: 'num', display: 'Numbers' },
   { code: 'Deut', slug: 'deut', display: 'Deuteronomy' },
+  { code: 'Josh', slug: 'josh', display: 'Joshua' },
   { code: 'Judg', slug: 'judg', display: 'Judges' },
   { code: '1Sam', slug: '1sam', display: '1 Samuel' },
-  { code: '2Sam', slug: '2sam', display: '2 Samuel' }
+  { code: '2Sam', slug: '2sam', display: '2 Samuel' },
+  { code: '1Kgs', slug: '1kgs', display: '1 Kings' },
+  { code: '2Kgs', slug: '2kgs', display: '2 Kings' },
+  { code: 'Isa', slug: 'isa', display: 'Isaiah' },
+  { code: 'Jer', slug: 'jer', display: 'Jeremiah' },
+  { code: 'Ezek', slug: 'ezek', display: 'Ezekiel' },
+  { code: 'Hos', slug: 'hos', display: 'Hosea' },
+  { code: 'Joel', slug: 'joel', display: 'Joel' },
+  { code: 'Amos', slug: 'amos', display: 'Amos' },
+  { code: 'Obad', slug: 'obad', display: 'Obadiah' },
+  { code: 'Jonah', slug: 'jonah', display: 'Jonah' },
+  { code: 'Mic', slug: 'mic', display: 'Micah' },
+  { code: 'Nah', slug: 'nah', display: 'Nahum' },
+  { code: 'Hab', slug: 'hab', display: 'Habakkuk' },
+  { code: 'Zeph', slug: 'zeph', display: 'Zephaniah' },
+  { code: 'Hag', slug: 'hag', display: 'Haggai' },
+  { code: 'Zech', slug: 'zech', display: 'Zechariah' },
+  { code: 'Mal', slug: 'mal', display: 'Malachi' },
+  { code: 'Ps', slug: 'ps', display: 'Psalms' },
+  { code: 'Prov', slug: 'prov', display: 'Proverbs' },
+  { code: 'Job', slug: 'job', display: 'Job' },
+  { code: 'Song', slug: 'song', display: 'Song of Songs' },
+  { code: 'Ruth', slug: 'ruth', display: 'Ruth' },
+  { code: 'Lam', slug: 'lam', display: 'Lamentations' },
+  { code: 'Eccl', slug: 'eccl', display: 'Ecclesiastes' },
+  { code: 'Esth', slug: 'esth', display: 'Esther' },
+  { code: 'Dan', slug: 'dan', display: 'Daniel' },
+  { code: 'Ezra', slug: 'ezra', display: 'Ezra' },
+  { code: 'Neh', slug: 'neh', display: 'Nehemiah' },
+  { code: '1Chr', slug: '1chr', display: '1 Chronicles' },
+  { code: '2Chr', slug: '2chr', display: '2 Chronicles' }
 ];
 
 // ─── 1. Numeral-lemma exclusion set, read from gate-map.json ──────────────
@@ -391,6 +471,13 @@ const HEADER = [
   '// never new cards) — never merged into window.SETS; resolved at deck-',
   '// build time by js/domain/deck/filters.js\'s resolveBookVocabCards.',
   '//',
+  '// Task #23: corpus widened from the Reader\'s 8-book subset to all 39',
+  '// OSHB books (the whole Tanakh, same pinned commit) — every rule above',
+  '// (content-class filter, proper/gentilic exclusion, min frequency 2,',
+  '// bucket/sub-group sizes, id scheme) is unchanged; only the corpus input',
+  '// and the Book Vocab book list grew. bbh-adv-<strongs> ids are Strong\'s-',
+  '// keyed, so pre-existing saved marks stay valid across this change.',
+  '//',
   '// Never edit this file by hand — re-run the generator instead. Never edit',
   '// source/bbh/ from here or anywhere else.',
   ''
@@ -415,12 +502,23 @@ function writeAdvancedVocabFile({ buckets, books }) {
   return parts.join('');
 }
 
+// BOOK_META and FULL_TANAKH_BOOK_LIST are two hand-authored parallel lists
+// (one carries display/slug metadata the other doesn't need) — guard
+// against them drifting apart silently.
+function assertBookMetaMatchesFullList() {
+  const metaCodes = BOOK_META.map((m) => m.code);
+  if (metaCodes.length !== FULL_TANAKH_BOOK_LIST.length || metaCodes.some((c, i) => c !== FULL_TANAKH_BOOK_LIST[i])) {
+    throw new Error('gen_bbh_advanced_vocab: BOOK_META and FULL_TANAKH_BOOK_LIST have drifted apart (order/content mismatch) — keep them in lockstep.');
+  }
+}
+
 // ─── 9. Top-level build ─────────────────────────────────────────────────
 function main() {
+  assertBookMetaMatchesFullList();
   const numeralStrongsSet = loadNumeralStrongsSet();
   const { cardsByLesson, idByDepointedHeadword } = buildLessonCardIndex();
 
-  const { verses } = importReaderCorpus({ verifyPin: true });
+  const { verses } = importReaderCorpus({ verifyPin: true, books: FULL_TANAKH_BOOK_LIST });
   const { perBook, global } = countContentFrequencies({ verses, numeralStrongsSet });
 
   const distinctStrongs = [...global.keys()].sort((a, b) => Number(a) - Number(b));

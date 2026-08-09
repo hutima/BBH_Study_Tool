@@ -29,10 +29,11 @@
 //      2Sam), js/data/bbh_alphabet.js exactly 23 letters + 12 vowels,
 //      js/data/bbh_reference_extra.js at least 40 sections.
 //   5c. js/data/bbh_advanced_vocab.js (task #20, advanced vocab + Book
-//      Vocab, replacing task #15's bbh_book_vocab.js) registers at least
-//      1 advanced-vocab bucket with a nonzero card count, and exactly 8
-//      Book Vocab book entries (one per Reader corpus book), with a
-//      per-bucket/per-book count report line.
+//      Vocab, replacing task #15's bbh_book_vocab.js; task #23 widened the
+//      corpus from the Reader's 8 books to the whole 39-book Tanakh)
+//      registers exactly 39 advanced-vocab buckets totaling exactly 3880
+//      cards, and exactly 39 Book Vocab book entries (one per OSHB/Tanakh
+//      book), with a per-bucket/per-book count report line.
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
 //   7. Google Analytics is REQUIRED and pinned to the owner's own GA4
 //      property (owner decision 2026-08-09, reversing Phase 2 architecture
@@ -414,8 +415,10 @@ function readDirSafe(dir) {
   }
 }
 
-// ── Check 5c: bbh_advanced_vocab.js registers advanced buckets + 8 Book
-//    Vocab book entries (task #20, replacing task #15's bbh_book_vocab.js) ──
+// ── Check 5c: bbh_advanced_vocab.js registers advanced buckets + 39 Book
+//    Vocab book entries (task #20, replacing task #15's bbh_book_vocab.js;
+//    task #23 widened the corpus from 8 books to the whole 39-book Tanakh,
+//    so the exact counts below grew accordingly) ──────────────────────────
 {
   const advancedVocabPath = 'js/data/bbh_advanced_vocab.js';
   if (!existsSync(path.join(ROOT, advancedVocabPath))) {
@@ -434,17 +437,19 @@ function readDirSafe(dir) {
 
     const bucketKeys = [...advSection.matchAll(/"key":\s*"(ADV\d+)"/g)].map((m) => m[1]);
     const totalAdvCards = [...advSection.matchAll(/"id":\s*"bbh-adv-[^"]+"/g)].length;
-    if (!bucketKeys.length || !totalAdvCards) {
-      fail(`check5c: expected at least 1 advanced-vocab bucket with cards in ${advancedVocabPath}, found ${bucketKeys.length} buckets / ${totalAdvCards} cards`);
+    if (bucketKeys.length !== 39) {
+      fail(`check5c: expected 39 advanced-vocab buckets in ${advancedVocabPath}, found ${bucketKeys.length}`);
+    } else if (totalAdvCards !== 3880) {
+      fail(`check5c: expected 3880 advanced-vocab cards in ${advancedVocabPath}, found ${totalAdvCards}`);
     } else {
       report(`check5c: ${bucketKeys.length} advanced buckets / ${totalAdvCards} cards registered in bbh_advanced_vocab.js (pass)`);
     }
 
     const bookKeys = [...bookSection.matchAll(/"key":\s*"([a-z0-9]+)"/g)].map((m) => m[1]);
-    if (bookKeys.length !== 8) {
-      fail(`check5c: expected 8 Book Vocab book entries in ${advancedVocabPath}, found ${bookKeys.length}`);
+    if (bookKeys.length !== 39) {
+      fail(`check5c: expected 39 Book Vocab book entries in ${advancedVocabPath}, found ${bookKeys.length}`);
     } else {
-      report(`check5c: 8 Book Vocab book entries registered in bbh_advanced_vocab.js (pass)`);
+      report(`check5c: 39 Book Vocab book entries registered in bbh_advanced_vocab.js (pass)`);
     }
     // Per-book ref counts: split bookSection on each book's own "key" line
     // (same light-regex-parse, no-execution style as every other check5*

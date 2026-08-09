@@ -23,11 +23,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=17">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=17">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=17">
+<link rel="manifest" href="manifest.json?v=18">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=18">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=18">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=17">
+<link rel="stylesheet" href="styles.css?v=18">
 <script>
 (function(){
   try {
@@ -503,7 +503,7 @@
           <span class="selector-label" style="margin-bottom:0">Advanced vocabulary</span>
           <span class="advanced-section-meta" id="advancedSectionMeta"></span>
         </summary>
-        <p class="advanced-section-blurb">Rare Hebrew Bible lemmas not covered in your course, ordered by descending corpus frequency in buckets of 100 (sub-groups of 25). These are not counted toward course-wide progress, but they do appear in the analytics for whatever you have selected.</p>
+        <p class="advanced-section-blurb">Hebrew Bible lemmas not covered in your course, drawn from the whole Tanakh (all 39 books) and ordered by descending corpus frequency in buckets of 100 (sub-groups of 25). These are not counted toward course-wide progress, but they do appear in the analytics for whatever you have selected.</p>
         <div id="advancedGrid"></div>
       </details>
     </div>
@@ -513,7 +513,7 @@
           <span class="selector-label" style="margin-bottom:0">Book Vocab</span>
           <span class="advanced-section-meta" id="bookVocabSectionMeta"></span>
         </summary>
-        <p class="advanced-section-blurb">Every lexeme with vocab coverage appearing in each book, grouped into sets of 50 by how often it occurs in that book. These are not new cards &mdash; each links to its existing card, so studying a book&rsquo;s vocabulary shares progress with that word&rsquo;s home lesson or advanced bucket. Frequencies are drawn from the OSHB corpus (8 books).</p>
+        <p class="advanced-section-blurb">Every lexeme with vocab coverage appearing in each book, grouped into sets of 50 by how often it occurs in that book. These are not new cards &mdash; each links to its existing card, so studying a book&rsquo;s vocabulary shares progress with that word&rsquo;s home lesson or advanced bucket. Frequencies are drawn from the whole Hebrew Bible (all 39 OSHB Tanakh books).</p>
         <div id="bookVocabGrid"></div>
       </details>
     </div>
@@ -530,7 +530,7 @@
     <h2 id="shortcutsTitle">How to use this app</h2>
     <div class="consent-copy user-guide-copy">
       <p>An unofficial, student-made study aid for John A. Cook &amp; Robert D. Holmstedt, <em>Beginning Biblical Hebrew: A Grammar and Illustrated Reader</em> (Baker Academic) &mdash; not affiliated with or endorsed by the authors or publisher. Four study modes (Vocabulary, Parsing, Grammar, Reader) all run locally in your browser; your study progress, marks, and stats stay on this device unless you explicitly export them as a JSON file yourself. The app does use Google Analytics for anonymous page-visit statistics (so the maintainer can see the app is being used) &mdash; but your study data is never part of that.</p>
-      <p>The Study Selector&rsquo;s <strong>Advanced vocabulary</strong> section adds 1,700+ optional cards beyond the 50-lesson course: every noun/verb/adjective lemma (excluding proper names and gentilics) attested at least twice across the 8-book Hebrew Bible corpus that ISN&rsquo;T already taught in the 209-card lesson vocabulary, ordered by descending corpus frequency in buckets of 100 (sub-groups of 25). They study exactly like a lesson deck (spaced repetition, marks, export) but don&rsquo;t count toward the 209-card course total &mdash; they do show up in the analytics for whatever you have selected, though. The <strong>Book Vocab</strong> section below it is different: it adds no new cards at all. For each book, every lexeme with vocab coverage (a 209-lesson card or an Advanced-vocabulary card) is grouped into sets of 50 by in-book frequency; picking a set just links in the cards that are already there, so your progress on a word is the same whether you studied it via its lesson, its advanced bucket, or a book&rsquo;s vocabulary set.</p>
+      <p>The Study Selector&rsquo;s <strong>Advanced vocabulary</strong> section adds 3,800+ optional cards beyond the 50-lesson course: every noun/verb/adjective lemma (excluding proper names and gentilics) attested at least twice across the whole Hebrew Bible (all 39 OSHB Tanakh books) that ISN&rsquo;T already taught in the 209-card lesson vocabulary, ordered by descending corpus frequency in buckets of 100 (sub-groups of 25) &mdash; a general memorization tool spanning every Old Testament book, not just the Reader&rsquo;s 8 curated books. They study exactly like a lesson deck (spaced repetition, marks, export) but don&rsquo;t count toward the 209-card course total &mdash; they do show up in the analytics for whatever you have selected, though. The <strong>Book Vocab</strong> section below it is different: it adds no new cards at all. For each of the 39 Tanakh books, every lexeme with vocab coverage (a 209-lesson card or an Advanced-vocabulary card) is grouped into sets of 50 by in-book frequency; picking a set just links in the cards that are already there, so your progress on a word is the same whether you studied it via its lesson, its advanced bucket, or a book&rsquo;s vocabulary set.</p>
       <p class="user-guide-attribution">Reader passages: Hebrew text and morphology from the Open Scriptures Hebrew Bible Project (https://github.com/openscriptures/morphhb), OSHB version 2.2 (v.2.2). Lemma and morphology data licensed under CC BY 4.0. Advanced vocabulary and Book Vocab: headwords and glosses from the Open Scriptures Strong&rsquo;s Hebrew Dictionary project (https://github.com/openscriptures/strongs), public domain.</p>
 
       <details class="user-guide-changelog">
@@ -766,15 +766,15 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=17"></script>
-<script defer src="js/data/bbh_advanced_vocab.js?v=17"></script>
-<script defer src="js/data/bbh_reference_data.js?v=17"></script>
-<script defer src="js/data/bbh_parsing.js?v=17"></script>
-<script defer src="js/data/bbh_grammar.js?v=17"></script>
-<script defer src="js/data/bbh_reader.js?v=17"></script>
-<script defer src="js/data/bbh_alphabet.js?v=17"></script>
-<script defer src="js/logic/pos_logic.js?v=17"></script>
-<script defer src="js/pwa/swUpdate.js?v=17"></script>
-<script type="module" src="js/app/main.js?v=17"></script>
+<script defer src="js/data/bbh_vocab.js?v=18"></script>
+<script defer src="js/data/bbh_advanced_vocab.js?v=18"></script>
+<script defer src="js/data/bbh_reference_data.js?v=18"></script>
+<script defer src="js/data/bbh_parsing.js?v=18"></script>
+<script defer src="js/data/bbh_grammar.js?v=18"></script>
+<script defer src="js/data/bbh_reader.js?v=18"></script>
+<script defer src="js/data/bbh_alphabet.js?v=18"></script>
+<script defer src="js/logic/pos_logic.js?v=18"></script>
+<script defer src="js/pwa/swUpdate.js?v=18"></script>
+<script type="module" src="js/app/main.js?v=18"></script>
 </body>
 </html>
