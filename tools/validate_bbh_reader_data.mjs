@@ -15,7 +15,10 @@
 //   3. selections.json shape (required fields, tier whitelist, unique ids,
 //      ref/osisRef book code in BOOK_LIST, challengeNote required iff
 //      tier==='challenge', wooden/woodenStatus present on every entry —
-//      task 13a).
+//      task 13a). Also enforces (task #24 stage D) that ZERO selections may
+//      have woodenStatus "draft" — every wooden translation must have
+//      cleared an independent review ("reviewed" or "revised") before this
+//      passes, so an un-reviewed draft can never ship silently.
 //   4. Corpus pin verification (delegated to importReaderCorpus ->
 //      verifyCorpusPin -> aborts if the pinned checkout's HEAD doesn't
 //      match).
@@ -189,6 +192,7 @@ function validateSelectionsShape(doc) {
   }
   const ids = new Set();
   const osisRefs = new Set();
+  const draftIds = [];
   for (const sel of doc.selections) {
     const label = `selection "${sel && sel.id}"`;
     if (typeof sel.id !== 'string' || !ID_RE.test(sel.id)) {
@@ -247,8 +251,26 @@ function validateSelectionsShape(doc) {
     if (!WOODEN_STATUS_VALUES.has(sel.woodenStatus)) {
       fail('selection-wooden', `${label}: woodenStatus "${sel.woodenStatus}" not in ${[...WOODEN_STATUS_VALUES].join('|')}`);
     }
+    if (sel.woodenStatus === 'draft') {
+      draftIds.push(sel.id);
+    }
   }
   report(`selections: ${doc.selections.length} entries, shape OK (pass)`);
+  // no-draft-wooden (task #24 stage D): "draft" means author-written but not
+  // yet independently morphology-reviewed (see the wooden/woodenStatus
+  // comment above) — a release-blocking gate, not a per-entry shape check,
+  // so a future selection can never ship with an unreviewed wooden
+  // translation silently. This validator runs as a tools/check_release.mjs
+  // subprocess check, so this failure blocks release the same way the other
+  // checks here do. Flip woodenStatus to "reviewed" (or "revised" if the
+  // review pass corrected the rendering) once independently verified against
+  // the token morphology, same as task 13a/13b's original review closed out
+  // the first 86 selections.
+  if (draftIds.length > 0) {
+    fail('no-draft-wooden', `${draftIds.length} selection(s) still have woodenStatus "draft" (not yet independently reviewed): ${draftIds.join(', ')}`);
+  } else {
+    report(`no-draft-wooden: 0 of ${doc.selections.length} selections have an unreviewed "draft" wooden translation (pass)`);
+  }
   return doc.selections;
 }
 

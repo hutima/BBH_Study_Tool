@@ -294,8 +294,201 @@
   new `scratchpad/smoke_task26.mjs`, one-line fix to
   `scratchpad/smoke_book_vocab.mjs`. NOT committed per orchestrator
   instruction — working tree left for the orchestrator to review/commit.
-- **Queue**: task #24 (Reader: more prose books + simple-poetry challenge
-  tier), addendum already drafted in docs/bbh-conversion-plan.md.
+- **Task #26 merged** as `60675d6` (PR #23, merge commit `3d79adf`,
+  `?v=20` — LIVE release): app-wide toggle-row alignment (vocab
+  `#controlsBar` 6 rows, grammar Review-missed, reader Challenge-passages)
+  to task #25's switch-then-label-then-(i) shape; full detail in
+  `docs/bbh-conversion-plan.md`'s task-26 addendum (see its "Status:
+  IMPLEMENTED, UNCOMMITTED" line, now superseded by this merge).
+- **Task #24 STAGE A implemented, uncommitted (2026-08-09)** — importer/
+  coverage groundwork only, no new selections, `js/data/bbh_reader.js`
+  untouched. `tools/import_oshb_reader.mjs`'s `BOOK_LIST` extended from 8
+  to 13 books (`+Josh, 1Kgs, 2Kgs, Esth, Ps`, codes matching task #23's
+  `gen_bbh_advanced_vocab.mjs` `BOOK_META` slugs `josh/1kgs/2kgs/esth/ps`),
+  plus its header/CLI-usage comments; corpus pin re-verified
+  (`/workspace/openscriptures/morphhb` HEAD = `6a5db284c7...`, matches
+  `source/bbh/reader/corpus-pin.json`). **Coverage: 0 gate-map gaps** in
+  all 5 new books individually and in the combined 13-book run (Josh 658v/
+  10,051t, 1Kgs 817v/13,140t, 2Kgs 719v/12,281t, Esth 167v/3,045t, Ps
+  2,527v/19,587t — Psalms' poetic register raised no new *morph codes* the
+  existing per-POS catch-alls don't already absorb, same finding as task
+  #14's 7-book pass). No `gate-map.json` edit needed or made — report at
+  `scratchpad/task24a_gatemap_gaps.md` (this session's scratchpad, not
+  committed). **Lemma audit**: combined top-40 most-frequent unresolved
+  content lemmas across the 5 new books with zero `LEMMA_OVERRIDES` entry
+  (2,496 candidates total, top 40 tabulated) written to
+  `scratchpad/task24a_lemma_audit.md` for stage B/C curation to consume;
+  notably poetry-flavored (עוֹלָם, חֶסֶד, הלל, רָשָׁע, אֲדֹנָי) plus
+  royal-narrative terms (מָלַךְ, נָבִיא, כִּסֵּא) and Joshua's
+  Levitical-city-list-specific מִגְרָשׁ (58/58 occurrences in Joshua
+  alone). No overrides added (per instruction — stage B/C's job; none of
+  the 40 would have collided with the already-frozen-then-lifted Genesis
+  set anyway). **Regeneration proof**: `node tools/gen_bbh_reader_data.mjs`
+  run twice, `js/data/bbh_reader.js` byte-identical both times (same sha1
+  `4d4689aa...` before/after, `git diff --exit-code` clean) — the 86
+  existing selections are unaffected; the importer only gained CAPABILITY.
+  `node tools/check_release.mjs` → 24 reports / 0 failures, unchanged from
+  before this stage (`?v=20` untouched, check6 confirms `source/bbh/`
+  untouched). Only file touched: `tools/import_oshb_reader.mjs`.
+- **Task #24 stage B IMPLEMENTED, UNCOMMITTED (2026-08-09)** — 12 new
+  PROSE selections curated into `source/bbh/reader/selections.json` from
+  Joshua/1 Kings/2 Kings/Esther (2 strict + 1 guided per book; Psalms is
+  stage C's job, not touched here), additions-only (86 pre-existing
+  entries verified byte-identical, zero frozen-score drift). Full list +
+  scores + bucket-coverage before/after in `docs/bbh-conversion-plan.md`'s
+  task-24 addendum. No new `LEMMA_OVERRIDES`. All 12 `wooden` translations
+  author-drafted, `woodenStatus:"draft"` (stage D reviews + flips to
+  `"reviewed"`). Strong's glosses 300/300 resolved (0 missing). Also fixed
+  a real gap found while spot-checking: `js/ui/reader.js`'s
+  `BOOK_NAMES`/`BOOK_ORDER` tables didn't know the 5 stage-A books, so
+  Josh/1Kgs/2Kgs/Esth rendered as raw OSIS codes — added all 5 (incl. `Ps`,
+  ahead of stage C). `tools/check_release.mjs` check5b passage count
+  86→98. Verified: `validate_bbh_reader_data.mjs` 6/6 pass; `gen_bbh_reader
+  _data.mjs` byte-identical across 2 reruns; `check_release.mjs` → 23
+  reports / 1 failure (`check6: source/bbh/ has uncommitted changes` —
+  expected while uncommitted, resolves to 24/0 once committed, same as
+  tasks 13/14's own precedent); `scratchpad/smoke_reader.mjs` (12
+  sections/40 checks) fully green (fixed two env-only Playwright flakes:
+  GA `gtag.js` route stub + `serviceWorkers: 'block'` context, since a
+  page-route stub alone doesn't survive the app's own SW taking control
+  after this smoke's later reloads); a new
+  `scratchpad/task24b_spotcheck.mjs` confirms `reader-esth-4-15` renders
+  Hebrew text + gloss popover + wooden-translation reveal correctly.
+  Files touched: `source/bbh/reader/selections.json`, `js/data/bbh_reader.js`
+  (regenerated), `tools/check_release.mjs`, `js/ui/reader.js`. NOT
+  committed per orchestrator instruction — working tree left for the
+  orchestrator. Next: stage C (Psalms challenge-tier passages, poetry-
+  labeled) and stage D (independent wooden-translation review flipping the
+  12 new `woodenStatus` fields to `"reviewed"`, release counts, smokes,
+  `?v=21` bump, PR).
+- **Task #24 stage C IMPLEMENTED, UNCOMMITTED (2026-08-09)** — 8 new
+  CHALLENGE-TIER-ONLY Psalms selections (`reader-ch-ps-*` ids), the first
+  poetry in the Reader corpus, curated into
+  `source/bbh/reader/selections.json` (additions only — all 98
+  pre-existing entries verified deep-equal byte-identical after
+  regeneration). Full list + scores + rationale in
+  `docs/bbh-conversion-plan.md`'s task-24 addendum. Of the user-suggested
+  candidate pool (Ps 1, 23, 100, 117, 121, 150), only Psalm 121 produced
+  natural challenge-eligible verses via `scoreVerse()`'s existing
+  diagnostic (121:2 gate L22/feature L42 Qal participle, 121:8 gate
+  L23/feature L40 pronoun-suffixed verb) — every verse in Ps 1/23/100/117/
+  150 individually checked either scored ordinary strict/guided already
+  (no >=10-lesson gap above one feature) or had too many unknown content
+  lexemes, so per the task brief's own permission the other 6 entries
+  substitute equally famous, equally short psalm verses that DO score
+  into the challenge shape: Ps 95:3, Ps 113:5, Ps 113:6, Ps 114:1 (the
+  Exodus-Hallel opening), Ps 130:4, Ps 146:1. **Poetry labeling**: every
+  new `challengeNote` leads with a plain genre sentence ("Poetry — Psalm
+  N. Verse structure and word order differ from prose narrative.") before
+  the usual future-feature sentence — reuses the EXISTING
+  `.reader-challenge-note` UI in `js/ui/reader.js` verbatim, no new UI
+  mechanism added (screenshot:
+  `scratchpad/task24c_ps121_2_full.png`). All 8 `wooden` translations
+  author-drafted fresh from the Hebrew, `woodenStatus:"draft"` (stage D
+  reviews), following the corpus's house style (YHWH for the divine name,
+  Hebrew-transliterated proper names, literal word order preserved even
+  where poetic, e.g. Ps 95:3's verbless "For a great God is YHWH"). No
+  `LEMMA_OVERRIDES` added. Strong's glosses: 316/316 resolved (up from
+  300/300 pre-stage-C). `tools/check_release.mjs` check5b passage count
+  updated 98→106. Verified: `node tools/validate_bbh_reader_data.mjs` →
+  6/6 pass; `node tools/gen_bbh_reader_data.mjs` run twice → byte-identical
+  (sha1 `1e1e7008...` both times); the 98 pre-existing passages deep-equal
+  byte-identical (`scratchpad/task24c_diff98.mjs`, 0 mismatches); `node
+  tools/check_release.mjs` → 23 reports / 1 failure (the expected
+  `check6: source/bbh/ has uncommitted changes`, resolves to 24/0 once
+  committed). Playwright: `scratchpad/smoke_reader.mjs` (12 sections, 40
+  checks) reruns fully green unmodified (no counts in that file needed
+  updating — it never asserts a total passage count); new
+  `scratchpad/smoke_task24c.mjs` (18 checks) confirms all 8
+  `reader-ch-ps-*` ids/tier/poetry-note-prefix, and that with the Challenge
+  toggle OFF no `Ps ...` row renders at Lesson 22 while ON reveals them
+  with the challenge badge + poetry-labeled note, hiding again on toggle
+  OFF — all green. Files touched: `source/bbh/reader/selections.json`,
+  `js/data/bbh_reader.js` (regenerated), `tools/check_release.mjs`. NOT
+  committed per orchestrator instruction — working tree left for the
+  orchestrator. Next: stage D (independent wooden-translation review
+  flipping all 20 new `draft` `woodenStatus` fields — 12 from stage B + 8
+  from stage C — to `"reviewed"`, release counts, smokes, `?v=21` bump,
+  PR).
+- **Task #24 stage D IMPLEMENTED, UNCOMMITTED (2026-08-09)** — independent
+  review (fresh reviewer, did not author stages B/C) of all 20 `draft`
+  wooden translations against their own token morphology (person/gender/
+  number, binyan/stem, conjugation, suffixes, construct chains,
+  definiteness, word order), plus release prep. **Verdict: 13 clean / 7
+  fixed** (all 20 now `woodenStatus:"reviewed"`, zero `"draft"` remain):
+  clean — `reader-josh-9-3`, `reader-josh-24-28`, `reader-1kgs-2-2`,
+  `reader-1kgs-3-19` (flagged: "because she lay on him" closely matches
+  ESV/NASB wording, but every major translation converges on it
+  independently for this short causal clause — judged unavoidable, not
+  copied, left as-is), `reader-esth-4-15`, and all 8 `reader-ch-ps-*`
+  entries. Fixed (7, one line each): `reader-josh-1-16` — restored the
+  "all that ... we will do / to all that ... we will go" parallel
+  structure the draft had broken with a paraphrastic "wherever" (which
+  also verbatim-echoed NIV's exact wording — spot-guard hit);
+  `reader-1kgs-19-16` and `reader-2kgs-13-22` — "Israel" → "Yisrael" for
+  consistency with the corpus's own established transliteration (3 prior
+  reviewed entries); `reader-2kgs-2-22` — "So the waters were healed" →
+  "And the waters..." (corpus convention is 58/58 "And" for wayyiqtol
+  opens; "So" uniquely echoed KJV's own connective); `reader-2kgs-5-19` —
+  "went from him" → "went from with him" (literal מֵאִתּוֹ, matching the
+  "from with" precedent stage C's own Ps 121:2 already set);
+  `reader-esth-2-5` — "There was a Jewish man..." → "A Jewish man was
+  in..." (the Hebrew is Subject-before-verb here, not the verb-initial
+  יְהִי pattern the corpus's existing "there was" renderings correctly
+  mirror elsewhere; the old wording also closely echoed ESV's "there was
+  a Jew in Susa the citadel"); `reader-esth-4-10` — "commanded him for
+  Mordecai" → "commanded him to Mordecai" (אֶל = "to", matching the very
+  next selection `reader-esth-4-15`'s own identical construction, which
+  already had it right). Field-level diff of a fresh
+  `gen_bbh_reader_data.mjs` regen against HEAD's `bbh_reader.js`: exactly
+  the 20 reviewed passages changed, and ONLY their `wooden`/`woodenStatus`
+  fields (7 changed both, 13 changed `woodenStatus` only) — the other 86
+  passages and every other field on all 106 are byte-identical (sha1
+  `7b32e2d5...`, reproducible across 2 reruns). `tools/
+  validate_bbh_reader_data.mjs` gained a new release-blocking check
+  (`no-draft-wooden`, task's ask: "if the validator doesn't enforce
+  reviewed-only, add that check") — fails if ANY selection still has
+  `woodenStatus:"draft"`; negative-tested (flipping one entry back to
+  `"draft"` correctly fails with exit 1, restoring it passes again).
+  `node tools/check_release.mjs` on a clean tree (verified via `git
+  stash`/`stash pop`, changes fully restored after) → **24 reports, 0
+  failures**; on the actual dirty tree → same 24 reports minus check6
+  (`source/bbh/ has uncommitted changes`, expected/uncommitted-stage
+  precedent from tasks 13/14/24A/24B/24C). `?v=20` → `?v=21` across
+  `index.html`/`sw.js`/`styles.css`/`pages/memorization.html`/
+  `docs/index-structure.md` (`CACHE_NAME` synced); `docs/
+  index-structure.md`'s two stale "52 curated ... passages" mentions
+  also corrected to 106 while there (pre-existing staleness from
+  stage B/C, not this stage's own drift). User guide (`index.html`)
+  Reader copy updated: book list now Genesis/Ruth/Jonah/Exodus/
+  Deuteronomy/Judges/Joshua/1&ndash;2 Samuel/1&ndash;2 Kings/Esther, the
+  Psalms Challenge-tier poetry called out explicitly, "labeled draft or
+  independently reviewed" wording retired (now "independently-reviewed",
+  since zero drafts remain), and the changelog's existing 2026-08 Reader
+  bullet updated in place (no new entry, per CLAUDE.md's changelog rule)
+  to match. Playwright: `scratchpad/smoke_reader.mjs` (12 sections, all
+  green, including its own wooden-caption check now reading "reviewed"
+  for a live passage) and `scratchpad/smoke_task24c.mjs` (18 checks, all
+  green) both rerun clean at baseline (GA route stub + `serviceWorkers:
+  'block'`); a new ad hoc spot-check confirmed `reader-esth-2-5` renders
+  the FIXED text "A Jewish man was in Susa the citadel..." (not the old
+  "There was a Jewish man...") with the "independently reviewed" caption.
+  Files touched: `source/bbh/reader/selections.json` (20 `woodenStatus`
+  flips, 7 with corrected `wooden` text), `js/data/bbh_reader.js`
+  (regenerated), `tools/validate_bbh_reader_data.mjs` (new
+  `no-draft-wooden` check), `index.html`, `sw.js`, `styles.css`,
+  `pages/memorization.html`, `docs/index-structure.md`. NOT committed —
+  Stage D is a fresh-reviewer session per the user's staging directive;
+  working tree left for the orchestrator to review/commit as the final
+  task #24 PR. **Task #24 is now COMPLETE pending orchestrator
+  commit+PR** — full stage ledger: A `0198a27`, B `71ff7e3`, C `879ed81`,
+  D uncommitted (this pass).
+- **Queue**: orchestrator to review stage D's diff, commit it to
+  `claude/new-session-988x25` (A/B/C are already separate commits on this
+  same feature branch — `0198a27`/`71ff7e3`/`879ed81` — per the staging
+  directive; none of the four stages are merged to `Main` yet), then open
+  the task #24 PR for all four stages together. No other agents in
+  flight.
 
 ## Repository and PR state
 
@@ -397,14 +590,24 @@
 
 ## Current work and file ownership
 
-- No agents in flight. Task #25 (parsing UX round) is merged (`cbe0e04`,
-  PR #22, merge commit `81c8903`) — `Main` is live at `?v=19`. Working
-  tree on `claude/new-session-988x25` (branched from `Main` tip
-  `81c8903`, ledger commit `c51b314` on top) carries task #26 (app-wide
-  toggle-row alignment) IMPLEMENTED, UNCOMMITTED — see the Resume status
-  bullet above and the addendum in `docs/bbh-conversion-plan.md` for full
-  detail. Live release remains `?v=19` until this is committed/merged;
-  the working tree itself is already bumped to `?v=20`.
+- No agents in flight. Task #25 (`cbe0e04`, PR #22, merge `81c8903`) and
+  task #26 (`60675d6`, PR #23, merge `3d79adf`) are both merged — `Main`
+  is live at `?v=20`. `claude/new-session-988x25` (branched from `Main`
+  tip `3d79adf`) carries task #24 stages A (`0198a27`), B (`71ff7e3`), and
+  C (`879ed81`) as committed-and-pushed feature-branch commits (none
+  merged to `Main` yet), plus stage D (this pass) UNCOMMITTED on top:
+  `source/bbh/reader/selections.json` (20 `woodenStatus` flips, 7 with
+  corrected `wooden` text) + `js/data/bbh_reader.js` (regenerated) +
+  `tools/validate_bbh_reader_data.mjs` (new `no-draft-wooden` release gate)
+  + `index.html`/`sw.js`/`styles.css`/`pages/memorization.html`/
+  `docs/index-structure.md` (`?v=20`→`?v=21` bump + Reader user-guide copy
+  + stale passage-count fix). `check_release.mjs` on the dirty tree is
+  24 reports with only check6 (`source/bbh/` uncommitted) failing — the
+  expected, final state before the orchestrator's commit+PR. Scratchpad
+  reports from all four stages (`task24a_*`, `task24b_*`, `task24c_*`,
+  plus this stage's `dump_draft.mjs`/`draft_dump.json`/`field_diff.mjs`/
+  `spotcheck_fix.mjs`) live in each stage's own session scratchpad dir,
+  not the repo.
 
 ## Content counts
 
@@ -418,8 +621,14 @@
   form exists anywhere in the book — recorded, nothing fabricated).
 - Grammar: 300 questions, all reviewStatus=reviewed (300/300 + 125/125
   blind answer agreement across two rounds; anti-giveaway lint zero).
-- Reader: 52 passages / 406 tokens (32 strict / 20 guided; 0 natural
-  challenge verses in Genesis under policy — documented).
+- Reader: 106 passages / 748 tokens (63 strict / 27 guided / 16 challenge,
+  8 of which are the first poetry in the corpus, Psalms; spans
+  Gen/Ruth/Jonah/Exod/Deut/Judg/1Sam/2Sam/Josh/1Kgs/2Kgs/Esth/Ps as of task
+  #24 stages A-D, uncommitted — see RESTORE.md's task-24 stage-D note).
+  All 106 wooden translations are `woodenStatus:"reviewed"` — 0 "draft"
+  remain (task #24 stage D: 13 clean / 7 fixed of the 20 stage-B/C
+  entries reviewed this pass; the original 86 were reviewed under task
+  13a/13b, 76 clean/10 fixed).
 - Reference: 42 generated sections / 398 rows.
 
 ## Tests last run (PR F head)

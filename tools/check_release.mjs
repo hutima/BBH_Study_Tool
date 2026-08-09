@@ -23,11 +23,14 @@
 //      (light regex parse — no execution of the generated file).
 //   5b. Same light-regex-parse treatment for the other generated data
 //      files: js/data/bbh_grammar.js registers exactly 300 questions,
-//      js/data/bbh_reader.js exactly 86 passages (task 13a: 78 pre-existing
-//      + 8 new challenge-tier selections — was 78 after the Reader book
-//      expansion: 52 Genesis + 26 across Ruth/Jonah/Exod/Deut/Judg/1Sam/
-//      2Sam), js/data/bbh_alphabet.js exactly 23 letters + 12 vowels,
-//      js/data/bbh_reference_extra.js at least 40 sections.
+//      js/data/bbh_reader.js exactly 106 passages (task #24 stage C: 98
+//      pre-existing + 8 new Psalms challenge-tier-only poetry selections —
+//      was 98 after task #24 stage B: 86 pre-existing + 12 new prose
+//      selections across Josh/1Kgs/2Kgs/Esth; was 86 after task 13a: 78
+//      pre-existing + 8 new challenge-tier selections; was 78 after the
+//      Reader book expansion: 52 Genesis + 26 across Ruth/Jonah/Exod/Deut/
+//      Judg/1Sam/2Sam), js/data/bbh_alphabet.js exactly 23 letters + 12
+//      vowels, js/data/bbh_reference_extra.js at least 40 sections.
 //   5c. js/data/bbh_advanced_vocab.js (task #20, advanced vocab + Book
 //      Vocab, replacing task #15's bbh_book_vocab.js; task #23 widened the
 //      corpus from the Reader's 8 books to the whole 39-book Tanakh)
@@ -378,8 +381,8 @@ function readDirSafe(dir) {
   } else {
     const src = readText(readerPath);
     const passageCount = [...src.matchAll(/"id":\s*"reader-[^"]+"/g)].length;
-    if (passageCount !== 86) fail(`check5b: expected 86 passages registered in ${readerPath}, found ${passageCount}`);
-    else report(`check5b: 86 passages registered in bbh_reader.js (pass)`);
+    if (passageCount !== 106) fail(`check5b: expected 106 passages registered in ${readerPath}, found ${passageCount}`);
+    else report(`check5b: 106 passages registered in bbh_reader.js (pass)`);
   }
 
   const alphabetPath = 'js/data/bbh_alphabet.js';

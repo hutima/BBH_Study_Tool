@@ -323,8 +323,15 @@ export function buildBookVocabSelector() {
     if (!ordered.length) {
       meta.textContent = '';
     } else {
+      // The sum over books counts a shared card once PER BOOK it appears in
+      // (a common lemma like elohim is in nearly every book's list), so it
+      // dwarfs the distinct-card count. Label the two numbers honestly:
+      // every ref is a LINK to one shared Strong's-keyed card, never a
+      // duplicate (user report 2026-08-09: "28,000 words" read as if Book
+      // Vocab carried that many separate words).
       const totalLinks = ordered.reduce((sum, b) => sum + (Array.isArray(b.refs) ? b.refs.length : 0), 0);
-      meta.textContent = `${ordered.length} books · ${totalLinks.toLocaleString()} words`;
+      const distinct = new Set(ordered.flatMap((b) => Array.isArray(b.refs) ? b.refs : [])).size;
+      meta.textContent = `${ordered.length} books · ${distinct.toLocaleString()} words · ${totalLinks.toLocaleString()} links`;
     }
   }
 

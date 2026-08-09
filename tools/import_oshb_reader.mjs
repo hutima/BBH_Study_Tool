@@ -20,8 +20,17 @@
 // (JSON-equal), rather than trusting a cached snapshot.
 //
 // BOOK_LIST is the configurable set of OSHB wlc/*.xml basenames imported —
-// currently ['Gen','Ruth','Jonah','Exod','Deut','Judg','1Sam','2Sam']
-// (verified exact filenames against the pinned checkout's wlc/ directory).
+// currently ['Gen','Ruth','Jonah','Exod','Deut','Judg','1Sam','2Sam',
+// 'Josh','1Kgs','2Kgs','Esth','Ps'] (verified exact filenames against the
+// pinned checkout's wlc/ directory). The 5 trailing entries were added by
+// task #24 stage A (importer/coverage groundwork only — no new selections
+// curated yet; see docs/bbh-conversion-plan.md's task-24 staging addendum).
+// Their codes match the canonical codes/slugs task #23's
+// tools/gen_bbh_advanced_vocab.mjs BOOK_META already uses for the same
+// books (josh, 1kgs, 2kgs, esth, ps) — this module has no separate slug
+// table of its own (osisRefToDisplay derives display refs straight from
+// osisID, never a hand-authored per-book name lookup), so no such table
+// needed updating.
 // Every verse carries its own `book` (OSIS book code) alongside `osisID`/
 // `ref` so downstream consumers (selections curation, Reader UI grouping)
 // can group multi-book output without re-parsing osisID.
@@ -42,8 +51,9 @@
 //     stdout (pipe to a file if you want it on disk — this tool never
 //     writes into the repo itself; only tools/gen_bbh_reader_data.mjs does,
 //     and only to js/data/bbh_reader.js).
-//   --book=Gen|Ruth|Jonah|Exod|Deut|Judg|1Sam|2Sam   scope --report/--emit
-//     to a single book (for per-book coverage/vocab-match audits).
+//   --book=Gen|Ruth|Jonah|Exod|Deut|Judg|1Sam|2Sam|Josh|1Kgs|2Kgs|Esth|Ps
+//     scope --report/--emit to a single book (for per-book coverage/
+//     vocab-match audits).
 //
 // Corpus pin: /workspace/openscriptures/morphhb @
 // 6a5db284c715c18b239422e57bb89684e6a19f00 (tag v.2.2) — see
@@ -70,7 +80,13 @@ const CHECKOUT_DIR = process.env.BBH_OSHB_CHECKOUT || '/workspace/openscriptures
 // present, exact case/spelling). Genesis first (Phase 2 PR D's original
 // scope, and the 52 pre-existing curated selections all live there), then
 // the "Reader book expansion" task's additions.
-export const BOOK_LIST = ['Gen', 'Ruth', 'Jonah', 'Exod', 'Deut', 'Judg', '1Sam', '2Sam'];
+export const BOOK_LIST = [
+  'Gen', 'Ruth', 'Jonah', 'Exod', 'Deut', 'Judg', '1Sam', '2Sam',
+  // task #24 stage A additions (importer capability only — see the header
+  // comment above and docs/bbh-conversion-plan.md's task-24 staging
+  // addendum; no selections curated from these yet):
+  'Josh', '1Kgs', '2Kgs', 'Esth', 'Ps'
+];
 
 // ─── 0. Corpus pin verification ────────────────────────────────────────────
 // Aborts (throws) unless the checkout's HEAD matches corpus-pin.json exactly.
@@ -922,7 +938,7 @@ function main() {
   const bookArg = args.find((a) => a.startsWith('--book='));
   const books = bookArg ? [bookArg.slice('--book='.length)] : BOOK_LIST;
   if (!doReport && !doEmit) {
-    console.log('Usage: node tools/import_oshb_reader.mjs --report | --emit [--book=Gen|Ruth|Jonah|Exod|Deut|Judg|1Sam|2Sam]');
+    console.log('Usage: node tools/import_oshb_reader.mjs --report | --emit [--book=Gen|Ruth|Jonah|Exod|Deut|Judg|1Sam|2Sam|Josh|1Kgs|2Kgs|Esth|Ps]');
     process.exitCode = 1;
     return;
   }
