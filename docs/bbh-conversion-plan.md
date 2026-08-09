@@ -455,3 +455,14 @@ stored token text stays byte-exact for provenance; the RENDER strips the
 segment dividers (documented display transform; byte-equality validation
 continues to run against stored data). Task #13 also delivers the
 per-passage show/hide translation control the user expects.
+
+## Addendum (user screenshot, 2026-08-09): parsing card hierarchy + translit (task #17)
+
+Parsing drill card gets Greek-app-style hierarchy: Hebrew form at
+vocab-card scale as the anchor, step label/choices stepped down, and a
+smaller italic TRANSLITERATION line under the form honoring the global
+show/hide preference. The book prints no paradigm transliterations, so
+they are generated deterministically at build time (rule-based romanizer
+matched to the vocab CSV's translit style; qamets-qatan/shewa/dagesh
+handling documented; ~30-form sample review before shipping; marked as
+derived in the data notes). Runs after task #16.
