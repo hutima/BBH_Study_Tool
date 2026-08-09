@@ -7,7 +7,8 @@
     "STEM-FLOOR ENCODING. Per the task policy, Nifal/Hitpael verb forms floor at L37 and Piel/Hifil floor at L29 regardless of their conjugation's own base lesson (e.g. Piel imperfect: base L23 imperfect, but max(23,29)=29). Rather than have the importer compute max() at runtime, every verb entry below already encodes the PRE-COMPUTED max(conjugationBaseLesson, stemFloor) as its bbhLesson — each entry's `note` states both the base lesson and the floor for traceability. Pual/Hofal (stem codes P/H) are UNMAPPED at any conjugation (appendix-only) — no floor applies because there is no ceiling to raise, they are simply out of scope.",
     "SEQUENTIAL PERFECT (weqatal, OSHB conjugation letter 'q') is folded into the ordinary perfect entries (conjugation-letter class '[pq]') — the book treats it as the Perfect form gated by number (L16/L19), not as a separate paradigm; do not add a distinct weqatal gate.",
     "PRIORITY TIERS in use: 100 = numeral lemma override (beats every other N/A rule); 90 = היה imperfect lemma override; 50/40/30 = the three suffix host-detection rules (verb-host / plural-noun-host / fallback-any-host), highest-specificity first; 20 = the main per-POS grammar rules; 1 = per-POS-letter safety-net catch-alls (unmapped) that guarantee every window-1 segment resolves to something even if a real Genesis form was missed when this table was authored.",
-    "Populated in Phase 2 PR D alongside tools/import_oshb_reader.mjs. Empty in PR A by design."
+    "Populated in Phase 2 PR D alongside tools/import_oshb_reader.mjs. Empty in PR A by design.",
+    "Bug-history note: every regex here is tested as ^(?:pattern)$ (a FULL-STRING match) by the importer, not a prefix search — bare POS-letter patterns that are meant to match a variable-length code (the numeral override [AN].*, the haya imperfect override Vqi\\d[mfc][sp], the Pual/Hofal V[PH].*, and every generic single-letter safety-net catch-all) MUST end in .* or an explicit variable-length class, or they will only ever match the bare 1-2 char POS code itself and silently never fire. Caught via tools/import_oshb_reader.mjs --report's coverage-gap count during PR D authoring; fixed before the first `selections.json` curation pass."
   ],
   "mappings": [
     {
@@ -221,14 +222,14 @@
       "note": "piel/hifil participle (active/passive) (base L42, stem floor L29 -> L42)"
     },
     {
-      "morphPattern": "V[PH]",
+      "morphPattern": "V[PH].*",
       "window": 1,
       "unmapped": true,
       "priority": 20,
       "note": "Pual/Hofal stem (any conjugation) — appendix-only per task policy, never gated to a lesson."
     },
     {
-      "morphPattern": "Vqi",
+      "morphPattern": "Vqi\\d[mfc][sp]",
       "window": 1,
       "bbhLesson": 28,
       "priority": 90,
@@ -238,7 +239,7 @@
       "note": "היה (lemma 1961) qal imperfect, any PGN — gated flat to L28 (irregular היה imperfect paradigm), overriding the regular qal imperfect sg/pl split."
     },
     {
-      "morphPattern": "V",
+      "morphPattern": "V.*",
       "window": 1,
       "unmapped": true,
       "priority": 1,
@@ -274,7 +275,7 @@
       "note": "Proper noun (name) — names appear in readings from the earliest lessons (L5 independent-pronoun lesson introduces the first narrative material); marked isProperName so it is excluded from unknown-content-lexeme counts."
     },
     {
-      "morphPattern": "N",
+      "morphPattern": "N.*",
       "window": 1,
       "unmapped": true,
       "priority": 1,
@@ -288,14 +289,14 @@
       "note": "Adjective (any type/gender/number/state) — L32 adjective inflection. Construct-state adjectives still land here: max(L32 adjective, L20 construct) = L32, so no separate construct rule is needed for adjectives."
     },
     {
-      "morphPattern": "A",
+      "morphPattern": "A.*",
       "window": 1,
       "unmapped": true,
       "priority": 1,
       "note": "Adjective form not matched by the rule above. Safety-net catch-all."
     },
     {
-      "morphPattern": "[AN]",
+      "morphPattern": "[AN].*",
       "window": 1,
       "bbhLesson": 45,
       "priority": 100,
@@ -342,7 +343,7 @@
       "note": "Interrogative pronoun — L14 interrogative-words table is the grammar gate (מי/מה individually enter vocab earlier at L6/L8, tracked separately via vocabLesson)."
     },
     {
-      "morphPattern": "P",
+      "morphPattern": "P.*",
       "window": 1,
       "unmapped": true,
       "priority": 1,
@@ -378,7 +379,7 @@
       "note": "Adverbs (D) and the closed-class particles affirmation/emphasis (Ta), entreaty 'נא' (Te), interjection (Tj), demonstrative/existential particles e.g. הנה/כן/יש (Tm), negative לא (Tn), and the direct-object marker את/אות (To) have no dedicated syntax paradigm lesson in this course — per the task brief's explicit instruction for adverbs ('gate by vocabulary presence only, grammar gate 1'), extended uniformly to this whole closed-class-particle family for the same reason (each is either core vocabulary taught from an early lesson, e.g. לא/את/כן at L5, יש at L12, or has no in-course paradigm at all). vocabLinked:true tells the importer to resolve this token's grammar contribution from its OWN vocabLesson match: found-in-CSV -> flat L1 (always in scope, effectively ungated); not found -> unmapped. See gate-map.json notes and tools/import_oshb_reader.mjs for the resolution code."
     },
     {
-      "morphPattern": "T",
+      "morphPattern": "T.*",
       "window": 1,
       "unmapped": true,
       "priority": 1,
@@ -392,7 +393,7 @@
       "note": "Preposition, with or without the fused article (Rd) — L13 (ו/ב/כ/ל/מן attach directly to the following word)."
     },
     {
-      "morphPattern": "R",
+      "morphPattern": "R.*",
       "window": 1,
       "unmapped": true,
       "priority": 1,
@@ -420,7 +421,7 @@
       "note": "Bare pronominal suffix segment, standalone. Never scored on its own — always co-occurs with a preceding host segment, which is what the window:2 host+suffix rules below actually score. neutral:true means: matched, not unmapped, contributes no lesson (prevents the generic 'S' catch-all from wrongly flagging every suffixed word as unmapped)."
     },
     {
-      "morphPattern": "S",
+      "morphPattern": "S.*",
       "window": 1,
       "unmapped": true,
       "priority": 1,
