@@ -923,6 +923,22 @@ function initializeShowTranslit() {
 // importantly, surfaces on touch devices where hover tooltips never appear.
 // The per-value exclude sub-filters (dimValueFilter_* / optionalFilter_*) are
 // skipped: their labels already name the value (e.g. "Aorist (Ch. 6)").
+//
+// Task #26 status: DEAD CODE PATH, kept intentionally (not deleted). Every
+// `.toggle-label` row this used to inject an (i) button into — the
+// #controlsBar rows — now ships its `.toggle-info` button directly in
+// index.html's markup as part of the shared TOGGLE-then-LABEL-then-(i) row
+// shape (same one js/ui/parsing.js's toggleHtml()/js/ui/grammar.js's
+// toggleHtml()/js/ui/reader.js's toggleHtml() use), so
+// installToggleInfoForContainer's own `if (label.querySelector('.toggle-info'))
+// return;` idempotent guard now bails on every row it visits — this function
+// installs nothing. It's left in place (still called below, still exported
+// via GLOBAL_CLICK_HANDLERS-adjacent module scope) as a no-op-compatible
+// shim per CLAUDE.md's module-cache hazard rule (never remove an export/
+// function an older shipped bundle might still reference) and as a safety
+// net if a future row is ever added to #controlsBar as plain markup without
+// its own (i). showToggleInfo/closeToggleInfoModal below are NOT dead — the
+// new markup-based (i) buttons in every mode call showToggleInfo directly.
 function installToggleInfoButtons() {
   // The Advanced-settings master toggles live in two containers: most in the
   // controls bar, plus the promoted Lookup-mode toggle that now sits up under
@@ -951,12 +967,14 @@ function installToggleInfoForContainer(bar) {
     else label.appendChild(info);
   });
 
-  // Only the switch should flip a toggle — a tap on the label *text* must not,
-  // so the small (i) sitting in that text run is easy to hit without catching
-  // the toggle. A capture-phase guard swallows clicks that land on a
-  // `.toggle-text` before the toggle's own inline onclick runs. The (i) keeps
-  // its own handler (we bail for it), and keyboard activation (Enter/Space,
-  // whose target is the button itself, not the text) still toggles.
+  // Only the switch should flip a toggle — a tap on the label *text* must not.
+  // Task #26: with every `.toggle-label` row now built TOGGLE-then-LABEL-
+  // then-(i) (the text is a DOM SIBLING of the switch, never nested inside
+  // a clickable ancestor), this capture-phase guard is structurally
+  // redundant — a `.toggle-text` click can no longer bubble into any
+  // toggle's onclick regardless. Left in place (harmless no-op) rather than
+  // removed, same rationale as installToggleInfoForContainer's header
+  // comment above.
   if (!bar.dataset.textGuard) {
     bar.dataset.textGuard = '1';
     bar.addEventListener('click', (e) => {
@@ -1087,24 +1105,25 @@ function syncToggleButtons() {
   const modeShortcutVocabBtn = document.getElementById('modeShortcutVocabBtn');
   const resetDeckBtn = document.getElementById('resetDeckBtn');
 
-  if (shuffleSwitch)   shuffleSwitch.classList.toggle('on',   !!runtime.shuffled);
-  if (directionSwitch) directionSwitch.classList.toggle('on', !!runtime.directionToGreek);
-  if (spacedSwitch)    spacedSwitch.classList.toggle('on',    !!runtime.spacedRepetition);
-  if (hardReviewSwitch) hardReviewSwitch.classList.toggle('on', !!runtime.hardVocabReviewMode);
+  // Task #26: role="switch"/aria-checked now live on the switch BUTTON
+  // itself (id unchanged, e.g. #shuffleBtn) — the row wrapper (#shuffleToggle
+  // etc., ids also unchanged) became a plain container <div> when these rows
+  // were rebuilt as TOGGLE-then-LABEL-then-(i) (see index.html's
+  // #controlsBar), so it no longer carries switch semantics itself. The row
+  // ids are still read below, but now purely for show/hide
+  // (`style.display`) — see the second half of this function and
+  // syncLayoutVisibility().
+  if (shuffleSwitch)   { shuffleSwitch.classList.toggle('on',   !!runtime.shuffled); shuffleSwitch.setAttribute('aria-checked', runtime.shuffled ? 'true' : 'false'); }
+  if (directionSwitch) { directionSwitch.classList.toggle('on', !!runtime.directionToGreek); directionSwitch.setAttribute('aria-checked', runtime.directionToGreek ? 'true' : 'false'); }
+  if (spacedSwitch)    { spacedSwitch.classList.toggle('on',    !!runtime.spacedRepetition); spacedSwitch.setAttribute('aria-checked', runtime.spacedRepetition ? 'true' : 'false'); }
+  if (hardReviewSwitch) { hardReviewSwitch.classList.toggle('on', !!runtime.hardVocabReviewMode); hardReviewSwitch.setAttribute('aria-checked', runtime.hardVocabReviewMode ? 'true' : 'false'); }
   // Spacing cadence (inverted toggle): ON = intensive (2-month course),
   // OFF = relaxed (8-month, the default for new users). Old users keep
   // intensive via their persisted value / the DEFAULT_SRS_CADENCE fallback.
   const cadenceIntensive = runtime.spacingCadence === 'intensive';
   const cadenceSwitch = document.getElementById('cadenceBtn');
-  if (cadenceSwitch) cadenceSwitch.classList.toggle('on', cadenceIntensive);
-  const cadenceToggleEl = document.getElementById('cadenceToggle');
-  if (cadenceToggleEl) cadenceToggleEl.setAttribute('aria-checked', cadenceIntensive ? 'true' : 'false');
-  if (dailyResetSwitch) dailyResetSwitch.classList.toggle('on', !!runtime.unspacedAutoResetEnabled);
-  if (shuffleToggle)   shuffleToggle.setAttribute('aria-checked',   runtime.shuffled ? 'true' : 'false');
-  if (directionToggle) directionToggle.setAttribute('aria-checked', runtime.directionToGreek ? 'true' : 'false');
-  if (spacedToggle)    spacedToggle.setAttribute('aria-checked',    runtime.spacedRepetition ? 'true' : 'false');
-  if (hardReviewToggle) hardReviewToggle.setAttribute('aria-checked', runtime.hardVocabReviewMode ? 'true' : 'false');
-  if (dailyResetToggle) dailyResetToggle.setAttribute('aria-checked', runtime.unspacedAutoResetEnabled ? 'true' : 'false');
+  if (cadenceSwitch) { cadenceSwitch.classList.toggle('on', cadenceIntensive); cadenceSwitch.setAttribute('aria-checked', cadenceIntensive ? 'true' : 'false'); }
+  if (dailyResetSwitch) { dailyResetSwitch.classList.toggle('on', !!runtime.unspacedAutoResetEnabled); dailyResetSwitch.setAttribute('aria-checked', runtime.unspacedAutoResetEnabled ? 'true' : 'false'); }
 
   if (directionToggle) {
     const directionLabel = directionToggle.querySelector('.toggle-text');

@@ -786,3 +786,108 @@ target reusing each toggle's existing explanation text. Extract ONE
 shared row pattern from the parsing implementation so all modes render
 identically. Button-group prefs (Font, Text size, theme, direction
 pills) are not toggles and stay as-is.
+
+**Status: IMPLEMENTED, UNCOMMITTED (2026-08-09).** Shipped on
+`claude/new-session-988x25`, working tree left for the orchestrator per
+instruction (no commit/push). `js/ui/parsing.js` itself is untouched —
+task #26 only generalizes the CSS it already shipped and converts three
+OTHER surfaces to the same shape.
+
+1. **Converted-row inventory** — 8 rows total, all now switch-then-label-
+   then-(i) in DOM order:
+   - Vocab `#controlsBar` (static markup, `index.html`; 6 rows): Shuffle,
+     Hard review, English → Hebrew (Direction), Spaced review, 2-month
+     pace (Cadence), Daily archive reset. Each row's outer `<div id="...
+     Toggle">` (e.g. `#shuffleToggle`) is unchanged and still purely
+     drives show/hide (`style.display`, `js/app/main.js`'s
+     `syncLayoutVisibility()`); the persisted-choice `onclick`/
+     `role="switch"`/`aria-checked` moved onto the switch `<button
+     id="...Btn">` (e.g. `#shuffleBtn`) inside it — that split (separate
+     row id vs. switch id) is a deliberate vocab-only difference from
+     parsing/grammar/reader, needed because these 6 rows individually
+     show/hide by id (cadence only while Spaced review is on, daily-reset
+     only while it's off).
+   - Grammar "Review missed" (`js/ui/grammar.js`'s `toggleHtml()`,
+     `#grammarReviewMissedToggle` now on the switch itself, matching
+     parsing's own id convention — Grammar has no per-row show/hide need,
+     so no separate row id was introduced). Difficulty (All/Core-only)
+     stays a plain `.theme-switcher` — 2 named options, not a boolean.
+   - Reader "Challenge passages" (`js/ui/reader.js`, new local
+     `toggleHtml()`; `#readerChallengeToggle` now on the switch,
+     replacing the old single `.reader-challenge-toggle-btn` Shown/Hidden
+     text button and its red accent color — every toggle now reads
+     consistently gold). Strict-only/Strict+Guided stays a
+     `.theme-switcher`.
+   - Parsing's own 9 More-options rows: unchanged, already shipped by
+     task #25.
+2. **Shared-pattern decision:** one CSS shape, `.toggle-row, .parsing-
+   toggle-row { cursor: default; ... }` plus the switch's enlarged ≥44px
+   tap target, moved out of the "Parsing mode" CSS section into `styles.
+   css`'s shared toggle-switch primitives (next to `.toggle-info`) and
+   generalized to the `.toggle-row` class name; `.parsing-toggle-row` is
+   kept as an identical-rules alias selector so `js/ui/parsing.js`'s own
+   (untouched) markup keeps working unchanged. For the JS-rendered modes,
+   NO new shared module/export was created (the module-cache hazard rule
+   in `CLAUDE.md` argues against a new cross-module import) — grammar.js
+   and reader.js each got their OWN local `toggleHtml()` copy (reader.js
+   didn't have one before; grammar.js's old button-wrapped version was
+   rewritten in place), byte-for-byte the same shape as parsing.js's,
+   each carrying a sync comment pointing at the other two copies. Vocab's
+   rows are static markup (not JS-rendered), hand-written to the same
+   shape directly in `index.html`.
+3. **`installToggleInfoButtons()`/`installToggleInfoForContainer()`**
+   (`js/app/main.js`): now dead code for `#controlsBar` — every row
+   already ships its own `(i)` in markup, so the functions' own
+   idempotent `if (label.querySelector('.toggle-info')) return;` guard
+   bails on every row. Left in place as a no-op-compatible shim (comment
+   added explaining why) rather than deleted, per the module-cache hazard
+   rule's "never remove something an older bundle might reference"
+   spirit — also acts as a safety net if a future row is ever added to
+   `#controlsBar` as plain markup without its own `(i)`.
+4. **Verification:**
+   - `node tools/check_release.mjs` → 24 reports / 0 failures at `?v=20`
+     (bumped from `?v=19` across `index.html`/`sw.js`/`styles.css`/
+     `pages/memorization.html`/`docs/index-structure.md`, `CACHE_NAME`
+     synced).
+   - New `scratchpad/smoke_task26.mjs` (40 steps, all green): for every
+     converted row (6 vocab + 1 grammar + 1 reader) — DOM order [switch,
+     text, info]; tapping (i) opens `#toggleInfoOverlay` without flipping
+     the switch; tapping the switch flips it; tapping the inert label
+     does nothing; state (all 6 vocab switches, grammar's, reader's)
+     survives a reload. Plus: toggling Spaced review is asserted against
+     the PERSISTED `runtime.spacedRepetition` flag (not just
+     `aria-checked`) and against a visible consequence (`#cadenceToggle`/
+     `#unspacedDailyResetToggle` swapping visibility); toggling Reader's
+     Challenge switch is asserted against the challenge-badge count
+     actually appearing/disappearing. Screenshots:
+     `scratchpad/task26_vocab_controlsbar_{375,1280}.png`,
+     `scratchpad/task26_grammar_options_375.png`,
+     `scratchpad/task26_reader_options_375.png`.
+   - `scratchpad/smoke_task25.mjs` rerun against a fresh `git worktree
+     add --detach ... HEAD` (`before_worktree`, created and removed by
+     this task per its own instructions) — all 12 steps still green,
+     confirming parsing is genuinely untouched.
+     `scratchpad/smoke_pr_h.mjs` rerun — same single known-flake failure
+     as its documented baseline (GA `ERR_TUNNEL_CONNECTION_FAILED`
+     console error in this sandbox, not a product bug).
+     `scratchpad/smoke_book_vocab.mjs` also rerun (not a required target,
+     but it independently exercised `#shuffleToggle`'s old row-level
+     `aria-checked` — updated its one-line selector to `#shuffleBtn` to
+     match the new split, then reran green, same single known GA-flake
+     failure as its own baseline).
+   - One test-harness pitfall found and fixed along the way (not a
+     product bug): `js/utils/clickShield.js`'s `shieldClicksBriefly()`
+     arms a 350ms window after any modal close (`closeStudySelector()`
+     included) that swallows the NEXT real click — including a
+     `<summary>`'s native toggle action — to absorb the iOS ghost click.
+     `smoke_task26.mjs`'s own deck-loading step originally waited only
+     300ms before clicking `#advancedSettingsDetails summary`, landing
+     inside that window and silently no-opping the open (the `<details>`
+     stayed closed, hidden children still passed DOM-order checks via
+     `evaluate()` but failed every `.click()`-based check as "not
+     visible"). Fixed by waiting 500ms (matching every other modal-close
+     site in this test suite) and making `openAdvancedSettings()`
+     retry/assert instead of firing-and-forgetting.
+5. **Deviations from the task brief:** none. Every listed row was
+   converted; button-groups (Font, Text size, theme switcher, direction/
+   difficulty/tier pills) were left alone as instructed.
