@@ -504,3 +504,14 @@ stubborn/improved/slipping lists) but INCLUDED in the spaced-repetition
 due-time histogram/forecast — scheduled reviews are real work regardless
 of deck. Folded into task #18 (item 5) with ad1547e as the behavioral
 reference.
+
+## Addendum (user requests, 2026-08-09): task #19 — Reference mobile + structure
+
+Reference page: (1) tables in scroll containers w/ sticky first column +
+edge-fade hint; alphabet/vowel charts become stacked cards <=600px;
+tightened mobile typography; source-ref dedup ranges. (2) Sections
+ordered by TEXTBOOK lesson order (earliest source lesson asc; appendix
+group last). (3) Every section collapsible (<details>), default
+collapsed, Expand/Collapse-all control. (4) Collapse state persisted in
+localStorage aux key bbhStudyToolReferenceStateV1 (page is standalone —
+main state modules untouched).
