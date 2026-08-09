@@ -9,7 +9,10 @@
 import { runtime } from '../state/runtime.js';
 import { shuffleArray } from '../utils/helpers.js';
 import { SESSION_IDLE_RESET_MS } from '../domain/srs/constants.js';
-import { isChapterKey, sortSetKeys, expandSessionSets } from '../domain/deck/ordering.js';
+import {
+  isChapterKey, sortSetKeys, expandSessionSets,
+  isAdvancedVocabKey, parseAdvancedSubKey, isBookVocabKey
+} from '../domain/deck/ordering.js';
 import { CHAPTER_TITLES } from '../data/setMeta.js';
 import { filterHardVocabCards } from '../domain/deck/filters.js';
 import { renderCard, renderChooseSessionEmptyState } from './render.js';
@@ -137,64 +140,130 @@ export function buildChapterSelector() {
   setActiveSetButtons();
 }
 
-// ─── "By book · advanced" selector (task #15) ──────────────────────────────
-// Per-book/Tanakh-core advanced vocab decks, registered into window.SETS
-// under 'book-*' keys (js/app/main.js's mergeBookVocabDecks, run once after
-// bbh_vocab.js has registered window.SETS). These are ordinary SETS entries
-// — toggleSet/loadDeckFromKeys below need no book-deck-specific branch — but
-// they are NOT isChapterKey (js/domain/deck/ordering.js's isChapterKey is
-// strictly `/^\d+$/`), so they never appear in buildChapterSelector's lesson
-// grid or get swept by deselectAllChapters' isChapterKey filter; this is a
-// separate grid + separate deselect helper for exactly that reason.
-const BOOK_DECK_KEY_PREFIX = 'book-';
-export function isBookDeckKey(key) {
-  return String(key).startsWith(BOOK_DECK_KEY_PREFIX);
+// ─── Advanced vocabulary + Book Vocab selectors (task #20) ────────────────
+// Reworked to match the ORIGINAL GREEK APP's design (ad1547e
+// advancedSection/bookVocabSection, js/ui/selectors.js's
+// buildAdvancedSelector/buildBookVocabSelector) — see docs/
+// bbh-conversion-plan.md's task-20 addendum. Two independent collapsible
+// sections, rendered AFTER the manual lesson selection list:
+//   - Advanced vocabulary: corpus-wide descending-frequency buckets of
+//     100 ("ADV<NN>" keys, registered into window.SETS by js/app/main.js's
+//     mergeAdvancedVocabDecks), each with selectable sub-groups of 25 via
+//     the pseudo-key "ADV<NN>::sub::<label>" (js/domain/deck/filters.js's
+//     getSelectedVocabCards / ordering.js's parseAdvancedSubKey).
+//   - Book Vocab: per-book LINKED sets of 50 via the pseudo-key
+//     "BKV::<book>::g::<N>" (never registered into window.SETS — resolved
+//     to existing lesson/advanced card ids at deck-build time by
+//     js/domain/deck/filters.js's resolveBookVocabCards).
+
+function getAdvancedSubGroups(set) {
+  const cards = Array.isArray(set?.cards) ? set.cards : [];
+  if (!cards.length) return [];
+  const groups = new Map();
+  cards.forEach((card, index) => {
+    const sub = card && card.sub ? String(card.sub) : 'group';
+    if (!groups.has(sub)) groups.set(sub, { sub, count: 0, firstIndex: index });
+    groups.get(sub).count += 1;
+  });
+  return [...groups.values()].sort((a, b) => a.firstIndex - b.firstIndex);
 }
 
-export function buildBookDeckSelector() {
-  const grid = document.getElementById('bookDecksGrid');
-  if (!grid) return;
-  grid.innerHTML = '';
-  grid.classList.add('chapters-grid');
+export function toggleAdvancedSubGroup(key, sub) {
+  toggleSet(`${key}::sub::${sub}`);
+}
+
+export function buildAdvancedVocabSelector() {
+  const list = document.getElementById('advancedGrid');
+  if (!list) return;
+  list.innerHTML = '';
 
   const sets = window.SETS && typeof window.SETS === 'object' ? window.SETS : {};
-  // Mixed-version safe (CLAUDE.md ES-module cache hazard): a stale cached
-  // bbh_book_vocab.js (or one simply not yet loaded) leaves window.
-  // BBH_BOOK_VOCAB undefined — the grid then renders empty rather than
-  // throwing. Deck order comes from BBH_BOOK_VOCAB.decks itself (the
-  // generator's own deterministic book-then-core order), not from
-  // Object.keys(sets) — avoids depending on incidental JS object
-  // key-iteration order.
-  const bookVocab = window.BBH_BOOK_VOCAB;
-  const deckKeys = (bookVocab && Array.isArray(bookVocab.decks)) ? bookVocab.decks.map((d) => d.key) : [];
-  if (!deckKeys.length) return;
+  const advancedKeys = Object.keys(sets).filter(isAdvancedVocabKey).sort();
+
+  const meta = document.getElementById('advancedSectionMeta');
+  if (meta) {
+    if (!advancedKeys.length) {
+      meta.textContent = '';
+    } else {
+      const totalCards = advancedKeys.reduce((sum, key) => sum + (Array.isArray(sets[key]?.cards) ? sets[key].cards.length : 0), 0);
+      meta.textContent = `${advancedKeys.length} buckets · ${totalCards.toLocaleString()} words`;
+    }
+  }
+
+  if (!advancedKeys.length) {
+    const empty = document.createElement('div');
+    empty.className = 'advanced-empty';
+    empty.textContent = 'Advanced vocabulary data has not loaded yet.';
+    list.appendChild(empty);
+    return;
+  }
 
   const deselectBtn = document.createElement('button');
   deselectBtn.type = 'button';
   deselectBtn.className = 'chapter-btn supplemental-deselect-all';
-  deselectBtn.textContent = 'Deselect all book decks';
-  deselectBtn.onclick = () => deselectAllBookDecks();
-  grid.appendChild(deselectBtn);
+  deselectBtn.textContent = 'Deselect all advanced';
+  deselectBtn.onclick = () => deselectAllAdvanced();
+  list.appendChild(deselectBtn);
 
-  deckKeys.forEach((key) => {
+  const body = document.createElement('div');
+  body.className = 'advanced-week-body';
+
+  advancedKeys.forEach(key => {
     const set = sets[key];
     if (!set) return;
-    const vocabCount = Array.isArray(set.cards) ? set.cards.length : 0;
+    const cardCount = Array.isArray(set.cards) ? set.cards.length : 0;
+    if (!cardCount) return;
+    const subGroups = getAdvancedSubGroups(set);
 
-    const btn = document.createElement('button');
-    btn.className = 'chapter-btn';
-    btn.dataset.key = key;
-    const countLabel = `${vocabCount} vocab`;
-    btn.innerHTML = `${set.label}<span class="chapter-count">${countLabel}</span>`;
-    btn.onclick = () => toggleSet(key);
-    grid.appendChild(btn);
+    const details = document.createElement('details');
+    details.className = 'supplemental-set advanced-set';
+    details.open = runtime.selectedKeys.includes(String(key));
+
+    const summary = document.createElement('summary');
+    summary.className = 'supplemental-summary advanced-summary';
+    summary.innerHTML = `<span>${set.label || key}</span><span class="chapter-count">${cardCount} words</span>`;
+    details.appendChild(summary);
+
+    if (set.notes) {
+      const notes = document.createElement('div');
+      notes.className = 'advanced-notes';
+      notes.textContent = set.notes;
+      details.appendChild(notes);
+    }
+
+    const controls = document.createElement('div');
+    controls.className = 'supplemental-paradigm-list advanced-sub-list';
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'chapter-btn supplemental-all-btn';
+    allBtn.dataset.key = key;
+    allBtn.innerHTML = `All of ${set.label || key}<span class="chapter-count">${cardCount} words</span>`;
+    allBtn.onclick = () => toggleSet(key);
+    controls.appendChild(allBtn);
+
+    subGroups.forEach(group => {
+      const btn = document.createElement('button');
+      btn.className = 'chapter-btn supplemental-paradigm-btn advanced-sub-btn';
+      btn.dataset.key = `${key}::sub::${group.sub}`;
+      btn.innerHTML = `${group.sub}<span class="chapter-count">${group.count} word${group.count === 1 ? '' : 's'}</span>`;
+      btn.onclick = () => toggleAdvancedSubGroup(key, group.sub);
+      controls.appendChild(btn);
+    });
+
+    details.appendChild(controls);
+    body.appendChild(details);
   });
 
+  list.appendChild(body);
   setActiveSetButtons();
 }
 
-export function deselectAllBookDecks() {
-  const remaining = runtime.selectedKeys.filter((k) => !isBookDeckKey(k));
+export function deselectAllAdvanced() {
+  const advancedBaseKey = (k) => {
+    const sub = parseAdvancedSubKey(k);
+    return sub ? sub.baseKey : k;
+  };
+  const remaining = runtime.selectedKeys.filter(k => !isAdvancedVocabKey(advancedBaseKey(k)));
   if (remaining.length === runtime.selectedKeys.length) return;
   host.saveCurrentDeckStateToBank();
   runtime.currentSession = null;
@@ -204,6 +273,121 @@ export function deselectAllBookDecks() {
     return;
   }
   loadDeckFromKeys(runtime.selectedKeys, null, { clearUnspacedMarks: true });
+}
+
+// ── Book Vocab selector ─────────────────────────────────────────────────
+const BOOK_VOCAB_GROUP_SIZE_DEFAULT = 50;
+function getBookVocabData() {
+  const data = window.BBH_BOOK_VOCAB;
+  const books = data && Array.isArray(data.books) ? data.books : [];
+  const size = (data && Number(data.groupSize)) || BOOK_VOCAB_GROUP_SIZE_DEFAULT;
+  return { books, size };
+}
+
+function getBookVocabGroups(refsLength, size) {
+  const groups = [];
+  for (let start = 0; start < refsLength; start += size) {
+    const end = Math.min(start + size, refsLength);
+    groups.push({ group: groups.length + 1, start, end, count: end - start });
+  }
+  return groups;
+}
+
+export function toggleBookVocabGroup(bookKey, groupNum) {
+  toggleSet(`BKV::${bookKey}::g::${groupNum}`);
+}
+
+export function deselectAllBookVocab() {
+  const remaining = runtime.selectedKeys.filter((k) => !isBookVocabKey(k));
+  if (remaining.length === runtime.selectedKeys.length) return;
+  host.saveCurrentDeckStateToBank();
+  runtime.currentSession = null;
+  runtime.selectedKeys = remaining;
+  if (!runtime.selectedKeys.length) {
+    clearAndRenderEmpty();
+    return;
+  }
+  loadDeckFromKeys(runtime.selectedKeys, null, { clearUnspacedMarks: true });
+}
+
+export function buildBookVocabSelector() {
+  const list = document.getElementById('bookVocabGrid');
+  if (!list) return;
+  list.innerHTML = '';
+
+  const { books, size } = getBookVocabData();
+  const ordered = [...books].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  const meta = document.getElementById('bookVocabSectionMeta');
+  if (meta) {
+    if (!ordered.length) {
+      meta.textContent = '';
+    } else {
+      const totalLinks = ordered.reduce((sum, b) => sum + (Array.isArray(b.refs) ? b.refs.length : 0), 0);
+      meta.textContent = `${ordered.length} books · ${totalLinks.toLocaleString()} words`;
+    }
+  }
+
+  if (!ordered.length) {
+    const empty = document.createElement('div');
+    empty.className = 'advanced-empty';
+    empty.textContent = 'Book Vocab data has not loaded yet.';
+    list.appendChild(empty);
+    return;
+  }
+
+  const deselectBtn = document.createElement('button');
+  deselectBtn.type = 'button';
+  deselectBtn.className = 'chapter-btn supplemental-deselect-all';
+  deselectBtn.textContent = 'Deselect all book vocab';
+  deselectBtn.onclick = () => deselectAllBookVocab();
+  list.appendChild(deselectBtn);
+
+  const body = document.createElement('div');
+  body.className = 'advanced-week-body';
+
+  ordered.forEach(book => {
+    const refs = Array.isArray(book.refs) ? book.refs : [];
+    const count = refs.length;
+    if (!count) return;
+    const bookKey = `BKV::${book.key}`;
+    const groups = getBookVocabGroups(count, size);
+
+    const details = document.createElement('details');
+    details.className = 'supplemental-set advanced-set book-vocab-set';
+    details.open = runtime.selectedKeys.some(k => k === bookKey || k.startsWith(`${bookKey}::g::`));
+
+    const summary = document.createElement('summary');
+    summary.className = 'supplemental-summary advanced-summary';
+    summary.innerHTML = `<span>${book.name}</span><span class="chapter-count">${count.toLocaleString()} words</span>`;
+    details.appendChild(summary);
+
+    const controls = document.createElement('div');
+    controls.className = 'supplemental-paradigm-list advanced-sub-list';
+
+    const allBtn = document.createElement('button');
+    allBtn.className = 'chapter-btn supplemental-all-btn';
+    allBtn.dataset.key = bookKey;
+    allBtn.innerHTML = `All of ${book.name}<span class="chapter-count">${count.toLocaleString()} words</span>`;
+    allBtn.onclick = () => toggleSet(bookKey);
+    controls.appendChild(allBtn);
+
+    groups.forEach(group => {
+      const btn = document.createElement('button');
+      btn.className = 'chapter-btn supplemental-paradigm-btn advanced-sub-btn';
+      btn.dataset.key = `${bookKey}::g::${group.group}`;
+      const label = `${group.start + 1}-${group.end}`;
+      btn.innerHTML = `${label}<span class="chapter-count">${group.count} word${group.count === 1 ? '' : 's'}</span>`;
+      btn.onclick = () => toggleBookVocabGroup(book.key, group.group);
+      controls.appendChild(btn);
+    });
+
+    details.appendChild(controls);
+    body.appendChild(details);
+  });
+
+  list.appendChild(body);
+  setActiveSetButtons();
 }
 
 // Shared empty-state path used when a deselect leaves no selected keys.

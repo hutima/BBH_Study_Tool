@@ -295,9 +295,13 @@ import {
   setActiveSetButtons,
   buildSessions,
   buildChapterSelector,
-  buildBookDeckSelector,
+  buildAdvancedVocabSelector,
+  buildBookVocabSelector,
   deselectAllChapters,
-  deselectAllBookDecks,
+  deselectAllAdvanced,
+  deselectAllBookVocab,
+  toggleAdvancedSubGroup,
+  toggleBookVocabGroup,
   deselectAll,
   loadDeckFromKeys,
   loadSession,
@@ -2599,7 +2603,7 @@ const GLOBAL_CLICK_HANDLERS = {
   returnSeenCardToDeck,
   closeAnalyticsOverlay, closeTransferModal, exportProgressJson,
   closeShortcutsModal, closeStudySelector,
-  deselectAllChapters, deselectAllBookDecks, deselectAll,
+  deselectAllChapters, deselectAllAdvanced, deselectAllBookVocab, deselectAll,
   handleConsentAction, handleTransferPrimaryAction, handleTransferSecondaryAction,
   openShortcutsModal, openStudySelector,
   openAnalyticsOverlay, resetAllStats, resetCurrentDeck, resetRequiredOnly,
@@ -2658,45 +2662,56 @@ initializeFontFamily();
 initializeTextSize();
 initializeShowPoints();
 initializeShowTranslit();
-// ─── Task #15: merge advanced/book-vocab decks into window.SETS ───────────
-// window.BBH_BOOK_VOCAB (js/data/bbh_book_vocab.js, a classic script loaded
-// after bbh_vocab.js in index.html — see that script tag order) carries 9
-// decks under their own 'book-*' key namespace (bbh-bk-* card ids). Merge
-// them into window.SETS here so they become ordinary selectable decks:
-// js/ui/selectors.js's buildBookDeckSelector renders them, and toggleSet/
-// loadDeckFromKeys need no book-deck-specific branch at all, since SETS
-// entries are otherwise generic (see js/domain/deck/filters.js's
-// getSelectedVocabCards, which already iterates window.SETS by key with no
-// numeric assumption). Guarded on BBH_BOOK_VOCAB being present, mirroring
-// this file's other mixed-version-cache guards below (runtime.parsing/
-// grammar/reader/alphabet defaults) — a stale cached page missing this
-// script (or a fresh page racing an update) degrades to "no book decks
-// yet" rather than throwing. isChapterKey (js/domain/deck/ordering.js) is
-// strictly `/^\d+$/`, so these non-numeric keys are automatically excluded
-// from buildChapterSelector's lesson grid, deselectAllChapters' sweep, and
-// the "highest selected vocab lesson" first-use rule in js/ui/parsing.js /
+// ─── Task #20: merge advanced-vocab buckets into window.SETS ──────────────
+// window.BBH_ADVANCED_VOCAB (js/data/bbh_advanced_vocab.js, a classic
+// script loaded after bbh_vocab.js in index.html — see that script tag
+// order) carries corpus-wide descending-frequency advanced-vocab buckets
+// under their own 'ADV<NN>' key namespace (bbh-adv-<strongs> card ids).
+// Merge them into window.SETS here so they become ordinary selectable
+// decks: js/ui/selectors.js's buildAdvancedVocabSelector renders them, and
+// toggleSet/loadDeckFromKeys need no advanced-bucket-specific branch at
+// all, since SETS entries are otherwise generic (see js/domain/deck/
+// filters.js's getSelectedVocabCards, which already iterates window.SETS
+// by key with no numeric assumption). The SAME script also registers
+// window.BBH_BOOK_VOCAB (the book -> ordered-ref-ids LINK index) — that one
+// is deliberately NEVER merged into window.SETS; its "BKV::<book>"/
+// "BKV::<book>::g::<N>" pseudo-keys are resolved straight to existing
+// lesson/advanced card ids at deck-build time by getSelectedVocabCards'
+// own book-vocab branch (js/domain/deck/filters.js's resolveBookVocabCards)
+// — see that file's header for why (shared progress, no duplicate ids).
+// Guarded on BBH_ADVANCED_VOCAB being present, mirroring this file's other
+// mixed-version-cache guards below (runtime.parsing/grammar/reader/
+// alphabet defaults) — a stale cached page missing this script (or a fresh
+// page racing an update) degrades to "no advanced buckets yet" rather than
+// throwing. isChapterKey (js/domain/deck/ordering.js) is strictly
+// `/^\d+$/`, so "ADV<NN>" keys are automatically excluded from
+// buildChapterSelector's lesson grid, deselectAllChapters' sweep, and the
+// "highest selected vocab lesson" first-use rule in js/ui/parsing.js /
 // grammar.js / reader.js (all three already guard with
-// `Number.isInteger(parseInt(k, 10))`, which is false for "book-gen" et
-// al. — verified, no change needed there).
-function mergeBookVocabDecks() {
-  const bookVocab = window.BBH_BOOK_VOCAB;
-  if (!bookVocab || !Array.isArray(bookVocab.decks)) return;
+// `Number.isInteger(parseInt(k, 10))`, which is false for "ADV01" et al.
+// — verified, no change needed there).
+function mergeAdvancedVocabDecks() {
+  const advancedVocab = window.BBH_ADVANCED_VOCAB;
+  if (!advancedVocab || !Array.isArray(advancedVocab.buckets)) return;
   window.SETS = window.SETS || {};
-  bookVocab.decks.forEach((deck) => {
-    if (!deck || !deck.key) return;
-    window.SETS[deck.key] = {
-      label: deck.label,
-      type: deck.type || 'chapter',
-      cards: Array.isArray(deck.cards) ? deck.cards : []
+  advancedVocab.buckets.forEach((bucket) => {
+    if (!bucket || !bucket.key) return;
+    window.SETS[bucket.key] = {
+      label: bucket.label,
+      type: 'advanced',
+      advanced: true,
+      notes: bucket.notes || '',
+      cards: Array.isArray(bucket.cards) ? bucket.cards : []
     };
   });
 }
-mergeBookVocabDecks();
+mergeAdvancedVocabDecks();
 
 // Initial build with default state (needed so restoreState can find DOM elements)
 buildSessions();
 buildChapterSelector();
-buildBookDeckSelector();
+buildAdvancedVocabSelector();
+buildBookVocabSelector();
 if (!restoreState()) {
   syncToggleButtons(); // reflect default controls on load
 }
@@ -2775,7 +2790,8 @@ if (!runtime.alphabet || typeof runtime.alphabet !== 'object') {
 // Rebuild after restore: runtime.appProfile may have changed, affecting grammar summary text
 buildSessions();
 buildChapterSelector();
-buildBookDeckSelector();
+buildAdvancedVocabSelector();
+buildBookVocabSelector();
 initPwaInstall();
 initializeConsentGate();
 

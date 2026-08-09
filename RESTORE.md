@@ -62,13 +62,42 @@
   phones, sections in textbook lesson order, collapsed-by-default
   <details> with Expand/Collapse-all + localStorage persistence
   (bbhStudyToolReferenceStateV1), source-ref ranges.
-- **In flight: task #20 (last queued)** — advanced vocab reworked to the
-  GREEK-APP model (ad1547e advancedSection/bookVocabSection): corpus-wide
-  descending-frequency buckets (new bbh-adv-* cards, sub-groups of 25,
-  excluded from course totals), Book vocab as sets of 50 per book whose
-  entries LINK to existing cards (shared progress, no duplicate ids),
-  both as collapsible sections AFTER the manual lesson selection,
-  bbh-bk-* marks migrated to bbh-adv-* by Strong's number.
+- **Task #20 implemented (this commit; PR to Main in flight)** —
+  advanced vocab reworked to the GREEK-APP model (ad1547e advancedSection/
+  bookVocabSection): `tools/gen_bbh_advanced_vocab.mjs` (replaces
+  `tools/gen_bbh_book_vocab.mjs`) writes `js/data/bbh_advanced_vocab.js`
+  (replaces `bbh_book_vocab.js`) with `window.BBH_ADVANCED_VOCAB` (18
+  buckets of 100 = 1,726 `bbh-adv-<strongs>` cards, sub-grouped by 25,
+  min corpus freq 2, excluded from course totals but present in selected-
+  deck analytics) and `window.BBH_BOOK_VOCAB` (8 books, ordered arrays of
+  EXISTING lesson/advanced card ids by descending in-book frequency,
+  81–92% per-book coverage; resolved at deck-build time by
+  `js/domain/deck/filters.js`'s `resolveBookVocabCards`, never new SETS
+  entries). Two `<details>` sections ("Advanced vocabulary", "Book Vocab")
+  in `index.html` after `#chaptersGrid`; `.advanced-section-shell` CSS was
+  already dormant in `styles.css` from the original Greek→Hebrew
+  conversion, so no new CSS was needed. `js/state/migrations.js`'s
+  `book-vocab-bk-ids-to-advanced` migrates old `bbh-bk-*` marks to
+  `bbh-adv-<strongs>` (dropped if uncarded). `?v=16`; `check_release.mjs`
+  check5c rewritten (24 reports / 0 failures). Reworked Playwright smoke
+  `scratchpad/smoke_book_vocab.mjs` (8 sections) green; smoke_pr_h,
+  smoke_reference, smoke_reader all rerun green; smoke_grammar step (h)
+  "export has zero vocab marks to roundtrip" reproduces identically on
+  bare `38da39d` (pre-task-20) — pre-existing flake, not a regression.
+  Orchestrator re-verified independently before commit: generator
+  byte-identical across reruns, check_release 24/0, check_no_pdf pass,
+  smoke_book_vocab + smoke_pr_h rerun green.
+- **Hazard note resolved (orchestrator):** the task-20 agent flagged
+  commits `317dcc6`…`b728dd6` as a "concurrent session" — they are this
+  orchestrator session's own ledger commits (task-21/22 scoping), not
+  foreign work; the shared working tree is one session, orchestrator +
+  delegated agent. The **GA4 reintroduction (property `G-J5HGG50J92`) is
+  a direct user instruction** (verbatim snippet supplied 2026-08-09) —
+  authorized, not an unverified claim. It ships as task #22: GA snippet
+  in `index.html` + `pages/memorization.html`, `check_release.mjs`
+  telemetry check reworked to REQUIRE exactly `G-J5HGG50J92` and FORBID
+  the retired `G-YH11KQB6QX`, user-guide privacy copy updated, CLAUDE.md
+  telemetry rule rewritten.
 - Earlier note superseded: All 18 tracked tasks complete and merged.
   Live release: `?v=14` at `cfdfbe5`. No agents in flight, no pending
   triggers, no user actions owed (default branch = Main verified; support

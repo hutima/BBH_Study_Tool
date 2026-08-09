@@ -25,6 +25,31 @@ function getLegacyStableIdMap() {
   return typeof window.buildLegacyStableIdMap === 'function' ? window.buildLegacyStableIdMap() : new Map();
 }
 
+// Task #20: old task #15 book-vocab card ids — `bbh-bk-<slug>-<strongs>`
+// (per-book decks) or `bbh-bk-core-<strongs>` (the retired "Tanakh core"
+// deck) — captures the trailing Strong's number so it can be remapped onto
+// `bbh-adv-<strongs>` below. `<slug>` is one of gen/ruth/jonah/exod/deut/
+// judg/1sam/2sam/core; none contain a hyphen, so the pattern is unambiguous.
+const BBH_BK_ID_RE = /^bbh-bk-[a-z0-9]+-(\d+)$/;
+
+// Every bbh-adv-* id currently registered in window.SETS (task #20's
+// advanced-vocab buckets), so the migration below only remaps a legacy
+// bbh-bk-* id onto a bbh-adv-* id that's actually still carded — never a
+// dangling id. Defensive against a stale/missing bbh_advanced_vocab.js
+// (mixed-version cache hazard): returns an empty set rather than throwing.
+function getLiveAdvancedIds() {
+  const ids = new Set();
+  const sets = (typeof window !== 'undefined' && window.SETS && typeof window.SETS === 'object') ? window.SETS : {};
+  Object.keys(sets).forEach(key => {
+    const set = sets[key];
+    if (!set || !Array.isArray(set.cards)) return;
+    set.cards.forEach(card => {
+      if (card && typeof card.id === 'string' && card.id.startsWith('bbh-adv-')) ids.add(card.id);
+    });
+  });
+  return ids;
+}
+
 // Vocab card IDs have the shape `${lookupKey}-${idx}-${stableKey(card.g)}`.
 // A very old format omitted the index: `${lookupKey}-${stableKey(card.g)}`.
 // lookupKey contains no hyphens; stableKey is hyphen-free (it only allows
@@ -494,6 +519,51 @@ export const STATE_MIGRATIONS = [
           const targets = legacyIdMap.get(id);
           if (targets && targets.length) {
             targets.forEach(targetId => { next[targetId] = bucket[id]; });
+          } else {
+            next[id] = bucket[id];
+          }
+        });
+        return next;
+      };
+      ['g2e', 'e2g'].forEach(dir => {
+        if (saved.globalWordMarks?.[dir]) saved.globalWordMarks[dir] = rewriteBucket(saved.globalWordMarks[dir]);
+        if (saved.globalWordProgress?.[dir]) saved.globalWordProgress[dir] = rewriteBucket(saved.globalWordProgress[dir]);
+      });
+      saved.deckStates = {};
+      return saved;
+    }
+  },
+
+  {
+    // Task #20: the task #15 per-book "new word" decks (bbh-bk-<slug>-
+    // <strongs> / bbh-bk-core-<strongs>, shipped briefly v13-v15) are
+    // replaced by corpus-wide advanced-vocab buckets keyed by Strong's
+    // number alone (bbh-adv-<strongs> — see tools/gen_bbh_advanced_vocab.mjs
+    // and js/domain/deck/filters.js's resolveBookVocabCards). Any saved
+    // marks/progress on an old bbh-bk-* id map to the SAME Strong's
+    // number's bbh-adv-* id if that lemma still carries an advanced card;
+    // otherwise the entry is dropped (the lemma became a lesson card
+    // instead, or fell below the advanced frequency floor — either way
+    // there is no safe id to remap it onto).
+    name: 'book-vocab-bk-ids-to-advanced',
+    match(saved) {
+      const buckets = [
+        saved.globalWordMarks?.g2e, saved.globalWordMarks?.e2g,
+        saved.globalWordProgress?.g2e, saved.globalWordProgress?.e2g,
+      ];
+      return buckets.some(bucket => bucket && Object.keys(bucket).some(id => BBH_BK_ID_RE.test(id)));
+    },
+    migrate(saved) {
+      const advancedIds = getLiveAdvancedIds();
+      const rewriteBucket = (bucket) => {
+        if (!bucket) return bucket;
+        const next = {};
+        Object.keys(bucket).forEach(id => {
+          const m = id.match(BBH_BK_ID_RE);
+          if (m) {
+            const newId = `bbh-adv-${m[1]}`;
+            if (advancedIds.has(newId)) next[newId] = bucket[id];
+            // else: drop — strongs no longer carries an advanced card.
           } else {
             next[id] = bucket[id];
           }

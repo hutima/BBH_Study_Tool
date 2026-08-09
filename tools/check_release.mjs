@@ -28,9 +28,11 @@
 //      expansion: 52 Genesis + 26 across Ruth/Jonah/Exod/Deut/Judg/1Sam/
 //      2Sam), js/data/bbh_alphabet.js exactly 23 letters + 12 vowels,
 //      js/data/bbh_reference_extra.js at least 40 sections.
-//   5c. js/data/bbh_book_vocab.js (task #15, advanced/by-book vocab decks)
-//      registers exactly 9 decks (8 per-book + 1 Tanakh-core), with a
-//      per-deck card-count report line.
+//   5c. js/data/bbh_advanced_vocab.js (task #20, advanced vocab + Book
+//      Vocab, replacing task #15's bbh_book_vocab.js) registers at least
+//      1 advanced-vocab bucket with a nonzero card count, and exactly 8
+//      Book Vocab book entries (one per Reader corpus book), with a
+//      per-bucket/per-book count report line.
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
 //   7. Zero case-insensitive 'googletagmanager', 'google-analytics',
 //      'gtag(', or 'G-YH11KQB6QX' in the live load graph — the app ships
@@ -374,27 +376,51 @@ function readDirSafe(dir) {
   }
 }
 
-// ── Check 5c: bbh_book_vocab.js registers 9 book/core decks (task #15) ──
+// ── Check 5c: bbh_advanced_vocab.js registers advanced buckets + 8 Book
+//    Vocab book entries (task #20, replacing task #15's bbh_book_vocab.js) ──
 {
-  const bookVocabPath = 'js/data/bbh_book_vocab.js';
-  if (!existsSync(path.join(ROOT, bookVocabPath))) {
-    fail(`check5c: ${bookVocabPath} not found`);
+  const advancedVocabPath = 'js/data/bbh_advanced_vocab.js';
+  if (!existsSync(path.join(ROOT, advancedVocabPath))) {
+    fail(`check5c: ${advancedVocabPath} not found`);
   } else {
-    const src = readText(bookVocabPath);
-    const deckKeys = [...src.matchAll(/"key":\s*"(book-[^"]+)"/g)].map((m) => m[1]);
-    const totalCards = [...src.matchAll(/"id":\s*"bbh-bk-[^"]+"/g)].length;
-    if (deckKeys.length !== 9) {
-      fail(`check5c: expected 9 book-vocab decks registered in ${bookVocabPath}, found ${deckKeys.length}`);
+    const src = readText(advancedVocabPath);
+    // The file registers window.BBH_ADVANCED_VOCAB then window.BBH_BOOK_VOCAB
+    // (see tools/gen_bbh_advanced_vocab.mjs's writeAdvancedVocabFile) — split
+    // on the ASSIGNMENT (not a bare substring match, which would instead hit
+    // the header comment's own prose mention of "window.BBH_BOOK_VOCAB")
+    // so bucket "key"s (ADV<NN>) and book "key"s (gen/ruth/...) never
+    // cross-match each other's regex.
+    const splitIdx = src.indexOf('window.BBH_BOOK_VOCAB =');
+    const advSection = splitIdx === -1 ? src : src.slice(0, splitIdx);
+    const bookSection = splitIdx === -1 ? '' : src.slice(splitIdx);
+
+    const bucketKeys = [...advSection.matchAll(/"key":\s*"(ADV\d+)"/g)].map((m) => m[1]);
+    const totalAdvCards = [...advSection.matchAll(/"id":\s*"bbh-adv-[^"]+"/g)].length;
+    if (!bucketKeys.length || !totalAdvCards) {
+      fail(`check5c: expected at least 1 advanced-vocab bucket with cards in ${advancedVocabPath}, found ${bucketKeys.length} buckets / ${totalAdvCards} cards`);
     } else {
-      report(`check5c: 9 book-vocab decks / ${totalCards} cards registered in bbh_book_vocab.js (pass)`);
+      report(`check5c: ${bucketKeys.length} advanced buckets / ${totalAdvCards} cards registered in bbh_advanced_vocab.js (pass)`);
     }
-    // Per-deck sizes: `src.split(...)` on each deck's own "key" line yields
-    // one chunk per deck holding exactly that deck's own cards (up to, not
-    // including, the next deck's "key" line) — light-regex-parse, same
-    // no-execution style as every other check5* block above.
-    const deckChunks = src.split(/"key":\s*"book-[^"]+"/).slice(1);
-    const sizes = deckKeys.map((key, i) => `${key}:${[...(deckChunks[i] || '').matchAll(/"id":\s*"bbh-bk-[^"]+"/g)].length}`);
-    report(`check5c: bbh_book_vocab.js deck sizes — ${sizes.join(', ')}`);
+
+    const bookKeys = [...bookSection.matchAll(/"key":\s*"([a-z0-9]+)"/g)].map((m) => m[1]);
+    if (bookKeys.length !== 8) {
+      fail(`check5c: expected 8 Book Vocab book entries in ${advancedVocabPath}, found ${bookKeys.length}`);
+    } else {
+      report(`check5c: 8 Book Vocab book entries registered in bbh_advanced_vocab.js (pass)`);
+    }
+    // Per-book ref counts: split bookSection on each book's own "key" line
+    // (same light-regex-parse, no-execution style as every other check5*
+    // block above), then count the quoted id strings inside that chunk's
+    // own "refs": [...] array (a flat array of strings — no nesting, so a
+    // lazy match up to the first "]" is exact).
+    const bookChunks = bookSection.split(/"key":\s*"[a-z0-9]+"/).slice(1);
+    const sizes = bookKeys.map((key, i) => {
+      const chunk = bookChunks[i] || '';
+      const refsMatch = chunk.match(/"refs":\s*\[([\s\S]*?)\]/);
+      const refCount = refsMatch ? [...refsMatch[1].matchAll(/"[^"]+"/g)].length : 0;
+      return `${key}:${refCount}`;
+    });
+    report(`check5c: bbh_advanced_vocab.js Book Vocab sizes — ${sizes.join(', ')}`);
   }
 }
 

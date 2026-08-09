@@ -1,5 +1,8 @@
 // Card selection / filtering helpers
-import { isChapterKey, sourceHint, getChapterForKey, getWeekForKey } from './ordering.js';
+import {
+  isChapterKey, sourceHint, getChapterForKey, getWeekForKey,
+  isBookVocabKey, parseBookVocabKey, parseAdvancedSubKey
+} from './ordering.js';
 import { getConfidencePct } from '../srs/confidence.js';
 
 // "Hard review" scope: cards the learner has missed more than 10 times and
@@ -70,15 +73,92 @@ function stableKey(text) {
   return typeof window.stableCardKey === 'function' ? window.stableCardKey(text) : String(text || '');
 }
 
+// ─── Book Vocab resolution (task #20) ──────────────────────────────────────
+// Book pseudo-keys ("BKV::<book>" / "BKV::<book>::g::<N>") don't carry their
+// own cards: window.BBH_BOOK_VOCAB.books[].refs is an array of EXISTING
+// card ids (lesson or advanced), ordered by descending in-book frequency —
+// computed at generation time by tools/gen_bbh_advanced_vocab.mjs. This
+// resolves a book pseudo-key back to the live, fully-enriched card objects
+// (same shape a lesson/advanced selection would produce) so progress is
+// shared with the card's home lesson/advanced-bucket set. Mirrors the
+// Greek app's resolveBookVocabCards (ad1547e js/domain/deck/filters.js),
+// adapted to resolve by id (deterministic here) rather than by headword.
+const BOOK_VOCAB_GROUP_SIZE_DEFAULT = 50;
+function bookVocabGroupSize() {
+  const n = window.BBH_BOOK_VOCAB && Number(window.BBH_BOOK_VOCAB.groupSize);
+  return n > 0 ? n : BOOK_VOCAB_GROUP_SIZE_DEFAULT;
+}
+
+// Index of every real (non-book-vocab) vocab card by id, built via a
+// recursive getSelectedVocabCards call over the full non-book-vocab key
+// inventory so a book-vocab-resolved card carries the EXACT SAME enriched
+// shape (sourceKey/sourceLabel/chapter/week/id) as when reached via its
+// home lesson or advanced bucket. Memoized; the signature invalidates the
+// cache if the loaded card data changes.
+let bookVocabCardIndex = null;
+let bookVocabCardIndexSig = '';
+function getRealCardIndexById() {
+  const sets = getSets();
+  const keys = Object.keys(sets).filter(k => !isBookVocabKey(k) && Array.isArray(sets[k]?.cards) && sets[k].cards.length);
+  const sig = keys.length + ':' + keys.reduce((n, k) => n + sets[k].cards.length, 0);
+  if (bookVocabCardIndex && bookVocabCardIndexSig === sig) return bookVocabCardIndex;
+  const idx = new Map();
+  // requiredFlag false: index the full inventory; required-only filtering
+  // is applied per-card when the book-vocab set is emitted, below.
+  getSelectedVocabCards(keys, false).forEach(card => {
+    if (card && card.id != null && !idx.has(card.id)) idx.set(card.id, card);
+  });
+  bookVocabCardIndex = idx;
+  bookVocabCardIndexSig = sig;
+  return idx;
+}
+
+export function resolveBookVocabCards(rawKey, requiredFlag = false) {
+  const parsed = parseBookVocabKey(rawKey);
+  if (!parsed) return [];
+  const books = (window.BBH_BOOK_VOCAB && Array.isArray(window.BBH_BOOK_VOCAB.books)) ? window.BBH_BOOK_VOCAB.books : [];
+  const book = books.find(b => b.key === parsed.book);
+  if (!book || !Array.isArray(book.refs)) return [];
+  let refs = book.refs;
+  if (parsed.group) {
+    const size = bookVocabGroupSize();
+    const start = (parsed.group - 1) * size;
+    refs = refs.slice(start, start + size);
+  }
+  const index = getRealCardIndexById();
+  const out = [];
+  const seen = new Set();
+  refs.forEach(id => {
+    const card = index.get(id);
+    if (!card) return; // linked card no longer present (mixed-version safe)
+    if (requiredFlag && !card.required) return;
+    if (seen.has(card.id)) return; // a book lists each lexeme once
+    seen.add(card.id);
+    out.push({ ...card });
+  });
+  return out;
+}
+
 export function getSelectedVocabCards(keys, requiredFlag = false) {
   const cards = [];
+  const hasBookVocabKeys = (keys || []).some(isBookVocabKey);
   (keys || []).forEach(key => {
-    const lookupKey = String(key);
+    const rawKey = String(key);
+    if (isBookVocabKey(rawKey)) {
+      resolveBookVocabCards(rawKey, requiredFlag).forEach(card => cards.push(card));
+      return;
+    }
+    // Advanced-vocab bucket sub-groups ("ADV01::sub::1-25") select a slice
+    // of their base bucket's cards by the card's own `sub` field (see
+    // tools/gen_bbh_advanced_vocab.mjs) rather than a separate SETS entry.
+    const sub = parseAdvancedSubKey(rawKey);
+    const lookupKey = sub ? sub.baseKey : rawKey;
     const set = getSets()[lookupKey];
     const setCards = Array.isArray(set?.cards) ? set.cards : [];
     if (!setCards.length) return;
     setCards.forEach((card, idx) => {
       if (requiredFlag && !card.required) return;
+      if (sub && String(card?.sub || '') !== sub.sub) return;
       cards.push({
         ...card,
         kind: 'vocab',
@@ -86,12 +166,26 @@ export function getSelectedVocabCards(keys, requiredFlag = false) {
         sourceLabel: sourceHint(lookupKey),
         chapter: getChapterForKey(lookupKey),
         week: getWeekForKey(lookupKey),
-        // Prefer the card's own explicit id (bbh-l<lesson>-<slug>) — only
-        // fall back to a derived key for cards that don't carry one.
+        // Prefer the card's own explicit id (bbh-l<lesson>-<slug> or
+        // bbh-adv-<strongs>) — only fall back to a derived key for cards
+        // that don't carry one.
         id: card.id != null ? String(card.id) : `${lookupKey}-${idx}-${stableKey(card.g)}`
       });
     });
   });
+  // Book vocab links to cards that may also be reachable via their home
+  // lesson/advanced bucket (or via another selected book), so collapse
+  // duplicate ids when any book-vocab key is in play. The non-book path
+  // can't produce dupes, so it skips this to preserve the original card
+  // order exactly.
+  if (hasBookVocabKeys) {
+    const seen = new Set();
+    return cards.filter(card => {
+      if (seen.has(card.id)) return false;
+      seen.add(card.id);
+      return true;
+    });
+  }
   return cards;
 }
 
@@ -122,17 +216,20 @@ export function getAllChapterKeys() {
   return Object.keys(getSets()).filter(isChapterKey).sort((a, b) => Number(a) - Number(b));
 }
 
-// Course-wide "all vocab" totals (task #15 seam): this feeds js/ui/
-// analytics.js's course-completion headline stats (the fixed "209 cards"
-// identity documented throughout RESTORE.md/CLAUDE.md) — deliberately
-// scoped to getAllChapterKeys() (isChapterKey-filtered), NOT the raw
-// getAllVocabKeys(), so the 'book-*' advanced decks merged into window.SETS
-// by js/app/main.js's mergeBookVocabDecks never inflate that denominator.
+// Course-wide "all vocab" totals: this feeds js/ui/analytics.js's course-
+// completion headline stats (the fixed "209 cards" identity documented
+// throughout RESTORE.md/CLAUDE.md) — deliberately scoped to
+// getAllChapterKeys() (isChapterKey-filtered), NOT the raw
+// getAllVocabKeys(), so the "ADV<NN>" advanced-vocab buckets merged into
+// window.SETS by js/app/main.js's mergeAdvancedVocabDecks (task #20) never
+// inflate that denominator. Book-vocab pseudo-keys ("BKV::...") are never
+// merged into window.SETS at all, so they're excluded automatically too.
 // This mirrors the existing precedent for runtime.alphabet (Lesson 0/1
 // practice decks are "never folded into any vocab count, stats or
-// export" — see CLAUDE.md): book decks fully participate in SRS
-// marks/progress/export like any other selected deck (verified in task
-// #15's self-check), they just don't count toward the course-wide 209.
+// export" — see CLAUDE.md): advanced/book-vocab cards fully participate in
+// SRS marks/progress/export like any other selected deck (verified in
+// task #20's self-check), they just don't count toward the course-wide
+// 209.
 export function getAllVocabCards(requiredFlag = false) {
   return getSelectedVocabCards(getAllChapterKeys(), requiredFlag);
 }
