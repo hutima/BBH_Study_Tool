@@ -137,6 +137,75 @@ export function buildChapterSelector() {
   setActiveSetButtons();
 }
 
+// ─── "By book · advanced" selector (task #15) ──────────────────────────────
+// Per-book/Tanakh-core advanced vocab decks, registered into window.SETS
+// under 'book-*' keys (js/app/main.js's mergeBookVocabDecks, run once after
+// bbh_vocab.js has registered window.SETS). These are ordinary SETS entries
+// — toggleSet/loadDeckFromKeys below need no book-deck-specific branch — but
+// they are NOT isChapterKey (js/domain/deck/ordering.js's isChapterKey is
+// strictly `/^\d+$/`), so they never appear in buildChapterSelector's lesson
+// grid or get swept by deselectAllChapters' isChapterKey filter; this is a
+// separate grid + separate deselect helper for exactly that reason.
+const BOOK_DECK_KEY_PREFIX = 'book-';
+export function isBookDeckKey(key) {
+  return String(key).startsWith(BOOK_DECK_KEY_PREFIX);
+}
+
+export function buildBookDeckSelector() {
+  const grid = document.getElementById('bookDecksGrid');
+  if (!grid) return;
+  grid.innerHTML = '';
+  grid.classList.add('chapters-grid');
+
+  const sets = window.SETS && typeof window.SETS === 'object' ? window.SETS : {};
+  // Mixed-version safe (CLAUDE.md ES-module cache hazard): a stale cached
+  // bbh_book_vocab.js (or one simply not yet loaded) leaves window.
+  // BBH_BOOK_VOCAB undefined — the grid then renders empty rather than
+  // throwing. Deck order comes from BBH_BOOK_VOCAB.decks itself (the
+  // generator's own deterministic book-then-core order), not from
+  // Object.keys(sets) — avoids depending on incidental JS object
+  // key-iteration order.
+  const bookVocab = window.BBH_BOOK_VOCAB;
+  const deckKeys = (bookVocab && Array.isArray(bookVocab.decks)) ? bookVocab.decks.map((d) => d.key) : [];
+  if (!deckKeys.length) return;
+
+  const deselectBtn = document.createElement('button');
+  deselectBtn.type = 'button';
+  deselectBtn.className = 'chapter-btn supplemental-deselect-all';
+  deselectBtn.textContent = 'Deselect all book decks';
+  deselectBtn.onclick = () => deselectAllBookDecks();
+  grid.appendChild(deselectBtn);
+
+  deckKeys.forEach((key) => {
+    const set = sets[key];
+    if (!set) return;
+    const vocabCount = Array.isArray(set.cards) ? set.cards.length : 0;
+
+    const btn = document.createElement('button');
+    btn.className = 'chapter-btn';
+    btn.dataset.key = key;
+    const countLabel = `${vocabCount} vocab`;
+    btn.innerHTML = `${set.label}<span class="chapter-count">${countLabel}</span>`;
+    btn.onclick = () => toggleSet(key);
+    grid.appendChild(btn);
+  });
+
+  setActiveSetButtons();
+}
+
+export function deselectAllBookDecks() {
+  const remaining = runtime.selectedKeys.filter((k) => !isBookDeckKey(k));
+  if (remaining.length === runtime.selectedKeys.length) return;
+  host.saveCurrentDeckStateToBank();
+  runtime.currentSession = null;
+  runtime.selectedKeys = remaining;
+  if (!runtime.selectedKeys.length) {
+    clearAndRenderEmpty();
+    return;
+  }
+  loadDeckFromKeys(runtime.selectedKeys, null, { clearUnspacedMarks: true });
+}
+
 // Shared empty-state path used when a deselect leaves no selected keys.
 function clearAndRenderEmpty() {
   // Deselecting everything is a "new session" event for the unspaced flow:

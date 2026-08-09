@@ -38,7 +38,7 @@ never nest a new overlay inside `.app`.
         `data-theme` / `data-font-family` / `data-text-size` on `<html>`
         before first paint to avoid a flash of the wrong theme. Don't move
         this above the stylesheet link.
-- `<link rel="stylesheet" href="styles.css?v=8">` (line 19)
+- `<link rel="stylesheet" href="styles.css?v=13">` (line 19)
 
 > Cache-bust: every asset URL ends in `?v=6`. Bump the number on release
 > (see "Cache-bust" in `CLAUDE.md`). The same number lives in `sw.js`
@@ -83,7 +83,7 @@ in `js/ui/modals.js` and `js/ui/navigation.js`, wired via `main.js`.
 |---------:|-------------------------------|---------|
 | 227–244  | `#transferOverlay`            | Import/export progress (textarea + file picker) — `js/state/persistence.js`. |
 | 245–415  | `#analyticsOverlay`           | Progress/analytics dashboard — hero XP/streak, chapter mastery grid, records, stubborn/slipping/most-improved lists, achievements, (Phase 2 PR B) `#analyticsParsingCollapse` (`data-collapse-key="parsingSection"`, `#analyticsParsingBody` — Parsing accuracy/known-status/trend/recent-forms; hidden via inline `style="display:none"` until at least one parsing attempt exists), (Phase 2 PR C) `#analyticsGrammarCollapse` (`data-collapse-key="grammarSection"`, `#analyticsGrammarBody` — overall accuracy, per-lesson-block accuracy, top-5 weakest concept tags, missed-question count; same hide-until-first-attempt behavior), and (Phase 2 PR D) `#analyticsReaderCollapse` (`data-collapse-key="readerSection"`, `#analyticsReaderBody` — passages read in the current lesson/tier scope vs. total, passages read overall, review-marks count; hidden until at least one passage is read or one token is marked). Rendered by `renderAnalyticsOverlay()` in `js/ui/analytics.js`, which calls each section through its own host hook (`host.renderParsingSection()` / `host.renderGrammarSection()` / `host.renderReaderSection()`) wired to `js/ui/parsing.js`'s `renderParsingAnalytics()` / `js/ui/grammar.js`'s `renderGrammarAnalytics()` / `js/ui/reader.js`'s `renderReaderAnalytics()` in `main.js`'s `configureAnalytics(...)` — analytics.js itself never imports parsing.js, grammar.js, or reader.js. Note: the Lesson 1/2 Alphabet/Vowel decks have NO analytics section anywhere in this overlay — see `js/ui/alphabet.js`'s header. Labels read "Lesson N" (not "Chapter N"). |
-| 416–447  | `#studySelectorOverlay`       | "Choose session" — a `.alphabet-lesson0-section` block with TWO rows (**"Lesson 1 · Alphabet"** button, `onclick="openAlphabetOverlay('letters')"`, and **"Lesson 2 · Vowel marks"** button, `onclick="openAlphabetOverlay('vowels')"` — PR H item 3; display-renamed from "Lesson 0A/0B" by task #16's addendum) sits ABOVE "Deselect all", visually separated and NOT part of `selectedKeys`/presets/vocab counts (see `js/ui/alphabet.js`), then "All Lessons" + 13 "Unit" reading-block presets — 14 keys total, the five decade-range presets were removed by PR H item 1 (`js/data/setMeta.js` `SESSION_WEEK_META`, all in one `#sessionsGrid`) — plus the individual-lesson chapter selector (`#chaptersGrid`), built by `js/ui/selectors.js` (task #16 addendum: `buildChapterSelector()` now excludes lessons 1–2 from this grid only — their 0-vocab lessons are now the two decks above; lesson 3 is the first entry; Parsing/Grammar/Reader's own lesson selects still start at 1). |
+| 416–454  | `#studySelectorOverlay`       | "Choose session" — a `.alphabet-lesson0-section` block with TWO rows (**"Lesson 1 · Alphabet"** button, `onclick="openAlphabetOverlay('letters')"`, and **"Lesson 2 · Vowel marks"** button, `onclick="openAlphabetOverlay('vowels')"` — PR H item 3; display-renamed from "Lesson 0A/0B" by task #16's addendum) sits ABOVE "Deselect all", visually separated and NOT part of `selectedKeys`/presets/vocab counts (see `js/ui/alphabet.js`), then "All Lessons" + 13 "Unit" reading-block presets — 14 keys total, the five decade-range presets were removed by PR H item 1 (`js/data/setMeta.js` `SESSION_WEEK_META`, all in one `#sessionsGrid`) — then (task #15) a **"By book · advanced"** section (`#bookDecksGrid`, same `.chapter-btn`/`toggleSet(key)` pattern as the lesson grid below, built by `js/ui/selectors.js`'s `buildBookDeckSelector()` from `window.BBH_BOOK_VOCAB.decks` after `js/app/main.js`'s `mergeBookVocabDecks()` has folded them into `window.SETS` under their own `book-*` keys; own "Deselect all book decks" button, `deselectAllBookDecks()`, since these keys aren't `isChapterKey` so the lesson/session deselect buttons skip them) — plus the individual-lesson chapter selector (`#chaptersGrid`), built by `js/ui/selectors.js` (task #16 addendum: `buildChapterSelector()` now excludes lessons 1–2 from this grid only — their 0-vocab lessons are now the two decks above; lesson 3 is the first entry; Parsing/Grammar/Reader's own lesson selects still start at 1). |
 | 448–474  | `#alphabetOverlay`            | **Phase 2 PR E; split into two decks + rating-row restyle by PR H items 2–3; readability/highlighting/one-handed-button fixes + "Lesson 1/2" display rename by task #16.** Lesson 1 Alphabet / Lesson 2 Vowel marks practice — one shared standalone overlay (flip card, `#alphabetMarkRow` reusing the vocab card's own `.mark-row`/`.mark-btn`/`.mark-again`/`.mark-easy` BUTTON classes for Again/Got it but with its own STACKED full-width one-handed row layout (`.alphabet-mark-row` overrides `.mark-row`'s flex-direction; `#markRow`'s 3-button vocab row is untouched), Shuffle, progress line, reset link, plus `#alphabetShevaFooter` — a small always-visible shəva-rules reference card shown only in the vowels deck), entirely owned by `js/ui/alphabet.js` (its own open/close functions, not `modals.js`). `#alphabetOverlayLabel`/`#alphabetOverlayTitle` swap text between "Lesson 1"/"Alphabet practice" and "Lesson 2"/"Vowel marks practice" based on which deck is open. See that module's header for the isolation rules. |
 | 473–528  | `#shortcutsOverlay`           | User guide / keyboard shortcuts, with a subsection per mode (Vocabulary incl. Lesson 0 + Units, Parsing, Grammar, Reader) + the inline **changelog** (see "Changelog" in `CLAUDE.md` for the editing rules). |
 | 551–583  | `#consentOverlay`             | First-run disclaimer / consent gate (`initializeConsentGate`, `handleConsentAction`) — includes the on-device-storage privacy line. |
@@ -97,23 +97,40 @@ in `js/ui/modals.js` and `js/ui/navigation.js`, wired via `main.js`.
 
 ---
 
-## Script block (~713–721)
+## Script block (~731–740)
 
 ```html
-<script defer src="js/data/bbh_vocab.js?v=8"></script>
-<script defer src="js/data/bbh_reference_data.js?v=8"></script>
-<script defer src="js/data/bbh_parsing.js?v=8"></script>
-<script defer src="js/data/bbh_grammar.js?v=8"></script>
-<script defer src="js/data/bbh_reader.js?v=8"></script>
-<script defer src="js/data/bbh_alphabet.js?v=8"></script>
-<script defer src="js/logic/pos_logic.js?v=8"></script>
-<script defer src="js/pwa/swUpdate.js?v=8"></script>
-<script type="module" src="js/app/main.js?v=8"></script>
+<script defer src="js/data/bbh_vocab.js?v=13"></script>
+<script defer src="js/data/bbh_book_vocab.js?v=13"></script>
+<script defer src="js/data/bbh_reference_data.js?v=13"></script>
+<script defer src="js/data/bbh_parsing.js?v=13"></script>
+<script defer src="js/data/bbh_grammar.js?v=13"></script>
+<script defer src="js/data/bbh_reader.js?v=13"></script>
+<script defer src="js/data/bbh_alphabet.js?v=13"></script>
+<script defer src="js/logic/pos_logic.js?v=13"></script>
+<script defer src="js/pwa/swUpdate.js?v=13"></script>
+<script type="module" src="js/app/main.js?v=13"></script>
 ```
 
 - **`js/data/bbh_vocab.js`** — classic deferred script, self-registers
   `window.SETS["1".."50"] = {label, type:'lesson', cards}` (generated; never
   hand-edit — see the data-regeneration rule in `CLAUDE.md`).
+- **`js/data/bbh_book_vocab.js`** — classic deferred script (task #15,
+  "advanced vocab + vocab by book"), self-registers
+  `window.BBH_BOOK_VOCAB = {schemaVersion, decks: [{key, label, cards}, ...]}`
+  (8 per-book "advanced" decks + 1 "Tanakh core" deck, 246 cards total) —
+  generated by `tools/gen_bbh_book_vocab.mjs` from a pinned OSHB checkout +
+  pinned Strong's Hebrew Dictionary checkout (both already pinned for the
+  Reader pipeline — see `source/bbh/reader/corpus-pin.json`), never
+  hand-edited. Loaded AFTER `bbh_vocab.js` in this script block on purpose:
+  `js/app/main.js`'s `mergeBookVocabDecks()` (module-load-time, before the
+  first `buildBookDeckSelector()` call) folds `BBH_BOOK_VOCAB.decks` into
+  `window.SETS` under their own `book-*` keys (`bbh-bk-*` card ids) — an
+  ordinary additive merge, guarded on `BBH_BOOK_VOCAB` being present
+  (mixed-version safe). Read by `js/ui/selectors.js`'s
+  `buildBookDeckSelector()`; card selection/SRS/export flow through the
+  same generic `window.SETS`-keyed code paths lesson decks use, with no
+  book-deck-specific branch needed there.
 - **`js/data/bbh_reference_data.js`** — classic deferred script, the
   paradigm/reference data also consumed by `pages/memorization.html`
   (which also loads the sibling `js/data/bbh_reference_extra.js` — the 42

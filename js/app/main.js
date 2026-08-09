@@ -288,7 +288,9 @@ import {
   setActiveSetButtons,
   buildSessions,
   buildChapterSelector,
+  buildBookDeckSelector,
   deselectAllChapters,
+  deselectAllBookDecks,
   deselectAll,
   loadDeckFromKeys,
   loadSession,
@@ -2537,7 +2539,7 @@ const GLOBAL_CLICK_HANDLERS = {
   returnSeenCardToDeck,
   closeAnalyticsOverlay, closeTransferModal, exportProgressJson,
   closeShortcutsModal, closeStudySelector,
-  deselectAllChapters, deselectAll,
+  deselectAllChapters, deselectAllBookDecks, deselectAll,
   handleConsentAction, handleTransferPrimaryAction, handleTransferSecondaryAction,
   openShortcutsModal, openStudySelector,
   openAnalyticsOverlay, resetAllStats, resetCurrentDeck, resetRequiredOnly,
@@ -2590,9 +2592,45 @@ initializeFontFamily();
 initializeTextSize();
 initializeShowPoints();
 initializeShowTranslit();
+// ─── Task #15: merge advanced/book-vocab decks into window.SETS ───────────
+// window.BBH_BOOK_VOCAB (js/data/bbh_book_vocab.js, a classic script loaded
+// after bbh_vocab.js in index.html — see that script tag order) carries 9
+// decks under their own 'book-*' key namespace (bbh-bk-* card ids). Merge
+// them into window.SETS here so they become ordinary selectable decks:
+// js/ui/selectors.js's buildBookDeckSelector renders them, and toggleSet/
+// loadDeckFromKeys need no book-deck-specific branch at all, since SETS
+// entries are otherwise generic (see js/domain/deck/filters.js's
+// getSelectedVocabCards, which already iterates window.SETS by key with no
+// numeric assumption). Guarded on BBH_BOOK_VOCAB being present, mirroring
+// this file's other mixed-version-cache guards below (runtime.parsing/
+// grammar/reader/alphabet defaults) — a stale cached page missing this
+// script (or a fresh page racing an update) degrades to "no book decks
+// yet" rather than throwing. isChapterKey (js/domain/deck/ordering.js) is
+// strictly `/^\d+$/`, so these non-numeric keys are automatically excluded
+// from buildChapterSelector's lesson grid, deselectAllChapters' sweep, and
+// the "highest selected vocab lesson" first-use rule in js/ui/parsing.js /
+// grammar.js / reader.js (all three already guard with
+// `Number.isInteger(parseInt(k, 10))`, which is false for "book-gen" et
+// al. — verified, no change needed there).
+function mergeBookVocabDecks() {
+  const bookVocab = window.BBH_BOOK_VOCAB;
+  if (!bookVocab || !Array.isArray(bookVocab.decks)) return;
+  window.SETS = window.SETS || {};
+  bookVocab.decks.forEach((deck) => {
+    if (!deck || !deck.key) return;
+    window.SETS[deck.key] = {
+      label: deck.label,
+      type: deck.type || 'chapter',
+      cards: Array.isArray(deck.cards) ? deck.cards : []
+    };
+  });
+}
+mergeBookVocabDecks();
+
 // Initial build with default state (needed so restoreState can find DOM elements)
 buildSessions();
 buildChapterSelector();
+buildBookDeckSelector();
 if (!restoreState()) {
   syncToggleButtons(); // reflect default controls on load
 }
@@ -2671,6 +2709,7 @@ if (!runtime.alphabet || typeof runtime.alphabet !== 'object') {
 // Rebuild after restore: runtime.appProfile may have changed, affecting grammar summary text
 buildSessions();
 buildChapterSelector();
+buildBookDeckSelector();
 initPwaInstall();
 initializeConsentGate();
 

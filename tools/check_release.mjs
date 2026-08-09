@@ -28,6 +28,9 @@
 //      expansion: 52 Genesis + 26 across Ruth/Jonah/Exod/Deut/Judg/1Sam/
 //      2Sam), js/data/bbh_alphabet.js exactly 23 letters + 12 vowels,
 //      js/data/bbh_reference_extra.js at least 40 sections.
+//   5c. js/data/bbh_book_vocab.js (task #15, advanced/by-book vocab decks)
+//      registers exactly 9 decks (8 per-book + 1 Tanakh-core), with a
+//      per-deck card-count report line.
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
 //   7. Zero case-insensitive 'googletagmanager', 'google-analytics',
 //      'gtag(', or 'G-YH11KQB6QX' in the live load graph — the app ships
@@ -368,6 +371,30 @@ function readDirSafe(dir) {
     const sectionCount = [...src.matchAll(/^ {8}"id":\s*"[^"]+"/gm)].length;
     if (sectionCount < 40) fail(`check5b: expected >=40 sections registered in ${refExtraPath}, found ${sectionCount}`);
     else report(`check5b: ${sectionCount} sections registered in bbh_reference_extra.js (>=40, pass)`);
+  }
+}
+
+// ── Check 5c: bbh_book_vocab.js registers 9 book/core decks (task #15) ──
+{
+  const bookVocabPath = 'js/data/bbh_book_vocab.js';
+  if (!existsSync(path.join(ROOT, bookVocabPath))) {
+    fail(`check5c: ${bookVocabPath} not found`);
+  } else {
+    const src = readText(bookVocabPath);
+    const deckKeys = [...src.matchAll(/"key":\s*"(book-[^"]+)"/g)].map((m) => m[1]);
+    const totalCards = [...src.matchAll(/"id":\s*"bbh-bk-[^"]+"/g)].length;
+    if (deckKeys.length !== 9) {
+      fail(`check5c: expected 9 book-vocab decks registered in ${bookVocabPath}, found ${deckKeys.length}`);
+    } else {
+      report(`check5c: 9 book-vocab decks / ${totalCards} cards registered in bbh_book_vocab.js (pass)`);
+    }
+    // Per-deck sizes: `src.split(...)` on each deck's own "key" line yields
+    // one chunk per deck holding exactly that deck's own cards (up to, not
+    // including, the next deck's "key" line) — light-regex-parse, same
+    // no-execution style as every other check5* block above.
+    const deckChunks = src.split(/"key":\s*"book-[^"]+"/).slice(1);
+    const sizes = deckKeys.map((key, i) => `${key}:${[...(deckChunks[i] || '').matchAll(/"id":\s*"bbh-bk-[^"]+"/g)].length}`);
+    report(`check5c: bbh_book_vocab.js deck sizes — ${sizes.join(', ')}`);
   }
 }
 

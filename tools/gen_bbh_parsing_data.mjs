@@ -401,4 +401,17 @@ function main() {
   );
 }
 
-main();
+// Guarded (task #15, advanced vocab + vocab-by-book): tools/gen_bbh_book_
+// vocab.mjs imports { romanizeForm } from this file to romanize book-deck
+// headwords without forking the rule set. Every other generator in this
+// repo (gen_bbh_data.mjs, gen_strongs_glosses.mjs, gen_bbh_reader_data.mjs)
+// gates its own main()/side-effecting call behind an isMainModule() check
+// for exactly this reason — importing a module for its pure helpers must
+// never also re-run its CLI (which here spawns a validator subprocess and
+// rewrites js/data/bbh_parsing.js). Re-running via `node
+// tools/gen_bbh_parsing_data.mjs` directly is unaffected: isMainModule()
+// is still true in that case, so main() still fires exactly as before.
+function isMainModule() {
+  return path.resolve(process.argv[1] || '') === path.resolve(fileURLToPath(import.meta.url));
+}
+if (isMainModule()) main();

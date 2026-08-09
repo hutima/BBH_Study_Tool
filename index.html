@@ -12,11 +12,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=12">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=12">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=12">
+<link rel="manifest" href="manifest.json?v=13">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=13">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=13">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=12">
+<link rel="stylesheet" href="styles.css?v=13">
 <script>
 (function(){
   try {
@@ -440,6 +440,11 @@
       <div class="sessions-grid" id="sessionsGrid"></div>
     </div>
     <div class="selector-section">
+      <span class="selector-label">By book &middot; advanced</span>
+      <p class="selector-sublabel">Top new words by frequency; excludes lesson vocabulary.</p>
+      <div class="sessions-grid" id="bookDecksGrid"></div>
+    </div>
+    <div class="selector-section">
       <span class="selector-label">Manual lesson selection</span>
       <div class="sessions-grid" id="chaptersGrid"></div>
     </div>
@@ -487,7 +492,8 @@
     <h2 id="shortcutsTitle">How to use this app</h2>
     <div class="consent-copy user-guide-copy">
       <p>An unofficial, student-made study aid for John A. Cook &amp; Robert D. Holmstedt, <em>Beginning Biblical Hebrew: A Grammar and Illustrated Reader</em> (Baker Academic) &mdash; not affiliated with or endorsed by the authors or publisher. Four study modes (Vocabulary, Parsing, Grammar, Reader) all run locally in your browser; nothing you study or mark is sent anywhere unless you explicitly export it as a JSON file yourself.</p>
-      <p class="user-guide-attribution">Reader passages: Hebrew text and morphology from the Open Scriptures Hebrew Bible Project (https://github.com/openscriptures/morphhb), OSHB version 2.2 (v.2.2). Lemma and morphology data licensed under CC BY 4.0.</p>
+      <p>The Study Selector&rsquo;s <strong>By book &middot; advanced</strong> group adds 9 optional vocabulary decks beyond the 50-lesson course: the top ~25 highest-frequency Hebrew words in each of Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, 1&nbsp;Samuel, and 2&nbsp;Samuel, plus a &ldquo;Tanakh core&rdquo; deck of the top 50 words across all eight books combined &mdash; every one of them a word NOT already taught in the 209-card lesson vocabulary, so studying them never duplicates or double-schedules a lesson card. They study exactly like a lesson deck (spaced repetition, marks, export) but don&rsquo;t count toward the 209-card course total.</p>
+      <p class="user-guide-attribution">Reader passages: Hebrew text and morphology from the Open Scriptures Hebrew Bible Project (https://github.com/openscriptures/morphhb), OSHB version 2.2 (v.2.2). Lemma and morphology data licensed under CC BY 4.0. Advanced vocabulary decks: headwords and glosses from the Open Scriptures Strong&rsquo;s Hebrew Dictionary project (https://github.com/openscriptures/strongs), public domain.</p>
 
       <details class="user-guide-changelog">
         <summary>Changelog</summary>
@@ -499,6 +505,7 @@
             <li><strong>Reader mode</strong> &mdash; curated Hebrew Bible passages across Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, and 1&ndash;2 Samuel (Strict/Guided tiers, plus an opt-in Challenge tier for one passage above your current lesson, only shown once one exists at your lesson) with tap-to-inspect word details (pointed lemma, gloss, gentilic labels), personal review marks, and a per-passage literal-translation reveal; no grading, nothing scheduled.</li>
             <li><strong>Lesson 1 &middot; Alphabet</strong> and <strong>Lesson 2 &middot; Vowel marks</strong> &mdash; two standalone flip-card decks covering the textbook&rsquo;s own Lesson 1 (The Consonants) and Lesson 2 (The Vowels) content (23 letters, 12 vowel points shown on real vocab words), separate from every other mode and stat; lessons 1&ndash;2 no longer appear in the vocab lesson list since this is now their content.</li>
             <li><strong>Vocabulary grew to 209 cards</strong> across all 50 lessons; session presets are now the textbook&rsquo;s own 13 reading-block &ldquo;Unit&rdquo; groupings plus All Lessons (the decade-range presets were retired).</li>
+            <li><strong>By book &middot; advanced</strong> vocab decks &mdash; 9 optional decks (Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, 1&ndash;2 Samuel, and a corpus-wide &ldquo;Tanakh core&rdquo;) of the highest-frequency Hebrew words per book, generated from the Reader&rsquo;s own Hebrew Bible corpus and Strong&rsquo;s Dictionary, excluding every word already in the 209-card lesson vocabulary. Study them like any lesson deck; they don&rsquo;t count toward the course total.</li>
             <li>Gamification titles are now Hebrew puns (Alef, Ger, Shomea, Talmid, Doresh, &hellip;) instead of the inherited Greek ones; mobile layout polish across Parsing and Grammar Quiz.</li>
             <li>Removed the last of the inherited analytics snippet &mdash; the app has shipped fully telemetry-free since this release, with no replacement analytics of any kind.</li>
           </ul>
@@ -721,14 +728,15 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=12"></script>
-<script defer src="js/data/bbh_reference_data.js?v=12"></script>
-<script defer src="js/data/bbh_parsing.js?v=12"></script>
-<script defer src="js/data/bbh_grammar.js?v=12"></script>
-<script defer src="js/data/bbh_reader.js?v=12"></script>
-<script defer src="js/data/bbh_alphabet.js?v=12"></script>
-<script defer src="js/logic/pos_logic.js?v=12"></script>
-<script defer src="js/pwa/swUpdate.js?v=12"></script>
-<script type="module" src="js/app/main.js?v=12"></script>
+<script defer src="js/data/bbh_vocab.js?v=13"></script>
+<script defer src="js/data/bbh_book_vocab.js?v=13"></script>
+<script defer src="js/data/bbh_reference_data.js?v=13"></script>
+<script defer src="js/data/bbh_parsing.js?v=13"></script>
+<script defer src="js/data/bbh_grammar.js?v=13"></script>
+<script defer src="js/data/bbh_reader.js?v=13"></script>
+<script defer src="js/data/bbh_alphabet.js?v=13"></script>
+<script defer src="js/logic/pos_logic.js?v=13"></script>
+<script defer src="js/pwa/swUpdate.js?v=13"></script>
+<script type="module" src="js/app/main.js?v=13"></script>
 </body>
 </html>
