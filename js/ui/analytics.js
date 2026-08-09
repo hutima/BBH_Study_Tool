@@ -202,6 +202,16 @@ export function maybeCelebrateAchievements() {
 // re-shuffles every quiz's choice list. maybeCelebrateAchievements runs on
 // every saveState (i.e. on every interaction), so build the lists once and
 // reuse them.
+//
+// Task #18 item 5 audit: getAllVocabCards() (js/domain/deck/filters.js) is
+// isChapterKey-filtered, so this — and everything downstream of it in this
+// file (computeCourseWideData, the Total Vocabulary histogram/chapter-
+// mastery grid, and its stubborn/slipping/most-improved lists) —
+// deliberately EXCLUDES the task #15 book-* advanced-vocab decks, same as
+// course-wide totals always have. This is unrelated to js/ui/progress.js's
+// due-by-day histogram, which is intentionally UNFILTERED (deck-scoped, not
+// course-scoped) so a selected book deck's due cards still show up there —
+// see that file's buildDueHistogramBars() header comment.
 let courseCardCache = null;
 function getCourseCards() {
   if (!courseCardCache) {

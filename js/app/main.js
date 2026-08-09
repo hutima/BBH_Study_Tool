@@ -224,16 +224,23 @@ import {
   readerToggleMarkForReview, readerToggleReadStatus, readerToggleWooden
 } from '../ui/reader.js';
 
-// UI — Lesson 0 Alphabet practice (Phase 2 PR E). New file; imports NOTHING
-// from other app modules (see js/ui/alphabet.js header) — same isolation as
-// grammar.js/reader.js. Owns its own overlay (open/close live here, not in
-// modals.js) and its own runtime.alphabet subtree, fully independent of
-// vocab/parsing/grammar/reader. Configured like every other UI module via
+// UI — Lesson 1/2 Alphabet + Vowel-marks practice (Phase 2 PR E; converted
+// from a modal overlay to an in-flow section by task #18). New file (as of
+// PR E); imports NOTHING from other app modules (see js/ui/alphabet.js
+// header) — same isolation as grammar.js/reader.js. Owns its own section
+// render (renderAlphabetSection, called from syncLayoutVisibility() below)
+// and its own runtime.alphabet subtree, fully independent of vocab/parsing/
+// grammar/reader. Configured like every other UI module via
 // configureAlphabet(deps); its click/change handlers are added to
 // GLOBAL_CLICK_HANDLERS below, same as every other onclick="..." surface.
+// isAlphabetOverlayOpen/openAlphabetOverlay/closeAlphabetOverlay are the
+// pre-task-#18 overlay API, kept imported (now inert no-ops — see that
+// module's header) per the "never remove an export an older shipped
+// main.js still imports" cross-version rule.
 import {
   configureAlphabet,
   isAlphabetOverlayOpen, openAlphabetOverlay, closeAlphabetOverlay,
+  isAlphabetSectionActive, openAlphabetSection, closeAlphabetSection, renderAlphabetSection,
   alphabetFlip, alphabetMarkAgain, alphabetMarkGotIt,
   alphabetShuffle, alphabetResetProgress
 } from '../ui/alphabet.js';
@@ -1186,6 +1193,34 @@ function syncLayoutVisibility() {
   if (parsingSectionEl) parsingSectionEl.style.display = 'none';
   if (grammarSectionEl) grammarSectionEl.style.display = 'none';
   if (readerSectionEl) readerSectionEl.style.display = 'none';
+
+  // Task #18: Lesson 1/2 alphabet-vowel practice, in-flow section. Lives
+  // INSIDE the vocab branch (runtime.studyMode stays 'vocab' the whole
+  // time — see js/ui/alphabet.js's header comment for why) rather than
+  // being a fourth early-return branch like Parsing/Grammar/Reader above:
+  // it's an override of what the vocab layout shows, not a separate mode.
+  const alphabetSectionEl = document.getElementById('alphabetSection');
+  if (isAlphabetSectionActive()) {
+    const advancedSettingsElA = document.getElementById('advancedSettingsDetails');
+    const resetActionsElA = document.getElementById('resetActionsDetails');
+    const cardAreaElA = document.getElementById('cardArea');
+    const navRowElA = document.getElementById('navRow');
+    const markRowElA = document.getElementById('markRow');
+    const ffRowElA = document.getElementById('ffRow');
+    const reviewShellElA = document.querySelector('.review-shell');
+    if (alphabetSectionEl) alphabetSectionEl.style.display = '';
+    if (advancedSettingsElA) advancedSettingsElA.style.display = 'none';
+    if (resetActionsElA) resetActionsElA.style.display = 'none';
+    if (cardAreaElA) cardAreaElA.style.display = 'none';
+    if (navRowElA) navRowElA.style.display = 'none';
+    if (markRowElA) markRowElA.style.display = 'none';
+    if (ffRowElA) ffRowElA.style.display = 'none';
+    if (reviewShellElA) reviewShellElA.style.display = 'none';
+    renderAlphabetSection();
+    return;
+  }
+  if (alphabetSectionEl) alphabetSectionEl.style.display = 'none';
+
   const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
   if (advancedSettingsEl) advancedSettingsEl.style.display = '';
 
@@ -1265,6 +1300,30 @@ function syncLayoutVisibility() {
       nextBtn.classList.remove('spaced-again', 'nav-next-as-reset');
     }
   }
+}
+
+// Task #18: study-selector entry point for the three alphabet/vowel
+// practice decks ('letters' | 'vowels' | 'combined'). Orchestrates across
+// modules (alphabet.js's own deck state + modals.js's study selector +
+// this module's syncLayoutVisibility), which is why it lives here rather
+// than in alphabet.js itself (that module imports nothing — see its
+// header). closeStudySelector() already calls shieldClicksBriefly()
+// internally (js/ui/modals.js), so the tap that picks a deck and dismisses
+// the selector is covered by the existing modal-close guard without any
+// extra wiring here.
+function pickAlphabetDeck(kind) {
+  openAlphabetSection(kind);
+  closeStudySelector();
+  syncLayoutVisibility();
+}
+
+// "← Back to lessons" — restores the vocab card area exactly where it was
+// (the vocab deck/selection was never touched while the alphabet section
+// was open). Not a modal close (no shieldClicksBriefly — see CLAUDE.md/
+// task #18 "do not shield non-modal buttons").
+function alphabetBackToVocab() {
+  closeAlphabetSection();
+  syncLayoutVisibility();
 }
 
 function ensureUsageStats(stats = runtime.appUsageStats) {
@@ -2523,6 +2582,7 @@ installKeyboardShortcuts({
   isContactAuthorModalOpen, closeContactAuthorModal,
   isInstallInstructionsOpen, closeInstallInstructions,
   isAlphabetOverlayOpen, closeAlphabetOverlay,
+  isAlphabetSectionActive, alphabetBackToVocab,
   isDisclaimerModalOpen, isTransferModalOpen, closeTransferModal,
   isReviewDeckMode,
   getSelectedKeys: () => runtime.selectedKeys,
@@ -2577,9 +2637,15 @@ const GLOBAL_CLICK_HANDLERS = {
   readerSetLesson, readerSetTier, readerSetShowChallenge,
   readerOpenPassage, readerBackToList, readerToggleToken,
   readerToggleMarkForReview, readerToggleReadStatus, readerToggleWooden,
-  // Phase 2 PR E: Lesson 0 Alphabet practice (js/ui/alphabet.js) click
-  // handlers, including its own overlay open/close.
+  // Phase 2 PR E: Lesson 1/2 Alphabet + Vowel-marks practice
+  // (js/ui/alphabet.js) click handlers. pickAlphabetDeck/alphabetBackToVocab
+  // (task #18) are this module's own wrappers (see their definitions
+  // above) that orchestrate the in-flow section; openAlphabetOverlay/
+  // closeAlphabetOverlay are the pre-task-#18 overlay API, kept wired as
+  // inert no-ops per the cross-version export rule (see js/ui/alphabet.js
+  // header).
   openAlphabetOverlay, closeAlphabetOverlay,
+  pickAlphabetDeck, alphabetBackToVocab,
   alphabetFlip, alphabetMarkAgain, alphabetMarkGotIt,
   alphabetShuffle, alphabetResetProgress
 };
@@ -2742,6 +2808,16 @@ function preventDoubleTapZoom(el) {
   const el = document.getElementById(id);
   if (el) preventDoubleTapZoom(el);
 });
+
+// Task #18 audit: every modal/overlay close button (Close/Cancel/Got it/
+// Got it!/Agree and continue/Refresh now, plus the small "✕" corner
+// buttons) carries a shared `.modal-close-btn` marker class in index.html
+// (in addition to its existing .ctrl-btn/.modal-close-x/etc styling
+// classes) specifically so this one query can cover all of them here,
+// rather than hand-listing ids the way the toggle/mode-shortcut buttons
+// above do — a close tap that reflows or dismisses the modal underneath it
+// is exactly the "double-tap-zoom" risk this guard exists for.
+document.querySelectorAll('.modal-close-btn').forEach(preventDoubleTapZoom);
 
 // Service-worker registration + the "Update available" refresh prompt were
 // extracted to js/pwa/swUpdate.js — a CLASSIC script loaded from its own
