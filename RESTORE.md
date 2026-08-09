@@ -15,9 +15,23 @@
   zero blockers; its should-fix items (stale ledger D1, quarantine deletion
   D2, release-gate coverage N1, gate-term plurals N2, false comment N3,
   nits) are all closed in PR F except D2 which is executed at PR F merge.
-- Next work: user follow-up task — parsing-vs-Greek depth review,
-  root-journey cross-lesson drills, mobile-first parsing UI simplification
-  (see ledger addendum 2026-08-09).
+- **PR G merged** as `d2c8401` (PR #10, `?v=7`): parsing depth review
+  (docs/bbh-parsing-depth-review.md, Opus-critiqued — 2 of 3 Opus calls
+  used), root-journey drills, By-feature scope, mobile parsing IA.
+- **In flight: PR H** (`?v=8`), seven items: decade presets removed,
+  alphabet rating-row layout, Lesson 0A/0B split (vowel-mark deck with
+  highlighted representative words), grammar mobile overlap fix, vocab
+  rating buttons hidden outside vocab, Hebrew title puns replacing the
+  transliterated-Greek ladder (+ release-scan guard), orchestrator-
+  specified scope/direction restyle (preset-style card grid; Parse|Build|
+  Mixed short labels; inline lesson row).
+- **Queue after PR H** (user-ordered): task #14 Reader review + multi-book
+  expansion (Ruth/Jonah/Exodus/Deut/Judges/Samuel candidates; fill thin
+  gate buckets 15-19/23-27/28-31; hunt challenge verses) THEN task #13
+  Reader literal glosses + LLM WOODEN verse translations — permitted by
+  user rule change 2026-08-09 (see ledger addendum + CLAUDE.md: dev-time
+  generation, independent review, labeled unofficial, never copied from
+  copyrighted translations).
 
 ## Repository and PR state
 
