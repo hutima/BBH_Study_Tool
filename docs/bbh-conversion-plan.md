@@ -320,3 +320,15 @@ design, from user feedback on the PR G UI): parsing scope control becomes
 a preset-style 2-column card grid (no stretched 5-way pill), direction
 pill gets short labels (Parse|Build|Mixed) + max-width, lesson selector
 becomes an inline label+select row, tighter mobile padding.
+
+## Addendum (user request, 2026-08-09): advanced vocab + vocab by book (task #15)
+
+After tasks 12/14/13: mirror the Greek app's deck structure with Hebrew
+sources — (1) per-book vocabulary decks (Genesis first, then the Reader-
+expansion books) generated from the pinned OSHB corpus by lemma frequency,
+own id namespace, selectable alongside lesson decks; (2) advanced-vocab
+tiers beyond the 209 lesson cards (textbook R# reader vocabulary and/or
+corpus frequency tiers). Glosses default to public-domain Strong's (mapped
+via OSHB Strong's numbers), optionally LLM-condensed under the 2026-08-09
+wooden-translation rule; the textbook glossary's R# glosses require the
+user to re-supply glossary pages (PDF transport copy deleted).
