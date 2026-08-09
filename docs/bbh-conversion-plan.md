@@ -424,3 +424,14 @@ regex consonant+combining-marks), larger/brighter representative word,
 highlight by color/weight only. Also: Again/Got-it become STACKED
 full-width vertical buttons on 0A/0B for one-handed use (user
 suggestion). Runs right after task #14 (styles.css overlap).
+
+## Addendum (user request, 2026-08-09): rename 0A/0B to Lessons 1/2
+
+The practice decks map exactly onto the textbook's own lessons (L1 The
+Consonants, L2 The Vowels), so the "Lesson 0" framing is retired:
+"Lesson 1 · Alphabet" and "Lesson 2 · Vowel marks" (display-only rename;
+state keys/ids unchanged). Lessons 1 and 2 disappear from the VOCAB
+lesson selector only (zero cards; their content is the practice decks) —
+parsing/grammar/reader selects and the Units presets are untouched, and
+the other zero-vocab lessons (4/37/41/43/44/46-48/50) stay listed per the
+user's scope. Ships with task #16.
