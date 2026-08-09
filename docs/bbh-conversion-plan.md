@@ -286,3 +286,16 @@ before shipping; (3) labeled in the UI as an unofficial literal rendering;
 translation. This supersedes the stricter clause in the task-13 addendum
 above — the interlinear gloss line and the wooden verse translation can
 ship together (gloss = per-token, wooden = per-verse).
+
+## Addendum (user feedback, 2026-08-09): PR H punch-list item 6 — Hebrew title puns
+
+The gamification Titles ladder still carries the Greek app's transliterated
+GREEK puns (Alpha, Paroikos, Akouōn, Spongos, Mathētēs, Berean …) — they
+evaded the release-gate Greek scans because they are Latin-script
+transliterations, not Greek Unicode. Convert every title (and any
+similarly-flavored achievement names — audit js/domain/gamification/*) to
+equivalent HEBREW puns preserving each level's joke (e.g. Alef "already
+know one letter", Ger "stranger in a strange land", Shomea "listening,
+not yet understanding", Talmid "officially a student", Doresh "checks the
+scrolls daily"). Consider extending the release-gate string scan with the
+known Greek transliteration list so regressions get caught.
