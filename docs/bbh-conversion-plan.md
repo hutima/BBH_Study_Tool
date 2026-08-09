@@ -435,3 +435,14 @@ lesson selector only (zero cards; their content is the practice decks) —
 parsing/grammar/reader selects and the Units presets are untouched, and
 the other zero-vocab lessons (4/37/41/43/44/46-48/50) stay listed per the
 user's scope. Ships with task #16.
+
+## Addendum (user feedback, 2026-08-09): challenge tier rework (into task #13)
+
+The challenge show/hide toggle is inert because the strict definition
+("exactly one near-future feature token") matched ZERO verses in all 8
+books. Task #13 additionally: relax the definition in a documented way
+(one future feature TYPE per verse, small token cap, few unknowns),
+re-score, curate real challenge passages (feature named in the passage
+header, badge highlighting verified with real data), and hide the toggle
+whenever no challenge passage exists at the learner's current gate — no
+inert controls.
