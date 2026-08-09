@@ -60,6 +60,20 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+// Task 13b, item 1: OSHB tags a fused multi-morpheme token's `t` field with
+// a literal "/" divider between its morphemes (e.g. "וְ/אֶת" = conjunction +
+// object marker, still ONE token/one `m`/`l`/`s`/`gl`/`lx`) — see
+// docs/bbh-conversion-plan.md's task-13 addenda and js/data/bbh_reader.js's
+// header. That divider is a tokenizer artifact, never real Hebrew text, so
+// every RENDER of a token's display string strips it here. This is a
+// display transform only: the stored token (`t`) is never mutated, and
+// every comparison/lookup/popover in this module stays keyed off the
+// token's index (activeTokenIdx) or its raw fields, never off this
+// stripped string.
+function stripMorphSlash(t) {
+  return String(t ?? '').replace(/\//g, '');
+}
+
 // ─── Inventory access ───────────────────────────────────────────────────
 function getPassages() {
   return (window.BBH_READER && Array.isArray(window.BBH_READER.passages)) ? window.BBH_READER.passages : [];
@@ -298,6 +312,28 @@ function decodeMorph(code) {
 let openPassageId = null;
 let activeTokenIdx = null;
 
+// Task 13b, item 3: which passages currently have their wooden-translation
+// reveal open. A plain module-local Set, same "session-only, not persisted"
+// idiom as openPassageId/activeTokenIdx above — deliberately NOT a new
+// runtime.reader field (no state/export shape change for this).
+const woodenRevealed = new Set();
+
+// ─── Task 13b, item 4: tier-clarity captions ───────────────────────────────
+// Single source of truth for the Strict/Guided explanation text, reused by
+// the caption under the Passages toggle AND the `title` attribute on every
+// tier badge (list rows + the single-passage header) — see tierBadgeHtml
+// below and renderReaderOptionsPanel's caption row.
+const STRICT_TIER_CAPTION = "every word's grammar is within your lesson; at most one unfamiliar word";
+const GUIDED_TIER_CAPTION = 'up to three unfamiliar words, marked with dotted underlines';
+
+// Task 13b, item 5: whether at least one challenge-tier passage exists at
+// or before `lesson` — drives hiding the Challenge-passages toggle row
+// entirely (rather than leaving an inert control) when there is nothing it
+// could reveal yet at the learner's current lesson.
+function hasChallengeAtGate(lesson) {
+  return gatedPassages(lesson).some((p) => p.tier === 'challenge');
+}
+
 // ─── Rendering: options panel ───────────────────────────────────────────
 function renderReaderOptionsPanel() {
   const panel = document.getElementById('readerOptionsPanel');
@@ -309,18 +345,7 @@ function renderReaderOptionsPanel() {
     lessonOptions += `<option value="${l}"${state.lesson === l ? ' selected' : ''}>${l}</option>`;
   }
 
-  panel.innerHTML = `
-    <div class="reader-options-row">
-      <label class="reader-field-label" for="readerLessonSelect">Current lesson</label>
-      <select id="readerLessonSelect" class="reader-select" onchange="readerSetLesson(this.value)">${lessonOptions}</select>
-    </div>
-    <div class="reader-options-row">
-      <span class="reader-field-label">Passages</span>
-      <div class="theme-switcher" id="readerTierToggle" role="group" aria-label="Passage tier filter">
-        <button class="theme-btn${state.tier === 'strict' ? ' active' : ''}" type="button" onclick="readerSetTier('strict')">Strict only</button>
-        <button class="theme-btn${state.tier !== 'strict' ? ' active' : ''}" type="button" onclick="readerSetTier('both')" title="Strict passages use only vocabulary already gated in by the current lesson; Guided passages may include a handful of not-yet-introduced words, marked with a dotted underline.">Strict + Guided</button>
-      </div>
-    </div>
+  const challengeRow = hasChallengeAtGate(state.lesson) ? `
     <div class="reader-options-row">
       <span class="reader-field-label">Challenge passages</span>
       <button
@@ -332,7 +357,22 @@ function renderReaderOptionsPanel() {
         onclick="readerSetShowChallenge(${state.showChallenge ? 'false' : 'true'})"
         title="Challenge passages deliberately include one word from a lesson you haven't reached yet, flagged in the passage header. Off by default."
       >${state.showChallenge ? 'Shown' : 'Hidden'}</button>
+    </div>` : '';
+
+  panel.innerHTML = `
+    <div class="reader-options-row">
+      <label class="reader-field-label" for="readerLessonSelect">Current lesson</label>
+      <select id="readerLessonSelect" class="reader-select" onchange="readerSetLesson(this.value)">${lessonOptions}</select>
     </div>
+    <div class="reader-options-row">
+      <span class="reader-field-label">Passages</span>
+      <div class="theme-switcher" id="readerTierToggle" role="group" aria-label="Passage tier filter">
+        <button class="theme-btn${state.tier === 'strict' ? ' active' : ''}" type="button" onclick="readerSetTier('strict')" title="Strict: ${escapeHtml(STRICT_TIER_CAPTION)}">Strict only</button>
+        <button class="theme-btn${state.tier !== 'strict' ? ' active' : ''}" type="button" onclick="readerSetTier('both')" title="Strict: ${escapeHtml(STRICT_TIER_CAPTION)}. Guided: ${escapeHtml(GUIDED_TIER_CAPTION)}.">Strict + Guided</button>
+      </div>
+    </div>
+    <div class="reader-tier-caption"><strong>Strict</strong> &mdash; ${escapeHtml(STRICT_TIER_CAPTION)}. <strong>Guided</strong> &mdash; ${escapeHtml(GUIDED_TIER_CAPTION)}.</div>
+    ${challengeRow}
   `;
 }
 
@@ -353,8 +393,8 @@ function renderRecentlyRead(state, passages) {
 function tierBadgeHtml(tier) {
   if (tier === 'challenge') return '<span class="reader-tier-badge reader-tier-badge-challenge">challenge</span>';
   return tier === 'guided'
-    ? '<span class="reader-tier-badge reader-tier-badge-guided">guided</span>'
-    : '<span class="reader-tier-badge reader-tier-badge-strict">strict</span>';
+    ? `<span class="reader-tier-badge reader-tier-badge-guided" title="${escapeHtml(GUIDED_TIER_CAPTION)}">guided</span>`
+    : `<span class="reader-tier-badge reader-tier-badge-strict" title="${escapeHtml(STRICT_TIER_CAPTION)}">strict</span>`;
 }
 
 function renderPassageRow(p, state) {
@@ -400,7 +440,11 @@ function renderPassageList(state, passages) {
 // logic is needed here.
 function tokenSpan(passage, t, idx, state) {
   const key = passage.id + ':' + idx;
-  const unknown = t.v == null && !t.pn && passage.tier === 'guided';
+  // Task 13b, item 1: dotted-underline scaffolding is reserved for genuinely
+  // unknown CONTENT words in a Guided passage — never a vocab-matched word
+  // (v != null), never any kind of proper/gentilic name (pn covers both,
+  // gent is checked too for explicitness per the task spec/addendum).
+  const unknown = t.v == null && !t.pn && !t.gent && passage.tier === 'guided';
   const marked = !!(state.marks && state.marks[key]);
   const active = activeTokenIdx === idx;
   const cls = ['reader-token'];
@@ -408,11 +452,100 @@ function tokenSpan(passage, t, idx, state) {
   if (t.pn) cls.push('reader-token-proper');
   if (marked) cls.push('reader-token-marked');
   if (active) cls.push('reader-token-active');
-  return `<span class="${cls.join(' ')}" role="button" tabindex="0" onclick="readerToggleToken(${idx})">${escapeHtml(t.t)}</span>`;
+  return `<span class="${cls.join(' ')}" role="button" tabindex="0" onclick="readerToggleToken(${idx})">${escapeHtml(stripMorphSlash(t.t))}</span>`;
 }
 
 function popoverRow(label, valueHtml) {
   return `<div class="reader-popover-row"><span class="reader-popover-label">${escapeHtml(label)}</span><span class="reader-popover-value">${valueHtml}</span></div>`;
+}
+
+// ─── Task 13b, item 2: pointed-lemma line (segments-as-words + lx) ─────────
+// Splits a token's `m` (stripped of the leading "H" language prefix, same as
+// decodeMorph above) into its "/"-separated morpheme segments, then finds
+// the CONTENT segment — the one the token's single `s`/`gl`/`lx` triple
+// describes (see js/data/bbh_reader.js's header: `s` is "the primary
+// content-word Strong's number ... or, failing that, the first segment
+// carrying a Strong's number" — tools/import_oshb_reader.mjs's
+// classifyToken()). Empirically (and by construction of that fallback
+// order) that is always the LAST segment that is neither a conjunction (C)
+// nor a pronominal suffix (S) — prefixes (conjunction, preposition,
+// definite article) precede it, a suffix (if any) trails it. Every segment
+// OTHER than the content one is rendered as its decoded label (e.g.
+// "conjunction", "preposition", "pronominal suffix · 3ms" — reusing
+// decodeMorphSegment above); the content segment itself is rendered as the
+// POINTED headword `lx` when present (falling back to its own decoded label
+// if this token carries no Strong's number at all) — never the raw
+// "c/853"-style lemma code.
+function morphSegmentsOf(code) {
+  const raw = String(code ?? '');
+  const stripped = raw.startsWith('H') ? raw.slice(1) : raw;
+  return stripped.split('/').filter(Boolean);
+}
+
+function contentSegmentIndex(segments) {
+  let idx = -1;
+  segments.forEach((seg, i) => {
+    const letter = seg[0];
+    if (letter !== 'C' && letter !== 'S') idx = i;
+  });
+  return idx === -1 ? segments.length - 1 : idx;
+}
+
+function renderLemmaLine(t) {
+  const segments = morphSegmentsOf(t.m);
+  if (!segments.length) {
+    return t.lx ? `<span class="hebrew-text reader-popover-hebrew" dir="rtl" lang="he">${escapeHtml(t.lx)}</span>` : '&mdash;';
+  }
+  const contentIdx = contentSegmentIndex(segments);
+  return segments.map((seg, i) => {
+    if (i === contentIdx && t.lx) {
+      return `<span class="hebrew-text reader-popover-hebrew" dir="rtl" lang="he">${escapeHtml(t.lx)}</span>`;
+    }
+    return escapeHtml(decodeMorphSegment(seg) || `(${seg})`);
+  }).join(' <span class="reader-popover-plus">+</span> ');
+}
+
+// ─── Task 13b, item 2: vocab-gloss lookup ──────────────────────────────────
+// A token's `v` field (vocab lesson) is the CONTENT match already resolved
+// by the generation pipeline; this only looks up which specific vocab CARD
+// that resolution meant, so the popover can show the textbook's own gloss
+// (richer/more accurate than the Strong's-derived `gl`) instead of it.
+// Match strategy: compare the token's POINTED headword (`lx`) against each
+// candidate card's pointed Hebrew (`g`, which may list "alt / forms"
+// separated by "/") for an EXACT string match, points included. Bare-
+// consonant matching was deliberately rejected — short words collide (e.g.
+// אֵת "the direct-object marker" and אַתְּ "you", both just א+ת once points
+// are stripped) and would surface a confidently wrong gloss. When no exact
+// match is found (e.g. gentilic tokens, whose `v` reflects a grammatical
+// pattern match rather than a specific lexeme card, or a token whose `lx`
+// citation form doesn't line up with the CSV's own headword spelling), this
+// simply returns null and the popover falls back to the Strong's gloss —
+// safer than guessing.
+function findVocabMatch(t) {
+  if (t.v == null || !t.lx) return null;
+  const set = window.SETS && window.SETS[String(t.v)];
+  const cards = (set && Array.isArray(set.cards)) ? set.cards : [];
+  const target = String(t.lx).normalize('NFC').trim();
+  for (const card of cards) {
+    const alts = String(card.g || '').normalize('NFC').split('/').map((s) => s.trim().replace(/־$/, ''));
+    if (alts.includes(target)) return card;
+  }
+  return null;
+}
+
+function renderGlossLine(t) {
+  const vocabMatch = findVocabMatch(t);
+  if (vocabMatch) {
+    let html = escapeHtml(vocabMatch.e);
+    if (t.gl && t.gl.trim().toLowerCase() !== String(vocabMatch.e).trim().toLowerCase()) {
+      html += ` <span class="reader-popover-strongs">(Strong's: ${escapeHtml(t.gl)})</span>`;
+    }
+    return html;
+  }
+  if (t.gl) {
+    return `${escapeHtml(t.gl)} <span class="reader-popover-hint">Strong&rsquo;s-derived</span>`;
+  }
+  return '&mdash;';
 }
 
 function renderTokenPopover(passage, idx, state) {
@@ -421,19 +554,39 @@ function renderTokenPopover(passage, idx, state) {
   const key = passage.id + ':' + idx;
   const marked = !!(state.marks && state.marks[key]);
   const rows = [];
-  rows.push(popoverRow('Display', `<span class="hebrew-text reader-popover-hebrew" dir="rtl" lang="he">${escapeHtml(t.t)}</span>`));
-  const lemmaValue = (t.s && t.s !== t.l)
-    ? `${escapeHtml(t.l)} <span class="reader-popover-strongs">(Strong's ${escapeHtml(t.s)})</span>`
-    : escapeHtml(t.l);
-  rows.push(popoverRow('Lemma', lemmaValue));
+  rows.push(popoverRow('Display', `<span class="hebrew-text reader-popover-hebrew" dir="rtl" lang="he">${escapeHtml(stripMorphSlash(t.t))}</span>`));
+  rows.push(popoverRow('Lemma', renderLemmaLine(t)));
+  rows.push(popoverRow('Gloss', renderGlossLine(t)));
   rows.push(popoverRow('Morphology', escapeHtml(decodeMorph(t.m))));
   if (Number.isInteger(t.g)) rows.push(popoverRow('BBH gate', `Lesson ${t.g}`));
   if (t.v != null) rows.push(popoverRow('Vocab lesson', `Lesson ${t.v}`));
-  if (t.pn) rows.push(popoverRow('Proper name', 'Yes'));
+  if (t.gent) rows.push(popoverRow('Proper name', 'Gentilic name'));
+  else if (t.pn) rows.push(popoverRow('Proper name', 'Yes'));
   return `
     <div class="reader-popover" role="group" aria-label="Word details">
       ${rows.join('')}
       <button class="ctrl-btn reader-mark-btn${marked ? ' active' : ''}" type="button" onclick="readerToggleMarkForReview(${idx})">${marked ? '★ Marked for review' : '☆ Mark for review'}</button>
+    </div>`;
+}
+
+// Task 13b, item 3: per-passage "Show literal translation" reveal — the
+// wooden verse-level translation drafted in task 13a (selections.json's
+// `wooden`/`woodenStatus`, embedded on every passage — see js/data/
+// bbh_reader.js's header). Collapsed by default; readerToggleWooden below
+// flips this passage's id in/out of the module-local `woodenRevealed` Set
+// (session-only, never persisted — see that Set's own comment).
+function renderWoodenSection(passage) {
+  if (!passage.wooden) return '';
+  const revealed = woodenRevealed.has(passage.id);
+  const caption = passage.woodenStatus === 'reviewed'
+    ? 'Unofficial literal rendering — machine-drafted, independently reviewed'
+    : 'Unofficial literal rendering — machine-drafted, not yet reviewed';
+  return `
+    <div class="reader-wooden-section">
+      <button class="ctrl-btn reader-wooden-toggle-btn" type="button" aria-expanded="${revealed ? 'true' : 'false'}" onclick="readerToggleWooden('${escapeHtml(passage.id)}')">${revealed ? 'Hide literal translation' : 'Show literal translation'}</button>
+      ${revealed ? `
+        <div class="reader-wooden-text">${escapeHtml(passage.wooden)}</div>
+        <div class="reader-wooden-caption">${escapeHtml(caption)}</div>` : ''}
     </div>`;
 }
 
@@ -453,8 +606,9 @@ function renderPassageView(passage, state) {
         ${tierBadgeHtml(passage.tier)}
         <span class="reader-passage-tokens">${n} word${n === 1 ? '' : 's'} · Gate: Lesson ${passage.gateLesson}</span>
       </div>
-      ${passage.tier === 'challenge' && passage.challengeNote ? `<div class="reader-challenge-note">Challenge: ${escapeHtml(passage.challengeNote)}</div>` : ''}
+      ${passage.tier === 'challenge' && passage.challengeNote ? `<div class="reader-challenge-note">&#9888; Challenge: ${escapeHtml(passage.challengeNote)}</div>` : ''}
       <div class="reader-hebrew-block hebrew-text" dir="rtl" lang="he">${tokensHtml}</div>
+      ${renderWoodenSection(passage)}
       ${popoverHtml}
     </div>`;
 }
@@ -618,6 +772,15 @@ export function readerToggleReadStatus(id) {
     state.readOrder = [id, ...state.readOrder.filter((x) => x !== id)].slice(0, 20);
   }
   host.saveState();
+  render();
+}
+
+// Task 13b, item 3: toggle a passage's wooden-translation reveal. Session-
+// local only — see the `woodenRevealed` Set's own comment above; no
+// runtime.reader field, no host.saveState() call here.
+export function readerToggleWooden(id) {
+  if (woodenRevealed.has(id)) woodenRevealed.delete(id);
+  else woodenRevealed.add(id);
   render();
 }
 

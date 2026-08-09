@@ -10,7 +10,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=11') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=12') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -18,7 +18,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=11') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=12') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -26,7 +26,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=11') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=12') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -34,7 +34,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=11') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=12') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -42,7 +42,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=11') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=12') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -50,7 +50,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=11') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=12') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -58,7 +58,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=11') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=12') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -66,7 +66,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=11') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=12') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -91,7 +91,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-normal.woff2?v=11') format('woff2');
+    src: url('fonts/noto-sans-latin-normal.woff2?v=12') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -102,7 +102,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=11') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=12') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -113,7 +113,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-italic.woff2?v=11') format('woff2');
+    src: url('fonts/noto-sans-latin-italic.woff2?v=12') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -124,7 +124,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=11') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=12') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -140,7 +140,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-serif-hebrew.woff2?v=11') format('woff2');
+    src: url('fonts/noto-serif-hebrew.woff2?v=12') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
   @font-face {
@@ -148,7 +148,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-sans-hebrew.woff2?v=11') format('woff2');
+    src: url('fonts/noto-sans-hebrew.woff2?v=12') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
 
@@ -6363,6 +6363,12 @@
 .reader-field-label { font-family: var(--font-display); font-size: calc((12px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
 .reader-select { background: var(--surface); color: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-family: var(--font-body); font-size: calc((13px) * var(--text-scale)); max-width: 100%; }
 
+/* Task 13b, item 4: Strict/Guided tier-clarity caption under the Passages
+   toggle row (js/ui/reader.js's STRICT_TIER_CAPTION/GUIDED_TIER_CAPTION —
+   same text is reused for the tier badges' `title` attribute). */
+.reader-tier-caption { font-size: calc((11.5px) * var(--text-scale)); color: var(--muted); line-height: 1.4; margin: -4px 0 10px; }
+.reader-tier-caption strong { color: var(--cream); }
+
 .reader-area { display: flex; flex-direction: column; gap: 16px; }
 
 /* Recently-read chip strip */
@@ -6394,8 +6400,10 @@
 .reader-challenge-toggle-btn.active { border-color: var(--accent-red); color: var(--accent-red); }
 
 /* Challenge-tier passage header note: the single flagged near-future
-   feature this passage deliberately exposes. */
-.reader-challenge-note { border: 1px dashed var(--accent-red); border-radius: 8px; padding: 8px 12px; font-size: calc((12.5px) * var(--text-scale)); color: var(--accent-red); }
+   feature this passage deliberately exposes. Task 13b item 5: rendered
+   prominently right under the header (badge + this note), solid-bordered
+   with a faint tint rather than the list badge's plain dashed outline. */
+.reader-challenge-note { border: 1px solid var(--accent-red); background: rgba(200, 90, 70, 0.1); border-radius: 8px; padding: 10px 14px; font-size: calc((13px) * var(--text-scale)); font-weight: 600; color: var(--accent-red); }
 
 .reader-empty-state { max-width: 560px; }
 
@@ -6427,8 +6435,21 @@
 .reader-popover-value { color: var(--cream); text-align: right; }
 .reader-popover-hebrew { font-size: calc((17px) * var(--text-scale)); }
 .reader-popover-strongs { color: var(--muted); font-size: calc((11px) * var(--text-scale)); }
+/* Task 13b, item 2: "+" joiner between decoded prefix/suffix segment labels
+   and the pointed content-word lemma in the popover's Lemma line. */
+.reader-popover-plus { color: var(--muted); }
+/* Task 13b, item 2: "Strong's-derived" hint next to the Gloss line for
+   tokens with no vocab-card match (see renderGlossLine in js/ui/reader.js). */
+.reader-popover-hint { color: var(--muted); font-size: calc((10.5px) * var(--text-scale)); font-style: italic; }
 .reader-mark-btn { align-self: center; margin-top: 4px; }
 .reader-mark-btn.active { border-color: var(--gold); color: var(--gold); }
+
+/* Task 13b, item 3: per-passage wooden (literal) translation reveal —
+   collapsed by default, session-only (js/ui/reader.js's woodenRevealed). */
+.reader-wooden-section { display: flex; flex-direction: column; gap: 6px; align-items: center; text-align: center; }
+.reader-wooden-toggle-btn { align-self: center; }
+.reader-wooden-text { font-style: italic; color: var(--muted); font-size: calc((14px) * var(--text-scale)); line-height: 1.5; max-width: 520px; }
+.reader-wooden-caption { font-size: calc((10.5px) * var(--text-scale)); color: var(--muted); opacity: 0.8; }
 
 /* CC BY 4.0 attribution line — always visible at the bottom of the Reader
    section (list view and reading view alike). Required, not decorative. */

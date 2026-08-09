@@ -3,11 +3,14 @@
   "notes": [
     "Curated Reader passages: verse references selected by reproducible gate scoring (tools/import_oshb_reader.mjs) from the pinned OSHB corpus, grouped by lesson gate and tier.",
     "Entry shape: {\"id\": \"...\", \"ref\": \"Gen 1:1\", \"osisRef\": \"Gen.1.1\", \"gateLesson\": N, \"tier\": \"strict\"|\"guided\"|\"challenge\", \"scores\": {...reproducible metrics...}, \"rationale\": \"...\"}.",
-    "Tiers: strict = all graded morphology in scope, <=1 unknown non-proper content lexeme; guided = all morphology in scope, <=3 unknown non-proper content lexemes (marked); challenge = exactly one identified near-future feature, never shown by default.",
+    "Tiers: strict = all graded morphology in scope at the verse's own gateLesson, <=1 unknown non-proper content lexeme; guided = all morphology in scope, <=3 unknown non-proper content lexemes (marked); challenge (reworked in task 13a) = presented at a LOWER gate than the verse's own natural maxGrammarLesson, with 1-3 tokens sharing exactly one future feature TYPE (one shared bbhLesson value, e.g. \"2 Past Narrative forms, Lesson 35\") exempted above that lower gate, plus <=2 unknown non-proper content lexemes overall; every challenge entry carries a `challengeNote` naming the future feature. Hidden by default in the Reader UI (challenge toggle), unlike strict/guided.",
     "CURATION METHOD (Phase 2 PR D): for each of the 10 gate buckets in tools/import_oshb_reader.mjs's bucketOf() (9-14, 15-19, 20-22, 23-27, 28-31, 32-34, 35-38, 39-41, 42-44, 45-50), up to 4 strict + 2 guided verses were hand-picked from that bucket's candidate list (node tools/import_oshb_reader.mjs --report, plus an ad hoc ranking script used only during authoring to enumerate/sort candidates), preferring in order: (a) verses from Genesis 1, 3, 22, 37, 38, 47, 50 (our own narrative-domain picks, independent of the textbook's own curated reading sequence), (b) shorter verses (lower tokenCount), (c) contiguous verse runs where the ranked candidate list offered one (e.g. Gen 36:25-28, a 4-verse contiguous strict run at the L33 gate; Gen 10:16-17 and 25:14-15 pairs). `gateLesson` always equals the verse's own `scores.maxGrammarLesson` here because every selected verse is strict or guided (Genesis, under this policy, produced zero 'challenge'-tier verses corpus-wide as of this pass — see the PR D report; the challenge tier is fully implemented in tools/import_oshb_reader.mjs and would populate here if a future gate-map/vocab refinement produced one).",
     "REPRODUCIBILITY: `scores` for every entry below is checked byte-for-byte (JSON-equal) against a FRESH run of importGenesis() by tools/validate_bbh_reader_data.mjs — any gate-map, override-table, or importer change that shifts a verse's score fails validation here until selections.json is re-curated or the drifted entries are removed.",
     "Populated in Phase 2 PR D alongside tools/import_oshb_reader.mjs. Empty in PR A by design.",
-    "READER BOOK EXPANSION (task: multi-book expansion, after PR H): the importer (tools/import_oshb_reader.mjs) now scores 8 books — Gen, Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam — over the same pinned OSHB checkout. The 52 pre-existing Genesis selections above are UNCHANGED (same ids/scores; re-verified byte-for-byte against a fresh import after the gate-map/override-table updates below). 26 new selections were added from the 7 new books: (a) thin-bucket fill for gate buckets 15-19/23-27/28-31, which previously had only 1-2 Genesis strict candidates, drawing exclusively from non-Genesis books, shortest tokenCount first; (b) up to 2 strict + 1 guided per new book, chosen from that book's single richest gate bucket (all 7 landed in bucket 35-38, the Qal wayyiqtol/past-narrative gate — the natural backbone of Biblical Hebrew narrative prose, so unsurprisingly every narrative book's deepest candidate pool). No challenge-tier verses were found in ANY of the 8 books (tier definition: exactly one clearly-identified near-future-lesson token, all others in scope) — same null result as the original Genesis-only pass; the challenge tier remains fully implemented and ready to populate if a future gate-map/override refinement produces a match. Selection picking was scripted (scratchpad/curate_reader.mjs, not part of the shipped tool chain) directly against a fresh importReaderCorpus() run, so every new entry's scores are trivially exact-reproducible by construction. LEMMA_OVERRIDES was extended with entries audited from the combined top-60 unresolved Strong's numbers across all 8 books (tools/import_oshb_reader.mjs's own header comment there documents 3 entries — אֱלֹהִים 430, אֶרֶץ 776, צִוָּה 6680 — that were found to genuinely match a CSV row but were deliberately withheld because adding them drifts 5 of the 52 fixed Genesis selections' scores). Coverage-gap count across all 8 books is 0 (unchanged) — gate-map.json needed no new entries beyond what Phase 2 PR D had already authored (its existing per-POS-letter safety-net catch-alls already cover every OSHB morph code observed in the 7 new books)."
+    "READER BOOK EXPANSION (task: multi-book expansion, after PR H): the importer (tools/import_oshb_reader.mjs) now scores 8 books — Gen, Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam — over the same pinned OSHB checkout. The 52 pre-existing Genesis selections above are UNCHANGED (same ids/scores; re-verified byte-for-byte against a fresh import after the gate-map/override-table updates below). 26 new selections were added from the 7 new books: (a) thin-bucket fill for gate buckets 15-19/23-27/28-31, which previously had only 1-2 Genesis strict candidates, drawing exclusively from non-Genesis books, shortest tokenCount first; (b) up to 2 strict + 1 guided per new book, chosen from that book's single richest gate bucket (all 7 landed in bucket 35-38, the Qal wayyiqtol/past-narrative gate — the natural backbone of Biblical Hebrew narrative prose, so unsurprisingly every narrative book's deepest candidate pool). No challenge-tier verses were found in ANY of the 8 books (tier definition: exactly one clearly-identified near-future-lesson token, all others in scope) — same null result as the original Genesis-only pass; the challenge tier remains fully implemented and ready to populate if a future gate-map/override refinement produces a match. Selection picking was scripted (scratchpad/curate_reader.mjs, not part of the shipped tool chain) directly against a fresh importReaderCorpus() run, so every new entry's scores are trivially exact-reproducible by construction. LEMMA_OVERRIDES was extended with entries audited from the combined top-60 unresolved Strong's numbers across all 8 books (tools/import_oshb_reader.mjs's own header comment there documents 3 entries — אֱלֹהִים 430, אֶרֶץ 776, צִוָּה 6680 — that were found to genuinely match a CSV row but were deliberately withheld because adding them drifts 5 of the 52 fixed Genesis selections' scores). Coverage-gap count across all 8 books is 0 (unchanged) — gate-map.json needed no new entries beyond what Phase 2 PR D had already authored (its existing per-POS-letter safety-net catch-alls already cover every OSHB morph code observed in the 7 new books).",
+    "CHALLENGE TIER REWORK (task 13a, 2026-08-09 addenda \"matcher fixes\"/\"challenge tier rework\"/\"underline noise\"): two matcher bugs were fixed in tools/import_oshb_reader.mjs's classifyToken() — (1) OSHB gentilic nouns (Ng: the Hivite/Arkite/Sinite/Philistine/etc. nation-name family) are now pn-class (excluded from unknownContentLexemes, isProperName:true, plus a distinct isGentilic/gent:true flag), matching how proper names (Np) were already handled — previously a verse full of untaught gentilic names (e.g. Gen 10:16-17) was wrongly counted as several unknown content words; (2) compound-token vocab matching now also checks a pure-function-word token's own core segment (e.g. the object-marker segment of ו/את) against the vocab index even when that token has no N/V/A content segment, so taught particle vocabulary (את, CSV L15) surfaces its vocabLesson for display/underline purposes instead of silently reading null. The freeze on 3 previously-withheld LEMMA_OVERRIDES entries (אֱלֹהִים 430 CSV L3, אֶרֶץ 776 CSV L9, צִוָּה 6680 CSV L35) was also lifted. Re-scoring the whole 8-book corpus with these fixes changed 10 of the 78 pre-existing selections above: reader-gen-10-16 and reader-gen-10-17 improved guided->strict (unknownContentLexemes 3->0, the exact Gen 10:17 screenshot case); reader-gen-1-1 and reader-gen-24-4 improved guided->strict (430/776 override additions); reader-gen-10-20 and reader-2sam-5-18 stayed guided but dropped one unknownContentLexemes; reader-gen-50-12/reader-gen-38-2/reader-gen-7-5 stayed strict but dropped to 0 unknownContentLexemes. No selection's tier got worse. All other 69 selections' scores/tier/gateLesson are byte-identical to their pre-13a values (reader-deut-6-4 also changed, but from a SEPARATE, unrelated fix — see the large-letter tokenizer note below).",
+    "The challenge tier itself was separately reworked (docs' \"challenge tier rework\" addendum): the ORIGINAL definition (\"exactly one near-future-lesson token, <=3 unknown content lexemes\") could structurally never fire (its own threshold was a strict subset of guided's, so guided always claimed the verse first — zero challenge candidates were ever found in any of the 8 books). scoreVerse() in tools/import_oshb_reader.mjs now computes challenge-eligibility as an INDEPENDENT diagnostic (`scores.challenge`), never overriding the primary strict/guided `tier` — an early draft that checked challenge before strict/guided (the only way to make the tighter threshold reachable) flipped 60+ of the 78 pre-existing selections into \"challenge\" purely because every ordinary short clause has \"one token at the single highest lesson (its main verb) plus a lower baseline\", which is completely normal sentence structure, not a rare/noteworthy shape. Keeping the two independent means a verse's primary tier is unaffected by whether it ALSO happens to be challenge-eligible; a curator opts a specific verse INTO the challenge tier explicitly (as done below). Two curation-quality floors beyond the doc's three numeric conditions: the lower gate G must be >= lesson 9 (bucketOf()'s own curation floor — below that is bare pronoun/article/preposition connective tissue with no real \"baseline\" to preview against), and the gap (maxGrammarLesson - G) must be >= 10 (so \"future feature\" means a meaningfully distant course unit, e.g. Past Narrative or Numerals, not just the next lesson or two over). Scanning all 8 books found 293 challenge-eligible verses across gate buckets 9-14 through 35-38 (none in 39-41/42-44/45-50 — see tools/import_oshb_reader.mjs --report's \"Challenge-eligible candidates\" section); 8 were curated below (reader-ch-* ids), one or two per bucket, spread across Gen/1Sam/Exod/2Sam and across feature types (Qal/Piel wayyiqtol, Hitpael wayyiqtol, Imperative, numerals), chosen for clean short clauses with a verified challengeNote.",
+    "LARGE-LETTER TOKENIZER FIX (task 13a, found while authoring wooden translations): OSHB marks the two traditionally-enlarged Masoretic letters in the Shema (Deut 6:4 — שְׁמַע's ע and אֶחָד's ד) with a <seg type=\"x-large\"> tag NESTED inside the <w> element itself, which tools/import_oshb_reader.mjs's original regex-based tokenizer (requiring a <w> body with no \"<\" at all) silently failed to match — both tokens vanished from the stream rather than erroring. This is the ONLY nested-tag-inside-<w> case anywhere in the 8-book corpus (grep-verified: exactly 2 <seg type=\"x-large\"> occurrences total, both in this one verse). Fixed in W_RE/NESTED_SEG_RE (flattens the nested <seg> back to plain text, byte-identical to the unmarked word) with the identical fix mirrored in validate_bbh_reader_data.mjs's independent extractRawTokenDisplays(). reader-deut-6-4 (already a curated selection) went from 4 tokens/gate L31 (missing \"Hear\" and \"one\" entirely) to the correct 6 tokens/gate L45 (אֶחָד \"one\" is a numeral, gate-mapped to L45) — still tier:\"strict\" (1 unknown content lexeme, was 0). No other selection or verse in the corpus is affected (the only other <seg type=\"x-large\"> instance is the matching אֶחָד in the same verse)."
   ],
   "selections": [
     {
@@ -22,7 +25,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 13
       },
-      "rationale": "Genesis 22 (preferred narrative domain); short genealogical clause, only conjunction/preposition-level grammar beyond vocab."
+      "rationale": "Genesis 22 (preferred narrative domain); short genealogical clause, only conjunction/preposition-level grammar beyond vocab.",
+      "wooden": "and Kesed, and Chazo, and Pildash, and Jidlaph, and Bethuel.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-25-14",
@@ -36,7 +41,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 13
       },
-      "rationale": "Shortest L13 candidate; contiguous with 25:15 below."
+      "rationale": "Shortest L13 candidate; contiguous with 25:15 below.",
+      "wooden": "and Mishma, and Dumah, and Massa,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-25-15",
@@ -50,7 +57,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 13
       },
-      "rationale": "Contiguous run with 25:14."
+      "rationale": "Contiguous run with 25:14.",
+      "wooden": "Chadad, and Tema, Jetur, Naphish, and Kedemah.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-27",
@@ -64,35 +73,41 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 13
       },
-      "rationale": "Short genealogical name-list clause at the L13 (conjunction/preposition) gate."
+      "rationale": "Short genealogical name-list clause at the L13 (conjunction/preposition) gate.",
+      "wooden": "and Hadoram, and Uzal, and Diklah,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-16",
       "ref": "Gen 10:16",
       "osisRef": "Gen.10.16",
       "gateLesson": 13,
-      "tier": "guided",
+      "tier": "strict",
       "scores": {
         "tokenCount": 6,
-        "unknownContentLexemes": 3,
+        "unknownContentLexemes": 0,
         "unmappedCount": 0,
         "maxGrammarLesson": 13
       },
-      "rationale": "Contiguous run with 10:17; genealogical list at the L13 gate with a couple of unknown proper-adjacent lexemes."
+      "rationale": "Contiguous run with 10:17; genealogical list at the L13 gate with a couple of unknown proper-adjacent lexemes.",
+      "wooden": "and the Jebusite, and the Amorite, and the Girgashite,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-17",
       "ref": "Gen 10:17",
       "osisRef": "Gen.10.17",
       "gateLesson": 13,
-      "tier": "guided",
+      "tier": "strict",
       "scores": {
         "tokenCount": 6,
-        "unknownContentLexemes": 3,
+        "unknownContentLexemes": 0,
         "unmappedCount": 0,
         "maxGrammarLesson": 13
       },
-      "rationale": "Contiguous run with 10:16."
+      "rationale": "Contiguous run with 10:16.",
+      "wooden": "and the Hivite, and the Arkite, and the Sinite,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-26",
@@ -106,7 +121,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 16
       },
-      "rationale": "Only L16-gate (Qal perfect singular) strict candidate short enough to curate; genealogical clause."
+      "rationale": "Only L16-gate (Qal perfect singular) strict candidate short enough to curate; genealogical clause.",
+      "wooden": "And Joktan fathered Almodad, and Sheleph, and Chatsarmaveth, and Jerach,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-16-14",
@@ -120,21 +137,25 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 16
       },
-      "rationale": "Second L16-gate strict candidate; etiological naming clause."
+      "rationale": "Second L16-gate strict candidate; etiological naming clause.",
+      "wooden": "Therefore he called the well Beer-Lachai-Roi; behold, between Kadesh and between Bered.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-1-1",
       "ref": "Gen 1:1",
       "osisRef": "Gen.1.1",
       "gateLesson": 16,
-      "tier": "guided",
+      "tier": "strict",
       "scores": {
         "tokenCount": 7,
-        "unknownContentLexemes": 2,
+        "unknownContentLexemes": 1,
         "unmappedCount": 0,
         "maxGrammarLesson": 16
       },
-      "rationale": "The opening verse of Genesis 1 (preferred chapter); Qal perfect 3ms בָּרָא is the gate."
+      "rationale": "The opening verse of Genesis 1 (preferred chapter); Qal perfect 3ms בָּרָא is the gate.",
+      "wooden": "In beginning, God created the sky and the earth.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-24",
@@ -148,7 +169,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 16
       },
-      "rationale": "Second available L16-gate guided candidate; genealogical clause."
+      "rationale": "Second available L16-gate guided candidate; genealogical clause.",
+      "wooden": "And Arpakshad fathered Shelach, and Shelach fathered Eber.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-22-21",
@@ -162,7 +185,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 22
       },
-      "rationale": "Genesis 22 (preferred); construct-state genealogical list, gate L22 (suffix on a singular host)."
+      "rationale": "Genesis 22 (preferred); construct-state genealogical list, gate L22 (suffix on a singular host).",
+      "wooden": "Uz his firstborn, and Buz his brother, and Kemuel father of Aram.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-46-23",
@@ -176,7 +201,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 20
       },
-      "rationale": "Shortest L20 (construct state) candidate."
+      "rationale": "Shortest L20 (construct state) candidate.",
+      "wooden": "And the sons of Dan: Chushim.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-35-24",
@@ -190,7 +217,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 20
       },
-      "rationale": "Short L20 construct-state genealogical clause."
+      "rationale": "Short L20 construct-state genealogical clause.",
+      "wooden": "The sons of Rachel: Yoseph and Binyamin.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-3",
@@ -204,7 +233,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 20
       },
-      "rationale": "Short L20 construct-state genealogical clause."
+      "rationale": "Short L20 construct-state genealogical clause.",
+      "wooden": "And the sons of Gomer: Ashkenaz, and Riphath, and Togarmah.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-15",
@@ -218,7 +249,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 22
       },
-      "rationale": "Shortest available L20-22 guided candidate."
+      "rationale": "Shortest available L20-22 guided candidate.",
+      "wooden": "And Kenaan fathered Tsidon his firstborn, and Cheth,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-17-4",
@@ -232,7 +265,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 22
       },
-      "rationale": "Short L22 guided candidate (covenant-formula clause)."
+      "rationale": "Short L22 guided candidate (covenant-formula clause).",
+      "wooden": "As for me, behold, my covenant is with you, and you shall become father of a multitude of nations.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-24-38",
@@ -246,21 +281,25 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 23
       },
-      "rationale": "Only strict candidate at the L23 (Qal imperfect singular) gate."
+      "rationale": "Only strict candidate at the L23 (Qal imperfect singular) gate.",
+      "wooden": "If not, to the house of my father you shall go, and to my clan, and you shall take a woman for my son.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-24-4",
       "ref": "Gen 24:4",
       "osisRef": "Gen.24.4",
       "gateLesson": 23,
-      "tier": "guided",
+      "tier": "strict",
       "scores": {
         "tokenCount": 10,
-        "unknownContentLexemes": 2,
+        "unknownContentLexemes": 1,
         "unmappedCount": 0,
         "maxGrammarLesson": 23
       },
-      "rationale": "Shorter of the two available L23-25 guided candidates."
+      "rationale": "Shorter of the two available L23-25 guided candidates.",
+      "wooden": "For to my land and to my birthplace you shall go, and you shall take a woman for my son, for Yitschak.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-20-18",
@@ -274,7 +313,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 25
       },
-      "rationale": "Second available L23-25 guided candidate (L25 adverbial-infinitive gate)."
+      "rationale": "Second available L23-25 guided candidate (L25 adverbial-infinitive gate).",
+      "wooden": "For closing, YHWH had closed up every womb belonging to the house of Abimelek, on account of the word of Sarah, wife of Abraham.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-24-1",
@@ -288,7 +329,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 29
       },
-      "rationale": "Only strict candidate at the L29 (Piel/Hifil floor) gate."
+      "rationale": "Only strict candidate at the L29 (Piel/Hifil floor) gate.",
+      "wooden": "And Abraham was old, come into the days, and YHWH had blessed Abraham in everything.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-49-18",
@@ -302,7 +345,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 29
       },
-      "rationale": "Shortest available L28-31 guided candidate (Jacob’s Blessing)."
+      "rationale": "Shortest available L28-31 guided candidate (Jacob’s Blessing).",
+      "wooden": "For your salvation I have waited, YHWH.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-49-5",
@@ -316,7 +361,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 31
       },
-      "rationale": "Second-shortest available L28-31 guided candidate."
+      "rationale": "Second-shortest available L28-31 guided candidate.",
+      "wooden": "Shimon and Levi are brothers; weapons of violence are their swords.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-25",
@@ -330,7 +377,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 33
       },
-      "rationale": "First of a 4-verse contiguous strict run (36:25-28) at the L33 (demonstrative/Edomite genealogy) gate."
+      "rationale": "First of a 4-verse contiguous strict run (36:25-28) at the L33 (demonstrative/Edomite genealogy) gate.",
+      "wooden": "And these are the sons of Anah: Dishon; and Oholibamah daughter of Anah.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-26",
@@ -344,7 +393,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 33
       },
-      "rationale": "Contiguous run with 36:25/27/28."
+      "rationale": "Contiguous run with 36:25/27/28.",
+      "wooden": "And these are the sons of Dishan: Chemdan, and Eshban, and Jithran, and Keran.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-27",
@@ -358,7 +409,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 33
       },
-      "rationale": "Contiguous run with 36:25/26/28."
+      "rationale": "Contiguous run with 36:25/26/28.",
+      "wooden": "These are the sons of Etser: Bilhan, and Zaavan, and Akan.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-28",
@@ -372,7 +425,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 33
       },
-      "rationale": "Contiguous run with 36:25/26/27."
+      "rationale": "Contiguous run with 36:25/26/27.",
+      "wooden": "These are the sons of Dishan: Uz and Aran.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-20",
@@ -382,11 +437,13 @@
       "tier": "guided",
       "scores": {
         "tokenCount": 7,
-        "unknownContentLexemes": 3,
+        "unknownContentLexemes": 2,
         "unmappedCount": 0,
         "maxGrammarLesson": 33
       },
-      "rationale": "Short L32-34 guided candidate, genealogical summary clause."
+      "rationale": "Short L32-34 guided candidate, genealogical summary clause.",
+      "wooden": "These are the sons of Cham, according to their clans, according to their tongues, in their lands, in their nations.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-9",
@@ -400,7 +457,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 33
       },
-      "rationale": "Short L32-34 guided candidate, genealogical heading clause."
+      "rationale": "Short L32-34 guided candidate, genealogical heading clause.",
+      "wooden": "And these are the generations of Esav, father of Edom, in the hill country of Seir.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-37-1",
@@ -414,7 +473,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Genesis 37 (preferred, opens the Joseph narrative); Past-Narrative (wayyiqtol) gate L35."
+      "rationale": "Genesis 37 (preferred, opens the Joseph narrative); Past-Narrative (wayyiqtol) gate L35.",
+      "wooden": "And Jaakob dwelt in the land of the sojournings of his father, in the land of Kenaan.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-38-6",
@@ -428,7 +489,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Genesis 38 (preferred); wayyiqtol gate L35."
+      "rationale": "Genesis 38 (preferred); wayyiqtol gate L35.",
+      "wooden": "And Jehudah took a woman for Er his firstborn, and her name was Tamar.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-47-10",
@@ -442,7 +505,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Genesis 47 (preferred); wayyiqtol gate L35."
+      "rationale": "Genesis 47 (preferred); wayyiqtol gate L35.",
+      "wooden": "And Jaakob blessed Paroh, and he went out from before the face of Paroh.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-26-6",
@@ -456,7 +521,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Shortest overall L35-38 strict candidate (3 tokens)."
+      "rationale": "Shortest overall L35-38 strict candidate (3 tokens).",
+      "wooden": "And Yitschak dwelt in Gerar.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-1-13",
@@ -470,7 +537,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Genesis 1 (preferred); the day-refrain formula, wayyiqtol gate L35."
+      "rationale": "Genesis 1 (preferred); the day-refrain formula, wayyiqtol gate L35.",
+      "wooden": "And there was evening, and there was morning, a third day.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-1-19",
@@ -484,7 +553,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Genesis 1 (preferred); the day-refrain formula, wayyiqtol gate L35."
+      "rationale": "Genesis 1 (preferred); the day-refrain formula, wayyiqtol gate L35.",
+      "wooden": "And there was evening, and there was morning, a fourth day.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-50-12",
@@ -494,11 +565,13 @@
       "tier": "strict",
       "scores": {
         "tokenCount": 6,
-        "unknownContentLexemes": 1,
+        "unknownContentLexemes": 0,
         "unmappedCount": 0,
         "maxGrammarLesson": 40
       },
-      "rationale": "Genesis 50 (preferred, closing chapter); attached object-pronoun-on-verb gate L40."
+      "rationale": "Genesis 50 (preferred, closing chapter); attached object-pronoun-on-verb gate L40.",
+      "wooden": "And his sons did for him thus, just as he had commanded them.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-38-2",
@@ -508,11 +581,13 @@
       "tier": "strict",
       "scores": {
         "tokenCount": 11,
-        "unknownContentLexemes": 1,
+        "unknownContentLexemes": 0,
         "unmappedCount": 0,
         "maxGrammarLesson": 40
       },
-      "rationale": "Genesis 38 (preferred); L40 verb-suffix gate."
+      "rationale": "Genesis 38 (preferred); L40 verb-suffix gate.",
+      "wooden": "And Jehudah saw there a daughter of a Kenaanite man, and his name was Shua, and he took her, and he came to her.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-44-6",
@@ -526,7 +601,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 40
       },
-      "rationale": "Short L39-41 (imperative/jussive/verb-suffix) strict candidate."
+      "rationale": "Short L39-41 (imperative/jussive/verb-suffix) strict candidate.",
+      "wooden": "And he overtook them, and he spoke to them these words.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-7-5",
@@ -536,11 +613,13 @@
       "tier": "strict",
       "scores": {
         "tokenCount": 6,
-        "unknownContentLexemes": 1,
+        "unknownContentLexemes": 0,
         "unmappedCount": 0,
         "maxGrammarLesson": 40
       },
-      "rationale": "Short L39-41 strict candidate."
+      "rationale": "Short L39-41 strict candidate.",
+      "wooden": "And Noach did according to all that YHWH had commanded him.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-1-3",
@@ -554,7 +633,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 39
       },
-      "rationale": "Genesis 1 (preferred); “Let there be light” jussive, gate L39."
+      "rationale": "Genesis 1 (preferred); “Let there be light” jussive, gate L39.",
+      "wooden": "And God said, 'Let light be,' and light was.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-50-6",
@@ -568,7 +649,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 40
       },
-      "rationale": "Genesis 50 (preferred); L40 verb-suffix gate."
+      "rationale": "Genesis 50 (preferred); L40 verb-suffix gate.",
+      "wooden": "And Paroh said, 'Go up and bury your father, just as he made you swear.'",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-32-14",
@@ -582,7 +665,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 42
       },
-      "rationale": "Shortest available L42-44 (participle) strict candidate."
+      "rationale": "Shortest available L42-44 (participle) strict candidate.",
+      "wooden": "And he lodged there that night, and he took from what had come into his hand a gift for Esav his brother.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-14-12",
@@ -596,7 +681,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 42
       },
-      "rationale": "Short L42-44 strict candidate."
+      "rationale": "Short L42-44 strict candidate.",
+      "wooden": "And they took Lot and his property, son of the brother of Abram, and they went, and he was dwelling in Sedom.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-32-19",
@@ -610,7 +697,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 42
       },
-      "rationale": "Short L42-44 strict candidate."
+      "rationale": "Short L42-44 strict candidate.",
+      "wooden": "And you shall say, 'To your servant, to Jaakob'; it is a gift sent to my lord, to Esav; and behold, also he is behind us.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-41-28",
@@ -624,7 +713,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 42
       },
-      "rationale": "Short L42-44 strict candidate."
+      "rationale": "Short L42-44 strict candidate.",
+      "wooden": "It is the word that I spoke to Paroh: what God is doing he has shown to Paroh.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-37-19",
@@ -638,7 +729,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 42
       },
-      "rationale": "Genesis 37 (preferred); L42 participle gate, the only preferred-chapter guided candidate in this bucket."
+      "rationale": "Genesis 37 (preferred); L42 participle gate, the only preferred-chapter guided candidate in this bucket.",
+      "wooden": "And they said, each man to his brother, 'Behold, this master of the dreams is coming.'",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-34-31",
@@ -652,7 +745,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 42
       },
-      "rationale": "Shortest non-preferred L42-44 guided candidate."
+      "rationale": "Shortest non-preferred L42-44 guided candidate.",
+      "wooden": "And they said, 'Like a prostitute should he treat our sister?'",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-19-36",
@@ -666,7 +761,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 45
       },
-      "rationale": "Shortest available L45-50 (numeral) strict candidate."
+      "rationale": "Shortest available L45-50 (numeral) strict candidate.",
+      "wooden": "And the two daughters of Lot conceived by their father.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-21-31",
@@ -680,7 +777,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 45
       },
-      "rationale": "Short L45-50 strict candidate (numeral-bearing place-naming clause)."
+      "rationale": "Short L45-50 strict candidate (numeral-bearing place-naming clause).",
+      "wooden": "Therefore he called that place Beer-Sheba, for there the two of them swore.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-7-9",
@@ -694,7 +793,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 45
       },
-      "rationale": "L45-50 strict candidate."
+      "rationale": "L45-50 strict candidate.",
+      "wooden": "Two by two they came to Noach, into the ark, male and female, just as God had commanded Noach.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-31-33",
@@ -708,7 +809,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 45
       },
-      "rationale": "L45-50 strict candidate."
+      "rationale": "L45-50 strict candidate.",
+      "wooden": "And Laban went into the tent of Jaakob, and into the tent of Leah, and into the tent of the two maidservants, and he did not find; and he went out from the tent of Leah, and he went into the tent of Rachel.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-22-23",
@@ -722,7 +825,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 45
       },
-      "rationale": "Genesis 22 (preferred); the only preferred-chapter guided candidate at the L45 numeral gate."
+      "rationale": "Genesis 22 (preferred); the only preferred-chapter guided candidate at the L45 numeral gate.",
+      "wooden": "And Bethuel fathered Rivkah; these eight Milkah bore to Nachor, brother of Abraham.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-42-17",
@@ -736,7 +841,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 45
       },
-      "rationale": "Shortest non-preferred L45-50 guided candidate."
+      "rationale": "Shortest non-preferred L45-50 guided candidate.",
+      "wooden": "And he gathered them into custody three days.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-3-15",
@@ -750,7 +857,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 16
       },
-      "rationale": "Thin-bucket fill (L16 gate, bucket 15-19); Deut strict candidate, 4 tokens."
+      "rationale": "Thin-bucket fill (L16 gate, bucket 15-19); Deut strict candidate, 4 tokens.",
+      "wooden": "And to Makir I gave the Gilad.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-5-17",
@@ -764,7 +873,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 23
       },
-      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens."
+      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens.",
+      "wooden": "You shall not murder.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-5-18",
@@ -778,7 +889,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 23
       },
-      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens."
+      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens.",
+      "wooden": "And you shall not commit adultery.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-5-19",
@@ -792,21 +905,25 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 23
       },
-      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens."
+      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens.",
+      "wooden": "And you shall not steal.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-6-4",
       "ref": "Deut 6:4",
       "osisRef": "Deut.6.4",
-      "gateLesson": 31,
+      "gateLesson": 45,
       "tier": "strict",
       "scores": {
-        "tokenCount": 4,
+        "tokenCount": 6,
         "unknownContentLexemes": 1,
         "unmappedCount": 0,
-        "maxGrammarLesson": 31
+        "maxGrammarLesson": 45
       },
-      "rationale": "Thin-bucket fill (L31 gate, bucket 28-31); Deut strict candidate, 4 tokens."
+      "rationale": "Thin-bucket fill; the Shema (Deut 6:4). Originally recorded at L31/4 tokens before task 13a's large-letter tokenizer fix (see tools/import_oshb_reader.mjs's W_RE/NESTED_SEG_RE): OSHB marks the traditionally-enlarged שְׁמַע/אֶחָד with a nested <seg type=\"x-large\"> the old regex-based tokenizer silently dropped both tokens for. Now 6 tokens, gate L45 (the closing numeral אֶחָד \"one\").",
+      "wooden": "Hear, Yisrael: YHWH our God, YHWH one.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-exod-6-17",
@@ -820,7 +937,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 31
       },
-      "rationale": "Thin-bucket fill (L31 gate, bucket 28-31); Exod strict candidate, 5 tokens."
+      "rationale": "Thin-bucket fill (L31 gate, bucket 28-31); Exod strict candidate, 5 tokens.",
+      "wooden": "The sons of Gereshon: Libni and Shimi, according to their clans.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1sam-30-28",
@@ -834,7 +953,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 30
       },
-      "rationale": "Thin-bucket fill (L30 gate, bucket 28-31); 1Sam strict candidate, 6 tokens."
+      "rationale": "Thin-bucket fill (L30 gate, bucket 28-31); 1Sam strict candidate, 6 tokens.",
+      "wooden": "and to those who were in Aroer, and to those who were in Siphmoth, and to those who were in Eshtemoa,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ruth-1-3",
@@ -848,7 +969,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 45
       },
-      "rationale": "Ruth showcase (L45 gate); short strict narrative verse, 8 tokens."
+      "rationale": "Ruth showcase (L45 gate); short strict narrative verse, 8 tokens.",
+      "wooden": "And Elimelek, husband of Naomi, died, and she was left, she and her two sons.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ruth-1-10",
@@ -862,7 +985,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Ruth showcase (L35 gate); guided narrative verse, 6 tokens."
+      "rationale": "Ruth showcase (L35 gate); guided narrative verse, 6 tokens.",
+      "wooden": "And they said to her, 'For with you we will return to your people.'",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-jonah-1-1",
@@ -876,7 +1001,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Jonah showcase (L35 gate); short strict narrative verse, 8 tokens."
+      "rationale": "Jonah showcase (L35 gate); short strict narrative verse, 8 tokens.",
+      "wooden": "And the word of YHWH was to Jonah son of Amittai, saying,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-jonah-4-4",
@@ -890,7 +1017,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Jonah showcase (L35 gate); guided narrative verse, 5 tokens."
+      "rationale": "Jonah showcase (L35 gate); guided narrative verse, 5 tokens.",
+      "wooden": "And YHWH said, 'Does it burn well for you?'",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-exod-13-1",
@@ -904,7 +1033,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Exod showcase (L35 gate); short strict narrative verse, 5 tokens."
+      "rationale": "Exod showcase (L35 gate); short strict narrative verse, 5 tokens.",
+      "wooden": "And YHWH spoke to Mosheh, saying,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-exod-14-1",
@@ -918,7 +1049,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Exod showcase (L35 gate); short strict narrative verse, 5 tokens."
+      "rationale": "Exod showcase (L35 gate); short strict narrative verse, 5 tokens.",
+      "wooden": "And YHWH spoke to Mosheh, saying,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-exod-16-30",
@@ -932,7 +1065,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Exod showcase (L35 gate); guided narrative verse, 4 tokens."
+      "rationale": "Exod showcase (L35 gate); guided narrative verse, 4 tokens.",
+      "wooden": "And the people rested on the seventh day.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-2-17",
@@ -946,7 +1081,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Deut showcase (L35 gate); short strict narrative verse, 4 tokens."
+      "rationale": "Deut showcase (L35 gate); short strict narrative verse, 4 tokens.",
+      "wooden": "And YHWH spoke to me, saying,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-3-29",
@@ -960,7 +1097,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Deut showcase (L35 gate); short strict narrative verse, 5 tokens."
+      "rationale": "Deut showcase (L35 gate); short strict narrative verse, 5 tokens.",
+      "wooden": "And we dwelt in the valley opposite Beth-Peor.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-25-4",
@@ -974,7 +1113,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 40
       },
-      "rationale": "Deut showcase (L40 gate); guided narrative verse, 4 tokens."
+      "rationale": "Deut showcase (L40 gate); guided narrative verse, 4 tokens.",
+      "wooden": "You shall not muzzle an ox in its threshing.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-judg-10-5",
@@ -988,7 +1129,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 37
       },
-      "rationale": "Judg showcase (L37 gate); short strict narrative verse, 4 tokens."
+      "rationale": "Judg showcase (L37 gate); short strict narrative verse, 4 tokens.",
+      "wooden": "And Jair died, and he was buried in Kamon.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-judg-12-10",
@@ -1002,7 +1145,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 37
       },
-      "rationale": "Judg showcase (L37 gate); short strict narrative verse, 5 tokens."
+      "rationale": "Judg showcase (L37 gate); short strict narrative verse, 5 tokens.",
+      "wooden": "And Ibtsan died, and he was buried in Beth-Lechem.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-judg-14-7",
@@ -1016,7 +1161,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "Judg showcase (L35 gate); guided narrative verse, 6 tokens."
+      "rationale": "Judg showcase (L35 gate); guided narrative verse, 6 tokens.",
+      "wooden": "And he went down, and he spoke to the woman, and she was right in the eyes of Shimshon.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1sam-15-10",
@@ -1030,7 +1177,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "1Sam showcase (L35 gate); short strict narrative verse, 6 tokens."
+      "rationale": "1Sam showcase (L35 gate); short strict narrative verse, 6 tokens.",
+      "wooden": "And the word of YHWH was to Shemuel, saying,",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1sam-10-17",
@@ -1044,7 +1193,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "1Sam showcase (L35 gate); short strict narrative verse, 7 tokens."
+      "rationale": "1Sam showcase (L35 gate); short strict narrative verse, 7 tokens.",
+      "wooden": "And Shemuel summoned the people to YHWH at the Mitspah.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1sam-10-13",
@@ -1058,7 +1209,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 37
       },
-      "rationale": "1Sam showcase (L37 gate); guided narrative verse, 4 tokens."
+      "rationale": "1Sam showcase (L37 gate); guided narrative verse, 4 tokens.",
+      "wooden": "And he finished from prophesying, and he came to the high place.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2sam-17-26",
@@ -1072,7 +1225,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "2Sam showcase (L35 gate); short strict narrative verse, 5 tokens."
+      "rationale": "2Sam showcase (L35 gate); short strict narrative verse, 5 tokens.",
+      "wooden": "And Yisrael and Abshalom camped in the land of the Gilad.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2sam-24-19",
@@ -1086,7 +1241,9 @@
         "unmappedCount": 0,
         "maxGrammarLesson": 35
       },
-      "rationale": "2Sam showcase (L35 gate); short strict narrative verse, 7 tokens."
+      "rationale": "2Sam showcase (L35 gate); short strict narrative verse, 7 tokens.",
+      "wooden": "And David went up according to the word of Gad, just as YHWH had commanded.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2sam-5-18",
@@ -1096,11 +1253,149 @@
       "tier": "guided",
       "scores": {
         "tokenCount": 5,
-        "unknownContentLexemes": 3,
+        "unknownContentLexemes": 2,
         "unmappedCount": 0,
         "maxGrammarLesson": 37
       },
-      "rationale": "2Sam showcase (L37 gate); guided narrative verse, 5 tokens."
+      "rationale": "2Sam showcase (L37 gate); guided narrative verse, 5 tokens.",
+      "wooden": "And the Philistines came, and they spread out in the valley of Rephaim.",
+      "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-ch-gen-26-23",
+      "ref": "Gen 26:23",
+      "osisRef": "Gen.26.23",
+      "gateLesson": 13,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Challenge showcase (gate L13): clean 4-token wayyiqtol clause (Isaac's itinerary) — every word is L13-or-below narrative-connective/place-name material except the single Past Narrative verb.",
+      "challengeNote": "Contains 1 Past Narrative (wayyiqtol) form — introduced in Lesson 35.",
+      "wooden": "And he went up from there to Beer-Sheba.",
+      "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-ch-1sam-21-1",
+      "ref": "1Sam 21:1",
+      "osisRef": "1Sam.21.1",
+      "gateLesson": 16,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Challenge showcase (gate L16): two Past Narrative wayyiqtol verbs (קם, וילך) back-to-back in a 5-token clause, everything else already in scope by L16 (Qal perfect) — a clean \"2 future forms, same feature\" example.",
+      "challengeNote": "Contains 2 Past Narrative (wayyiqtol) forms — introduced in Lesson 35.",
+      "wooden": "And he rose and went, and Jehonathan came to the city.",
+      "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-ch-gen-24-34",
+      "ref": "Gen 24:34",
+      "osisRef": "Gen.24.34",
+      "gateLesson": 20,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Challenge showcase (gate L20): short self-introduction clause (\"I am Abraham's servant\") — construct-noun/pronoun material already in scope by L20, one wayyiqtol verb previews Past Narrative.",
+      "challengeNote": "Contains 1 Past Narrative (wayyiqtol) form — introduced in Lesson 35.",
+      "wooden": "And he said, 'Servant of Abraham am I.'",
+      "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-ch-gen-23-12",
+      "ref": "Gen 23:12",
+      "osisRef": "Gen.23.12",
+      "gateLesson": 20,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 37
+      },
+      "rationale": "Challenge showcase (gate L20): Abraham bowing before the Hittites — construct-chain/preposition material already in scope by L20, one Hitpael wayyiqtol verb previews the Nifal/Hitpael stem floor.",
+      "challengeNote": "Contains 1 Hitpael wayyiqtol form (וַיִּשְׁתַּחוּ, \"and he bowed down\") — the Nifal/Hitpael stem floor introduced in Lesson 37.",
+      "wooden": "And Abraham bowed down before the face of the people of the land.",
+      "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-ch-gen-8-15",
+      "ref": "Gen 8:15",
+      "osisRef": "Gen.8.15",
+      "gateLesson": 24,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Challenge showcase (gate L24): the recurring \"God spoke to X, saying\" narrative formula — infinitive construct לֵאמֹר already in scope by L24, one Piel wayyiqtol verb previews Past Narrative.",
+      "challengeNote": "Contains 1 Piel Past-Narrative (wayyiqtol) form — introduced in Lesson 35.",
+      "wooden": "And God spoke to Noach, saying,",
+      "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-ch-exod-6-11",
+      "ref": "Exod 6:11",
+      "osisRef": "Exod.6.11",
+      "gateLesson": 29,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 11,
+        "unknownContentLexemes": 0,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 39
+      },
+      "rationale": "Challenge showcase (gate L29): \"Go, speak to Pharaoh...\" — 0 unknown content lexemes, entirely Piel/Qal perfect-or-lower material in scope by L29 except two paired Imperative verbs opening the verse.",
+      "challengeNote": "Contains 2 Imperative forms (בֹּא \"go!\", דַבֵּר \"speak!\") — the Imperative introduced in Lesson 39.",
+      "wooden": "Go, speak to Paroh, king of Mitsrayim, that he send away the sons of Yisrael from his land.",
+      "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-ch-1sam-17-14",
+      "ref": "1Sam 17:14",
+      "osisRef": "1Sam.17.14",
+      "gateLesson": 32,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 8,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 45
+      },
+      "rationale": "Challenge showcase (gate L32): David introduced as the youngest of the brothers — adjective inflection (קָטָן/גְּדֹלִים) already in scope by L32, one numeral previews the numerals unit.",
+      "challengeNote": "Contains 1 numeral form (שְׁלֹשָׁה \"three\") — Numerals introduced in Lesson 45.",
+      "wooden": "And David, he was the small one, and the three great ones went after Shaul.",
+      "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-ch-2sam-13-38",
+      "ref": "2Sam 13:38",
+      "osisRef": "2Sam.13.38",
+      "gateLesson": 35,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 8,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 45
+      },
+      "rationale": "Challenge showcase (gate L35): Absalom's flight to Geshur — Past Narrative wayyiqtol material already in scope by L35, one cardinal numeral previews the numerals unit.",
+      "challengeNote": "Contains 1 numeral form (שָׁלֹשׁ \"three\") — Numerals introduced in Lesson 45.",
+      "wooden": "And Abshalom fled, and he went to Geshur, and he was there three years.",
+      "woodenStatus": "reviewed"
     }
   ]
 }

@@ -36,6 +36,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { importReaderCorpus, readCorpusPin, ROOT } from './import_oshb_reader.mjs';
+import { buildGlossIndex } from './gen_strongs_glosses.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 void __dirname;
@@ -74,22 +75,47 @@ function readJson(filePath) {
 //      grammar-neutral (e.g. a bare "C" conjunction gates at L13, so this
 //      is null only for genuinely gate-less segments, which in practice
 //      does not occur once every POS is covered by gate-map.json)
-//   pn true if any segment of this token is a proper noun (Np)
+//   pn true if any segment of this token is a proper noun (Np) OR a
+//      gentilic noun (Ng) — task 13a: gentilics are pn-class (excluded
+//      from unknown-content-lexeme counts), see `gent` below for how the
+//      UI tells the two apart.
+//   gent true if this token is specifically a GENTILIC noun (Ng — "the
+//      Hivite", "the Philistine", etc.), a strict subset of pn:true tokens
+//      (task 13a). Lets the UI label these "gentilic name" rather than a
+//      personal/place name. Omitted (not just false) when not gentilic, to
+//      keep the common case's payload small — same idiom as challengeNote.
 //   v  this token's content-word vocabLesson match (CSV-verified earliest
-//      lesson), or null if unmatched/not a content word
-function buildToken(classifiedToken) {
-  return {
+//      lesson), or null if unmatched/not a content word. Task 13a: also
+//      resolves for pure function-word tokens (e.g. the object marker את)
+//      whose own core segment is itself taught vocabulary, not just N/V/A
+//      content words — see classifyToken() in tools/import_oshb_reader.mjs.
+//   gl Strong's-derived short English gloss (task 13a), or null if this
+//      token carries no Strong's number at all. Vocab-matched tokens (v
+//      non-null) still get a `gl` — gloss precedence between the richer
+//      vocab-CSV gloss and this Strong's-derived one is the UI's concern,
+//      not this pipeline's.
+//   lx Strong's-derived pointed Hebrew HEADWORD (citation/lexical form,
+//      NOT the inflected surface form `t` displays) for the popover lemma
+//      display, or null if this token carries no Strong's number.
+function buildToken(classifiedToken, glossIndex) {
+  const strongs = classifiedToken.strongs;
+  const gloss = strongs ? glossIndex.get(strongs) : null;
+  const out = {
     t: classifiedToken.token.display,
     l: classifiedToken.token.lemmaRaw,
-    s: classifiedToken.strongs,
+    s: strongs,
     m: classifiedToken.token.morphRaw,
     g: classifiedToken.tokenLesson,
     pn: classifiedToken.isProperName,
-    v: classifiedToken.vocabLesson
+    v: classifiedToken.vocabLesson,
+    gl: gloss ? gloss.gl : null,
+    lx: gloss ? gloss.lx : null
   };
+  if (classifiedToken.isGentilic) out.gent = true;
+  return out;
 }
 
-function buildPassage(selection, freshVerse) {
+function buildPassage(selection, freshVerse, glossIndex) {
   return {
     id: selection.id,
     book: freshVerse.book,
@@ -101,13 +127,22 @@ function buildPassage(selection, freshVerse) {
     // its own effective gate (see selections.json's per-entry field and
     // js/ui/reader.js's challenge-toggle gating).
     challengeNote: selection.tier === 'challenge' ? (selection.challengeNote || null) : undefined,
-    tokens: freshVerse.tokens.map(buildToken)
+    // wooden/woodenStatus (task 13a): a dev-time-authored, LLM-wooden-style
+    // literal English rendering of the whole verse (docs/bbh-conversion-
+    // plan.md's "LLM wooden translations permitted" addendum) — stored in
+    // selections.json as authoritative source, embedded verbatim here.
+    // woodenStatus is always "draft" as authored by this task; a SEPARATE
+    // review agent is expected to update it in selections.json (never here)
+    // once independently checked against the token morphology/glosses.
+    wooden: selection.wooden,
+    woodenStatus: selection.woodenStatus,
+    tokens: freshVerse.tokens.map((t) => buildToken(t, glossIndex))
   };
 }
 
-function buildOutput(selectionsDoc, pin, freshVerses) {
+function buildOutput(selectionsDoc, pin, freshVerses, glossIndex) {
   const byOsisID = new Map(freshVerses.map((v) => [v.osisID, v]));
-  const passages = selectionsDoc.selections.map((sel) => buildPassage(sel, byOsisID.get(sel.osisRef)));
+  const passages = selectionsDoc.selections.map((sel) => buildPassage(sel, byOsisID.get(sel.osisRef), glossIndex));
   return {
     schemaVersion: 1,
     attribution: pin.attribution,
@@ -131,11 +166,14 @@ const HEADER = [
   '// into index.html\'s <script> tags and sw.js\'s precache list.',
   '//',
   '// Shape: { schemaVersion, attribution, corpusPin: {tag, commit},',
-  '// passages: [{ id, book, ref, gateLesson, tier, challengeNote?,',
-  '// tokens: [{t,l,s,m,g,pn,v}] }] }. `book` is the OSIS book code (Gen,',
-  '// Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam) — added by the multi-book',
-  '// Reader expansion; `challengeNote` is present only on tier:"challenge"',
-  '// passages.',
+  '// passages: [{ id, book, ref, gateLesson, tier, challengeNote?, wooden,',
+  '// woodenStatus, tokens: [{t,l,s,m,g,pn,gent?,v,gl,lx}] }] }. `book` is the',
+  '// OSIS book code (Gen, Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam) — added',
+  '// by the multi-book Reader expansion; `challengeNote` is present only on',
+  '// tier:"challenge" passages. `wooden`/`woodenStatus`, `gent`, and the',
+  '// token-level `gl`/`lx` fields were added in task 13a (Strong\'s glosses +',
+  '// wooden translations + gentilic/compound-token matcher fixes) — see',
+  '// buildToken()/buildPassage() below and tools/gen_strongs_glosses.mjs.',
   '// Token field meanings are documented above buildToken() in',
   '// tools/gen_bbh_reader_data.mjs. `t` (display) is preserved byte-for-byte',
   '// from the Westminster Leningrad Codex text as distributed by OSHB — never',
@@ -163,7 +201,33 @@ function main() {
   const pin = readCorpusPin();
   const { verses } = importReaderCorpus();
 
-  const output = buildOutput(selectionsDoc, pin, verses);
+  // Distinct Strong's numbers across every selection's tokens (fresh, not
+  // cached from selections.json — mirrors the rest of this pipeline's
+  // never-trust-a-cache discipline), in a fixed deterministic order
+  // (selections.json's own array order, then each verse's own token
+  // order) so buildGlossIndex()'s Map insertion order — and therefore
+  // nothing about the OUTPUT, which is only ever looked up by key — can
+  // never introduce nondeterminism.
+  const byOsisID = new Map(verses.map((v) => [v.osisID, v]));
+  const strongsNumbers = [];
+  const seenStrongs = new Set();
+  for (const sel of selectionsDoc.selections) {
+    const v = byOsisID.get(sel.osisRef);
+    if (!v) continue;
+    for (const t of v.tokens) {
+      if (t.strongs && !seenStrongs.has(t.strongs)) {
+        seenStrongs.add(t.strongs);
+        strongsNumbers.push(t.strongs);
+      }
+    }
+  }
+  const { index: glossIndex, resolved, missing } = buildGlossIndex(strongsNumbers);
+  console.log(
+    `Strong's glosses: ${resolved}/${strongsNumbers.length} distinct numbers resolved` +
+    (missing.length ? `; MISSING: ${missing.join(', ')}` : '.')
+  );
+
+  const output = buildOutput(selectionsDoc, pin, verses, glossIndex);
   writeFileSync(OUT_PATH, writeReaderFile(output));
   console.log(
     `Wrote ${path.relative(ROOT, OUT_PATH)} ` +

@@ -14,5 +14,18 @@
     "Display text must be preserved byte-for-byte from the source; OSHB warns against NFC-normalizing its Hebrew. Derived comparison/search keys live in separate fields only.",
     "Do not mix in BHSA/ETCBC annotations (CC BY-NC) or call Tanach.us UXLC text 'WLC'.",
     "Import is development-time only (tools/import_oshb_reader.mjs reads a checkout pinned to this commit); the app ships only the curated generated subset."
-  ]
+  ],
+  "strongsPin": {
+    "schemaVersion": 1,
+    "corpus": "Open Scriptures Strong's Hebrew Dictionary",
+    "repository": "https://github.com/openscriptures/strongs",
+    "commit": "0acd2f251c2d35ff8db2dece4e0593979d3ac223",
+    "file": "hebrew/strongs-hebrew-dictionary.js",
+    "license": "Public domain — James Strong's 1894 'A Concise Dictionary of the Words in the Hebrew Bible', out of copyright. The Open Scriptures JSON/XML e-text encoding of it (this pinned file) carries its own file-header copyright notice ('Copyright 2010, Open Scriptures. CC-BY-SA.') for the digitization/editing work, distinct from the (public-domain) underlying dictionary text itself.",
+    "attribution": "Strong's Hebrew Dictionary definitions and headwords from the Open Scriptures Strong's project (https://github.com/openscriptures/strongs), derived from James Strong's 1894 public-domain dictionary.",
+    "notes": [
+      "Added in task 13a for per-token gloss (`gl`) and pointed-headword (`lx`) generation (tools/gen_strongs_glosses.mjs) — dev-time only, never fetched at runtime; the app ships only the short, modernized glosses this pipeline extracts for the exact Strong's numbers appearing in the curated Reader selections.",
+      "Archaic English in strongs_def/kjv_def (thee/thou/thy/ye, -eth/-est verb endings, unto/hath/saith/shalt) is mechanically modernized via a documented replacement table — see tools/gen_strongs_glosses.mjs's MODERNIZE_TABLE."
+    ]
+  }
 }

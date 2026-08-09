@@ -12,11 +12,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=11">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=11">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=11">
+<link rel="manifest" href="manifest.json?v=12">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=12">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=12">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=11">
+<link rel="stylesheet" href="styles.css?v=12">
 <script>
 (function(){
   try {
@@ -496,7 +496,7 @@
           <ul class="user-guide-list">
             <li><strong>Parsing mode</strong> &mdash; drill verb/noun/pronoun forms gated to your current lesson, in Parse (identify), Build (construct), or Mixed direction, with focused-paradigm, shuffle-all, custom-set, exclude-known, and appendix-forms scoping. Parsing forms now show a transliteration line (respects the Transliteration show/hide toggle) and a clearer card layout &mdash; big Hebrew form, small italic transliteration, then the step label.</li>
             <li><strong>Grammar Quiz mode</strong> &mdash; multiple-choice questions gated to your current lesson, with a review-missed filter and an All/Core-only difficulty switch.</li>
-            <li><strong>Reader mode</strong> &mdash; curated Hebrew Bible passages across Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, and 1&ndash;2 Samuel (Strict/Guided tiers, plus an opt-in Challenge tier for one passage above your current lesson) with tap-to-inspect word details and personal review marks; no grading, nothing scheduled.</li>
+            <li><strong>Reader mode</strong> &mdash; curated Hebrew Bible passages across Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, and 1&ndash;2 Samuel (Strict/Guided tiers, plus an opt-in Challenge tier for one passage above your current lesson, only shown once one exists at your lesson) with tap-to-inspect word details (pointed lemma, gloss, gentilic labels), personal review marks, and a per-passage literal-translation reveal; no grading, nothing scheduled.</li>
             <li><strong>Lesson 1 &middot; Alphabet</strong> and <strong>Lesson 2 &middot; Vowel marks</strong> &mdash; two standalone flip-card decks covering the textbook&rsquo;s own Lesson 1 (The Consonants) and Lesson 2 (The Vowels) content (23 letters, 12 vowel points shown on real vocab words), separate from every other mode and stat; lessons 1&ndash;2 no longer appear in the vocab lesson list since this is now their content.</li>
             <li><strong>Vocabulary grew to 209 cards</strong> across all 50 lessons; session presets are now the textbook&rsquo;s own 13 reading-block &ldquo;Unit&rdquo; groupings plus All Lessons (the decade-range presets were retired).</li>
             <li>Gamification titles are now Hebrew puns (Alef, Ger, Shomea, Talmid, Doresh, &hellip;) instead of the inherited Greek ones; mobile layout polish across Parsing and Grammar Quiz.</li>
@@ -533,7 +533,7 @@
       <p>Short multiple-choice questions on grammar concepts, gated to your current lesson so nothing ahead of where you are shows up. Turn on <strong>Review missed</strong> to focus on questions you&rsquo;ve gotten wrong before, and switch <strong>Difficulty</strong> between All questions and Core-only.</p>
 
       <h3 class="user-guide-heading">Reader mode</h3>
-      <p>Curated passages from Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, and 1&ndash;2 Samuel, grouped by book and then by lesson gate, split into <strong>Strict</strong> (only vocabulary already introduced) and <strong>Guided</strong> (a few not-yet-introduced words, underlined) tiers. Tap any word for its lemma, morphology, and gate/vocab lesson; tap <strong>&#x2606; Mark for review</strong> to flag it for yourself &mdash; a plain personal note, never scheduled or graded. Reader has no SRS of any kind. A <strong>Challenge passages</strong> switch (off by default) reveals a small number of passages that deliberately include one word from a lesson you haven&rsquo;t reached yet, named in the passage header.</p>
+      <p>Curated passages from Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, and 1&ndash;2 Samuel, grouped by book and then by lesson gate, split into <strong>Strict</strong> (every word&rsquo;s grammar is within your lesson; at most one unfamiliar word) and <strong>Guided</strong> (up to three unfamiliar words, marked with dotted underlines) tiers. Tap any word for its pointed lemma, gloss, morphology, and gate/vocab lesson &mdash; gentilic names (e.g. &ldquo;the Hivite&rdquo;) are labeled as such; tap <strong>&#x2606; Mark for review</strong> to flag it for yourself &mdash; a plain personal note, never scheduled or graded. Reader has no SRS of any kind. Each passage has a <strong>Show literal translation</strong> button revealing an unofficial, machine-drafted word-for-word rendering, labeled draft or independently reviewed. A <strong>Challenge passages</strong> switch (off by default, and shown only when one exists at your current lesson) reveals a small number of passages that deliberately include one word from a lesson you haven&rsquo;t reached yet, named in the passage header.</p>
 
       <h3 class="user-guide-heading">Settings &amp; tools</h3>
       <p>Under <em>Advanced review settings</em> (vocabulary mode only; all persist; each toggle has an <strong>(i)</strong> for details):</p>
@@ -721,14 +721,14 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=11"></script>
-<script defer src="js/data/bbh_reference_data.js?v=11"></script>
-<script defer src="js/data/bbh_parsing.js?v=11"></script>
-<script defer src="js/data/bbh_grammar.js?v=11"></script>
-<script defer src="js/data/bbh_reader.js?v=11"></script>
-<script defer src="js/data/bbh_alphabet.js?v=11"></script>
-<script defer src="js/logic/pos_logic.js?v=11"></script>
-<script defer src="js/pwa/swUpdate.js?v=11"></script>
-<script type="module" src="js/app/main.js?v=11"></script>
+<script defer src="js/data/bbh_vocab.js?v=12"></script>
+<script defer src="js/data/bbh_reference_data.js?v=12"></script>
+<script defer src="js/data/bbh_parsing.js?v=12"></script>
+<script defer src="js/data/bbh_grammar.js?v=12"></script>
+<script defer src="js/data/bbh_reader.js?v=12"></script>
+<script defer src="js/data/bbh_alphabet.js?v=12"></script>
+<script defer src="js/logic/pos_logic.js?v=12"></script>
+<script defer src="js/pwa/swUpdate.js?v=12"></script>
+<script type="module" src="js/app/main.js?v=12"></script>
 </body>
 </html>
