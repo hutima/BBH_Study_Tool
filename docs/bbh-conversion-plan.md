@@ -424,3 +424,64 @@ regex consonant+combining-marks), larger/brighter representative word,
 highlight by color/weight only. Also: Again/Got-it become STACKED
 full-width vertical buttons on 0A/0B for one-handed use (user
 suggestion). Runs right after task #14 (styles.css overlap).
+
+## Addendum (user request, 2026-08-09): rename 0A/0B to Lessons 1/2
+
+The practice decks map exactly onto the textbook's own lessons (L1 The
+Consonants, L2 The Vowels), so the "Lesson 0" framing is retired:
+"Lesson 1 · Alphabet" and "Lesson 2 · Vowel marks" (display-only rename;
+state keys/ids unchanged). Lessons 1 and 2 disappear from the VOCAB
+lesson selector only (zero cards; their content is the practice decks) —
+parsing/grammar/reader selects and the Units presets are untouched, and
+the other zero-vocab lessons (4/37/41/43/44/46-48/50) stay listed per the
+user's scope. Ships with task #16.
+
+## Addendum (user feedback, 2026-08-09): challenge tier rework (into task #13)
+
+The challenge show/hide toggle is inert because the strict definition
+("exactly one near-future feature token") matched ZERO verses in all 8
+books. Task #13 additionally: relax the definition in a documented way
+(one future feature TYPE per verse, small token cap, few unknowns),
+re-score, curate real challenge passages (feature named in the passage
+header, badge highlighting verified with real data), and hide the toggle
+whenever no challenge passage exists at the learner's current gate — no
+inert controls.
+
+## Addendum (user screenshot, 2026-08-09): Reader renders OSHB slashes (into task #13)
+
+The Reader displays OSHB's morpheme-segmentation "/" markers inside the
+Hebrew (e.g. ה/תבה) — annotation, not Masoretic text. Fix in task #13:
+stored token text stays byte-exact for provenance; the RENDER strips the
+segment dividers (documented display transform; byte-equality validation
+continues to run against stored data). Task #13 also delivers the
+per-passage show/hide translation control the user expects.
+
+## Addendum (user screenshot, 2026-08-09): parsing card hierarchy + translit (task #17)
+
+Parsing drill card gets Greek-app-style hierarchy: Hebrew form at
+vocab-card scale as the anchor, step label/choices stepped down, and a
+smaller italic TRANSLITERATION line under the form honoring the global
+show/hide preference. The book prints no paradigm transliterations, so
+they are generated deterministically at build time (rule-based romanizer
+matched to the vocab CSV's translit style; qamets-qatan/shewa/dagesh
+handling documented; ~30-form sample review before shipping; marked as
+derived in the data notes). Runs after task #16.
+
+## Addendum (user feedback, 2026-08-09): tier-label clarity (into task #13)
+
+Strict/Guided means nothing to a user in-app. Task #13 adds a plain-
+language caption under the Passages toggle (Strict: every word's grammar
+is within your current lesson, at most one unfamiliar word. Guided: up to
+three unfamiliar words, marked with dotted underlines), matching badge
+tooltips, and user-guide wording.
+
+## Addendum (user screenshot, 2026-08-09): underline noise — matcher fixes (into task #13)
+
+Gen 10:17 showed every word dotted-underlined. Two matcher bugs: OSHB
+gentilic nouns (Ng — the Hivite/Arkite/Sinite) are not excluded like
+proper nouns, so name-lists count as unknown content words (wrongly
+underlined AND wrongly scored guided); and compound tokens (ו/את) match
+vocab against the whole compound lemma instead of the core segment, so
+known vocabulary like the object marker fails to match. Task #13: Ng →
+proper-name-class, per-core-segment vocab matching, corpus re-score with
+documented tier shifts.
