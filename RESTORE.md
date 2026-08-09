@@ -62,6 +62,24 @@
   phones, sections in textbook lesson order, collapsed-by-default
   <details> with Expand/Collapse-all + localStorage persistence
   (bbhStudyToolReferenceStateV1), source-ref ranges.
+- **ALL 26 TRACKED TASKS COMPLETE AND MERGED. Queue empty.** Live
+  release: `?v=21` at `1f00d5a` (PR #24). Final round, all 2026-08-09:
+  #23 whole-Tanakh advanced vocab merged `3b6e3d4` (PR #21, `?v=18` —
+  39 buckets / 3,880 cards, Book Vocab 39 books, all old bbh-adv ids
+  preserved); #25 parsing UX merged `81c8903` (PR #22, `?v=19` —
+  Lesson focus / All to date renames + fresh-state default, More-options
+  toggle->label->(i) rows with tap isolation, mobile journey/card stack
+  fix); #26 app-wide toggle alignment merged `3d79adf` (PR #23, `?v=20`
+  — 8 rows across vocab/grammar/reader, shared .toggle-row CSS,
+  installToggleInfoButtons kept as shim); #24 staged Reader expansion
+  merged `1f00d5a` (PR #24, `?v=21` — stages A `0198a27` importer 13
+  books / 0 morph gaps, B `71ff7e3` 12 prose selections Josh/1-2Kgs/
+  Esth, C `879ed81` 8 Psalms poetry-labeled challenge passages, D
+  `04323f8` independent wooden review 13 clean / 7 fixed + release-
+  blocking no-draft-wooden validator check; 106 passages total, all
+  reviewed). Plus in-PR-24: Book Vocab meta "39 books · 4,009 words ·
+  28,290 links" label fix (`9d7235e`), Reader gold-name caption line.
+  No agents in flight, no pending triggers, no user actions owed.
 - **Tasks #21+#22 merged** as `c6f7f9d` (PR #20, `?v=17` — LIVE release).
   All 22 tracked tasks complete and merged; no agents in flight, no
   pending triggers. Queue empty; possible user-suggested follow-up:
