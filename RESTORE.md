@@ -56,7 +56,20 @@
   close buttons, book-deck analytics scoping confirmed at Greek parity
   (due histogram includes book decks; course panels exclude) and
   smoke-locked.
-- **QUEUE EMPTY (2026-08-09).** All 18 tracked tasks complete and merged.
+- **Task #19 merged** as `ce07e1b` (PR #18, `?v=15`): Reference mobile
+  overhaul — real overflow scrolling w/ sticky first column + fade hint
+  (root cause: width:100% squeeze), stacked alphabet/vowel cards on
+  phones, sections in textbook lesson order, collapsed-by-default
+  <details> with Expand/Collapse-all + localStorage persistence
+  (bbhStudyToolReferenceStateV1), source-ref ranges.
+- **In flight: task #20 (last queued)** — advanced vocab reworked to the
+  GREEK-APP model (ad1547e advancedSection/bookVocabSection): corpus-wide
+  descending-frequency buckets (new bbh-adv-* cards, sub-groups of 25,
+  excluded from course totals), Book vocab as sets of 50 per book whose
+  entries LINK to existing cards (shared progress, no duplicate ids),
+  both as collapsible sections AFTER the manual lesson selection,
+  bbh-bk-* marks migrated to bbh-adv-* by Strong's number.
+- Earlier note superseded: All 18 tracked tasks complete and merged.
   Live release: `?v=14` at `cfdfbe5`. No agents in flight, no pending
   triggers, no user actions owed (default branch = Main verified; support
   follow-up closed per user; two stale merged branches remain deletable
