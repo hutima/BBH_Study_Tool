@@ -891,3 +891,16 @@ OTHER surfaces to the same shape.
 5. **Deviations from the task brief:** none. Every listed row was
    converted; button-groups (Font, Text size, theme switcher, direction/
    difficulty/tier pills) were left alone as instructed.
+
+## Addendum (user directive, 2026-08-09): task #24 runs STAGED
+
+Task #24 (Reader prose/poetry expansion) is staged and committed in
+parts so progress survives token-budget exhaustion (user directive).
+Each stage is a separate agent run, verified by the orchestrator, then
+committed AND pushed to the feature branch when green (branch pushes
+don't deploy; only the final PR merge does), with RESTORE.md refreshed
+at every checkpoint: (A) importer BOOK_LIST + gate-map/morph coverage
+for Josh/1Kgs/2Kgs/Esth/Ps; (B) prose selections curated + scored +
+glosses + wooden translations (committable per book); (C) Psalms
+challenge-tier passages, poetry-labeled; (D) independent
+wooden-translation review, release counts, smokes, ?v=21 bump, PR.
