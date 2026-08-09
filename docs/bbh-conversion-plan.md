@@ -773,3 +773,16 @@ in `scratchpad/`: `task25_more_options_375_{before,after}.png`,
 `task25_build_journey_375_{before,after}.png` (the before shot reproduces
 the reported crush exactly), `task25_build_journey_1280_{before,after}.png`,
 `task25_more_options_1280_after.png`.
+
+## Addendum (user request, 2026-08-09): task #26 — toggle alignment app-wide
+
+Apply task #25's toggle-row conventions to EVERY option toggle in every
+mode, not just parsing: vocab #controlsBar (Shuffle, Hard review,
+Direction, Spaced repetition, 2-month pace, Daily reset), grammar
+options, reader options, and any other role="switch" row. Each becomes
+TOGGLE control first, then label, then (i) — flip-tap area limited to
+the toggle control (>=44px), label inert, (i) a separate tap-guarded
+target reusing each toggle's existing explanation text. Extract ONE
+shared row pattern from the parsing implementation so all modes render
+identically. Button-group prefs (Font, Text size, theme, direction
+pills) are not toggles and stay as-is.
