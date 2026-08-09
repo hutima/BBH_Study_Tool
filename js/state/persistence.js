@@ -183,7 +183,7 @@ function sanitizeParsingState(candidate) {
     schemaVersion: 1,
     lesson,
     focusedParadigmId: (typeof src.focusedParadigmId === 'string' && src.focusedParadigmId) ? src.focusedParadigmId : null,
-    direction: src.direction === 'build' ? 'build' : 'parse',
+    direction: src.direction === 'build' ? 'build' : src.direction === 'mixed' ? 'mixed' : 'parse',
     shuffleAll: !!src.shuffleAll,
     customSetOn: !!src.customSetOn,
     customSet: sanitizeParsingCustomSet(src.customSet),

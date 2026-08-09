@@ -183,9 +183,10 @@ import {
   renderParsingPanel,
   renderParsingAnalytics,
   parsingSetLesson, parsingSetParadigm,
-  parsingToggleShuffleAll, parsingToggleCustomSet, parsingToggleCustomSetParadigm,
+  parsingToggleShuffleAll, parsingToggleCustomSet, parsingToggleCustomSetParadigm, parsingToggleCustomSetGroup,
   parsingToggleExcludeKnown, parsingToggleAppendix, parsingSetDirection, parsingToggleDim,
-  parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice, parsingNextCard,
+  parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice,
+  parsingToggleBuildPick, parsingCheckBuildPicks, parsingNextCard,
   parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt
 } from '../ui/parsing.js';
 
@@ -2387,9 +2388,10 @@ const GLOBAL_CLICK_HANDLERS = {
   triggerInstall, closeInstallInstructions, dontShowInstallAgain,
   // Phase 2 PR B: Parsing mode (js/ui/parsing.js) click/change handlers.
   parsingSetLesson, parsingSetParadigm,
-  parsingToggleShuffleAll, parsingToggleCustomSet, parsingToggleCustomSetParadigm,
+  parsingToggleShuffleAll, parsingToggleCustomSet, parsingToggleCustomSetParadigm, parsingToggleCustomSetGroup,
   parsingToggleExcludeKnown, parsingToggleAppendix, parsingSetDirection, parsingToggleDim,
-  parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice, parsingNextCard,
+  parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice,
+  parsingToggleBuildPick, parsingCheckBuildPicks, parsingNextCard,
   parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt
 };
 if (typeof globalThis !== 'undefined') Object.assign(globalThis, GLOBAL_CLICK_HANDLERS);
