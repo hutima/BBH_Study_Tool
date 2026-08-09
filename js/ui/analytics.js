@@ -56,7 +56,10 @@ let host = {
   renderParsingSection: () => {},
   // Phase 2 PR C: same pattern for the Grammar Quiz analytics section
   // (js/ui/grammar.js) — analytics.js never depends on grammar.js either.
-  renderGrammarSection: () => {}
+  renderGrammarSection: () => {},
+  // Phase 2 PR D: same pattern for the Reader analytics section
+  // (js/ui/reader.js) — analytics.js never depends on reader.js either.
+  renderReaderSection: () => {}
 };
 
 export function configureAnalytics(deps) {
@@ -1126,6 +1129,8 @@ export function renderAnalyticsOverlay() {
   host.renderParsingSection();
   // Phase 2 PR C: Grammar Quiz progress section — same pattern.
   host.renderGrammarSection();
+  // Phase 2 PR D: Reader progress section — same pattern.
+  host.renderReaderSection();
 }
 
 // Single delegated handler for the tappable rows inside the stubborn /

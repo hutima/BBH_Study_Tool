@@ -14,11 +14,12 @@ export const SHOW_POINTS_STORAGE_KEY = 'bbhStudyToolShowPoints';
 export const SHOW_TRANSLIT_STORAGE_KEY = 'bbhStudyToolShowTranslit';
 export const PROGRESS_EXPORT_FORMAT = 'bbh-study-tool-progress-export';
 // v2 -> v3: added the `parsing` state subtree (Phase 2 PR B). v3 -> v4:
-// added the `grammar` state subtree (Phase 2 PR C). Import stays backward
-// compatible — a v2/v3 payload has no `parsing`/`grammar` key and each
+// added the `grammar` state subtree (Phase 2 PR C). v4 -> v5: added the
+// `reader` state subtree (Phase 2 PR D). Import stays backward compatible —
+// a v2/v3/v4 payload has no `parsing`/`grammar`/`reader` key and each
 // sanitizes to its own defaults (see persistence.js sanitizeParsingState /
-// sanitizeGrammarState).
-export const PROGRESS_EXPORT_VERSION = 4;
+// sanitizeGrammarState / sanitizeReaderState).
+export const PROGRESS_EXPORT_VERSION = 5;
 export const STUDY_IDLE_MS = 90 * 1000;
 export const STUDY_SESSION_BREAK_MS = 30 * 60 * 1000;
 export const MAX_STUDY_SESSION_HISTORY = 500;
@@ -78,7 +79,10 @@ export const ANALYTICS_COLLAPSED_DEFAULTS = {
   parsingSection: false,
   // Grammar Quiz (Phase 2 PR C) — same rule: only shown once there's at
   // least one attempt (see js/ui/grammar.js renderGrammarAnalytics).
-  grammarSection: false
+  grammarSection: false,
+  // Reader (Phase 2 PR D) — same rule: only shown once there's at least one
+  // read passage or review mark (see js/ui/reader.js renderReaderAnalytics).
+  readerSection: false
 };
 
 // ── Sanitize gamification state ──

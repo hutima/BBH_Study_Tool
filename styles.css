@@ -10,7 +10,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=4') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=5') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -18,7 +18,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=4') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=5') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -26,7 +26,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=4') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=5') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -34,7 +34,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=4') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=5') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -42,7 +42,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=4') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=5') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -50,7 +50,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=4') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=5') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -58,7 +58,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=4') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=5') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -66,7 +66,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=4') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=5') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -91,7 +91,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-normal.woff2?v=4') format('woff2');
+    src: url('fonts/noto-sans-latin-normal.woff2?v=5') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -102,7 +102,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=4') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=5') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -113,7 +113,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-italic.woff2?v=4') format('woff2');
+    src: url('fonts/noto-sans-latin-italic.woff2?v=5') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -124,7 +124,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=4') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=5') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -140,7 +140,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-serif-hebrew.woff2?v=4') format('woff2');
+    src: url('fonts/noto-serif-hebrew.woff2?v=5') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
   @font-face {
@@ -148,7 +148,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-sans-hebrew.woff2?v=4') format('woff2');
+    src: url('fonts/noto-sans-hebrew.woff2?v=5') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
 
@@ -6215,4 +6215,81 @@
 .grammar-analytics-row { display: flex; justify-content: space-between; gap: 10px; font-size: calc((13px) * var(--text-scale)); color: var(--cream); }
 .grammar-missed-hint { font-size: calc((13px) * var(--text-scale)); color: var(--gold-light); line-height: 1.4; }
 
+/* ── Reader mode (Phase 2 PR D) — js/ui/reader.js ─────────────────────────
+   Same convention as Grammar (see the comment above): reuses truly-generic
+   pre-existing classes (.ctrl-btn, .theme-switcher/.theme-btn,
+   .utility-section, .empty-state, .hebrew-text/.big) and gets its own
+   .reader-* rules below for everything specific to the Reader layout —
+   options row/select, the passage list, the reading view + token popover,
+   the attribution line, the analytics rows. */
+.reader-section { margin-bottom: 20px; }
+.reader-options-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.reader-field-label { font-family: var(--font-display); font-size: calc((12px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.reader-select { background: var(--surface); color: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-family: var(--font-body); font-size: calc((13px) * var(--text-scale)); max-width: 100%; }
+
+.reader-area { display: flex; flex-direction: column; gap: 16px; }
+
+/* Recently-read chip strip */
+.reader-recent { display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+.reader-recent-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.reader-recent-chip { background: var(--surface); color: var(--cream); border: 1px solid var(--border); border-radius: 999px; padding: 4px 12px; font-size: calc((12px) * var(--text-scale)); cursor: pointer; }
+.reader-recent-chip:hover, .reader-recent-chip:focus { border-color: var(--gold); }
+
+/* Passage list, grouped by gate-lesson bucket */
+.reader-group { display: flex; flex-direction: column; gap: 8px; }
+.reader-group-heading { font-family: var(--font-display); font-size: calc((12px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--gold); }
+.reader-passage-list { display: flex; flex-direction: column; gap: 8px; }
+.reader-passage-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%; text-align: left; background: var(--surface); color: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; cursor: pointer; font-family: var(--font-body); }
+.reader-passage-row:hover, .reader-passage-row:focus { border-color: var(--gold); }
+.reader-passage-ref { font-weight: 600; }
+.reader-passage-meta { display: flex; align-items: center; gap: 10px; font-size: calc((12px) * var(--text-scale)); color: var(--muted); }
+.reader-passage-tokens { white-space: nowrap; }
+.reader-tier-badge { border: 1px solid var(--border); border-radius: 999px; padding: 2px 9px; font-size: calc((10px) * var(--text-scale)); letter-spacing: 0.5px; text-transform: uppercase; color: var(--muted); }
+.reader-tier-badge-guided { color: var(--gold); border-color: var(--gold-dim); }
+.reader-read-check { color: var(--green); font-weight: 700; }
+
+.reader-empty-state { max-width: 560px; }
+
+/* Single-passage reading view */
+.reader-passage-view { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 640px; margin: 0 auto; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 22px 24px; }
+.reader-passage-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.reader-passage-title { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.reader-read-toggle-btn.active { border-color: var(--green); color: var(--green); }
+
+/* Hebrew passage text: RTL, tokens as tappable spans separated by a literal
+   space between siblings. Display strings are rendered verbatim — see the
+   DISPLAY-TEXT INTEGRITY note at the top of js/ui/reader.js; this block
+   never reflects the vocab Vowel-points toggle. */
+.reader-hebrew-block { font-size: calc((clamp(20px, 4.4vw, 28px)) * var(--text-scale)); line-height: 2.1; text-align: center; word-spacing: 0.15em; }
+.reader-token { cursor: pointer; border-radius: 4px; padding: 0 1px; transition: background-color 0.15s ease; }
+.reader-token:hover, .reader-token:focus { background: rgba(201, 168, 76, 0.14); outline: none; }
+.reader-token-active { background: rgba(201, 168, 76, 0.30); }
+.reader-token-proper { color: var(--gold-light); }
+/* Subtle scaffolding hint for unknown-vocab words in Guided passages only —
+   never applied to Strict passages (all their vocabulary is already gated
+   in) or to proper names (pn tokens are never "unknown vocab"). */
+.reader-token-unknown { text-decoration: underline dotted; text-underline-offset: 4px; text-decoration-color: var(--muted); }
+.reader-token-marked { box-shadow: inset 0 -2px 0 var(--gold); }
+
+/* Inline word-detail popover — one at a time (js/ui/reader.js activeTokenIdx) */
+.reader-popover { border: 1px solid var(--border); border-radius: 10px; background: var(--bg); padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
+.reader-popover-row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; font-size: calc((13px) * var(--text-scale)); flex-wrap: wrap; }
+.reader-popover-label { font-family: var(--font-display); font-size: calc((11px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.reader-popover-value { color: var(--cream); text-align: right; }
+.reader-popover-hebrew { font-size: calc((17px) * var(--text-scale)); }
+.reader-popover-strongs { color: var(--muted); font-size: calc((11px) * var(--text-scale)); }
+.reader-mark-btn { align-self: center; margin-top: 4px; }
+.reader-mark-btn.active { border-color: var(--gold); color: var(--gold); }
+
+/* CC BY 4.0 attribution line — always visible at the bottom of the Reader
+   section (list view and reading view alike). Required, not decorative. */
+.reader-attribution { font-size: calc((10px) * var(--text-scale)); color: var(--muted); opacity: 0.8; line-height: 1.4; text-align: center; padding-top: 4px; }
+
+/* Reader analytics section (js/ui/reader.js renderReaderAnalytics),
+   rendered into #analyticsReaderBody inside #analyticsReaderCollapse. */
+.reader-analytics-row { display: flex; justify-content: space-between; gap: 10px; font-size: calc((13px) * var(--text-scale)); color: var(--cream); }
+
+/* Reader attribution line duplicated in the User guide overlay, near the
+   existing credits copy (see index.html #shortcutsOverlay). */
+.user-guide-attribution { font-size: calc((11px) * var(--text-scale)); color: var(--muted); font-style: italic; }
 

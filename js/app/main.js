@@ -202,6 +202,20 @@ import {
   grammarSelectChoice, grammarNextQuestion
 } from '../ui/grammar.js';
 
+// UI — Reader (Phase 2 PR D). New file; imports NOTHING from other app
+// modules (see js/ui/reader.js header) — same isolation as grammar.js.
+// Configured like every other UI module via configureReader(deps); its
+// click/change handlers are added to GLOBAL_CLICK_HANDLERS below, same as
+// every other onclick="..." surface.
+import {
+  configureReader,
+  renderReaderPanel,
+  renderReaderAnalytics,
+  readerSetLesson, readerSetTier,
+  readerOpenPassage, readerBackToList, readerToggleToken,
+  readerToggleMarkForReview, readerToggleReadStatus
+} from '../ui/reader.js';
+
 // UI
 import { installKeyboardShortcuts } from '../ui/keyboard.js';
 import { showLevelToast, showBadgeToast } from '../ui/toast.js';
@@ -429,6 +443,8 @@ configureNavigation({
   normalizeStudyMode: (m) => normalizeStudyMode(m),
   isParsingMode: () => isParsingMode(),
   isGrammarMode: () => isGrammarMode(),
+  isReaderMode: () => isReaderMode(),
+  renderReaderModule: () => renderReaderModule(),
   ensureDirectionalStores: () => ensureDirectionalStores(),
   getDirectionalMarksStore: () => getDirectionalMarksStore(),
   getDirectionalProgressStore: () => getDirectionalProgressStore(),
@@ -464,7 +480,8 @@ configureAnalytics({
   accumulateActiveStudyTime: () => accumulateActiveStudyTime(),
   saveState: () => saveState(),
   renderParsingSection: () => renderParsingAnalytics(),
-  renderGrammarSection: () => renderGrammarAnalytics()
+  renderGrammarSection: () => renderGrammarAnalytics(),
+  renderReaderSection: () => renderReaderAnalytics()
 });
 configureParsing({
   getState: () => runtime.parsing,
@@ -496,6 +513,18 @@ configureGrammar({
   getSessionSeed: () => PARSING_SESSION_SEED,
   saveState: () => saveState()
 });
+configureReader({
+  getState: () => runtime.reader,
+  // Reader mode never overwrites runtime.selectedKeys (same as Grammar), so
+  // the live vocab selection is simply whatever modeSelections.vocab has
+  // stashed, falling back to the live selectedKeys when in vocab mode. Same
+  // "highest selected vocab lesson" first-ever-use rule as Parsing/Grammar.
+  getSelectedVocabKeys: () => (
+    isPlainObject(runtime.modeSelections?.vocab) && Array.isArray(runtime.modeSelections.vocab.selectedKeys)
+  ) ? runtime.modeSelections.vocab.selectedKeys
+    : (runtime.studyMode === 'vocab' ? runtime.selectedKeys : []),
+  saveState: () => saveState()
+});
 configurePersistence({
   ensureUsageStats: (stats) => ensureUsageStats(stats),
   normalizeStudyMode: (m) => normalizeStudyMode(m),
@@ -513,7 +542,14 @@ configurePersistence({
   syncToggleButtons: () => syncToggleButtons(),
   syncLayoutVisibility: () => syncLayoutVisibility(),
   getDirectionalProgressStore: () => getDirectionalProgressStore(),
-  maybeAutoResetUnspacedArchives: () => maybeAutoResetUnspacedArchives()
+  maybeAutoResetUnspacedArchives: () => maybeAutoResetUnspacedArchives(),
+  // Reader mode (Phase 2 PR D) — persistence.js already carried these two
+  // host hooks (defaulting to a no-op false/noop) from before Reader
+  // existed; wiring them here is the only change persistence.js itself
+  // needs (see js/state/persistence.js's restoreState()/applyImportedState()
+  // call sites).
+  isReaderMode: () => isReaderMode(),
+  renderReaderModule: () => renderReaderModule()
 });
 
 
@@ -579,6 +615,14 @@ function isReaderMode() {
   return runtime.studyMode === 'reader';
 }
 
+// Reader mode (Phase 2 PR D) — see js/ui/reader.js. Thin wrapper so the
+// navigation.js/persistence.js host hooks (renderReaderModule) — both
+// pre-existing no-op defaults from before Reader existed — have something
+// real to call.
+function renderReaderModule() {
+  renderReaderPanel();
+}
+
 function isCardStudyMode() {
   return runtime.studyMode === 'vocab' || runtime.studyMode === 'morph' || runtime.studyMode === 'parsing' || runtime.studyMode === 'reader';
 }
@@ -624,19 +668,21 @@ function getProfileDescription() {
   return 'Vocabulary flashcards for Cook & Holmstedt, Beginning Biblical Hebrew.';
 }
 
-// Phase 2 PR B/C: Parsing and Grammar Quiz are now real, selectable modes.
-// Grammar-as-in-morph/Reader remain deferred (no UI reaches 'morph'/
-// 'reader', so this never returns them) — see CLAUDE.md /
+// Phase 2 PR B/C/D: Parsing, Grammar Quiz, and Reader are now real,
+// selectable modes. Grammar-as-in-morph remains deferred (no UI reaches
+// 'morph', so this never returns it) — see CLAUDE.md /
 // docs/bbh-conversion-plan.md.
 function normalizeStudyMode(mode) {
   if (mode === 'parsing') return 'parsing';
   if (mode === 'grammar') return 'grammar';
+  if (mode === 'reader') return 'reader';
   return 'vocab';
 }
 
 function getModeDescription() {
   if (runtime.studyMode === 'parsing') return 'Parsing Practice';
   if (runtime.studyMode === 'grammar') return 'Grammar Quiz';
+  if (runtime.studyMode === 'reader') return 'Reader';
   return 'Vocabulary Flashcards';
 }
 
@@ -1020,6 +1066,8 @@ function syncToggleButtons() {
   if (modeShortcutParsingBtn) modeShortcutParsingBtn.classList.toggle('active', runtime.studyMode === 'parsing');
   const modeShortcutGrammarBtn = document.getElementById('modeShortcutGrammarBtn');
   if (modeShortcutGrammarBtn) modeShortcutGrammarBtn.classList.toggle('active', runtime.studyMode === 'grammar');
+  const modeShortcutReaderBtn = document.getElementById('modeShortcutReaderBtn');
+  if (modeShortcutReaderBtn) modeShortcutReaderBtn.classList.toggle('active', runtime.studyMode === 'reader');
   syncThemeButtons();
   if (resetDeckBtn) {
     resetDeckBtn.textContent = runtime.spacedRepetition ? 'Reset spaced' : 'Reset unspaced';
@@ -1043,6 +1091,7 @@ function syncLayoutVisibility() {
   // through past this block).
   const parsingSectionEl = document.getElementById('parsingSection');
   const grammarSectionEl = document.getElementById('grammarSection');
+  const readerSectionEl = document.getElementById('readerSection');
   if (isParsingMode()) {
     const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
     const resetActionsEl = document.getElementById('resetActionsDetails');
@@ -1053,6 +1102,7 @@ function syncLayoutVisibility() {
     const reviewShellEl = document.querySelector('.review-shell');
     if (parsingSectionEl) parsingSectionEl.style.display = '';
     if (grammarSectionEl) grammarSectionEl.style.display = 'none';
+    if (readerSectionEl) readerSectionEl.style.display = 'none';
     if (advancedSettingsEl) advancedSettingsEl.style.display = 'none';
     if (resetActionsEl) resetActionsEl.style.display = 'none';
     if (cardAreaEl) cardAreaEl.style.display = 'none';
@@ -1073,6 +1123,7 @@ function syncLayoutVisibility() {
     const reviewShellEl = document.querySelector('.review-shell');
     if (grammarSectionEl) grammarSectionEl.style.display = '';
     if (parsingSectionEl) parsingSectionEl.style.display = 'none';
+    if (readerSectionEl) readerSectionEl.style.display = 'none';
     if (advancedSettingsEl) advancedSettingsEl.style.display = 'none';
     if (resetActionsEl) resetActionsEl.style.display = 'none';
     if (cardAreaEl) cardAreaEl.style.display = 'none';
@@ -1083,8 +1134,30 @@ function syncLayoutVisibility() {
     renderGrammarPanel();
     return;
   }
+  if (isReaderMode()) {
+    const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
+    const resetActionsEl = document.getElementById('resetActionsDetails');
+    const cardAreaEl = document.getElementById('cardArea');
+    const navRowEl = document.getElementById('navRow');
+    const markRowEl = document.getElementById('markRow');
+    const ffRowEl = document.getElementById('ffRow');
+    const reviewShellEl = document.querySelector('.review-shell');
+    if (readerSectionEl) readerSectionEl.style.display = '';
+    if (parsingSectionEl) parsingSectionEl.style.display = 'none';
+    if (grammarSectionEl) grammarSectionEl.style.display = 'none';
+    if (advancedSettingsEl) advancedSettingsEl.style.display = 'none';
+    if (resetActionsEl) resetActionsEl.style.display = 'none';
+    if (cardAreaEl) cardAreaEl.style.display = 'none';
+    if (navRowEl) navRowEl.style.display = 'none';
+    if (markRowEl) markRowEl.style.display = 'none';
+    if (ffRowEl) ffRowEl.style.display = 'none';
+    if (reviewShellEl) reviewShellEl.style.display = 'none';
+    renderReaderPanel();
+    return;
+  }
   if (parsingSectionEl) parsingSectionEl.style.display = 'none';
   if (grammarSectionEl) grammarSectionEl.style.display = 'none';
+  if (readerSectionEl) readerSectionEl.style.display = 'none';
   const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
   if (advancedSettingsEl) advancedSettingsEl.style.display = '';
 
@@ -2465,7 +2538,11 @@ const GLOBAL_CLICK_HANDLERS = {
   parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt,
   // Phase 2 PR C: Grammar Quiz mode (js/ui/grammar.js) click/change handlers.
   grammarSetLesson, grammarToggleReviewMissed, grammarSetDifficulty,
-  grammarSelectChoice, grammarNextQuestion
+  grammarSelectChoice, grammarNextQuestion,
+  // Phase 2 PR D: Reader mode (js/ui/reader.js) click/change handlers.
+  readerSetLesson, readerSetTier,
+  readerOpenPassage, readerBackToList, readerToggleToken,
+  readerToggleMarkForReview, readerToggleReadStatus
 };
 if (typeof globalThis !== 'undefined') Object.assign(globalThis, GLOBAL_CLICK_HANDLERS);
 if (typeof window !== 'undefined' && window !== globalThis) Object.assign(window, GLOBAL_CLICK_HANDLERS);
@@ -2521,6 +2598,20 @@ if (!runtime.grammar || typeof runtime.grammar !== 'object') {
     initializedFromVocab: false
   };
 }
+// Same mixed-version guard for runtime.reader (Phase 2 PR D). Shape mirrors
+// runtime.js's `reader` default — keep the two in sync.
+if (!runtime.reader || typeof runtime.reader !== 'object') {
+  runtime.reader = {
+    schemaVersion: 1,
+    lesson: 1,
+    tier: 'both',
+    readPassages: {},
+    readOrder: [],
+    marks: {},
+    lastPassageId: null,
+    initializedFromVocab: false
+  };
+}
 // Rebuild after restore: runtime.appProfile may have changed, affecting grammar summary text
 buildSessions();
 buildChapterSelector();
@@ -2552,7 +2643,7 @@ function preventDoubleTapZoom(el) {
   }, false);
 }
 
-['shuffleToggle','directionToggle','spacedToggle','unspacedDailyResetToggle','modeShortcutVocabBtn','modeShortcutParsingBtn','modeShortcutGrammarBtn','themeSystemBtn','themeDarkBtn','themeLightBtn'].forEach(id => {
+['shuffleToggle','directionToggle','spacedToggle','unspacedDailyResetToggle','modeShortcutVocabBtn','modeShortcutParsingBtn','modeShortcutGrammarBtn','modeShortcutReaderBtn','themeSystemBtn','themeDarkBtn','themeLightBtn'].forEach(id => {
   const el = document.getElementById(id);
   if (el) preventDoubleTapZoom(el);
 });

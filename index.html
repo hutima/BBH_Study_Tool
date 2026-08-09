@@ -12,11 +12,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=4">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=4">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=4">
+<link rel="manifest" href="manifest.json?v=5">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=5">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=5">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=4">
+<link rel="stylesheet" href="styles.css?v=5">
 <script>
 (function(){
   try {
@@ -70,6 +70,7 @@
       <button class="mode-btn active" id="modeShortcutVocabBtn" type="button" onclick="setStudyMode('vocab')">Vocab</button>
       <button class="mode-btn" id="modeShortcutParsingBtn" type="button" onclick="setStudyMode('parsing')">Parsing</button>
       <button class="mode-btn" id="modeShortcutGrammarBtn" type="button" onclick="setStudyMode('grammar')">Grammar</button>
+      <button class="mode-btn" id="modeShortcutReaderBtn" type="button" onclick="setStudyMode('reader')">Reader</button>
     </div>
     <button class="quick-btn" type="button" onclick="openAnalyticsOverlay()">Progress</button>
     <button class="quick-btn" type="button" onclick="openShortcutsModal()">User guide</button>
@@ -169,6 +170,15 @@
       <div id="grammarOptionsPanel"></div>
     </details>
     <div class="grammar-area" id="grammarArea"></div>
+  </section>
+
+  <section class="reader-section" id="readerSection" style="display:none">
+    <details class="utility-section" id="readerOptionsDetails" open>
+      <summary>Reader options</summary>
+      <div id="readerOptionsPanel"></div>
+    </details>
+    <div class="reader-area" id="readerArea"></div>
+    <div class="reader-attribution" id="readerAttribution"></div>
   </section>
 
   <div class="card-area" id="cardArea">
@@ -372,6 +382,19 @@
       </div>
     </details>
 
+    <details class="analytics-collapse" id="analyticsReaderCollapse" data-collapse-key="readerSection" style="display:none">
+      <summary class="analytics-collapse-summary">
+        <span class="analytics-collapse-caret" aria-hidden="true">▾</span>
+        <div class="analytics-collapse-title-wrap">
+          <h3>Reader</h3>
+          <p class="analytics-collapse-summary-status" id="analyticsReaderSummaryStatus">Reader progress.</p>
+        </div>
+      </summary>
+      <div class="analytics-collapse-body">
+        <div id="analyticsReaderBody"></div>
+      </div>
+    </details>
+
     <details class="analytics-collapse" data-collapse-key="titles">
       <summary class="analytics-collapse-summary">
         <span class="analytics-collapse-caret" aria-hidden="true">▾</span>
@@ -423,6 +446,7 @@
     <h2 id="shortcutsTitle">How to use this app</h2>
     <div class="consent-copy user-guide-copy">
       <p>An unofficial, student-made study aid for John A. Cook &amp; Robert D. Holmstedt, <em>Beginning Biblical Hebrew: A Grammar and Illustrated Reader</em> (Baker Academic) &mdash; not affiliated with or endorsed by the authors or publisher. Flip cards, mark how confident you felt, and the app schedules what comes back next.</p>
+      <p class="user-guide-attribution">Reader passages: Hebrew text and morphology from the Open Scriptures Hebrew Bible Project (https://github.com/openscriptures/morphhb), OSHB version 2.2 (v.2.2). Lemma and morphology data licensed under CC BY 4.0.</p>
 
       <details class="user-guide-changelog">
         <summary>Changelog</summary>
@@ -633,12 +657,13 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=4"></script>
-<script defer src="js/data/bbh_reference_data.js?v=4"></script>
-<script defer src="js/data/bbh_parsing.js?v=4"></script>
-<script defer src="js/data/bbh_grammar.js?v=4"></script>
-<script defer src="js/logic/pos_logic.js?v=4"></script>
-<script defer src="js/pwa/swUpdate.js?v=4"></script>
-<script type="module" src="js/app/main.js?v=4"></script>
+<script defer src="js/data/bbh_vocab.js?v=5"></script>
+<script defer src="js/data/bbh_reference_data.js?v=5"></script>
+<script defer src="js/data/bbh_parsing.js?v=5"></script>
+<script defer src="js/data/bbh_grammar.js?v=5"></script>
+<script defer src="js/data/bbh_reader.js?v=5"></script>
+<script defer src="js/logic/pos_logic.js?v=5"></script>
+<script defer src="js/pwa/swUpdate.js?v=5"></script>
+<script type="module" src="js/app/main.js?v=5"></script>
 </body>
 </html>
