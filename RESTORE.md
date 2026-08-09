@@ -35,16 +35,20 @@
   card bg in light theme), Intl.Segmenter grapheme safety, stacked
   one-handed buttons, decks renamed "Lesson 1 · Alphabet"/"Lesson 2 ·
   Vowel marks" (display-only), vocab grid drops empty L1/L2.
-- **In flight: task #17** — parsing card hierarchy (Hebrew form at
-  vocab-card scale, stepped-down labels) + deterministic build-time
-  transliteration line honoring showTranslit (romanizer matched to the
-  vocab CSV style; sample-reviewed; marked derived).
-- **Queue**: task #13 Reader mega-pass, seven items (glosses + wooden
-  translations + show/hide button; render-time slash stripping; deferred
-  override re-curation; challenge rework; tier-clarity captions; gentilic
-  Ng + compound-token matcher fixes with corpus re-score; popover Strong's
-  glosses with modernized English + pointed-Hebrew lemma rendering) →
-  task #15 advanced vocab + vocab-by-book decks.
+- **Task #17 merged** as `6facb1b` (PR #14, `?v=11`): parsing card
+  hierarchy + deterministic romanizer (104/108 CSV style-match, 4
+  documented principled mismatches in the generator header).
+- **In flight: task #13** — Reader mega-pass, seven items, staged as:
+  13a data pipeline (gentilic Ng + compound-segment matcher fixes with
+  corpus re-score; 3 deferred overrides + drifted-score re-curation;
+  challenge-definition rework with real curated passages; Strong's-PD
+  gloss data — pin openscriptures/strongs, modernized English under the
+  LLM rule; LLM wooden verse translations authored then INDEPENDENTLY
+  reviewed against token morphology) → 13b UI (render-time slash strip;
+  tap gloss + pointed-lemma popover, never raw codes; per-passage
+  show/hide wooden translation labeled unofficial; tier-clarity captions;
+  challenge toggle hidden when none at gate).
+- **Queue**: task #15 advanced vocab + vocab-by-book decks.
 
 ## Repository and PR state
 
