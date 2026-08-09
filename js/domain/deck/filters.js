@@ -111,6 +111,9 @@ export function derivedCardFaceKey(card) {
   return null;
 }
 
+// Kept as a general "every window.SETS key" utility (unfiltered) — no
+// in-repo caller besides getAllVocabCards below as of task #15, but the
+// name has no "lesson-only" contract of its own, so it stays literal.
 export function getAllVocabKeys() {
   return Object.keys(getSets());
 }
@@ -119,8 +122,19 @@ export function getAllChapterKeys() {
   return Object.keys(getSets()).filter(isChapterKey).sort((a, b) => Number(a) - Number(b));
 }
 
+// Course-wide "all vocab" totals (task #15 seam): this feeds js/ui/
+// analytics.js's course-completion headline stats (the fixed "209 cards"
+// identity documented throughout RESTORE.md/CLAUDE.md) — deliberately
+// scoped to getAllChapterKeys() (isChapterKey-filtered), NOT the raw
+// getAllVocabKeys(), so the 'book-*' advanced decks merged into window.SETS
+// by js/app/main.js's mergeBookVocabDecks never inflate that denominator.
+// This mirrors the existing precedent for runtime.alphabet (Lesson 0/1
+// practice decks are "never folded into any vocab count, stats or
+// export" — see CLAUDE.md): book decks fully participate in SRS
+// marks/progress/export like any other selected deck (verified in task
+// #15's self-check), they just don't count toward the course-wide 209.
 export function getAllVocabCards(requiredFlag = false) {
-  return getSelectedVocabCards(getAllVocabKeys(), requiredFlag);
+  return getSelectedVocabCards(getAllChapterKeys(), requiredFlag);
 }
 
 export function getChapterVocabCards(chapterKey, requiredFlag = false) {
