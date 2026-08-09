@@ -678,3 +678,20 @@ strict/guided selections curated into thin gate buckets for variety;
 intermediate. All new passages follow the wooden-translation policy
 (LLM-wooden-reviewed, independently verified against token morphology,
 labeled unofficial) and the Strong's gloss pipeline.
+
+## Addendum (user requests + screenshots, 2026-08-09): task #25 — parsing UX round
+
+Four items from live mobile testing: (1) scope card "Focused" renamed
+"Lesson focus" (drills a single lesson's material); (2) scope card
+"Shuffle" renamed "All to date" (cumulative pool up to the current
+lesson) and made the DEFAULT scope for fresh state — display-only
+renames, internal keys 'focused'/'shuffle' unchanged, stored user
+choices never overridden, default mirrored in all three state sync
+points; (3) More-options rows rebuilt as TOGGLE first, then label, then
+a NEW (i) info button per option (vocab controlsBar tooltip style), with
+the tap area that flips the toggle limited to the toggle CONTROL itself
+(user constraint — a tap on/near the (i) must never flip the option;
+toggle keeps a >=44px target; (i) is its own tap-guarded target); (4)
+mobile Build-mode/root-journey layout bug: journey-map chips and the
+drill card share a row and crush into two columns on phones — stack
+full-width on narrow viewports for both Parse and Build.
