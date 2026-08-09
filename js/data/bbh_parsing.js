@@ -11,10 +11,13 @@
 //
 // Shape: { schemaVersion, paradigms: [...], lessonGates: [...] }. Every
 // form under paradigms[].forms carries every field from
-// source/bbh/parsing/paradigms.json unchanged, plus a generated `compare`
-// field (the pointed `display` with vowel points/cantillation stripped —
-// see js/utils/hebrewText.js#stripHebrewPoints) for point-insensitive
-// answer comparison. `lessonGates` mirrors source/bbh/parsing/
+// source/bbh/parsing/paradigms.json unchanged, plus two generated fields:
+// `compare` (the pointed `display` with vowel points/cantillation stripped
+// — see js/utils/hebrewText.js#stripHebrewPoints) for point-insensitive
+// answer comparison, and `translit` (task #17 — a deterministic, rule-
+// based romanization of `display`; see romanizeForm() in
+// tools/gen_bbh_parsing_data.mjs for the full rule set and its documented
+// limitations). `lessonGates` mirrors source/bbh/parsing/
 // lesson_gates.json's `lessons` array unchanged.
 //
 // Never edit this file by hand — re-run the generator instead. Never edit
@@ -53,7 +56,8 @@
               "lesson": 5,
               "page": 32
             },
-            "compare": "הוא"
+            "compare": "הוא",
+            "translit": "hu"
           },
           {
             "id": "pron-subject-3fs",
@@ -75,7 +79,8 @@
               "lesson": 5,
               "page": 32
             },
-            "compare": "היא"
+            "compare": "היא",
+            "translit": "hi"
           },
           {
             "id": "pron-subject-2ms",
@@ -97,7 +102,8 @@
               "lesson": 5,
               "page": 32
             },
-            "compare": "אתה"
+            "compare": "אתה",
+            "translit": "atta"
           },
           {
             "id": "pron-subject-2fs",
@@ -119,7 +125,8 @@
               "lesson": 5,
               "page": 32
             },
-            "compare": "את"
+            "compare": "את",
+            "translit": "at"
           },
           {
             "id": "pron-subject-1cs",
@@ -141,7 +148,8 @@
               "lesson": 5,
               "page": 32
             },
-            "compare": "אני"
+            "compare": "אני",
+            "translit": "ani"
           },
           {
             "id": "pron-subject-3mp",
@@ -163,7 +171,8 @@
               "lesson": 11,
               "page": 44
             },
-            "compare": "הם"
+            "compare": "הם",
+            "translit": "hem"
           },
           {
             "id": "pron-subject-3fp",
@@ -185,7 +194,8 @@
               "lesson": 11,
               "page": 44
             },
-            "compare": "הן"
+            "compare": "הן",
+            "translit": "hen"
           },
           {
             "id": "pron-subject-2mp",
@@ -207,7 +217,8 @@
               "lesson": 11,
               "page": 44
             },
-            "compare": "אתם"
+            "compare": "אתם",
+            "translit": "attem"
           },
           {
             "id": "pron-subject-2fp",
@@ -229,7 +240,8 @@
               "lesson": 11,
               "page": 44
             },
-            "compare": "אתן"
+            "compare": "אתן",
+            "translit": "atten"
           },
           {
             "id": "pron-subject-1cp",
@@ -251,7 +263,8 @@
               "lesson": 11,
               "page": 44
             },
-            "compare": "אנחנו"
+            "compare": "אנחנו",
+            "translit": "anachnu"
           },
           {
             "id": "pron-subject-1cs-alt",
@@ -273,7 +286,8 @@
               "page": "a-12"
             },
             "introducedLesson": 5,
-            "compare": "אנכי"
+            "compare": "אנכי",
+            "translit": "anokhi"
           },
           {
             "id": "pron-subject-3mp-alt",
@@ -295,7 +309,8 @@
               "page": "a-12"
             },
             "introducedLesson": 11,
-            "compare": "המה"
+            "compare": "המה",
+            "translit": "hemma"
           },
           {
             "id": "pron-subject-3fp-alt",
@@ -317,7 +332,8 @@
               "page": "a-12"
             },
             "introducedLesson": 11,
-            "compare": "הנה"
+            "compare": "הנה",
+            "translit": "henna"
           }
         ]
       },
@@ -349,7 +365,8 @@
               "lesson": 6,
               "page": 34
             },
-            "compare": "מי"
+            "compare": "מי",
+            "translit": "mi"
           },
           {
             "id": "particle-interrogative-mah",
@@ -369,7 +386,8 @@
               "lesson": 8,
               "page": 38
             },
-            "compare": "מה"
+            "compare": "מה",
+            "translit": "ma"
           },
           {
             "id": "particle-interrogative-lammah",
@@ -389,7 +407,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "למה"
+            "compare": "למה",
+            "translit": "lamma"
           },
           {
             "id": "particle-interrogative-maddua",
@@ -409,7 +428,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "מדוע"
+            "compare": "מדוע",
+            "translit": "maddua"
           },
           {
             "id": "particle-interrogative-bammeh",
@@ -429,7 +449,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "במה"
+            "compare": "במה",
+            "translit": "bamme"
           },
           {
             "id": "particle-interrogative-eykh",
@@ -449,7 +470,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "איך"
+            "compare": "איך",
+            "translit": "ekh"
           },
           {
             "id": "particle-interrogative-kammah",
@@ -469,7 +491,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "כמה"
+            "compare": "כמה",
+            "translit": "kamma"
           },
           {
             "id": "particle-interrogative-matay",
@@ -489,7 +512,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "מתי"
+            "compare": "מתי",
+            "translit": "matay"
           },
           {
             "id": "particle-interrogative-ey",
@@ -509,7 +533,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "אי"
+            "compare": "אי",
+            "translit": "e"
           },
           {
             "id": "particle-interrogative-ayyeh",
@@ -529,7 +554,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "איה"
+            "compare": "איה",
+            "translit": "aye"
           },
           {
             "id": "particle-interrogative-eyfoh",
@@ -549,7 +575,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "איפה"
+            "compare": "איפה",
+            "translit": "efo"
           },
           {
             "id": "particle-interrogative-meayin",
@@ -569,7 +596,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "מאין"
+            "compare": "מאין",
+            "translit": "me'ayin"
           },
           {
             "id": "particle-interrogative-an",
@@ -589,7 +617,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "אן"
+            "compare": "אן",
+            "translit": "an"
           },
           {
             "id": "particle-interrogative-anah",
@@ -609,7 +638,8 @@
               "lesson": 14,
               "page": 51
             },
-            "compare": "אנה"
+            "compare": "אנה",
+            "translit": "ana"
           }
         ]
       },
@@ -643,7 +673,8 @@
               "lesson": 7,
               "page": 36
             },
-            "compare": "סוס"
+            "compare": "סוס",
+            "translit": "sus"
           },
           {
             "id": "noun-endings-f-sg",
@@ -665,7 +696,8 @@
               "lesson": 7,
               "page": 36
             },
-            "compare": "סוסה"
+            "compare": "סוסה",
+            "translit": "susa"
           },
           {
             "id": "noun-endings-m-pl",
@@ -687,7 +719,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "סוסים"
+            "compare": "סוסים",
+            "translit": "susim"
           },
           {
             "id": "noun-endings-f-pl",
@@ -709,7 +742,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "סוסות"
+            "compare": "סוסות",
+            "translit": "susot"
           },
           {
             "id": "noun-endings-m-dual",
@@ -731,7 +765,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "סוסים"
+            "compare": "סוסים",
+            "translit": "susayim"
           },
           {
             "id": "noun-endings-f-dual",
@@ -753,7 +788,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "סוסתים"
+            "compare": "סוסתים",
+            "translit": "susatayim"
           }
         ]
       },
@@ -787,7 +823,8 @@
               "lesson": 7,
               "page": 37
             },
-            "compare": "אב"
+            "compare": "אב",
+            "translit": "av"
           },
           {
             "id": "noun-irregular-av-abs-pl",
@@ -809,7 +846,8 @@
               "lesson": 7,
               "page": 37
             },
-            "compare": "אבות"
+            "compare": "אבות",
+            "translit": "avot"
           },
           {
             "id": "noun-irregular-av-cst-sg",
@@ -831,7 +869,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "אבי"
+            "compare": "אבי",
+            "translit": "avi"
           },
           {
             "id": "noun-irregular-av-cst-pl",
@@ -853,7 +892,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "אבות"
+            "compare": "אבות",
+            "translit": "avot"
           },
           {
             "id": "noun-irregular-ach-abs-sg",
@@ -875,7 +915,8 @@
               "lesson": 10,
               "page": 42
             },
-            "compare": "אח"
+            "compare": "אח",
+            "translit": "ach"
           },
           {
             "id": "noun-irregular-ach-abs-pl",
@@ -897,7 +938,8 @@
               "lesson": 10,
               "page": 42
             },
-            "compare": "אחים"
+            "compare": "אחים",
+            "translit": "achim"
           },
           {
             "id": "noun-irregular-ach-cst-sg",
@@ -919,7 +961,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "אחי"
+            "compare": "אחי",
+            "translit": "achi"
           },
           {
             "id": "noun-irregular-ach-cst-pl",
@@ -941,7 +984,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "אחי"
+            "compare": "אחי",
+            "translit": "ache"
           },
           {
             "id": "noun-irregular-achot-abs-sg",
@@ -963,7 +1007,8 @@
               "lesson": 10,
               "page": 42
             },
-            "compare": "אחות"
+            "compare": "אחות",
+            "translit": "achot"
           },
           {
             "id": "noun-irregular-achot-abs-pl",
@@ -985,7 +1030,8 @@
               "lesson": 10,
               "page": 42
             },
-            "compare": "אחיות"
+            "compare": "אחיות",
+            "translit": "achot"
           },
           {
             "id": "noun-irregular-achot-cst-sg",
@@ -1007,7 +1053,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "אחות"
+            "compare": "אחות",
+            "translit": "achot"
           },
           {
             "id": "noun-irregular-achot-cst-pl",
@@ -1029,7 +1076,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "אחיות"
+            "compare": "אחיות",
+            "translit": "achot"
           },
           {
             "id": "noun-irregular-ish-abs-sg",
@@ -1051,7 +1099,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "איש"
+            "compare": "איש",
+            "translit": "ish"
           },
           {
             "id": "noun-irregular-ish-abs-pl",
@@ -1073,7 +1122,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "אנשים"
+            "compare": "אנשים",
+            "translit": "anashim"
           },
           {
             "id": "noun-irregular-ish-cst-sg",
@@ -1095,7 +1145,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "איש"
+            "compare": "איש",
+            "translit": "ish"
           },
           {
             "id": "noun-irregular-ish-cst-pl",
@@ -1117,7 +1168,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "אנשי"
+            "compare": "אנשי",
+            "translit": "anshe"
           },
           {
             "id": "noun-irregular-isha-abs-sg",
@@ -1139,7 +1191,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "אשה"
+            "compare": "אשה",
+            "translit": "isha"
           },
           {
             "id": "noun-irregular-isha-abs-pl",
@@ -1161,7 +1214,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "נשים"
+            "compare": "נשים",
+            "translit": "nashim"
           },
           {
             "id": "noun-irregular-isha-cst-sg",
@@ -1183,7 +1237,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "אשת"
+            "compare": "אשת",
+            "translit": "eshet"
           },
           {
             "id": "noun-irregular-isha-cst-pl",
@@ -1205,7 +1260,8 @@
               "appendix": "B",
               "page": "a-11"
             },
-            "compare": "נשי"
+            "compare": "נשי",
+            "translit": "neshe"
           },
           {
             "id": "noun-irregular-ben-abs-sg",
@@ -1227,7 +1283,8 @@
               "lesson": 7,
               "page": 37
             },
-            "compare": "בן"
+            "compare": "בן",
+            "translit": "ben"
           },
           {
             "id": "noun-irregular-ben-abs-pl",
@@ -1249,7 +1306,8 @@
               "lesson": 7,
               "page": 37
             },
-            "compare": "בנים"
+            "compare": "בנים",
+            "translit": "banim"
           },
           {
             "id": "noun-irregular-ben-cst-sg",
@@ -1271,7 +1329,8 @@
               "appendix": "B",
               "page": "a-12"
             },
-            "compare": "בן"
+            "compare": "בן",
+            "translit": "ben"
           },
           {
             "id": "noun-irregular-ben-cst-pl",
@@ -1293,7 +1352,8 @@
               "appendix": "B",
               "page": "a-12"
             },
-            "compare": "בני"
+            "compare": "בני",
+            "translit": "bene"
           },
           {
             "id": "noun-irregular-bat-abs-sg",
@@ -1315,7 +1375,8 @@
               "lesson": 7,
               "page": 37
             },
-            "compare": "בת"
+            "compare": "בת",
+            "translit": "bat"
           },
           {
             "id": "noun-irregular-bat-abs-pl",
@@ -1337,7 +1398,8 @@
               "lesson": 7,
               "page": 37
             },
-            "compare": "בנות"
+            "compare": "בנות",
+            "translit": "banot"
           },
           {
             "id": "noun-irregular-bat-cst-sg",
@@ -1359,7 +1421,8 @@
               "appendix": "B",
               "page": "a-12"
             },
-            "compare": "בת"
+            "compare": "בת",
+            "translit": "bat"
           },
           {
             "id": "noun-irregular-bat-cst-pl",
@@ -1381,7 +1444,8 @@
               "appendix": "B",
               "page": "a-12"
             },
-            "compare": "בנות"
+            "compare": "בנות",
+            "translit": "benot"
           },
           {
             "id": "noun-irregular-rosh-abs-sg",
@@ -1403,7 +1467,8 @@
               "lesson": 10,
               "page": 42
             },
-            "compare": "ראש"
+            "compare": "ראש",
+            "translit": "rosh"
           },
           {
             "id": "noun-irregular-rosh-abs-pl",
@@ -1425,7 +1490,8 @@
               "lesson": 10,
               "page": 42
             },
-            "compare": "ראשים"
+            "compare": "ראשים",
+            "translit": "rashim"
           },
           {
             "id": "noun-irregular-rosh-cst-sg",
@@ -1447,7 +1513,8 @@
               "appendix": "B",
               "page": "a-12"
             },
-            "compare": "ראש"
+            "compare": "ראש",
+            "translit": "rosh"
           },
           {
             "id": "noun-irregular-rosh-cst-pl",
@@ -1469,7 +1536,8 @@
               "appendix": "B",
               "page": "a-12"
             },
-            "compare": "ראשי"
+            "compare": "ראשי",
+            "translit": "rashe"
           }
         ]
       },
@@ -1504,7 +1572,8 @@
               "lesson": 8,
               "page": 38
             },
-            "compare": "בית"
+            "compare": "בית",
+            "translit": "bayit"
           },
           {
             "id": "noun-irregular-bayit-cons-sg",
@@ -1526,7 +1595,8 @@
             },
             "ambiguityNote": null,
             "appendixOnly": true,
-            "compare": "בית"
+            "compare": "בית",
+            "translit": "bet"
           },
           {
             "id": "noun-irregular-bayit-abs-pl",
@@ -1548,7 +1618,8 @@
               "lesson": 8,
               "page": 38
             },
-            "compare": "בתים"
+            "compare": "בתים",
+            "translit": "battim"
           },
           {
             "id": "noun-irregular-bayit-cons-pl",
@@ -1570,7 +1641,8 @@
               "page": "a-11"
             },
             "appendixOnly": true,
-            "compare": "בתי"
+            "compare": "בתי",
+            "translit": "batte"
           }
         ]
       },
@@ -1606,7 +1678,8 @@
               "lesson": 9,
               "page": 39
             },
-            "compare": "לו"
+            "compare": "לו",
+            "translit": "lo"
           },
           {
             "id": "particle-l-possession-3fs",
@@ -1630,7 +1703,8 @@
               "lesson": 9,
               "page": 39
             },
-            "compare": "לה"
+            "compare": "לה",
+            "translit": "lah"
           },
           {
             "id": "particle-l-possession-2ms",
@@ -1654,7 +1728,8 @@
               "lesson": 9,
               "page": 39
             },
-            "compare": "לך"
+            "compare": "לך",
+            "translit": "lekha"
           },
           {
             "id": "particle-l-possession-2fs",
@@ -1678,7 +1753,8 @@
               "lesson": 9,
               "page": 39
             },
-            "compare": "לך"
+            "compare": "לך",
+            "translit": "lakh"
           },
           {
             "id": "particle-l-possession-1cs",
@@ -1702,7 +1778,8 @@
               "lesson": 9,
               "page": 39
             },
-            "compare": "לי"
+            "compare": "לי",
+            "translit": "li"
           },
           {
             "id": "particle-l-possession-3mp",
@@ -1726,7 +1803,8 @@
               "lesson": 17,
               "page": 58
             },
-            "compare": "להם"
+            "compare": "להם",
+            "translit": "lahem"
           },
           {
             "id": "particle-l-possession-3fp",
@@ -1750,7 +1828,8 @@
               "lesson": 17,
               "page": 58
             },
-            "compare": "להן"
+            "compare": "להן",
+            "translit": "lahen"
           },
           {
             "id": "particle-l-possession-2mp",
@@ -1774,7 +1853,8 @@
               "lesson": 17,
               "page": 58
             },
-            "compare": "לכם"
+            "compare": "לכם",
+            "translit": "lakhem"
           },
           {
             "id": "particle-l-possession-2fp",
@@ -1798,7 +1878,8 @@
               "lesson": 17,
               "page": 58
             },
-            "compare": "לכן"
+            "compare": "לכן",
+            "translit": "lakhen"
           },
           {
             "id": "particle-l-possession-1cp",
@@ -1822,7 +1903,8 @@
               "lesson": 17,
               "page": 58
             },
-            "compare": "לנו"
+            "compare": "לנו",
+            "translit": "lanu"
           }
         ]
       },
@@ -1856,7 +1938,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "יד"
+            "compare": "יד",
+            "translit": "yad"
           },
           {
             "id": "noun-dual-bodyparts-yad-dual",
@@ -1878,7 +1961,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "ידים"
+            "compare": "ידים",
+            "translit": "yadayim"
           },
           {
             "id": "noun-dual-bodyparts-ozen-sg",
@@ -1900,7 +1984,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "אזן"
+            "compare": "אזן",
+            "translit": "ozen"
           },
           {
             "id": "noun-dual-bodyparts-ozen-dual",
@@ -1922,7 +2007,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "אזנים"
+            "compare": "אזנים",
+            "translit": "aznayim"
           },
           {
             "id": "noun-dual-bodyparts-regel-sg",
@@ -1944,7 +2030,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "רגל"
+            "compare": "רגל",
+            "translit": "regel"
           },
           {
             "id": "noun-dual-bodyparts-regel-dual",
@@ -1966,7 +2053,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "רגלים"
+            "compare": "רגלים",
+            "translit": "raglayim"
           },
           {
             "id": "noun-dual-bodyparts-ayin-sg",
@@ -1988,7 +2076,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "עין"
+            "compare": "עין",
+            "translit": "ayin"
           },
           {
             "id": "noun-dual-bodyparts-ayin-dual",
@@ -2010,7 +2099,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "עינים"
+            "compare": "עינים",
+            "translit": "enayim"
           },
           {
             "id": "noun-dual-bodyparts-naal-sg",
@@ -2032,7 +2122,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "נעל"
+            "compare": "נעל",
+            "translit": "na'al"
           },
           {
             "id": "noun-dual-bodyparts-naal-dual",
@@ -2054,7 +2145,8 @@
               "lesson": 10,
               "page": 41
             },
-            "compare": "נעלים"
+            "compare": "נעלים",
+            "translit": "na'alayim"
           }
         ]
       },
@@ -2089,7 +2181,8 @@
               "lesson": 11,
               "page": 44
             },
-            "compare": "עיר"
+            "compare": "עיר",
+            "translit": "ir"
           },
           {
             "id": "noun-irregular-ir-cons-sg",
@@ -2111,7 +2204,8 @@
             },
             "ambiguityNote": "Construct singular is spelled identically to the absolute singular; disambiguate by whether the noun heads a construct phrase (followed by another noun/def. article target).",
             "appendixOnly": true,
-            "compare": "עיר"
+            "compare": "עיר",
+            "translit": "ir"
           },
           {
             "id": "noun-irregular-ir-abs-pl",
@@ -2133,7 +2227,8 @@
               "lesson": 11,
               "page": 44
             },
-            "compare": "ערים"
+            "compare": "ערים",
+            "translit": "arim"
           },
           {
             "id": "noun-irregular-ir-cons-pl",
@@ -2155,7 +2250,8 @@
               "page": "a-12"
             },
             "appendixOnly": true,
-            "compare": "ערי"
+            "compare": "ערי",
+            "translit": "are"
           }
         ]
       },
@@ -2187,7 +2283,8 @@
               "lesson": 12,
               "page": 46
             },
-            "compare": "יש"
+            "compare": "יש",
+            "translit": "yesh"
           },
           {
             "id": "particle-yesh-ayin-ayin",
@@ -2207,7 +2304,8 @@
               "lesson": 12,
               "page": 46
             },
-            "compare": "אין"
+            "compare": "אין",
+            "translit": "en"
           }
         ]
       },
@@ -2243,7 +2341,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "היה"
+            "compare": "היה",
+            "translit": "haya"
           },
           {
             "id": "verb-haya-perfect-3fs",
@@ -2267,7 +2366,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "היתה"
+            "compare": "היתה",
+            "translit": "hayta"
           },
           {
             "id": "verb-haya-perfect-2ms",
@@ -2291,7 +2391,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "היית"
+            "compare": "היית",
+            "translit": "hayita"
           },
           {
             "id": "verb-haya-perfect-2fs",
@@ -2315,7 +2416,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "היית"
+            "compare": "היית",
+            "translit": "hayit"
           },
           {
             "id": "verb-haya-perfect-1cs",
@@ -2339,7 +2441,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "הייתי"
+            "compare": "הייתי",
+            "translit": "hayiti"
           },
           {
             "id": "verb-haya-perfect-3cp",
@@ -2363,7 +2466,8 @@
               "lesson": 19,
               "page": 62
             },
-            "compare": "היו"
+            "compare": "היו",
+            "translit": "hayu"
           },
           {
             "id": "verb-haya-perfect-2mp",
@@ -2387,7 +2491,8 @@
               "lesson": 19,
               "page": 62
             },
-            "compare": "הייתם"
+            "compare": "הייתם",
+            "translit": "heyitem"
           },
           {
             "id": "verb-haya-perfect-2fp",
@@ -2411,7 +2516,8 @@
               "lesson": 19,
               "page": 62
             },
-            "compare": "הייתן"
+            "compare": "הייתן",
+            "translit": "heyiten"
           },
           {
             "id": "verb-haya-perfect-1cp",
@@ -2435,7 +2541,8 @@
               "lesson": 19,
               "page": 62
             },
-            "compare": "היינו"
+            "compare": "היינו",
+            "translit": "hayinu"
           }
         ]
       },
@@ -2471,7 +2578,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "שמר"
+            "compare": "שמר",
+            "translit": "shamar"
           },
           {
             "id": "verb-qal-perfect-3fs",
@@ -2495,7 +2603,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "שמרה"
+            "compare": "שמרה",
+            "translit": "shamra"
           },
           {
             "id": "verb-qal-perfect-2ms",
@@ -2519,7 +2628,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "שמרת"
+            "compare": "שמרת",
+            "translit": "shamarta"
           },
           {
             "id": "verb-qal-perfect-2fs",
@@ -2543,7 +2653,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "שמרת"
+            "compare": "שמרת",
+            "translit": "shamart"
           },
           {
             "id": "verb-qal-perfect-1cs",
@@ -2567,7 +2678,8 @@
               "lesson": 16,
               "page": 55
             },
-            "compare": "שמרתי"
+            "compare": "שמרתי",
+            "translit": "shamarti"
           },
           {
             "id": "verb-qal-perfect-3cp",
@@ -2591,7 +2703,8 @@
               "lesson": 19,
               "page": 62
             },
-            "compare": "שמרו"
+            "compare": "שמרו",
+            "translit": "shamru"
           },
           {
             "id": "verb-qal-perfect-2mp",
@@ -2615,7 +2728,8 @@
               "lesson": 19,
               "page": 62
             },
-            "compare": "שמרתם"
+            "compare": "שמרתם",
+            "translit": "shemartem"
           },
           {
             "id": "verb-qal-perfect-2fp",
@@ -2639,7 +2753,8 @@
               "lesson": 19,
               "page": 62
             },
-            "compare": "שמרתן"
+            "compare": "שמרתן",
+            "translit": "shemarten"
           },
           {
             "id": "verb-qal-perfect-1cp",
@@ -2663,7 +2778,8 @@
               "lesson": 19,
               "page": 62
             },
-            "compare": "שמרנו"
+            "compare": "שמרנו",
+            "translit": "shamarnu"
           }
         ]
       },
@@ -2697,7 +2813,8 @@
               "lesson": 20,
               "page": 64
             },
-            "compare": "דבר"
+            "compare": "דבר",
+            "translit": "davar"
           },
           {
             "id": "noun-bound-construct-m-cst-sg",
@@ -2719,7 +2836,8 @@
               "lesson": 20,
               "page": 64
             },
-            "compare": "דבר"
+            "compare": "דבר",
+            "translit": "devar"
           },
           {
             "id": "noun-bound-construct-m-abs-pl",
@@ -2741,7 +2859,8 @@
               "lesson": 20,
               "page": 64
             },
-            "compare": "דברים"
+            "compare": "דברים",
+            "translit": "devarim"
           },
           {
             "id": "noun-bound-construct-m-cst-pl",
@@ -2763,7 +2882,8 @@
               "lesson": 20,
               "page": 64
             },
-            "compare": "דברי"
+            "compare": "דברי",
+            "translit": "divre"
           },
           {
             "id": "noun-bound-construct-f-abs-sg",
@@ -2785,7 +2905,8 @@
               "lesson": 20,
               "page": 64
             },
-            "compare": "אדמה"
+            "compare": "אדמה",
+            "translit": "adama"
           },
           {
             "id": "noun-bound-construct-f-cst-sg",
@@ -2807,7 +2928,8 @@
               "lesson": 20,
               "page": 64
             },
-            "compare": "אדמת"
+            "compare": "אדמת",
+            "translit": "admat"
           },
           {
             "id": "noun-bound-construct-f-abs-pl",
@@ -2829,7 +2951,8 @@
               "lesson": 20,
               "page": 64
             },
-            "compare": "אדמות"
+            "compare": "אדמות",
+            "translit": "adamot"
           },
           {
             "id": "noun-bound-construct-f-cst-pl",
@@ -2851,7 +2974,8 @@
               "lesson": 20,
               "page": 64
             },
-            "compare": "אדמות"
+            "compare": "אדמות",
+            "translit": "admot"
           }
         ]
       },
@@ -2886,7 +3010,8 @@
               "lesson": 21,
               "page": 67
             },
-            "compare": "יום"
+            "compare": "יום",
+            "translit": "yom"
           },
           {
             "id": "noun-irregular-yom-cons-sg",
@@ -2908,7 +3033,8 @@
             },
             "ambiguityNote": "Construct singular is spelled identically to the absolute singular; disambiguate by whether the noun heads a construct phrase (followed by another noun/def. article target).",
             "appendixOnly": true,
-            "compare": "יום"
+            "compare": "יום",
+            "translit": "yom"
           },
           {
             "id": "noun-irregular-yom-abs-pl",
@@ -2930,7 +3056,8 @@
               "lesson": 21,
               "page": 67
             },
-            "compare": "ימים"
+            "compare": "ימים",
+            "translit": "yamim"
           },
           {
             "id": "noun-irregular-yom-cons-pl",
@@ -2952,7 +3079,8 @@
               "page": "a-12"
             },
             "appendixOnly": true,
-            "compare": "ימי"
+            "compare": "ימי",
+            "translit": "yeme"
           }
         ]
       },
@@ -2992,7 +3120,8 @@
               "lesson": 22,
               "page": 69
             },
-            "compare": "דבריו"
+            "compare": "דבריו",
+            "translit": "devarayv"
           },
           {
             "id": "noun-attached-pl-3fs",
@@ -3020,7 +3149,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דבריה"
+            "compare": "דבריה",
+            "translit": "devareha"
           },
           {
             "id": "noun-attached-pl-2ms",
@@ -3048,7 +3178,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דבריך"
+            "compare": "דבריך",
+            "translit": "devarekha"
           },
           {
             "id": "noun-attached-pl-2fs",
@@ -3076,7 +3207,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דבריך"
+            "compare": "דבריך",
+            "translit": "devarayikh"
           },
           {
             "id": "noun-attached-pl-1cs",
@@ -3104,7 +3236,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דברי"
+            "compare": "דברי",
+            "translit": "devaray"
           },
           {
             "id": "noun-attached-pl-3mp",
@@ -3132,7 +3265,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דבריהם"
+            "compare": "דבריהם",
+            "translit": "divrehem"
           },
           {
             "id": "noun-attached-pl-3fp",
@@ -3160,7 +3294,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דבריהן"
+            "compare": "דבריהן",
+            "translit": "divrehen"
           },
           {
             "id": "noun-attached-pl-2mp",
@@ -3188,7 +3323,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דבריכם"
+            "compare": "דבריכם",
+            "translit": "divrekhem"
           },
           {
             "id": "noun-attached-pl-2fp",
@@ -3216,7 +3352,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דבריכן"
+            "compare": "דבריכן",
+            "translit": "divrekhen"
           },
           {
             "id": "noun-attached-pl-1cp",
@@ -3244,7 +3381,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דברינו"
+            "compare": "דברינו",
+            "translit": "divrenu"
           },
           {
             "id": "noun-attached-pl-3ms-fem-host",
@@ -3272,7 +3410,8 @@
               "page": "a-13"
             },
             "introducedLesson": 31,
-            "compare": "תורותיו"
+            "compare": "תורותיו",
+            "translit": "torotayv"
           }
         ]
       },
@@ -3312,7 +3451,8 @@
               "lesson": 22,
               "page": 69
             },
-            "compare": "דברו"
+            "compare": "דברו",
+            "translit": "devaro"
           },
           {
             "id": "noun-attached-sg-3fs",
@@ -3340,7 +3480,8 @@
               "lesson": 22,
               "page": 68
             },
-            "compare": "דברה"
+            "compare": "דברה",
+            "translit": "devarah"
           },
           {
             "id": "noun-attached-sg-2ms",
@@ -3368,7 +3509,8 @@
               "lesson": 22,
               "page": 68
             },
-            "compare": "דברך"
+            "compare": "דברך",
+            "translit": "devarkha"
           },
           {
             "id": "noun-attached-sg-2fs",
@@ -3396,7 +3538,8 @@
               "lesson": 22,
               "page": 68
             },
-            "compare": "דברך"
+            "compare": "דברך",
+            "translit": "devarekh"
           },
           {
             "id": "noun-attached-sg-1cs",
@@ -3424,7 +3567,8 @@
               "lesson": 22,
               "page": 68
             },
-            "compare": "דברי"
+            "compare": "דברי",
+            "translit": "devari"
           },
           {
             "id": "noun-attached-sg-3mp",
@@ -3452,7 +3596,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דברם"
+            "compare": "דברם",
+            "translit": "devaram"
           },
           {
             "id": "noun-attached-sg-3fp",
@@ -3480,7 +3625,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דברן"
+            "compare": "דברן",
+            "translit": "devaran"
           },
           {
             "id": "noun-attached-sg-2mp",
@@ -3508,7 +3654,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דברכם"
+            "compare": "דברכם",
+            "translit": "devarkhem"
           },
           {
             "id": "noun-attached-sg-2fp",
@@ -3536,7 +3683,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דברכן"
+            "compare": "דברכן",
+            "translit": "devarkhen"
           },
           {
             "id": "noun-attached-sg-1cp",
@@ -3564,7 +3712,8 @@
               "lesson": 31,
               "page": 91
             },
-            "compare": "דברנו"
+            "compare": "דברנו",
+            "translit": "devarenu"
           },
           {
             "id": "noun-attached-sg-3ms-fem-host",
@@ -3592,7 +3741,8 @@
               "lesson": 22,
               "page": 68
             },
-            "compare": "תורתו"
+            "compare": "תורתו",
+            "translit": "torato"
           }
         ]
       },
@@ -3628,7 +3778,8 @@
               "lesson": 23,
               "page": 71
             },
-            "compare": "ישמר"
+            "compare": "ישמר",
+            "translit": "yishmor"
           },
           {
             "id": "verb-qal-imperfect-2ms-3fs",
@@ -3659,7 +3810,8 @@
               "lesson": 23,
               "page": 71
             },
-            "compare": "תשמר"
+            "compare": "תשמר",
+            "translit": "tishmor"
           },
           {
             "id": "verb-qal-imperfect-2fs",
@@ -3683,7 +3835,8 @@
               "lesson": 23,
               "page": 71
             },
-            "compare": "תשמרי"
+            "compare": "תשמרי",
+            "translit": "tishmeri"
           },
           {
             "id": "verb-qal-imperfect-1cs",
@@ -3707,7 +3860,8 @@
               "lesson": 23,
               "page": 71
             },
-            "compare": "אשמר"
+            "compare": "אשמר",
+            "translit": "eshmor"
           },
           {
             "id": "verb-qal-imperfect-3mp",
@@ -3731,7 +3885,8 @@
               "lesson": 27,
               "page": 81
             },
-            "compare": "ישמרו"
+            "compare": "ישמרו",
+            "translit": "yishmeru"
           },
           {
             "id": "verb-qal-imperfect-2mp",
@@ -3755,7 +3910,8 @@
               "lesson": 27,
               "page": 81
             },
-            "compare": "תשמרו"
+            "compare": "תשמרו",
+            "translit": "tishmeru"
           },
           {
             "id": "verb-qal-imperfect-3fp-2fp",
@@ -3786,7 +3942,8 @@
               "lesson": 27,
               "page": 81
             },
-            "compare": "תשמרנה"
+            "compare": "תשמרנה",
+            "translit": "tishmorna"
           },
           {
             "id": "verb-qal-imperfect-1cp",
@@ -3810,7 +3967,8 @@
               "lesson": 27,
               "page": 81
             },
-            "compare": "נשמר"
+            "compare": "נשמר",
+            "translit": "nishmor"
           }
         ]
       },
@@ -3843,7 +4001,8 @@
               "lesson": 24,
               "page": 74
             },
-            "compare": "שמר"
+            "compare": "שמר",
+            "translit": "shemor"
           }
         ]
       },
@@ -3876,7 +4035,8 @@
               "lesson": 25,
               "page": 77
             },
-            "compare": "שמור"
+            "compare": "שמור",
+            "translit": "shamor"
           }
         ]
       },
@@ -3912,7 +4072,8 @@
               "lesson": 28,
               "page": 83
             },
-            "compare": "יהיה"
+            "compare": "יהיה",
+            "translit": "yihye"
           },
           {
             "id": "verb-haya-imperfect-2ms-3fs",
@@ -3943,7 +4104,8 @@
               "lesson": 28,
               "page": 83
             },
-            "compare": "תהיה"
+            "compare": "תהיה",
+            "translit": "tihye"
           },
           {
             "id": "verb-haya-imperfect-2fs",
@@ -3967,7 +4129,8 @@
               "lesson": 28,
               "page": 83
             },
-            "compare": "תהיי"
+            "compare": "תהיי",
+            "translit": "tihyi"
           },
           {
             "id": "verb-haya-imperfect-1cs",
@@ -3991,7 +4154,8 @@
               "lesson": 28,
               "page": 83
             },
-            "compare": "אהיה"
+            "compare": "אהיה",
+            "translit": "ehye"
           },
           {
             "id": "verb-haya-imperfect-3mp",
@@ -4015,7 +4179,8 @@
               "lesson": 28,
               "page": 83
             },
-            "compare": "יהיו"
+            "compare": "יהיו",
+            "translit": "yihu"
           },
           {
             "id": "verb-haya-imperfect-2mp",
@@ -4039,7 +4204,8 @@
               "lesson": 28,
               "page": 83
             },
-            "compare": "תהיו"
+            "compare": "תהיו",
+            "translit": "tihu"
           },
           {
             "id": "verb-haya-imperfect-3fp-2fp",
@@ -4070,7 +4236,8 @@
               "lesson": 28,
               "page": 83
             },
-            "compare": "תהיינה"
+            "compare": "תהיינה",
+            "translit": "tihyena"
           },
           {
             "id": "verb-haya-imperfect-1cp",
@@ -4094,7 +4261,8 @@
               "lesson": 28,
               "page": 83
             },
-            "compare": "נהיה"
+            "compare": "נהיה",
+            "translit": "nihye"
           }
         ]
       },
@@ -4133,7 +4301,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "אחת"
+            "compare": "אחת",
+            "translit": "achat"
           },
           {
             "id": "numeral-cardinal-1-10-1-m",
@@ -4160,7 +4329,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "אחד"
+            "compare": "אחד",
+            "translit": "echad"
           },
           {
             "id": "numeral-cardinal-1-10-1-m-cst",
@@ -4182,7 +4352,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "אחד"
+            "compare": "אחד",
+            "translit": "achad"
           },
           {
             "id": "numeral-cardinal-1-10-2-f-abs",
@@ -4203,7 +4374,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שתים"
+            "compare": "שתים",
+            "translit": "shettayim"
           },
           {
             "id": "numeral-cardinal-1-10-2-f-cstr",
@@ -4224,7 +4396,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שתי"
+            "compare": "שתי",
+            "translit": "shette"
           },
           {
             "id": "numeral-cardinal-1-10-2-m-abs",
@@ -4245,7 +4418,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שנים"
+            "compare": "שנים",
+            "translit": "shenayim"
           },
           {
             "id": "numeral-cardinal-1-10-2-m-cstr",
@@ -4266,7 +4440,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שני"
+            "compare": "שני",
+            "translit": "shene"
           },
           {
             "id": "numeral-cardinal-1-10-3-f-abs",
@@ -4287,7 +4462,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שלש"
+            "compare": "שלש",
+            "translit": "shalosh"
           },
           {
             "id": "numeral-cardinal-1-10-3-f-cstr",
@@ -4308,7 +4484,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שלש"
+            "compare": "שלש",
+            "translit": "shelosh"
           },
           {
             "id": "numeral-cardinal-1-10-3-m-abs",
@@ -4329,7 +4506,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שלשה"
+            "compare": "שלשה",
+            "translit": "shelosha"
           },
           {
             "id": "numeral-cardinal-1-10-3-m-cstr",
@@ -4350,7 +4528,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שלשת"
+            "compare": "שלשת",
+            "translit": "sheloshet"
           },
           {
             "id": "numeral-cardinal-1-10-4-f",
@@ -4377,7 +4556,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ארבע"
+            "compare": "ארבע",
+            "translit": "arba"
           },
           {
             "id": "numeral-cardinal-1-10-4-m-abs",
@@ -4398,7 +4578,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ארבעה"
+            "compare": "ארבעה",
+            "translit": "arba'a"
           },
           {
             "id": "numeral-cardinal-1-10-4-m-cstr",
@@ -4419,7 +4600,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ארבעת"
+            "compare": "ארבעת",
+            "translit": "arba'at"
           },
           {
             "id": "numeral-cardinal-1-10-5-f-abs",
@@ -4440,7 +4622,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "חמש"
+            "compare": "חמש",
+            "translit": "chamesh"
           },
           {
             "id": "numeral-cardinal-1-10-5-f-cstr",
@@ -4461,7 +4644,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "חמש"
+            "compare": "חמש",
+            "translit": "chamesh"
           },
           {
             "id": "numeral-cardinal-1-10-5-m-abs",
@@ -4482,7 +4666,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "חמשה"
+            "compare": "חמשה",
+            "translit": "chamisha"
           },
           {
             "id": "numeral-cardinal-1-10-5-m-cstr",
@@ -4503,7 +4688,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "חמשת"
+            "compare": "חמשת",
+            "translit": "chameshet"
           },
           {
             "id": "numeral-cardinal-1-10-6-f",
@@ -4530,7 +4716,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שש"
+            "compare": "שש",
+            "translit": "shesh"
           },
           {
             "id": "numeral-cardinal-1-10-6-m-abs",
@@ -4551,7 +4738,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ששה"
+            "compare": "ששה",
+            "translit": "shisha"
           },
           {
             "id": "numeral-cardinal-1-10-6-m-cstr",
@@ -4572,7 +4760,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ששת"
+            "compare": "ששת",
+            "translit": "sheshet"
           },
           {
             "id": "numeral-cardinal-1-10-7-f-abs",
@@ -4593,7 +4782,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שבע"
+            "compare": "שבע",
+            "translit": "sheva"
           },
           {
             "id": "numeral-cardinal-1-10-7-f-cstr",
@@ -4614,7 +4804,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שבע"
+            "compare": "שבע",
+            "translit": "sheva"
           },
           {
             "id": "numeral-cardinal-1-10-7-m-abs",
@@ -4635,7 +4826,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שבעה"
+            "compare": "שבעה",
+            "translit": "shiv'a"
           },
           {
             "id": "numeral-cardinal-1-10-7-m-cstr",
@@ -4656,7 +4848,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שבעת"
+            "compare": "שבעת",
+            "translit": "shiv'at"
           },
           {
             "id": "numeral-cardinal-1-10-8-f",
@@ -4683,7 +4876,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שמנה"
+            "compare": "שמנה",
+            "translit": "shemone"
           },
           {
             "id": "numeral-cardinal-1-10-8-m-abs",
@@ -4704,7 +4898,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שמנה"
+            "compare": "שמנה",
+            "translit": "shemona"
           },
           {
             "id": "numeral-cardinal-1-10-8-m-cstr",
@@ -4725,7 +4920,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שמנת"
+            "compare": "שמנת",
+            "translit": "shemonat"
           },
           {
             "id": "numeral-cardinal-1-10-9-f-abs",
@@ -4746,7 +4942,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "תשע"
+            "compare": "תשע",
+            "translit": "tesha"
           },
           {
             "id": "numeral-cardinal-1-10-9-f-cstr",
@@ -4767,7 +4964,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "תשע"
+            "compare": "תשע",
+            "translit": "tesha"
           },
           {
             "id": "numeral-cardinal-1-10-9-m-abs",
@@ -4788,7 +4986,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "תשעה"
+            "compare": "תשעה",
+            "translit": "tish'a"
           },
           {
             "id": "numeral-cardinal-1-10-9-m-cstr",
@@ -4809,7 +5008,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "תשעת"
+            "compare": "תשעת",
+            "translit": "tish'at"
           },
           {
             "id": "numeral-cardinal-1-10-10-f",
@@ -4836,7 +5036,8 @@
               "lesson": 29,
               "page": 86
             },
-            "compare": "עשר"
+            "compare": "עשר",
+            "translit": "eser"
           },
           {
             "id": "numeral-cardinal-1-10-10-m-abs",
@@ -4857,7 +5058,8 @@
               "lesson": 29,
               "page": 86
             },
-            "compare": "עשרה"
+            "compare": "עשרה",
+            "translit": "asara"
           },
           {
             "id": "numeral-cardinal-1-10-10-m-cstr",
@@ -4878,7 +5080,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "עשרת"
+            "compare": "עשרת",
+            "translit": "aseret"
           }
         ]
       },
@@ -4913,7 +5116,8 @@
               "lesson": 39,
               "page": 109
             },
-            "compare": "ימלך"
+            "compare": "ימלך",
+            "translit": "yamlekh"
           },
           {
             "id": "verb-hifil-impf-3ms-mlk",
@@ -4936,7 +5140,8 @@
               "lesson": 39,
               "page": 109
             },
-            "compare": "ימליך"
+            "compare": "ימליך",
+            "translit": "yamlikh"
           },
           {
             "id": "verb-hifil-impf-3ms-pqd-appendix",
@@ -4959,7 +5164,8 @@
               "appendix": "C",
               "page": "a-18"
             },
-            "compare": "יפקיד"
+            "compare": "יפקיד",
+            "translit": "yafqid"
           }
         ]
       },
@@ -4994,7 +5200,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "השליך"
+            "compare": "השליך",
+            "translit": "hishlikh"
           },
           {
             "id": "verb-hifil-recognition-impf-3ms-shlk",
@@ -5017,7 +5224,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "ישליך"
+            "compare": "ישליך",
+            "translit": "yashlikh"
           },
           {
             "id": "verb-hifil-recognition-impv-2ms-shlk",
@@ -5040,7 +5248,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "השלך"
+            "compare": "השלך",
+            "translit": "hashlekh"
           },
           {
             "id": "verb-hifil-recognition-perf-3ms-mlk",
@@ -5063,7 +5272,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "המליך"
+            "compare": "המליך",
+            "translit": "himlikh"
           },
           {
             "id": "verb-hifil-recognition-perf-3ms-kbd",
@@ -5086,7 +5296,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "הכביד"
+            "compare": "הכביד",
+            "translit": "hikhbid"
           },
           {
             "id": "verb-hifil-recognition-perf-3ms-shkm",
@@ -5109,7 +5320,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "השכים"
+            "compare": "השכים",
+            "translit": "hishkim"
           },
           {
             "id": "verb-hifil-recognition-perf-3ms-tzlch",
@@ -5132,7 +5344,8 @@
               "lesson": 29,
               "page": 86
             },
-            "compare": "הצליח"
+            "compare": "הצליח",
+            "translit": "hitslicha"
           },
           {
             "id": "verb-hifil-recognition-perf-3ms-shb",
@@ -5155,7 +5368,8 @@
               "lesson": 29,
               "page": 86
             },
-            "compare": "השביע"
+            "compare": "השביע",
+            "translit": "hishbia"
           },
           {
             "id": "verb-hifil-recognition-perf-3ms-shcht",
@@ -5178,7 +5392,8 @@
               "lesson": 29,
               "page": 86
             },
-            "compare": "השחית"
+            "compare": "השחית",
+            "translit": "hishchit"
           },
           {
             "id": "verb-hifil-recognition-perf-3ms-bdl",
@@ -5201,7 +5416,8 @@
               "lesson": 42,
               "page": 117
             },
-            "compare": "הבדיל"
+            "compare": "הבדיל",
+            "translit": "hivdil"
           }
         ]
       },
@@ -5236,7 +5452,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "קבץ"
+            "compare": "קבץ",
+            "translit": "qibbets"
           },
           {
             "id": "verb-piel-recognition-impf-3ms-qbts",
@@ -5259,7 +5476,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "יקבץ"
+            "compare": "יקבץ",
+            "translit": "yeqabbets"
           },
           {
             "id": "verb-piel-recognition-perf-3ms-kbd",
@@ -5282,7 +5500,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "כבד"
+            "compare": "כבד",
+            "translit": "kibbed"
           },
           {
             "id": "verb-piel-recognition-perf-3ms-dbr",
@@ -5305,7 +5524,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "דבר"
+            "compare": "דבר",
+            "translit": "dibber"
           },
           {
             "id": "verb-piel-recognition-perf-3ms-tswh",
@@ -5328,7 +5548,8 @@
               "lesson": 29,
               "page": 85
             },
-            "compare": "צוה"
+            "compare": "צוה",
+            "translit": "tsiva"
           },
           {
             "id": "verb-piel-recognition-perf-3ms-brk",
@@ -5351,7 +5572,8 @@
               "lesson": 29,
               "page": 86
             },
-            "compare": "ברך"
+            "compare": "ברך",
+            "translit": "berakh"
           },
           {
             "id": "verb-piel-recognition-perf-3ms-klh",
@@ -5374,7 +5596,8 @@
               "lesson": 29,
               "page": 86
             },
-            "compare": "כלה"
+            "compare": "כלה",
+            "translit": "kila"
           }
         ]
       },
@@ -5408,7 +5631,8 @@
               "lesson": 32,
               "page": 93
             },
-            "compare": "גדול"
+            "compare": "גדול",
+            "translit": "gadol"
           },
           {
             "id": "adjective-inflection-m-cst-sg",
@@ -5430,7 +5654,8 @@
               "lesson": 32,
               "page": 93
             },
-            "compare": "גדול"
+            "compare": "גדול",
+            "translit": "gedol"
           },
           {
             "id": "adjective-inflection-m-abs-pl",
@@ -5452,7 +5677,8 @@
               "lesson": 32,
               "page": 93
             },
-            "compare": "גדולים"
+            "compare": "גדולים",
+            "translit": "gedolim"
           },
           {
             "id": "adjective-inflection-m-cst-pl",
@@ -5474,7 +5700,8 @@
               "lesson": 32,
               "page": 93
             },
-            "compare": "גדלי"
+            "compare": "גדלי",
+            "translit": "gedole"
           },
           {
             "id": "adjective-inflection-f-abs-sg",
@@ -5496,7 +5723,8 @@
               "lesson": 32,
               "page": 93
             },
-            "compare": "גדולה"
+            "compare": "גדולה",
+            "translit": "gedola"
           },
           {
             "id": "adjective-inflection-f-cst-sg",
@@ -5518,7 +5746,8 @@
               "lesson": 32,
               "page": 93
             },
-            "compare": "גדלת"
+            "compare": "גדלת",
+            "translit": "gedolat"
           },
           {
             "id": "adjective-inflection-f-abs-pl",
@@ -5540,7 +5769,8 @@
               "lesson": 32,
               "page": 93
             },
-            "compare": "גדולות"
+            "compare": "גדולות",
+            "translit": "gedolot"
           },
           {
             "id": "adjective-inflection-f-cst-pl",
@@ -5562,7 +5792,8 @@
               "lesson": 32,
               "page": 93
             },
-            "compare": "גדלות"
+            "compare": "גדלות",
+            "translit": "gedolot"
           }
         ]
       },
@@ -5596,7 +5827,8 @@
               "lesson": 33,
               "page": 96
             },
-            "compare": "זה"
+            "compare": "זה",
+            "translit": "ze"
           },
           {
             "id": "pron-demonstrative-near-fs",
@@ -5618,7 +5850,8 @@
               "lesson": 33,
               "page": 96
             },
-            "compare": "זאת"
+            "compare": "זאת",
+            "translit": "zot"
           },
           {
             "id": "pron-demonstrative-near-cp",
@@ -5640,7 +5873,8 @@
               "lesson": 33,
               "page": 96
             },
-            "compare": "אלה"
+            "compare": "אלה",
+            "translit": "ele"
           },
           {
             "id": "pron-demonstrative-far-ms",
@@ -5662,7 +5896,8 @@
               "lesson": 33,
               "page": 96
             },
-            "compare": "הוא"
+            "compare": "הוא",
+            "translit": "hu"
           },
           {
             "id": "pron-demonstrative-far-fs",
@@ -5684,7 +5919,8 @@
               "lesson": 33,
               "page": 96
             },
-            "compare": "היא"
+            "compare": "היא",
+            "translit": "hi"
           },
           {
             "id": "pron-demonstrative-far-mp",
@@ -5706,7 +5942,8 @@
               "lesson": 33,
               "page": 96
             },
-            "compare": "המה"
+            "compare": "המה",
+            "translit": "hemma"
           },
           {
             "id": "pron-demonstrative-far-fp",
@@ -5728,7 +5965,8 @@
               "lesson": 33,
               "page": 96
             },
-            "compare": "הנה"
+            "compare": "הנה",
+            "translit": "henna"
           }
         ]
       },
@@ -5762,7 +6000,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "מלך"
+            "compare": "מלך",
+            "translit": "melekh"
           },
           {
             "id": "noun-segolate-boker-sg",
@@ -5784,7 +6023,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "בקר"
+            "compare": "בקר",
+            "translit": "boqer"
           },
           {
             "id": "noun-segolate-naar-sg",
@@ -5806,7 +6046,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "נער"
+            "compare": "נער",
+            "translit": "na'ar"
           },
           {
             "id": "noun-segolate-erets-sg",
@@ -5828,7 +6069,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "ארץ"
+            "compare": "ארץ",
+            "translit": "erets"
           },
           {
             "id": "noun-segolate-eved-sg",
@@ -5850,7 +6092,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "עבד"
+            "compare": "עבד",
+            "translit": "eved"
           },
           {
             "id": "noun-segolate-nefesh-sg",
@@ -5872,7 +6115,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "נפש"
+            "compare": "נפש",
+            "translit": "nefesh"
           },
           {
             "id": "noun-segolate-malka-sg",
@@ -5894,7 +6138,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "מלכה"
+            "compare": "מלכה",
+            "translit": "malka"
           },
           {
             "id": "noun-segolate-naara-sg",
@@ -5916,7 +6161,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "נערה"
+            "compare": "נערה",
+            "translit": "na'ara"
           },
           {
             "id": "noun-segolate-melekh-pl",
@@ -5938,7 +6184,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "מלכים"
+            "compare": "מלכים",
+            "translit": "melakhim"
           },
           {
             "id": "noun-segolate-malka-pl",
@@ -5960,7 +6207,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "מלכות"
+            "compare": "מלכות",
+            "translit": "melakhot"
           },
           {
             "id": "noun-segolate-naar-pl",
@@ -5982,7 +6230,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "נערים"
+            "compare": "נערים",
+            "translit": "ne'arim"
           },
           {
             "id": "noun-segolate-naara-pl",
@@ -6004,7 +6253,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "נערות"
+            "compare": "נערות",
+            "translit": "ne'arot"
           },
           {
             "id": "noun-segolate-eved-pl",
@@ -6026,7 +6276,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "עבדים"
+            "compare": "עבדים",
+            "translit": "avadim"
           },
           {
             "id": "noun-segolate-boker-pl",
@@ -6048,7 +6299,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "בקרים"
+            "compare": "בקרים",
+            "translit": "beqarim"
           },
           {
             "id": "noun-segolate-erets-pl",
@@ -6070,7 +6322,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "ארצות"
+            "compare": "ארצות",
+            "translit": "aratsot"
           },
           {
             "id": "noun-segolate-nefesh-pl",
@@ -6092,7 +6345,8 @@
               "lesson": 34,
               "page": 98
             },
-            "compare": "נפשות"
+            "compare": "נפשות",
+            "translit": "nefashot"
           }
         ]
       },
@@ -6128,7 +6382,8 @@
               "lesson": 35,
               "page": 100
             },
-            "compare": "וישמר"
+            "compare": "וישמר",
+            "translit": "vayishmor"
           },
           {
             "id": "verb-past-narrative-1cs",
@@ -6152,7 +6407,8 @@
               "lesson": 35,
               "page": 100
             },
-            "compare": "ואשמר"
+            "compare": "ואשמר",
+            "translit": "va'eshmor"
           },
           {
             "id": "verb-past-narrative-3ms-haya",
@@ -6176,7 +6432,8 @@
               "lesson": 36,
               "page": 102
             },
-            "compare": "ויהי"
+            "compare": "ויהי",
+            "translit": "vayhi"
           }
         ]
       },
@@ -6212,7 +6469,8 @@
               "lesson": 37,
               "page": 104
             },
-            "compare": "התקבץ"
+            "compare": "התקבץ",
+            "translit": "hitqabbets"
           },
           {
             "id": "verb-hitpael-recognition-impv-2ms-qbts",
@@ -6236,7 +6494,8 @@
               "lesson": 37,
               "page": 104
             },
-            "compare": "התקבץ"
+            "compare": "התקבץ",
+            "translit": "hitqabbets"
           },
           {
             "id": "verb-hitpael-recognition-impf-3ms-qbts",
@@ -6259,7 +6518,8 @@
               "lesson": 37,
               "page": 104
             },
-            "compare": "יתקבץ"
+            "compare": "יתקבץ",
+            "translit": "yitqabbets"
           }
         ]
       },
@@ -6294,7 +6554,8 @@
               "lesson": 37,
               "page": 104
             },
-            "compare": "נשמר"
+            "compare": "נשמר",
+            "translit": "nishmar"
           },
           {
             "id": "verb-nifal-recognition-impf-3ms-shmr",
@@ -6317,7 +6578,8 @@
               "lesson": 37,
               "page": 104
             },
-            "compare": "ישמר"
+            "compare": "ישמר",
+            "translit": "yishamer"
           },
           {
             "id": "verb-nifal-recognition-impv-2ms-shmr",
@@ -6340,7 +6602,8 @@
               "lesson": 37,
               "page": 104
             },
-            "compare": "השמר"
+            "compare": "השמר",
+            "translit": "hishamer"
           },
           {
             "id": "verb-nifal-recognition-perf-3ms-rah",
@@ -6363,7 +6626,8 @@
               "lesson": 42,
               "page": 117
             },
-            "compare": "נראה"
+            "compare": "נראה",
+            "translit": "nir'a"
           }
         ]
       },
@@ -6399,7 +6663,8 @@
               "lesson": 38,
               "page": 106
             },
-            "compare": "כבד"
+            "compare": "כבד",
+            "translit": "kaved"
           },
           {
             "id": "verb-qal-stative-perf-3ms-qaton",
@@ -6423,7 +6688,8 @@
               "lesson": 38,
               "page": 106
             },
-            "compare": "קטן"
+            "compare": "קטן",
+            "translit": "qaton"
           },
           {
             "id": "verb-qal-stative-impf-3ms-kaved",
@@ -6447,7 +6713,8 @@
               "lesson": 38,
               "page": 106
             },
-            "compare": "יכבד"
+            "compare": "יכבד",
+            "translit": "yikhbad"
           },
           {
             "id": "verb-qal-stative-impf-3ms-qaton",
@@ -6471,7 +6738,8 @@
               "lesson": 38,
               "page": 106
             },
-            "compare": "יקטן"
+            "compare": "יקטן",
+            "translit": "yiqtan"
           }
         ]
       },
@@ -6506,7 +6774,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "המלך"
+            "compare": "המלך",
+            "translit": "hamlekh"
           },
           {
             "id": "verb-hifil-imperative-2fs",
@@ -6529,7 +6798,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "המליכי"
+            "compare": "המליכי",
+            "translit": "hamlikhi"
           },
           {
             "id": "verb-hifil-imperative-2mp",
@@ -6552,7 +6822,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "המליכו"
+            "compare": "המליכו",
+            "translit": "hamlikhu"
           },
           {
             "id": "verb-hifil-imperative-2fp",
@@ -6575,7 +6846,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "המלכנה"
+            "compare": "המלכנה",
+            "translit": "hamlekhna"
           }
         ]
       },
@@ -6610,7 +6882,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "התקבץ"
+            "compare": "התקבץ",
+            "translit": "hitqabbets"
           },
           {
             "id": "verb-hitpael-imperative-2fs",
@@ -6633,7 +6906,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "התקבצי"
+            "compare": "התקבצי",
+            "translit": "hitqabbtsi"
           },
           {
             "id": "verb-hitpael-imperative-2mp",
@@ -6656,7 +6930,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "התקבצו"
+            "compare": "התקבצו",
+            "translit": "hitqabbtsu"
           },
           {
             "id": "verb-hitpael-imperative-2fp",
@@ -6679,7 +6954,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "התקבצנה"
+            "compare": "התקבצנה",
+            "translit": "hitqabbetsna"
           }
         ]
       },
@@ -6714,7 +6990,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "השמר"
+            "compare": "השמר",
+            "translit": "hishamer"
           },
           {
             "id": "verb-nifal-imperative-2fs",
@@ -6737,7 +7014,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "השמרי"
+            "compare": "השמרי",
+            "translit": "hishamri"
           },
           {
             "id": "verb-nifal-imperative-2mp",
@@ -6760,7 +7038,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "השמרו"
+            "compare": "השמרו",
+            "translit": "hishamru"
           },
           {
             "id": "verb-nifal-imperative-2fp",
@@ -6783,7 +7062,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "השמרנה"
+            "compare": "השמרנה",
+            "translit": "hishamarna"
           }
         ]
       },
@@ -6818,7 +7098,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "קבץ"
+            "compare": "קבץ",
+            "translit": "qabbets"
           },
           {
             "id": "verb-piel-imperative-2fs",
@@ -6841,7 +7122,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "קבצי"
+            "compare": "קבצי",
+            "translit": "qabbtsi"
           },
           {
             "id": "verb-piel-imperative-2mp",
@@ -6864,7 +7146,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "קבצו"
+            "compare": "קבצו",
+            "translit": "qabbtsu"
           },
           {
             "id": "verb-piel-imperative-2fp",
@@ -6887,7 +7170,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "קבצנה"
+            "compare": "קבצנה",
+            "translit": "qabbetsna"
           }
         ]
       },
@@ -6922,7 +7206,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "שמר"
+            "compare": "שמר",
+            "translit": "shemor"
           },
           {
             "id": "verb-qal-imperative-2fs",
@@ -6945,7 +7230,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "שמרי"
+            "compare": "שמרי",
+            "translit": "shimri"
           },
           {
             "id": "verb-qal-imperative-2mp",
@@ -6968,7 +7254,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "שמרו"
+            "compare": "שמרו",
+            "translit": "shimru"
           },
           {
             "id": "verb-qal-imperative-2fp",
@@ -6991,7 +7278,8 @@
               "lesson": 39,
               "page": 110
             },
-            "compare": "שמרנה"
+            "compare": "שמרנה",
+            "translit": "shemorna"
           }
         ]
       },
@@ -7026,7 +7314,8 @@
               "lesson": 39,
               "page": 109
             },
-            "compare": "אשמרה"
+            "compare": "אשמרה",
+            "translit": "eshmera"
           },
           {
             "id": "verb-qal-jussive-coh-1cp-shmr",
@@ -7049,7 +7338,8 @@
               "lesson": 39,
               "page": 109
             },
-            "compare": "נשמרה"
+            "compare": "נשמרה",
+            "translit": "nishmera"
           },
           {
             "id": "verb-qal-jussive-3ms-qum",
@@ -7072,7 +7362,8 @@
               "lesson": 39,
               "page": 109
             },
-            "compare": "יקם"
+            "compare": "יקם",
+            "translit": "yaqom"
           },
           {
             "id": "verb-qal-impf-3ms-qum",
@@ -7095,7 +7386,8 @@
               "lesson": 39,
               "page": 109
             },
-            "compare": "יקום"
+            "compare": "יקום",
+            "translit": "yaqum"
           }
         ]
       },
@@ -7130,7 +7422,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "הו- / ו-"
+            "compare": "הו- / ו-",
+            "translit": "hu / vo"
           },
           {
             "id": "verb-attached-object-suffixes-3mp",
@@ -7153,7 +7446,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "ם-"
+            "compare": "ם-",
+            "translit": "m"
           },
           {
             "id": "verb-attached-object-suffixes-3fp",
@@ -7176,7 +7470,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "ן-"
+            "compare": "ן-",
+            "translit": "n"
           },
           {
             "id": "verb-attached-object-suffixes-2ms",
@@ -7199,7 +7494,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "ך-"
+            "compare": "ך-",
+            "translit": "kha"
           },
           {
             "id": "verb-attached-object-suffixes-2fs",
@@ -7222,7 +7518,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "ך-"
+            "compare": "ך-",
+            "translit": "khe"
           },
           {
             "id": "verb-attached-object-suffixes-2mp",
@@ -7245,7 +7542,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "כם-"
+            "compare": "כם-",
+            "translit": "khem"
           },
           {
             "id": "verb-attached-object-suffixes-2fp",
@@ -7268,7 +7566,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "כן-"
+            "compare": "כן-",
+            "translit": "khen"
           },
           {
             "id": "verb-attached-object-suffixes-1cs",
@@ -7291,7 +7590,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "ני-"
+            "compare": "ני-",
+            "translit": "ni"
           },
           {
             "id": "verb-attached-object-suffixes-1cp",
@@ -7314,7 +7614,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "נו-"
+            "compare": "נו-",
+            "translit": "nu"
           }
         ]
       },
@@ -7354,7 +7655,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "שמרו"
+            "compare": "שמרו",
+            "translit": "shamro"
           },
           {
             "id": "verb-attached-qal-example-impf-3ms-3ms-shmr-a",
@@ -7383,7 +7685,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "ישמרהו"
+            "compare": "ישמרהו",
+            "translit": "yishmerehu"
           },
           {
             "id": "verb-attached-qal-example-impf-3ms-3ms-shmr-b",
@@ -7412,7 +7715,8 @@
               "lesson": 40,
               "page": 112
             },
-            "compare": "ישמרנו"
+            "compare": "ישמרנו",
+            "translit": "yishmerennu"
           }
         ]
       },
@@ -7446,7 +7750,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "ממליך"
+            "compare": "ממליך",
+            "translit": "mamlikh"
           },
           {
             "id": "verb-hifil-participle-ms-pqd-appendix",
@@ -7468,7 +7773,8 @@
               "appendix": "C",
               "page": "a-18"
             },
-            "compare": "מפקיד"
+            "compare": "מפקיד",
+            "translit": "mafqid"
           }
         ]
       },
@@ -7502,7 +7808,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "מתקבץ"
+            "compare": "מתקבץ",
+            "translit": "mitqabbets"
           }
         ]
       },
@@ -7536,7 +7843,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "נשמר"
+            "compare": "נשמר",
+            "translit": "nishmar"
           }
         ]
       },
@@ -7570,7 +7878,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "מקבץ"
+            "compare": "מקבץ",
+            "translit": "meqabbets"
           },
           {
             "id": "verb-piel-participle-ms-pqd-appendix",
@@ -7592,7 +7901,8 @@
               "appendix": "C",
               "page": "a-17"
             },
-            "compare": "מפקד"
+            "compare": "מפקד",
+            "translit": "mefaqed"
           }
         ]
       },
@@ -7626,7 +7936,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "אמר"
+            "compare": "אמר",
+            "translit": "omer"
           },
           {
             "id": "verb-qal-participle-act-ms-cstr",
@@ -7648,7 +7959,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "אמר"
+            "compare": "אמר",
+            "translit": "omar"
           },
           {
             "id": "verb-qal-participle-act-fs-abs",
@@ -7671,7 +7983,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "אמרת / אמרה"
+            "compare": "אמרת / אמרה",
+            "translit": "omeret / omra"
           },
           {
             "id": "verb-qal-participle-act-fs-cstr",
@@ -7694,7 +8007,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "אמרת / אמרת"
+            "compare": "אמרת / אמרת",
+            "translit": "omeret / omrat"
           },
           {
             "id": "verb-qal-participle-act-mp-abs",
@@ -7716,7 +8030,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "אמרים"
+            "compare": "אמרים",
+            "translit": "omrim"
           },
           {
             "id": "verb-qal-participle-act-mp-cstr",
@@ -7738,7 +8053,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "אמרי"
+            "compare": "אמרי",
+            "translit": "omre"
           },
           {
             "id": "verb-qal-participle-act-fp",
@@ -7760,7 +8076,8 @@
               "lesson": 42,
               "page": 116
             },
-            "compare": "אמרות"
+            "compare": "אמרות",
+            "translit": "omrot"
           },
           {
             "id": "verb-qal-participle-pass-ms-abscstr",
@@ -7782,7 +8099,8 @@
               "lesson": 42,
               "page": 117
             },
-            "compare": "ארור"
+            "compare": "ארור",
+            "translit": "arur"
           },
           {
             "id": "verb-qal-participle-pass-fs-abs",
@@ -7804,7 +8122,8 @@
               "lesson": 42,
               "page": 117
             },
-            "compare": "ארורה"
+            "compare": "ארורה",
+            "translit": "arura"
           },
           {
             "id": "verb-qal-participle-pass-fs-cstr",
@@ -7826,7 +8145,8 @@
               "lesson": 42,
               "page": 117
             },
-            "compare": "ארורת"
+            "compare": "ארורת",
+            "translit": "arurat"
           },
           {
             "id": "verb-qal-participle-pass-mp-abs",
@@ -7848,7 +8168,8 @@
               "lesson": 42,
               "page": 117
             },
-            "compare": "ארורים"
+            "compare": "ארורים",
+            "translit": "arurim"
           },
           {
             "id": "verb-qal-participle-pass-mp-cstr",
@@ -7870,7 +8191,8 @@
               "lesson": 42,
               "page": 117
             },
-            "compare": "ארורי"
+            "compare": "ארורי",
+            "translit": "arure"
           },
           {
             "id": "verb-qal-participle-pass-fp",
@@ -7892,7 +8214,8 @@
               "lesson": 42,
               "page": 117
             },
-            "compare": "ארורות"
+            "compare": "ארורות",
+            "translit": "arurot"
           }
         ]
       },
@@ -7925,7 +8248,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "אחד עשר"
+            "compare": "אחד עשר",
+            "translit": "achad asar"
           },
           {
             "id": "numeral-11-19-11-b",
@@ -7946,7 +8270,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "עשתי עשר"
+            "compare": "עשתי עשר",
+            "translit": "ashte asar"
           },
           {
             "id": "numeral-11-19-12-a",
@@ -7967,7 +8292,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "שנים עשר"
+            "compare": "שנים עשר",
+            "translit": "shenem asar"
           },
           {
             "id": "numeral-11-19-12-b",
@@ -7988,7 +8314,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "שני עשר"
+            "compare": "שני עשר",
+            "translit": "shene asar"
           }
         ]
       },
@@ -8021,7 +8348,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "מאה"
+            "compare": "מאה",
+            "translit": "me'a"
           },
           {
             "id": "numeral-hundreds-100-fs-cstr",
@@ -8042,7 +8370,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "מאת"
+            "compare": "מאת",
+            "translit": "me'at"
           },
           {
             "id": "numeral-hundreds-100-p",
@@ -8062,7 +8391,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "מאות"
+            "compare": "מאות",
+            "translit": "meot"
           },
           {
             "id": "numeral-hundreds-200",
@@ -8082,7 +8412,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "מאתים"
+            "compare": "מאתים",
+            "translit": "matayim"
           },
           {
             "id": "numeral-hundreds-300",
@@ -8102,7 +8433,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "שלש־מאות"
+            "compare": "שלש־מאות",
+            "translit": "shelosh-meot"
           }
         ]
       },
@@ -8134,7 +8466,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ראשון"
+            "compare": "ראשון",
+            "translit": "rishon"
           },
           {
             "id": "numeral-ordinal-1-10-1-f",
@@ -8154,7 +8487,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ראשונה"
+            "compare": "ראשונה",
+            "translit": "rishona"
           },
           {
             "id": "numeral-ordinal-1-10-2-m",
@@ -8174,7 +8508,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שני"
+            "compare": "שני",
+            "translit": "sheni"
           },
           {
             "id": "numeral-ordinal-1-10-2-f",
@@ -8194,7 +8529,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שנית"
+            "compare": "שנית",
+            "translit": "shenit"
           },
           {
             "id": "numeral-ordinal-1-10-3-m",
@@ -8214,7 +8550,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שלישי"
+            "compare": "שלישי",
+            "translit": "shelishi"
           },
           {
             "id": "numeral-ordinal-1-10-3-f",
@@ -8234,7 +8571,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שלישית"
+            "compare": "שלישית",
+            "translit": "shelishit"
           },
           {
             "id": "numeral-ordinal-1-10-4-m",
@@ -8254,7 +8592,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "רביעי"
+            "compare": "רביעי",
+            "translit": "revi'i"
           },
           {
             "id": "numeral-ordinal-1-10-4-f",
@@ -8274,7 +8613,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "רביעית"
+            "compare": "רביעית",
+            "translit": "revi'it"
           },
           {
             "id": "numeral-ordinal-1-10-5-m",
@@ -8294,7 +8634,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "חמישי"
+            "compare": "חמישי",
+            "translit": "chamishi"
           },
           {
             "id": "numeral-ordinal-1-10-5-f",
@@ -8314,7 +8655,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "חמישית"
+            "compare": "חמישית",
+            "translit": "chamishit"
           },
           {
             "id": "numeral-ordinal-1-10-6-m",
@@ -8334,7 +8676,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ששי"
+            "compare": "ששי",
+            "translit": "shishi"
           },
           {
             "id": "numeral-ordinal-1-10-6-f",
@@ -8354,7 +8697,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "ששית"
+            "compare": "ששית",
+            "translit": "shishit"
           },
           {
             "id": "numeral-ordinal-1-10-7-m",
@@ -8374,7 +8718,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שביעי"
+            "compare": "שביעי",
+            "translit": "shevi'i"
           },
           {
             "id": "numeral-ordinal-1-10-7-f",
@@ -8394,7 +8739,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שביעית"
+            "compare": "שביעית",
+            "translit": "shevi'it"
           },
           {
             "id": "numeral-ordinal-1-10-8-m",
@@ -8414,7 +8760,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שמיני"
+            "compare": "שמיני",
+            "translit": "shemini"
           },
           {
             "id": "numeral-ordinal-1-10-8-f",
@@ -8434,7 +8781,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "שמינית"
+            "compare": "שמינית",
+            "translit": "sheminit"
           },
           {
             "id": "numeral-ordinal-1-10-9-m",
@@ -8454,7 +8802,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "תשיעי"
+            "compare": "תשיעי",
+            "translit": "teshi'i"
           },
           {
             "id": "numeral-ordinal-1-10-9-f",
@@ -8474,7 +8823,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "תשיעית"
+            "compare": "תשיעית",
+            "translit": "teshi'it"
           },
           {
             "id": "numeral-ordinal-1-10-10-m",
@@ -8494,7 +8844,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "עשירי"
+            "compare": "עשירי",
+            "translit": "asiri"
           },
           {
             "id": "numeral-ordinal-1-10-10-f",
@@ -8514,7 +8865,8 @@
               "lesson": 45,
               "page": 125
             },
-            "compare": "עשירית"
+            "compare": "עשירית",
+            "translit": "asirit"
           }
         ]
       },
@@ -8545,7 +8897,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "עשרים"
+            "compare": "עשרים",
+            "translit": "esrim"
           },
           {
             "id": "numeral-tens-31",
@@ -8564,7 +8917,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "שלושים ואחד"
+            "compare": "שלושים ואחד",
+            "translit": "sheloshim ve'echad"
           },
           {
             "id": "numeral-tens-45",
@@ -8583,7 +8937,8 @@
               "lesson": 45,
               "page": 126
             },
-            "compare": "ארבעים וחמש"
+            "compare": "ארבעים וחמש",
+            "translit": "arba'im vechamesh"
           }
         ]
       },
@@ -8619,7 +8974,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "אותו"
+            "compare": "אותו",
+            "translit": "oto"
           },
           {
             "id": "particle-object-marker-sfx3fs",
@@ -8643,7 +8999,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "אתה"
+            "compare": "אתה",
+            "translit": "otah"
           },
           {
             "id": "particle-object-marker-sfx2ms",
@@ -8667,7 +9024,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "אתך"
+            "compare": "אתך",
+            "translit": "otkha"
           },
           {
             "id": "particle-object-marker-sfx2fs",
@@ -8691,7 +9049,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "אתך"
+            "compare": "אתך",
+            "translit": "otakh"
           },
           {
             "id": "particle-object-marker-sfx1cs",
@@ -8715,7 +9074,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "אתי"
+            "compare": "אתי",
+            "translit": "oti"
           },
           {
             "id": "particle-object-marker-sfx3mp",
@@ -8739,7 +9099,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אותם"
+            "compare": "אותם",
+            "translit": "otam"
           },
           {
             "id": "particle-object-marker-sfx3fp",
@@ -8763,7 +9124,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אתהן"
+            "compare": "אתהן",
+            "translit": "ethen"
           },
           {
             "id": "particle-object-marker-sfx2mp",
@@ -8787,7 +9149,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אתכם"
+            "compare": "אתכם",
+            "translit": "etkhem"
           },
           {
             "id": "particle-object-marker-sfx2fp",
@@ -8811,7 +9174,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אתכן"
+            "compare": "אתכן",
+            "translit": "etkhen"
           },
           {
             "id": "particle-object-marker-sfx1cp",
@@ -8835,7 +9199,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אותנו"
+            "compare": "אותנו",
+            "translit": "otanu"
           }
         ]
       },
@@ -8871,7 +9236,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדיו"
+            "compare": "עדיו",
+            "translit": "adayv"
           },
           {
             "id": "particle-prep-attached-ad-sfx3fs",
@@ -8895,7 +9261,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדיה"
+            "compare": "עדיה",
+            "translit": "adeha"
           },
           {
             "id": "particle-prep-attached-ad-sfx2ms",
@@ -8919,7 +9286,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדיך"
+            "compare": "עדיך",
+            "translit": "adekha"
           },
           {
             "id": "particle-prep-attached-ad-sfx2fs",
@@ -8943,7 +9311,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדיך"
+            "compare": "עדיך",
+            "translit": "adayikh"
           },
           {
             "id": "particle-prep-attached-ad-sfx1cs",
@@ -8967,7 +9336,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדי"
+            "compare": "עדי",
+            "translit": "aday"
           },
           {
             "id": "particle-prep-attached-ad-sfx3mp",
@@ -8991,7 +9361,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדיהם"
+            "compare": "עדיהם",
+            "translit": "adehem"
           },
           {
             "id": "particle-prep-attached-ad-sfx3fp",
@@ -9015,7 +9386,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדיהן"
+            "compare": "עדיהן",
+            "translit": "adehen"
           },
           {
             "id": "particle-prep-attached-ad-sfx2mp",
@@ -9039,7 +9411,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדיכם"
+            "compare": "עדיכם",
+            "translit": "adekhem"
           },
           {
             "id": "particle-prep-attached-ad-sfx2fp",
@@ -9063,7 +9436,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדיכן"
+            "compare": "עדיכן",
+            "translit": "adekhen"
           },
           {
             "id": "particle-prep-attached-ad-sfx1cp",
@@ -9087,7 +9461,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עדינו"
+            "compare": "עדינו",
+            "translit": "adenu"
           }
         ]
       },
@@ -9123,7 +9498,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עליו"
+            "compare": "עליו",
+            "translit": "alayv"
           },
           {
             "id": "particle-prep-attached-al-sfx3fs",
@@ -9147,7 +9523,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עליה"
+            "compare": "עליה",
+            "translit": "aleha"
           },
           {
             "id": "particle-prep-attached-al-sfx2ms",
@@ -9171,7 +9548,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עליך"
+            "compare": "עליך",
+            "translit": "alekha"
           },
           {
             "id": "particle-prep-attached-al-sfx2fs",
@@ -9195,7 +9573,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עליך"
+            "compare": "עליך",
+            "translit": "alayikh"
           },
           {
             "id": "particle-prep-attached-al-sfx1cs",
@@ -9219,7 +9598,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עלי"
+            "compare": "עלי",
+            "translit": "alay"
           },
           {
             "id": "particle-prep-attached-al-sfx3mp",
@@ -9243,7 +9623,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עליהם"
+            "compare": "עליהם",
+            "translit": "alehem"
           },
           {
             "id": "particle-prep-attached-al-sfx3fp",
@@ -9267,7 +9648,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עליהן"
+            "compare": "עליהן",
+            "translit": "alehen"
           },
           {
             "id": "particle-prep-attached-al-sfx2mp",
@@ -9291,7 +9673,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עליכם"
+            "compare": "עליכם",
+            "translit": "alekhem"
           },
           {
             "id": "particle-prep-attached-al-sfx2fp",
@@ -9315,7 +9698,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עליכן"
+            "compare": "עליכן",
+            "translit": "alekhen"
           },
           {
             "id": "particle-prep-attached-al-sfx1cp",
@@ -9339,7 +9723,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "עלינו"
+            "compare": "עלינו",
+            "translit": "alenu"
           }
         ]
       },
@@ -9375,7 +9760,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אליו"
+            "compare": "אליו",
+            "translit": "elayv"
           },
           {
             "id": "particle-prep-attached-el-sfx3fs",
@@ -9399,7 +9785,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אליה"
+            "compare": "אליה",
+            "translit": "eleha"
           },
           {
             "id": "particle-prep-attached-el-sfx2ms",
@@ -9423,7 +9810,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אליך"
+            "compare": "אליך",
+            "translit": "elekha"
           },
           {
             "id": "particle-prep-attached-el-sfx2fs",
@@ -9447,7 +9835,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אליך"
+            "compare": "אליך",
+            "translit": "elayikh"
           },
           {
             "id": "particle-prep-attached-el-sfx1cs",
@@ -9471,7 +9860,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אלי"
+            "compare": "אלי",
+            "translit": "elay"
           },
           {
             "id": "particle-prep-attached-el-sfx3mp",
@@ -9495,7 +9885,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אליהם"
+            "compare": "אליהם",
+            "translit": "alehem"
           },
           {
             "id": "particle-prep-attached-el-sfx3fp",
@@ -9519,7 +9910,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אליהן"
+            "compare": "אליהן",
+            "translit": "alehen"
           },
           {
             "id": "particle-prep-attached-el-sfx2mp",
@@ -9543,7 +9935,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אליכם"
+            "compare": "אליכם",
+            "translit": "alekhem"
           },
           {
             "id": "particle-prep-attached-el-sfx2fp",
@@ -9567,7 +9960,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אליכן"
+            "compare": "אליכן",
+            "translit": "alekhen"
           },
           {
             "id": "particle-prep-attached-el-sfx1cp",
@@ -9591,7 +9985,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "אלינו"
+            "compare": "אלינו",
+            "translit": "elenu"
           }
         ]
       },
@@ -9626,7 +10021,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "כמהו"
+            "compare": "כמהו",
+            "translit": "kamohu"
           },
           {
             "id": "particle-prep-attached-kmo-3fs",
@@ -9650,7 +10046,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "כמוה"
+            "compare": "כמוה",
+            "translit": "kamoha"
           },
           {
             "id": "particle-prep-attached-kmo-2ms",
@@ -9674,7 +10071,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "כמוך"
+            "compare": "כמוך",
+            "translit": "kamokha"
           },
           {
             "id": "particle-prep-attached-kmo-2fs",
@@ -9698,7 +10096,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "כמוך"
+            "compare": "כמוך",
+            "translit": "kamokh"
           },
           {
             "id": "particle-prep-attached-kmo-1cs",
@@ -9722,7 +10121,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "כמוני"
+            "compare": "כמוני",
+            "translit": "kamoni"
           },
           {
             "id": "particle-prep-attached-kmo-3mp",
@@ -9746,7 +10146,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "כהם"
+            "compare": "כהם",
+            "translit": "kahem"
           },
           {
             "id": "particle-prep-attached-kmo-3fp",
@@ -9770,7 +10171,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "כהן"
+            "compare": "כהן",
+            "translit": "kahen"
           },
           {
             "id": "particle-prep-attached-kmo-2mp",
@@ -9794,7 +10196,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "ככם"
+            "compare": "ככם",
+            "translit": "kakhem"
           },
           {
             "id": "particle-prep-attached-kmo-2fp",
@@ -9818,7 +10221,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "ככן"
+            "compare": "ככן",
+            "translit": "kakhen"
           },
           {
             "id": "particle-prep-attached-kmo-1cp",
@@ -9842,7 +10246,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "כמונו"
+            "compare": "כמונו",
+            "translit": "kamonu"
           }
         ]
       },
@@ -9877,7 +10282,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "ממנו"
+            "compare": "ממנו",
+            "translit": "mimmennu"
           },
           {
             "id": "particle-prep-attached-mn-3fs",
@@ -9901,7 +10307,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "ממנה"
+            "compare": "ממנה",
+            "translit": "mimmenna"
           },
           {
             "id": "particle-prep-attached-mn-2ms",
@@ -9925,7 +10332,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "ממך"
+            "compare": "ממך",
+            "translit": "mimmkha"
           },
           {
             "id": "particle-prep-attached-mn-2fs",
@@ -9949,7 +10357,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "ממך"
+            "compare": "ממך",
+            "translit": "mimmekh"
           },
           {
             "id": "particle-prep-attached-mn-1cs",
@@ -9973,7 +10382,8 @@
               "appendix": "B",
               "page": "a-13"
             },
-            "compare": "ממני"
+            "compare": "ממני",
+            "translit": "mimmenni"
           },
           {
             "id": "particle-prep-attached-mn-3mp",
@@ -9997,7 +10407,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "מהם"
+            "compare": "מהם",
+            "translit": "mehem"
           },
           {
             "id": "particle-prep-attached-mn-3fp",
@@ -10021,7 +10432,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "מהן"
+            "compare": "מהן",
+            "translit": "mehen"
           },
           {
             "id": "particle-prep-attached-mn-2mp",
@@ -10045,7 +10457,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "מכם"
+            "compare": "מכם",
+            "translit": "mikkem"
           },
           {
             "id": "particle-prep-attached-mn-2fp",
@@ -10069,7 +10482,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "מכן"
+            "compare": "מכן",
+            "translit": "mikken"
           },
           {
             "id": "particle-prep-attached-mn-1cp",
@@ -10100,7 +10514,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "ממנו"
+            "compare": "ממנו",
+            "translit": "mimmennu"
           }
         ]
       },
@@ -10136,7 +10551,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתיו"
+            "compare": "תחתיו",
+            "translit": "tachtayv"
           },
           {
             "id": "particle-prep-attached-tachat-sfx3fs",
@@ -10160,7 +10576,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתיה"
+            "compare": "תחתיה",
+            "translit": "tachteha"
           },
           {
             "id": "particle-prep-attached-tachat-sfx2ms",
@@ -10184,7 +10601,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתיך"
+            "compare": "תחתיך",
+            "translit": "tachtekha"
           },
           {
             "id": "particle-prep-attached-tachat-sfx2fs",
@@ -10208,7 +10626,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתיך"
+            "compare": "תחתיך",
+            "translit": "tachtayikh"
           },
           {
             "id": "particle-prep-attached-tachat-sfx1cs",
@@ -10232,7 +10651,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתי"
+            "compare": "תחתי",
+            "translit": "tachtay"
           },
           {
             "id": "particle-prep-attached-tachat-sfx3mp",
@@ -10256,7 +10676,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתיהם"
+            "compare": "תחתיהם",
+            "translit": "tachtehem"
           },
           {
             "id": "particle-prep-attached-tachat-sfx3fp",
@@ -10280,7 +10701,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתיהן"
+            "compare": "תחתיהן",
+            "translit": "tachtehen"
           },
           {
             "id": "particle-prep-attached-tachat-sfx2mp",
@@ -10304,7 +10726,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתיכם"
+            "compare": "תחתיכם",
+            "translit": "tachtekhem"
           },
           {
             "id": "particle-prep-attached-tachat-sfx2fp",
@@ -10328,7 +10751,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתיכן"
+            "compare": "תחתיכן",
+            "translit": "tachtekhen"
           },
           {
             "id": "particle-prep-attached-tachat-sfx1cp",
@@ -10352,7 +10776,8 @@
               "appendix": "B",
               "page": "a-14"
             },
-            "compare": "תחתינו"
+            "compare": "תחתינו",
+            "translit": "tachtenu"
           }
         ]
       },
@@ -10386,7 +10811,8 @@
               "appendix": "C",
               "page": "a-18"
             },
-            "compare": "וישחתו"
+            "compare": "וישחתו",
+            "translit": "vayashchitu"
           },
           {
             "id": "verb-hifil-pastnarrative-appendix-3ms-shmd",
@@ -10409,7 +10835,8 @@
               "appendix": "C",
               "page": "a-18"
             },
-            "compare": "וישמד"
+            "compare": "וישמד",
+            "translit": "vayashmed"
           }
         ]
       },
@@ -10441,7 +10868,8 @@
               "appendix": "C",
               "page": "a-17"
             },
-            "compare": "נפקד"
+            "compare": "נפקד",
+            "translit": "nifqod"
           },
           {
             "id": "verb-nifal-infinitive-appendix-advinf-b",
@@ -10462,7 +10890,8 @@
               "appendix": "C",
               "page": "a-17"
             },
-            "compare": "הפקד"
+            "compare": "הפקד",
+            "translit": "hippaqed"
           }
         ]
       },
@@ -10496,7 +10925,8 @@
               "appendix": "C",
               "page": "a-17"
             },
-            "compare": "וידבר"
+            "compare": "וידבר",
+            "translit": "vaydabber"
           }
         ]
       },
@@ -10532,7 +10962,8 @@
               "appendix": "C",
               "page": "a-17"
             },
-            "compare": "ענותי"
+            "compare": "ענותי",
+            "translit": "unnoti"
           },
           {
             "id": "verb-pual-appendix-advinf-gnb",
@@ -10552,7 +10983,8 @@
               "appendix": "C",
               "page": "a-17"
             },
-            "compare": "גנב"
+            "compare": "גנב",
+            "translit": "gunnav"
           }
         ]
       }

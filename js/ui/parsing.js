@@ -781,6 +781,27 @@ function renderDimensionChoices(dim, gatedPool) {
   return buttons.join('');
 }
 
+// Prompt-block markup shared by the Parse step and the summary screen: the
+// Hebrew form at the vocab card's own headword scale (.card-greek — see
+// styles.css), an italic transliteration line directly under it using the
+// SAME .card-translit class/hook the vocab card uses (so the existing
+// html[data-show-translit="hide"] rule shows/hides it for free — no new
+// state, no new JS toggle logic, exactly mirroring how render.js consumes
+// runtime.showTranslit), and this module's own uppercase step/progress
+// label below that.
+function renderFormHeadline(form, progressLabel) {
+  const translitHtml = form.translit
+    ? `<div class="card-translit">${escapeHtml(form.translit)}</div>`
+    : '';
+  const progressHtml = progressLabel ? `<div class="parsing-progress">${escapeHtml(progressLabel)}</div>` : '';
+  return `
+    <div class="parsing-prompt-block">
+      <div class="card-greek hebrew-text" dir="rtl" lang="he">${escapeHtml(form.display)}</div>
+      ${translitHtml}
+      ${progressHtml}
+    </div>`;
+}
+
 function renderParseStep(state) {
   const form = currentForm;
   const dim = parseSteps[parseStepIndex];
@@ -791,8 +812,7 @@ function renderParseStep(state) {
     : '';
   return `
     <div class="parsing-card">
-      <div class="big hebrew-text" dir="rtl" lang="he">${escapeHtml(form.display)}</div>
-      <div class="parsing-progress">${escapeHtml(progress)}</div>
+      ${renderFormHeadline(form, progress)}
       <div class="parsing-step-grid">${stepButtons}</div>
       <button class="ctrl-btn parsing-dontknow-btn" type="button" onclick="parsingSubmitDontKnow()">I don't know</button>
     </div>`;
@@ -820,8 +840,10 @@ function renderBuildQuestion(state) {
     : '';
   return `
     <div class="parsing-card">
-      <div class="parsing-build-prompt">${escapeHtml(promptLabel)}</div>
-      <div class="parsing-progress">${escapeHtml(progressLabel)}</div>
+      <div class="parsing-prompt-block">
+        <div class="parsing-build-prompt">${escapeHtml(promptLabel)}</div>
+        <div class="parsing-progress">${escapeHtml(progressLabel)}</div>
+      </div>
       <div class="parsing-step-grid">${choiceButtons}</div>
       ${checkBtn}
     </div>`;
@@ -905,7 +927,7 @@ function renderSummary(state) {
 
   return `
     <div class="parsing-card parsing-summary">
-      <div class="big hebrew-text" dir="rtl" lang="he">${escapeHtml(form.display)}</div>
+      ${renderFormHeadline(form, '')}
       ${body}
       ${noteHtml}${ambigHtml}${lemmaHtml}${sourceHtml}
       <button class="ctrl-btn quick-primary parsing-next-btn" type="button" onclick="parsingNextCard()">Next →</button>

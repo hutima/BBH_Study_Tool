@@ -10,7 +10,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=10') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=11') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -18,7 +18,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=10') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=11') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -26,7 +26,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=10') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=11') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -34,7 +34,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=10') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=11') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -42,7 +42,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=10') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=11') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -50,7 +50,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=10') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=11') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -58,7 +58,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=10') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=11') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -66,7 +66,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=10') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=11') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -91,7 +91,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-normal.woff2?v=10') format('woff2');
+    src: url('fonts/noto-sans-latin-normal.woff2?v=11') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -102,7 +102,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=10') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=11') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -113,7 +113,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-italic.woff2?v=10') format('woff2');
+    src: url('fonts/noto-sans-latin-italic.woff2?v=11') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -124,7 +124,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=10') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=11') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -140,7 +140,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-serif-hebrew.woff2?v=10') format('woff2');
+    src: url('fonts/noto-serif-hebrew.woff2?v=11') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
   @font-face {
@@ -148,7 +148,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-sans-hebrew.woff2?v=10') format('woff2');
+    src: url('fonts/noto-sans-hebrew.woff2?v=11') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
 
@@ -6206,14 +6206,29 @@
 
 .parsing-area { display: flex; justify-content: center; }
 .parsing-card { width: 100%; max-width: 560px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 28px 26px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+/* Task #17 — card hierarchy: the "prompt block" groups the (big) Hebrew
+   form, its (small, italic, muted) transliteration, and the (small,
+   uppercase, muted) step/progress label into one visually-graduated unit,
+   clearly separated from the choice-button grid below it — mirrors the
+   Greek-original "big word, small italic transliteration under it" feel
+   the vocab flashcard already has (see .card-greek/.card-translit below). */
+.parsing-prompt-block { display: flex; flex-direction: column; align-items: center; width: 100%; margin-bottom: 8px; }
+.parsing-prompt-block .card-greek { margin-bottom: 2px; }
+.parsing-prompt-block .card-translit { margin-bottom: 4px; }
+.parsing-prompt-block .parsing-progress { margin: 4px 0 0; }
 .parsing-progress { color: var(--muted); font-family: var(--font-display); font-size: calc((12px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; margin: 6px 0 18px; min-height: 1.2em; }
-.parsing-step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; width: 100%; margin-bottom: 14px; }
+.parsing-step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; width: 100%; margin-bottom: 14px; margin-top: 14px; }
 .parsing-choice-btn { width: 100%; }
 .parsing-build-choice { font-size: calc((clamp(20px, 4vw, 28px)) * var(--text-scale)); font-family: var(--font-hebrew); padding: 14px 10px; }
 .parsing-dontknow-btn { color: var(--muted); border-color: var(--border); margin-top: 4px; }
-.parsing-build-prompt { font-family: var(--font-display); font-size: calc((16px) * var(--text-scale)); color: var(--gold-light); margin-bottom: 4px; }
+/* Build mode shows no Hebrew form (that's the point — you have to build it),
+   so the target PARSE DESCRIPTION is what gets the "prominent" treatment
+   instead, at roughly the vocab card's English-gloss scale (.card-english)
+   rather than the old flat 16px. */
+.parsing-build-prompt { font-family: var(--font-display); font-size: calc((clamp(19px, 4vw, 25px)) * var(--text-scale)); font-weight: 600; color: var(--gold-light); line-height: 1.4; margin-bottom: 2px; }
 
 .parsing-summary { align-items: stretch; text-align: left; }
+.parsing-summary .parsing-prompt-block { margin-bottom: 14px; }
 .parsing-summary .hebrew-text { align-self: center; margin-bottom: 10px; }
 .parsing-summary-picks { display: flex; flex-direction: column; gap: 4px; margin-bottom: 14px; }
 .parsing-summary-pick-row { display: flex; justify-content: space-between; gap: 10px; font-size: calc((13px) * var(--text-scale)); color: var(--cream); }
