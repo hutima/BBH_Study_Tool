@@ -259,39 +259,60 @@ export function loadVocabRows() {
 // doesn't over-report. Built from `--report`'s "unmatched lemma frequency"
 // diagnostic, cross-checked by hand against the vocab CSV. Keyed by Strong's
 // number (stable across all inflected forms, unlike display text).
+// Every entry below was individually cross-checked against
+// source/bbh/Beginning_Biblical_Hebrew_Vocabulary_by_Lesson.csv (both a
+// Hebrew-substring grep against the CSV's `hebrew` column and an
+// English-gloss grep against `english_gloss`/`grammar_and_forms`, to catch
+// cases where a verb's dictionary-citation vowel pattern — e.g. Piel
+// דִּבֵּר vs. a wayyiqtol וַיְדַבֵּר — doesn't literally substring-match).
+// `vocabLesson: null` entries are NOT gaps in this table; they are the
+// documented, verified finding that the lemma is genuinely absent from the
+// 191-card BBH vocab CSV (a curated subset of Genesis's actual vocabulary,
+// not exhaustive), so `--report`'s unmatched-frequency list should stop
+// flagging them as "not yet resolved" once they're listed here.
 export const LEMMA_OVERRIDES = new Map([
-  // lemma, vocabLesson, CSV headword it corresponds to, gloss (for review)
-  ['559', { vocabLesson: null, note: 'אמר "say" (Strong 559) — highest-frequency Genesis verb; NOT present in the BBH vocab CSV at all. Left unmatched (null) deliberately, not an oversight.' }],
-  ['1121', { vocabLesson: 7, note: 'בֵּן "son" (Strong 1121) — CSV L7 headword בֵּן (בָּנִים); construct/plural/suffixed forms (בֶּן־, בְּנֵי, בְּנוֹ, ...) don\'t depointed-match the absolute citation form.' }],
-  ['1', { vocabLesson: 7, note: 'אָב "father" (Strong 1) — CSV L7; construct אֲבִי/אֲבִיו etc. don\'t match אָב.' }],
-  ['376', { vocabLesson: 6, note: 'אִישׁ "man" (Strong 376) — CSV L6; construct/suffixed/plural (אִישׁ־, אַנְשֵׁי, אֲנָשִׁים already covers plural) don\'t all match.' }],
-  ['802', { vocabLesson: 6, note: 'אִשָּׁה "woman/wife" (Strong 802) — CSV L6; construct אֵשֶׁת and suffixed forms don\'t match אִשָּׁה.' }],
-  ['1980', { vocabLesson: null, note: 'הלך "go/walk" (Strong 1980) — very frequent verb, not in the BBH vocab CSV (191-card set is a curated subset, not exhaustive).' }],
-  ['3820', { vocabLesson: null, note: 'לֵב "heart" (Strong 3820) — not in the BBH vocab CSV.' }],
-  ['5414', { vocabLesson: null, note: 'נתן "give" (Strong 5414) — not in the BBH vocab CSV.' }],
-  ['7200', { vocabLesson: null, note: 'ראה "see" (Strong 7200) — not in the BBH vocab CSV.' }],
-  ['3427', { vocabLesson: null, note: 'ישב "sit/dwell" (Strong 3427) — not in the BBH vocab CSV.' }],
-  ['935', { vocabLesson: null, note: 'בוא "come/enter" (Strong 935) — not in the BBH vocab CSV.' }],
-  ['3318', { vocabLesson: null, note: 'יצא "go out" (Strong 3318) — not in the BBH vocab CSV.' }],
-  ['6213', { vocabLesson: null, note: 'עשה "do/make" (Strong 6213) — not in the BBH vocab CSV.' }],
-  ['1961', { vocabLesson: 6, note: 'היה "be/become" (Strong 1961) — CSV L6 lists הָיָה (3ms) and הָיְתָה (3fs) as separate rows; other PGN forms (הָיוּ, אֶהְיֶה, יִהְיֶה, ...) don\'t depointed-match either citation row.' }],
-  ['3423', { vocabLesson: null, note: 'ירש "possess/inherit" (Strong 3423) — not in the BBH vocab CSV.' }],
-  ['995', { vocabLesson: null, note: 'בין "understand/discern" (Strong 995) — not in the BBH vocab CSV.' }],
-  ['1288', { vocabLesson: null, note: 'ברך "bless" (Strong 1288) — not in the BBH vocab CSV.' }],
-  ['3045', { vocabLesson: null, note: 'ידע "know" (Strong 3045) — not in the BBH vocab CSV.' }],
-  ['7121', { vocabLesson: null, note: 'קרא "call/read" (Strong 7121) — not in the BBH vocab CSV.' }],
-  ['259', { vocabLesson: null, note: 'אֶחָד "one" (Strong 259) — numeral; grammar-gated via gate-map (L45), left unmatched here since it is not a CSV vocab row.' }],
-  ['1004', { vocabLesson: null, note: 'בַּיִת "house" (Strong 1004) — CSV L8 headword בַּיִת (בָּתִּים) DOES direct-match the absolute-singular form; override retained only to document that construct בֵּית-/suffixed forms fall back to null (no separate override attempted — too many distinct construct/suffixed shapes to enumerate here).' }],
-  ['430', { vocabLesson: 3, note: 'אֱלֹהִים "God/gods" (Strong 430) — CSV L3 headword אֱלֹהִים direct-matches the plain form already; kept here only as a documentation anchor for review, not a functional override.' }],
-  ['5921', { vocabLesson: null, note: 'עַל "on/over/against" (Strong 5921) — very frequent preposition (tagged bare R), not in the BBH vocab CSV.' }],
-  ['413', { vocabLesson: null, note: 'אֶל "to/toward" (Strong 413) — frequent preposition, not in the BBH vocab CSV.' }],
-  ['3605', { vocabLesson: null, note: 'כֹּל "all/every" (Strong 3605) — CSV L18 lists כֹּל / כָּל־ but the maqqef-bound construct form כָּל־ (with a following maqqef segment) does not depointed-match the isolated headword in all inflections; direct match already covers the bare form.' }],
-  ['5750', { vocabLesson: null, note: 'עוֹד "still/yet/again" (Strong 5750, adverb D) — not in the BBH vocab CSV; grammar gate resolves via the vocabLinked D-rule to unmapped.' }],
-  ['3318b', { vocabLesson: null, note: 'placeholder guard — see 3318 above; kept to document that Strong homonym letters (e.g. "3318 a"/"3318 b") are stripped to their numeric core before this table is consulted, so both homonyms share one entry.' }],
-  ['120', { vocabLesson: null, note: 'אָדָם "man/mankind/Adam" (Strong 120) — not in the BBH vocab CSV as common-noun "man" (only as the proper name once tagged Np, which the Np rule already handles at grammar-gate L5; the common-noun sense here is left unmatched).' }],
-  ['776', { vocabLesson: 9, note: 'אֶרֶץ "land/earth" (Strong 776) — CSV L9 headword אֶרֶץ (אֲרָצוֹת) direct-matches the absolute singular; kept as a documentation anchor, not a functional override (construct/suffixed/article-fused forms remain unmatched, no override attempted).' }],
-  ['4325', { vocabLesson: null, note: 'מַיִם "water" (Strong 4325) — not in the BBH vocab CSV.' }],
-  ['8064', { vocabLesson: null, note: 'שָׁמַיִם "sky/heavens" (Strong 8064) — not in the BBH vocab CSV.' }]
+  ['559', { vocabLesson: null, note: 'אמר "say" (Strong 559) — highest-frequency Genesis verb; verified NOT present in the BBH vocab CSV.' }],
+  ['935', { vocabLesson: 26, note: 'בוא "come, enter" (Strong 935) — CSV L26 row בּוֹא "come, enter". Direct match only succeeds for the bare Qal infinitive/3ms-lookalike forms.' }],
+  ['3205', { vocabLesson: null, note: 'ילד "bear/beget" (Strong 3205) — verified NOT present in the BBH vocab CSV.' }],
+  ['251', { vocabLesson: 10, note: 'אָח "brother" (Strong 251) — CSV L10 row אָח (אַחִים); plural/construct/suffixed forms (אֲחִי, אֶחָיו, ...) don\'t depointed-match the absolute singular citation form.' }],
+  ['6440', { vocabLesson: null, note: 'פָּנִים "face" (Strong 6440) — verified NOT present in the BBH vocab CSV.' }],
+  ['3947', { vocabLesson: 16, note: 'לָקַח "take, receive" (Strong 3947) — CSV L16 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['5414', { vocabLesson: 17, note: 'נָתַן "give, place, set" (Strong 5414) — CSV L17 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['6213', { vocabLesson: 15, note: 'עָשָׂה "do, make" (Strong 6213) — CSV L15 row עָשָׂה (נַעֲשָׂה); only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['7121', { vocabLesson: 16, note: 'קָרָא "call" (Strong 7121) — CSV L16 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['7200', { vocabLesson: null, note: 'ראה "see" (Strong 7200) — verified NOT present in the BBH vocab CSV.' }],
+  ['3212', { vocabLesson: 16, note: 'ילך — OSHB\'s alternate/defective lemma citation used for many wayyiqtol/imperfect forms of הָלַךְ "walk, go" (Strong 1980, CSV L16); Hebrew lexicography treats 3212 and 1980 as the same lexeme (הלך suppletes with ילך in the imperfect stem), so this shares 1980\'s vocab lesson.' }],
+  ['1980', { vocabLesson: 16, note: 'הָלַךְ "walk, go" (Strong 1980) — CSV L16 row; only the bare Qal perfect 3ms citation form direct-matches (see also 3212, the imperfect-stem alternate lemma).' }],
+  ['4191', { vocabLesson: 30, note: 'מוּת "die" (Strong 4191) — CSV L30 row; only the bare Qal citation form direct-matches.' }],
+  ['5869', { vocabLesson: 10, note: 'עַיִן "eye" (Strong 5869) — CSV lists it twice: L10 עַיִן (עֵינַיִם) dual, and L40 עַיִן, עֵין bound-form pair; construct/suffixed forms don\'t depointed-match either citation row, so this maps to the lower (L10) lesson per the "earliest attested" rule.' }],
+  ['8034', { vocabLesson: 6, note: 'שֵׁם "name" (Strong 8034) — CSV L6 row שֵׁם (שֵׁמוֹת); construct/suffixed forms (שֵׁם־, שְׁמוֹ, ...) don\'t depointed-match the absolute singular.' }],
+  ['1288', { vocabLesson: 29, note: 'בֵּרַךְ/בֵּרֵךְ "bless" (Strong 1288, Piel) — CSV L29 row; only the bare Piel perfect 3ms citation form direct-matches.' }],
+  ['2416', { vocabLesson: null, note: 'חַי "living, life" (Strong 2416) — verified NOT present in the BBH vocab CSV (distinct from Strong 5315 נֶפֶשׁ "life, self", which IS L34 vocab and direct-matches its own absolute form already).' }],
+  ['3967', { vocabLesson: null, note: 'מֵאָה "hundred" (Strong 3967) — verified NOT present in the BBH vocab CSV.' }],
+  ['6629', { vocabLesson: null, note: 'צֹאן "flock" (Strong 6629) — verified NOT present in the BBH vocab CSV.' }],
+  ['7651', { vocabLesson: null, note: 'שֶׁבַע "seven" (Strong 7651, numeral) — verified NOT present in the BBH vocab CSV; grammar-gated separately via gate-map\'s numeral override (L45).' }],
+  ['7725', { vocabLesson: null, note: 'שׁוּב "return" (Strong 7725) — verified NOT present in the BBH vocab CSV (an earlier draft of this table wrongly matched it to L21\'s unrelated שָׁבַת "rest", Strong 7673 — a false substring hit on the shared שׁב consonants; corrected here after review).' }],
+  ['2421', { vocabLesson: null, note: 'חָיָה "live" (Strong 2421) — verified NOT present in the BBH vocab CSV.' }],
+  ['113', { vocabLesson: 3, note: 'אָדוֹן "lord, master" (Strong 113) — CSV L3 row אָדוֹן / אֲדֹנָי; construct/suffixed forms (אֲדֹנִי, אֲדֹנָיו, ...) don\'t all depointed-match.' }],
+  ['3117', { vocabLesson: 21, note: 'יוֹם "day" (Strong 3117) — CSV L21 row (plural יָמִים noted in grammar_and_forms); plural/construct forms don\'t depointed-match the singular citation.' }],
+  ['7971', { vocabLesson: 15, note: 'שָׁלַח "send" (Strong 7971) — CSV L15 row שָׁלַח (נִשְׁלַח); only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['6965', { vocabLesson: null, note: 'קוּם "arise, stand up" (Strong 6965) — verified NOT present in the BBH vocab CSV (distinct from Strong 5975 עָמַד "stand", which IS L19 vocab and direct-matches its own form already).' }],
+  ['8147', { vocabLesson: 31, note: 'שְׁנַיִם "two" (Strong 8147, numeral) — CSV L31 row שְׁנַיִם (F שְׁתַּיִם); construct שְׁנֵי and the feminine form don\'t depointed-match the masculine absolute citation. Also grammar-gated via gate-map\'s numeral override (L45).' }],
+  ['7704', { vocabLesson: null, note: 'שָׂדֶה "field" (Strong 7704) — verified NOT present in the BBH vocab CSV.' }],
+  ['259', { vocabLesson: null, note: 'אֶחָד "one" (Strong 259, numeral) — verified NOT present in the BBH vocab CSV; grammar-gated separately via gate-map\'s numeral override (L45).' }],
+  ['3318', { vocabLesson: 22, note: 'יָצָא "go forth" (Strong 3318) — CSV L22 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['120', { vocabLesson: null, note: 'אָדָם "man, mankind" (Strong 120, common-noun sense) — verified NOT present in the BBH vocab CSV as a common noun (only ever tagged Np "Adam" in this corpus\'s proper-name instances, which the Np gate-map rule already covers at grammar-gate L5 and excludes from unknown-content-lexeme counts).' }],
+  ['1323', { vocabLesson: 7, note: 'בַּת "daughter" (Strong 1323) — CSV L7 row בַּת (בָּנוֹת); construct/suffixed/plural forms don\'t depointed-match the absolute singular.' }],
+  ['398', { vocabLesson: 18, note: 'אָכַל "eat" (Strong 398) — CSV L18 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['5375', { vocabLesson: 32, note: 'נָשָׂא "lift up, carry" (Strong 5375) — CSV L32 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['1696', { vocabLesson: 15, note: 'דִּבֶּר "speak" (Strong 1696, Piel) — CSV L15 row דִּבֵּר; distinct lexeme from Strong 1697 דָּבָר "word, thing" (CSV L5) despite the shared consonantal root — only the bare Piel perfect 3ms citation form direct-matches.' }],
+  ['4672', { vocabLesson: 22, note: 'מָצָא "find" (Strong 4672) — CSV L22 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['1', { vocabLesson: 7, note: 'אָב "father" (Strong 1) — CSV L7 row; construct/suffixed forms (אֲבִי, אָבִיו, ...) don\'t depointed-match אָב.' }],
+  ['376', { vocabLesson: 6, note: 'אִישׁ "man" (Strong 376) — CSV L6 row; construct/suffixed forms don\'t all depointed-match.' }],
+  ['802', { vocabLesson: 6, note: 'אִשָּׁה "woman, wife" (Strong 802) — CSV L6 row; construct אֵשֶׁת and suffixed forms don\'t depointed-match אִשָּׁה.' }],
+  ['1121', { vocabLesson: 7, note: 'בֵּן "son" (Strong 1121) — CSV L7 row בֵּן (בָּנִים); construct/plural/suffixed forms (בֶּן־, בְּנֵי, בְּנוֹ, ...) don\'t depointed-match the absolute singular citation form.' }],
+  ['1961', { vocabLesson: 6, note: 'הָיָה "be, become" (Strong 1961) — CSV L6 lists both הָיָה (3ms) and הָיְתָה (3fs) as separate rows; every other PGN form (הָיוּ, אֶהְיֶה, יִהְיֶה, ...) fails to depointed-match either citation row.' }],
+  ['5750', { vocabLesson: null, note: 'עוֹד "still, yet, again" (Strong 5750, adverb D) — verified NOT present in the BBH vocab CSV; grammar gate resolves via the vocabLinked D-rule to unmapped.' }]
 ]);
 
 /**
