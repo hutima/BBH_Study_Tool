@@ -383,3 +383,14 @@ corpus frequency tiers). Glosses default to public-domain Strong's (mapped
 via OSHB Strong's numbers), optionally LLM-condensed under the 2026-08-09
 wooden-translation rule; the textbook glossary's R# glosses require the
 user to re-supply glossary pages (PDF transport copy deleted).
+
+## Addendum (user feedback, 2026-08-09): 0B vowel-deck fixes (task #16)
+
+From live screenshots: 0B is hard to read and some vowel marks render
+misplaced on the answer face — root-cause hypothesis: cluster highlighting
+splits spans mid-grapheme, detaching combining marks from their base.
+Fix: true grapheme segmentation (Intl.Segmenter 'grapheme', fallback
+regex consonant+combining-marks), larger/brighter representative word,
+highlight by color/weight only. Also: Again/Got-it become STACKED
+full-width vertical buttons on 0A/0B for one-handed use (user
+suggestion). Runs right after task #14 (styles.css overlap).
