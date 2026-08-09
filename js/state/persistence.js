@@ -239,6 +239,62 @@ function sanitizeGrammarState(candidate) {
   };
 }
 
+// ── Reader state sanitize (Phase 2 PR D) ──────────────────────────────────
+// runtime.reader is owned/mutated by js/ui/reader.js, but persistence.js
+// (like every other persisted subtree) is responsible for validating it on
+// the way in from localStorage or an imported JSON file. Backward
+// compatible: a v2/v3/v4 export or a save from before this landed has no
+// `reader` key at all, which sanitizes to the v1 default shape below (see
+// store.js PROGRESS_EXPORT_VERSION comment). NO SRS interaction of any kind
+// — there is no attempts/confidence shape to sanitize here, only plain
+// read-status and self-review flags.
+function sanitizeReaderPassageIdSet(input) {
+  const src = isPlainObject(input) ? input : {};
+  const out = {};
+  Object.keys(src).forEach((id) => {
+    if (src[id] === true) out[id] = true;
+  });
+  return out;
+}
+
+function sanitizeReaderReadOrder(input, readPassages) {
+  const src = Array.isArray(input) ? input : [];
+  const out = [];
+  const seen = new Set();
+  src.forEach((id) => {
+    const key = String(id);
+    if (seen.has(key) || !readPassages[key]) return;
+    seen.add(key);
+    out.push(key);
+  });
+  return out.slice(0, 20);
+}
+
+function sanitizeReaderMarks(input) {
+  const src = isPlainObject(input) ? input : {};
+  const out = {};
+  Object.keys(src).forEach((key) => {
+    if (src[key] === true) out[key] = true;
+  });
+  return out;
+}
+
+function sanitizeReaderState(candidate) {
+  const src = isPlainObject(candidate) ? candidate : {};
+  const lesson = Number.isInteger(src.lesson) && src.lesson >= 1 && src.lesson <= 50 ? src.lesson : 1;
+  const readPassages = sanitizeReaderPassageIdSet(src.readPassages);
+  return {
+    schemaVersion: 1,
+    lesson,
+    tier: src.tier === 'strict' ? 'strict' : 'both',
+    readPassages,
+    readOrder: sanitizeReaderReadOrder(src.readOrder, readPassages),
+    marks: sanitizeReaderMarks(src.marks),
+    lastPassageId: (typeof src.lastPassageId === 'string' && src.lastPassageId) ? src.lastPassageId : null,
+    initializedFromVocab: !!src.initializedFromVocab
+  };
+}
+
 // ── Persisted-state payload + sanitization for import ────────────────────
 
 export function buildPersistedStatePayload(options = {}) {
@@ -319,7 +375,11 @@ export function buildPersistedStatePayload(options = {}) {
     parsing: sanitizeParsingState(runtime.parsing),
     // Grammar Quiz mode (Phase 2 PR C) — likewise fully independent, never
     // touches vocab SRS/marks/progress or the parsing subtree above.
-    grammar: sanitizeGrammarState(runtime.grammar)
+    grammar: sanitizeGrammarState(runtime.grammar),
+    // Reader mode (Phase 2 PR D) — likewise fully independent, never
+    // touches vocab SRS/marks/progress or the parsing/grammar subtrees
+    // above. No SRS interaction of any kind.
+    reader: sanitizeReaderState(runtime.reader)
   }, options);
 }
 
@@ -361,6 +421,9 @@ function sanitizeImportedState(candidate) {
   // Grammar Quiz mode (Phase 2 PR C). A v2/v3 export predates this field
   // entirely — sanitizeGrammarState defaults it, matching a fresh install.
   state.grammar = sanitizeGrammarState(candidate.grammar);
+  // Reader mode (Phase 2 PR D). A v2/v3/v4 export predates this field
+  // entirely — sanitizeReaderState defaults it, matching a fresh install.
+  state.reader = sanitizeReaderState(candidate.reader);
 
   const usage = host.ensureUsageStats(candidate.appUsageStats);
   state.appUsageStats = {
@@ -1012,6 +1075,9 @@ export function restoreState() {
     // Grammar Quiz mode (Phase 2 PR C) — likewise fully independent of the
     // vocab deck below; restores unconditionally for the same reason.
     runtime.grammar = sanitizeGrammarState(saved.grammar);
+    // Reader mode (Phase 2 PR D) — likewise fully independent of the vocab
+    // deck below; restores unconditionally for the same reason.
+    runtime.reader = sanitizeReaderState(saved.reader);
 
     if (!runtime.selectedKeys.length) {
       host.clearSpacedUndoSnapshot();

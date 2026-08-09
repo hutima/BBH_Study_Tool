@@ -801,6 +801,32 @@ export const STATE_MIGRATIONS = [
       };
       return saved;
     }
+  },
+
+  {
+    // Phase 2 PR D: introduces runtime.reader. Any save/export from before
+    // this landed has no `reader` key at all; seed the v1 default shape so
+    // downstream restore code (persistence.js sanitizeReaderState) always
+    // sees a well-formed object. A save that already has SOME `reader`
+    // object (even a malformed one from a future version) is left alone —
+    // sanitizeReaderState fills in per-field defaults for anything odd.
+    name: 'reader-state-v1-init',
+    match(saved) {
+      return !isPlainObject(saved.reader);
+    },
+    migrate(saved) {
+      saved.reader = {
+        schemaVersion: 1,
+        lesson: 1,
+        tier: 'both',
+        readPassages: {},
+        readOrder: [],
+        marks: {},
+        lastPassageId: null,
+        initializedFromVocab: false
+      };
+      return saved;
+    }
   }
 ];
 

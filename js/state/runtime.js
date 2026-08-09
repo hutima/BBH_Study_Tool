@@ -116,6 +116,27 @@ export const runtime = {
     initializedFromVocab: false
   },
 
+  // ── Reader mode (Phase 2 PR D) ───────────────────────────────────────
+  // Fully independent of the vocab deck/SRS machinery and of the parsing/
+  // grammar subtrees above — see js/ui/reader.js. Owned/mutated only by
+  // js/ui/reader.js (via the live reference handed back from
+  // configureReader's getState hook) and restored/persisted by
+  // js/state/persistence.js's sanitizeReaderState. NO SRS interaction of
+  // any kind lives here — `marks` is a plain self-review flag, never
+  // scheduled or graded.
+  // SYNC: js/app/main.js keeps a mirrored copy of this default shape in its
+  // mixed-version guard after restoreState() — update both together.
+  reader: {
+    schemaVersion: 1,
+    lesson: 1,
+    tier: 'both',             // 'strict' | 'both' (Strict+Guided)
+    readPassages: {},         // { [passageId]: true }
+    readOrder: [],            // passage ids, most recent read first, capped 20
+    marks: {},                // { [passageId + ':' + tokenIndex]: true }
+    lastPassageId: null,
+    initializedFromVocab: false
+  },
+
   // ── Persisted directional stores (rebuilt from localStorage) ────────
   deckStates: {},
   globalWordMarks: {},
