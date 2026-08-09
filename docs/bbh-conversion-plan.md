@@ -183,7 +183,7 @@ lesson pages remain the primary authority for gate values.
 | B | Verified parsing inventory (PDF), Parse/Build domain+UI, state v2, parsing analytics | sonnet (transcription+impl), fable (review) | `source/bbh/parsing/*`, `tools/gen_bbh_parsing_data.mjs`, `js/data/bbh_parsing.js`, `js/domain/parsing/*`, `js/ui/*` (parsing seams), `js/state/*`, `index.html` | pending |
 | C | Grammar bank (300 reviewed Qs), anti-giveaway validator, Grammar UI, parsing UX round, freeze hotfix | sonnet fan-out (5 authors, 7 blind reviewers, lint+fix passes), fable (adjudication) | `source/bbh/grammar/*`, `tools/{validate,gen}_bbh_grammar_data.mjs`, `js/data/bbh_grammar.js`, `js/ui/grammar.js`, `js/ui/parsing.js`, `js/pwa/swUpdate.js`, state files | done |
 | D | OSHB import/scorer, curated selections, Reader UI, attribution | sonnet | `tools/import_oshb_reader.mjs`, `source/bbh/reader/*`, `js/data/bbh_reader.js`, `js/ui/reader2/*` | pending |
-| E | Vocab 191→203 (IDs preserved), Reference tables, guidance text | sonnet | `source/bbh/*.csv`, `tools/gen_bbh_data.mjs` counts, `pages/memorization.html`, `docs/bbh-content-gaps.md` | pending |
+| E | Vocab 191→209 (IDs preserved), Lesson 0 Alphabet UI, Reference Extended-reference render, guidance text | sonnet | `source/bbh/*.csv`, `tools/gen_bbh_data.mjs` counts, `js/ui/alphabet.js`, `pages/memorization.html`, `docs/bbh-content-gaps.md`, `index.html`, state files, docs | done |
 | F | Release hardening: cached-v1 upgrade test, offline, `?v=2`, docs, final audit | sonnet + opus (audit) | `sw.js`, `index.html`, README, CLAUDE.md, docs | pending |
 
 Opus budget: 3 calls max — (1) schema/gate review pre-PR-B, (2) mid-project
@@ -225,3 +225,17 @@ from presets, vocab stats, and export vocab counts), unaffected by vocab
 toggles. UI: entry in the lesson area launching a lightweight flip/shuffle
 loop with local again/got-it marking. Closes the "full alphabet chart" gap in
 docs/bbh-content-gaps.md. Scope: PR E (content completion), first item.
+
+## Addendum (user request, 2026-08-09): post-Phase-2 follow-up — parsing depth review + root drills + mobile UX
+
+After PR F ships: (1) a Fable/Opus review of the Hebrew Parsing module
+against the original Greek implementation (`ad1547e`) — interaction depth,
+drill variety, analytics parity; (2) root-based cross-lesson drills:
+combine paradigms sharing a root (שמר spans Qal Perfect L16 → Imperfect
+L23 → Past Narrative L35 → Imperative L39 → Participle L42; היה and the
+derived-binyan exemplars similarly) into "conjugation journey" practice —
+Hebrew's smaller axis system makes same-word-across-lessons testing
+natural where Greek needed separate paradigms; (3) simplify the Parsing UI
+into user-sensible modules/groupings, designed mobile-first (current
+controls still clunky per user feedback). Tracked as follow-up task; not
+part of the Phase 2 definition of done.

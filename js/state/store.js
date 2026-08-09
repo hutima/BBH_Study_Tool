@@ -15,11 +15,13 @@ export const SHOW_TRANSLIT_STORAGE_KEY = 'bbhStudyToolShowTranslit';
 export const PROGRESS_EXPORT_FORMAT = 'bbh-study-tool-progress-export';
 // v2 -> v3: added the `parsing` state subtree (Phase 2 PR B). v3 -> v4:
 // added the `grammar` state subtree (Phase 2 PR C). v4 -> v5: added the
-// `reader` state subtree (Phase 2 PR D). Import stays backward compatible —
-// a v2/v3/v4 payload has no `parsing`/`grammar`/`reader` key and each
-// sanitizes to its own defaults (see persistence.js sanitizeParsingState /
-// sanitizeGrammarState / sanitizeReaderState).
-export const PROGRESS_EXPORT_VERSION = 5;
+// `reader` state subtree (Phase 2 PR D). v5 -> v6: added the `alphabet`
+// state subtree (Phase 2 PR E, Lesson 0 alphabet practice). Import stays
+// backward compatible — a v2/v3/v4/v5 payload has no
+// `parsing`/`grammar`/`reader`/`alphabet` key and each sanitizes to its own
+// defaults (see persistence.js sanitizeParsingState / sanitizeGrammarState /
+// sanitizeReaderState / sanitizeAlphabetState).
+export const PROGRESS_EXPORT_VERSION = 6;
 export const STUDY_IDLE_MS = 90 * 1000;
 export const STUDY_SESSION_BREAK_MS = 30 * 60 * 1000;
 export const MAX_STUDY_SESSION_HISTORY = 500;

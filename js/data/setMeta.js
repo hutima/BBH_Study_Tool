@@ -59,7 +59,9 @@ export const CHAPTER_TITLES = {
 // is the same data under its natural BBH name.
 export const LESSON_TITLES = CHAPTER_TITLES;
 
-// Six range presets for the lesson selector: five 10-lesson blocks plus "all".
+// Range presets for the lesson selector: five 10-lesson decade blocks, "all",
+// plus 13 "Unit" reading-block presets (the textbook's own illustrated-
+// Reading breakpoints) as a second preset group — 19 keys total.
 export const SESSION_WEEK_META = {
   "rng1": {
     "label": "Lessons 1–10",
@@ -187,6 +189,121 @@ export const SESSION_WEEK_META = {
       46,
       47,
       48,
+      49,
+      50
+    ]
+  },
+  "unit1": {
+    "label": "Unit 1 (L1–9)",
+    "lessons": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ]
+  },
+  "unit2": {
+    "label": "Unit 2 (L10–14)",
+    "lessons": [
+      10,
+      11,
+      12,
+      13,
+      14
+    ]
+  },
+  "unit3": {
+    "label": "Unit 3 (L15–18)",
+    "lessons": [
+      15,
+      16,
+      17,
+      18
+    ]
+  },
+  "unit4": {
+    "label": "Unit 4 (L19–22)",
+    "lessons": [
+      19,
+      20,
+      21,
+      22
+    ]
+  },
+  "unit5": {
+    "label": "Unit 5 (L23–26)",
+    "lessons": [
+      23,
+      24,
+      25,
+      26
+    ]
+  },
+  "unit6": {
+    "label": "Unit 6 (L27–30)",
+    "lessons": [
+      27,
+      28,
+      29,
+      30
+    ]
+  },
+  "unit7": {
+    "label": "Unit 7 (L31–34)",
+    "lessons": [
+      31,
+      32,
+      33,
+      34
+    ]
+  },
+  "unit8": {
+    "label": "Unit 8 (L35–38)",
+    "lessons": [
+      35,
+      36,
+      37,
+      38
+    ]
+  },
+  "unit9": {
+    "label": "Unit 9 (L39–41)",
+    "lessons": [
+      39,
+      40,
+      41
+    ]
+  },
+  "unit10": {
+    "label": "Unit 10 (L42–44)",
+    "lessons": [
+      42,
+      43,
+      44
+    ]
+  },
+  "unit11": {
+    "label": "Unit 11 (L45–46)",
+    "lessons": [
+      45,
+      46
+    ]
+  },
+  "unit12": {
+    "label": "Unit 12 (L47–48)",
+    "lessons": [
+      47,
+      48
+    ]
+  },
+  "unit13": {
+    "label": "Unit 13 (L49–50)",
+    "lessons": [
       49,
       50
     ]

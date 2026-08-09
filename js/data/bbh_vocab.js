@@ -31,10 +31,19 @@
       },
       {
         "id": "bbh-l03-אדון",
-        "g": "אָדוֹן / אֲדֹנָי",
-        "e": "master, lord; Lord (of God)",
-        "translit": "adon / Adonai",
-        "notes": "noun M; אֲדֹנָי used for God",
+        "g": "אָדוֹן",
+        "e": "master, lord",
+        "translit": "adon",
+        "notes": "noun M",
+        "page": 29,
+        "required": true
+      },
+      {
+        "id": "bbh-l03-אדני",
+        "g": "אֲדֹנָי",
+        "e": "Lord (of God)",
+        "translit": "Adonai",
+        "notes": "proper noun (epithet); used for God",
         "page": 29,
         "required": true
       },
@@ -323,6 +332,24 @@
         "notes": "interrogative",
         "page": 38,
         "required": true
+      },
+      {
+        "id": "bbh-l08-ה",
+        "g": "הַ",
+        "e": "the",
+        "translit": "ha",
+        "notes": "definite article",
+        "page": 38,
+        "required": true
+      },
+      {
+        "id": "bbh-l08-ה-2",
+        "g": "הֲ",
+        "e": "(marks a yes/no question)",
+        "translit": "ha",
+        "notes": "interrogative particle",
+        "page": 38,
+        "required": true
       }
     ]
   };
@@ -576,6 +603,24 @@
         "notes": "adverb",
         "page": 46,
         "required": true
+      },
+      {
+        "id": "bbh-l12-יש",
+        "g": "יֵשׁ",
+        "e": "there is, there are",
+        "translit": "yesh",
+        "notes": "existential particle",
+        "page": 46,
+        "required": true
+      },
+      {
+        "id": "bbh-l12-אין",
+        "g": "אֵין",
+        "e": "there is not, there are not",
+        "translit": "en",
+        "notes": "existential particle (negative)",
+        "page": 46,
+        "required": true
       }
     ]
   };
@@ -634,6 +679,42 @@
         "g": "לִפְנֵי",
         "e": "before",
         "translit": "lifne",
+        "notes": "preposition",
+        "page": 48,
+        "required": true
+      },
+      {
+        "id": "bbh-l13-ב",
+        "g": "בְּ",
+        "e": "in, at, with, by",
+        "translit": "be",
+        "notes": "preposition",
+        "page": 48,
+        "required": true
+      },
+      {
+        "id": "bbh-l13-כ",
+        "g": "כְּ",
+        "e": "like, as",
+        "translit": "ke",
+        "notes": "preposition",
+        "page": 48,
+        "required": true
+      },
+      {
+        "id": "bbh-l13-ל",
+        "g": "לְ",
+        "e": "to, for",
+        "translit": "le",
+        "notes": "preposition",
+        "page": 48,
+        "required": true
+      },
+      {
+        "id": "bbh-l13-מן",
+        "g": "מִן",
+        "e": "from; more than",
+        "translit": "min",
         "notes": "preposition",
         "page": 48,
         "required": true
@@ -1493,6 +1574,60 @@
         "notes": "PI",
         "page": 88,
         "required": true
+      },
+      {
+        "id": "bbh-l30-כי",
+        "g": "כִּי",
+        "e": "because, when, if, though, but; that",
+        "translit": "kî",
+        "notes": "CONJ; COMP",
+        "page": 88,
+        "required": true
+      },
+      {
+        "id": "bbh-l30-אשר",
+        "g": "אֲשֶׁר",
+        "e": "that, which, who",
+        "translit": "ʾăsher",
+        "notes": "CONJ; COMP",
+        "page": 88,
+        "required": true
+      },
+      {
+        "id": "bbh-l30-לו",
+        "g": "לוּ",
+        "e": "would that, if (irreal)",
+        "translit": "lû",
+        "notes": "COND",
+        "page": 88,
+        "required": true
+      },
+      {
+        "id": "bbh-l30-לולי",
+        "g": "לוּלֵי",
+        "e": "if not (irreal, negative)",
+        "translit": "lûlê",
+        "notes": "COND",
+        "page": 88,
+        "required": true
+      },
+      {
+        "id": "bbh-l30-לכן",
+        "g": "לָכֵן",
+        "e": "therefore",
+        "translit": "lākhēn",
+        "notes": "CONJ",
+        "page": 88,
+        "required": true
+      },
+      {
+        "id": "bbh-l30-למען",
+        "g": "לְמַעַן",
+        "e": "for the sake of; so that",
+        "translit": "ləmaʿan",
+        "notes": "PREP; CONJ",
+        "page": 88,
+        "required": true
       }
     ]
   };
@@ -1611,6 +1746,33 @@
         "e": "behind, after",
         "translit": "ʾakhar, ʾakharē",
         "notes": "PREP, ADV, CONJ",
+        "page": 96,
+        "required": true
+      },
+      {
+        "id": "bbh-l33-זה",
+        "g": "זֶה",
+        "e": "this (m.)",
+        "translit": "zeh",
+        "notes": "demonstrative pronoun, ms",
+        "page": 96,
+        "required": true
+      },
+      {
+        "id": "bbh-l33-זאת",
+        "g": "זֹאת",
+        "e": "this (f.)",
+        "translit": "zot",
+        "notes": "demonstrative pronoun, fs",
+        "page": 96,
+        "required": true
+      },
+      {
+        "id": "bbh-l33-אלה",
+        "g": "אֵלֶּה",
+        "e": "these",
+        "translit": "elleh",
+        "notes": "demonstrative pronoun, common pl",
         "page": 96,
         "required": true
       }
