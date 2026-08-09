@@ -30,14 +30,21 @@
   candidates in all 8 books — documented). Deferred into task #13's pass:
   3 vocab overrides (elohim/erets/tsivvah) that drift 5 frozen Genesis
   scores, re-curate then.
-- **In flight: task #16** — 0B vowel-deck fixes (grapheme-safe cluster
-  highlighting via Intl.Segmenter — root cause of the misplaced-marks
-  artifact; larger representative word; Again/Got-it stacked full-width
-  for one-handed use on 0A+0B).
-- **Queue**: task #13 Reader literal glosses + LLM WOODEN verse
-  translations over the 78-passage set (user rule 2026-08-09 in
-  CLAUDE.md/ledger; includes the 3-override re-curation) → task #15
-  advanced vocab + vocab-by-book decks (Strong's-PD glosses default).
+- **Task #16 merged** as `e859aa5` (PR #13, `?v=10`): vowel-deck fixes
+  (root causes: highlight underline fusing with niqqud; hardcoded dark
+  card bg in light theme), Intl.Segmenter grapheme safety, stacked
+  one-handed buttons, decks renamed "Lesson 1 · Alphabet"/"Lesson 2 ·
+  Vowel marks" (display-only), vocab grid drops empty L1/L2.
+- **In flight: task #17** — parsing card hierarchy (Hebrew form at
+  vocab-card scale, stepped-down labels) + deterministic build-time
+  transliteration line honoring showTranslit (romanizer matched to the
+  vocab CSV style; sample-reviewed; marked derived).
+- **Queue**: task #13 Reader mega-pass, seven items (glosses + wooden
+  translations + show/hide button; render-time slash stripping; deferred
+  override re-curation; challenge rework; tier-clarity captions; gentilic
+  Ng + compound-token matcher fixes with corpus re-score; popover Strong's
+  glosses with modernized English + pointed-Hebrew lemma rendering) →
+  task #15 advanced vocab + vocab-by-book decks.
 
 ## Repository and PR state
 
