@@ -589,7 +589,14 @@ function renderFocusedPickerRow(state) {
     if (!byCategory[p.category]) byCategory[p.category] = [];
     byCategory[p.category].push(p);
   });
-  let paradigmOptions = `<option value=""${state.focusedParadigmId ? '' : ' selected'}>None (today's new material)</option>`;
+  // Task #21 item 2: the default option used to read "today's new material",
+  // which didn't mean much out of context. Relabel to the concrete lesson
+  // number this row already gates against (state.lesson — the SAME value
+  // getGatedPool/getScopedPool use for the current-lesson gate), recomputed
+  // on every call to this renderer so it tracks lesson changes automatically.
+  // Pool/behavior is unchanged — focusedParadigmId stays null for this
+  // option, exactly as before.
+  let paradigmOptions = `<option value=""${state.focusedParadigmId ? '' : ' selected'}>None (New in Lesson ${state.lesson})</option>`;
   CATEGORY_ORDER.forEach((cat) => {
     const list = byCategory[cat];
     if (!list || !list.length) return;

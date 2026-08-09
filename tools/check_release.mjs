@@ -34,9 +34,13 @@
 //      Book Vocab book entries (one per Reader corpus book), with a
 //      per-bucket/per-book count report line.
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
-//   7. Zero case-insensitive 'googletagmanager', 'google-analytics',
-//      'gtag(', or 'G-YH11KQB6QX' in the live load graph — the app ships
-//      telemetry-free (Phase 2 architecture decision 8).
+//   7. Google Analytics is REQUIRED and pinned to the owner's own GA4
+//      property (owner decision 2026-08-09, reversing Phase 2 architecture
+//      decision 8): index.html and pages/memorization.html must each carry
+//      the gtag.js loader + config for exactly 'G-J5HGG50J92'; the retired
+//      inherited property 'G-YH11KQB6QX' must never reappear; no other
+//      GA4 measurement id and no gtag/googletagmanager reference outside
+//      those two HTML files is allowed anywhere in the live load graph.
 //
 // Also documents (see bottom of file / README) running
 // tools/validate_bbh_data.mjs, tools/check_no_pdf.mjs, and
@@ -215,9 +219,20 @@ function readDirSafe(dir) {
 
   let greekHits = 0;
   let bannedHits = 0;
-  let gaHits = 0;
+  let gaViolations = 0;
   const greekLocations = [];
-  const GA_RE = /googletagmanager|google-analytics|gtag\(|G-YH11KQB6QX/i;
+  // ── Check 7 (reworked 2026-08-09, owner decision reversing Phase 2
+  // architecture decision 8): GA4 is back, on the owner's OWN property.
+  // The rules are now: (a) the retired inherited property G-YH11KQB6QX may
+  // never reappear anywhere in the live graph; (b) no GA4 measurement id
+  // other than the allowed one may appear; (c) gtag/googletagmanager
+  // references live ONLY in the two HTML entry pages (the snippet), never
+  // in app JS; (d) both entry pages MUST actually carry the loader+config
+  // for the allowed property (asserted after the scan loop).
+  const GA_ALLOWED_ID = 'G-J5HGG50J92';
+  const GA_RETIRED_ID_RE = /G-YH11KQB6QX/i;
+  const GA_MEASUREMENT_ID_RE = /\bG-[A-Z0-9]{10}\b/g;
+  const GA_SNIPPET_FILES = new Set(['index.html', 'pages/memorization.html']);
   // Bare 'greek' is never a hard failure — this codebase intentionally keeps
   // a handful of legacy identifiers/CSS hooks with "greek" in the name
   // (runtime.directionToGreek, .card-greek, the old-export-format rejection
@@ -242,9 +257,19 @@ function readDirSafe(dir) {
       } else if (/greek/i.test(line)) {
         bareGreekLocations.push(`${rel}:${idx + 1}`);
       }
-      if (GA_RE.test(line)) {
-        gaHits++;
-        fail(`check7: GA/gtag term at ${rel}:${idx + 1}: ${line.trim().slice(0, 120)}`);
+      if (GA_RETIRED_ID_RE.test(line)) {
+        gaViolations++;
+        fail(`check7: retired GA property G-YH11KQB6QX at ${rel}:${idx + 1}: ${line.trim().slice(0, 120)}`);
+      }
+      for (const m of line.matchAll(GA_MEASUREMENT_ID_RE)) {
+        if (m[0] !== GA_ALLOWED_ID) {
+          gaViolations++;
+          fail(`check7: unexpected GA4 measurement id ${m[0]} at ${rel}:${idx + 1} (only ${GA_ALLOWED_ID} is allowed)`);
+        }
+      }
+      if (/googletagmanager|google-analytics|gtag\(/i.test(line) && !GA_SNIPPET_FILES.has(rel)) {
+        gaViolations++;
+        fail(`check7: gtag/GA reference outside the HTML snippet files at ${rel}:${idx + 1}: ${line.trim().slice(0, 120)}`);
       }
     });
   }
@@ -257,7 +282,20 @@ function readDirSafe(dir) {
     report(`check3: 0 Greek-Unicode hits across ${filesToScan.length} live-graph files (pass)`);
   }
   if (!bannedHits) report('check4: 0 duff/koine/greekFlashcards hits (pass)');
-  if (!gaHits) report(`check7: 0 googletagmanager/google-analytics/gtag(/G-YH11KQB6QX hits across ${filesToScan.length} live-graph files (pass)`);
+  // Check 7 positive half: both entry pages must actually SHIP the snippet
+  // (loader + config) for the allowed property — a silent drop of the
+  // owner's analytics is as much a release failure as a rogue property.
+  for (const rel of GA_SNIPPET_FILES) {
+    const abs = path.join(ROOT, rel);
+    const text = existsSync(abs) ? readFileSync(abs, 'utf8') : '';
+    const hasLoader = text.includes(`googletagmanager.com/gtag/js?id=${GA_ALLOWED_ID}`);
+    const hasConfig = text.includes(`gtag('config', '${GA_ALLOWED_ID}')`);
+    if (!hasLoader || !hasConfig) {
+      gaViolations++;
+      fail(`check7: ${rel} is missing the GA snippet for ${GA_ALLOWED_ID} (loader: ${hasLoader ? 'ok' : 'MISSING'}, config: ${hasConfig ? 'ok' : 'MISSING'})`);
+    }
+  }
+  if (!gaViolations) report(`check7: GA pinned to ${GA_ALLOWED_ID} — snippet present in ${[...GA_SNIPPET_FILES].join(' + ')}, retired G-YH11KQB6QX absent, no stray gtag refs across ${filesToScan.length} live-graph files (pass)`);
 
   // ── Check 4b: the retired transliterated-GREEK gamification titles never
   // regress (PR H punch-list item 6, 2026-08-09) ──────────────────────────

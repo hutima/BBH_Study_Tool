@@ -109,12 +109,25 @@ What remains genuinely deferred:
   unverified against the physical textbook** — see the "still open" section
   of `docs/bbh-content-gaps.md` for the exact list.
 
-Google Analytics stays removed (Phase 2 architecture decision 8, done): the
-inherited `gtag`/GA snippet (`G-YH11KQB6QX`) is gone from `index.html` with
-no replacement, the app ships telemetry-free, and `tools/check_release.mjs`
-fails the release if any GA/gtag string reappears in the live load graph. No
-replacement analytics tool is permitted — "analytics" in this app means the
-local, on-device progress dashboard only.
+**Telemetry (owner policy change, 2026-08-09 — reverses Phase 2
+architecture decision 8):** the app ships Google Analytics again, on the
+owner's OWN GA4 property `G-J5HGG50J92`, added at the owner's explicit
+request with an owner-supplied verbatim snippet. Rules, enforced by
+`tools/check_release.mjs` check7:
+
+- The gtag.js loader + `gtag('config', 'G-J5HGG50J92')` snippet MUST be
+  present in both `index.html` and `pages/memorization.html` (a silent
+  drop fails the release).
+- The retired inherited property `G-YH11KQB6QX` must never reappear, no
+  other GA4 measurement id may appear, and no `gtag(`/`googletagmanager`
+  reference may exist outside those two HTML files — app JS stays free of
+  telemetry calls; GA sees page visits only, never study data.
+- The user guide discloses this (anonymous page-visit stats; study
+  progress stays on-device). Keep that disclosure accurate if the
+  snippet ever changes.
+- "Analytics" elsewhere in this codebase (the Progress overlay,
+  `analytics*` ids) still means the local, on-device progress dashboard —
+  unrelated to GA.
 
 ## Navigation
 

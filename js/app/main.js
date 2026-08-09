@@ -412,6 +412,18 @@ import {
 // app-wide rather than minting a second independent one.
 const PARSING_SESSION_SEED = Date.now() & 0x7fffffff;
 
+// Task #21 item 3: PARSING_SESSION_SEED is captured once per app LOAD, but
+// an installed PWA can keep a single load resident for days, so re-opening
+// the Grammar Quiz in the same resident load replayed the identical
+// question order. grammarEntropy re-rolls on every transition INTO grammar
+// mode (see syncLayoutVisibility) and is XORed into the seed handed to
+// configureGrammar below — fresh question order per quiz visit, stable
+// within the visit. Ordering-only, never persisted, never graded; parsing
+// keeps the plain per-load seed (its pools are lesson-scoped and short, so
+// per-visit reshuffle was never the complaint there).
+let grammarEntropy = 0;
+let lastVisibleMode = null;
+
 // Wire UI modules with the host helpers they call back into.
 // Function declarations are hoisted; getter/setter closures defer reads to
 // invocation time, so let-binding values are valid by the time they're called.
@@ -545,7 +557,7 @@ configureGrammar({
     isPlainObject(runtime.modeSelections?.vocab) && Array.isArray(runtime.modeSelections.vocab.selectedKeys)
   ) ? runtime.modeSelections.vocab.selectedKeys
     : (runtime.studyMode === 'vocab' ? runtime.selectedKeys : []),
-  getSessionSeed: () => PARSING_SESSION_SEED,
+  getSessionSeed: () => (PARSING_SESSION_SEED ^ grammarEntropy) & 0x7fffffff,
   saveState: () => saveState()
 });
 configureReader({
@@ -1131,6 +1143,14 @@ function syncLayoutVisibility() {
   const parsingSectionEl = document.getElementById('parsingSection');
   const grammarSectionEl = document.getElementById('grammarSection');
   const readerSectionEl = document.getElementById('readerSection');
+  // Task #21 item 3: re-roll the grammar shuffle entropy only on a
+  // TRANSITION into grammar mode — repeated syncs while already in grammar
+  // (option toggles, theme changes, etc.) keep the current visit's order.
+  const visibleMode = isParsingMode() ? 'parsing' : isGrammarMode() ? 'grammar' : isReaderMode() ? 'reader' : 'vocab';
+  if (visibleMode === 'grammar' && lastVisibleMode !== 'grammar') {
+    grammarEntropy = Date.now() & 0x7fffffff;
+  }
+  lastVisibleMode = visibleMode;
   if (isParsingMode()) {
     const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
     const resetActionsEl = document.getElementById('resetActionsDetails');
