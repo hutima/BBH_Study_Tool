@@ -221,7 +221,7 @@ import {
   renderReaderAnalytics,
   readerSetLesson, readerSetTier, readerSetShowChallenge,
   readerOpenPassage, readerBackToList, readerToggleToken,
-  readerToggleMarkForReview, readerToggleReadStatus
+  readerToggleMarkForReview, readerToggleReadStatus, readerToggleWooden
 } from '../ui/reader.js';
 
 // UI — Lesson 0 Alphabet practice (Phase 2 PR E). New file; imports NOTHING
@@ -2574,7 +2574,7 @@ const GLOBAL_CLICK_HANDLERS = {
   // readerSetShowChallenge added by the Reader book expansion.
   readerSetLesson, readerSetTier, readerSetShowChallenge,
   readerOpenPassage, readerBackToList, readerToggleToken,
-  readerToggleMarkForReview, readerToggleReadStatus,
+  readerToggleMarkForReview, readerToggleReadStatus, readerToggleWooden,
   // Phase 2 PR E: Lesson 0 Alphabet practice (js/ui/alphabet.js) click
   // handlers, including its own overlay open/close.
   openAlphabetOverlay, closeAlphabetOverlay,
