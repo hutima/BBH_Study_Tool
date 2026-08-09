@@ -310,3 +310,13 @@ high-frequency lemmas; re-curate selections to fill the thin gate buckets
 (15-19, 23-27, 28-31 had only 1-2 Genesis strict candidates) and to find
 challenge-tier verses (Genesis yielded zero). Byte-equality, determinism,
 and tier rules unchanged.
+
+## Addendum (user ordering, 2026-08-09): task order + PR H item 7
+
+Task #14 (Reader multi-book expansion) runs BEFORE task #13 (literal
+glosses + wooden translations) so gloss/translation authoring happens once
+over the final passage set. PR H additionally carries item 7 (orchestrator
+design, from user feedback on the PR G UI): parsing scope control becomes
+a preset-style 2-column card grid (no stretched 5-way pill), direction
+pill gets short labels (Parse|Build|Mixed) + max-width, lesson selector
+becomes an inline label+select row, tighter mobile padding.
