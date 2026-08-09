@@ -27,8 +27,16 @@
   page provenance), plus the user-requested parsing UX round (grouped
   custom-set picker, 6-choice/all-that-apply Build, contrast panel, Mixed
   direction). Export format v4.
-- Current phase: PR D — public-text Reader (OSHB) — **paused mid-flight on
-  user token budget (2026-08-09); resume scheduled via send_later**.
+- **PR D merged** as `ba9d39c` (PR #7, `?v=5`): OSHB v2.2 Reader — 60-entry
+  gate map (0 unmatched segments / 20,612 Genesis tokens), byte-exact
+  importer, 52 curated selections (32 strict / 20 guided; 0 natural
+  challenge verses in Genesis — documented), Reader UI with token popovers
+  (all 109 morph codes decode), CC-BY attribution, export v5.
+- Current phase: PR E — content completion. Inputs banked in repo:
+  docs/bbh-vocab-reconciliation.md (decision: glossary-faithful 209 unless
+  user says otherwise — Baker/Quizlet egress-blocked), source/bbh/
+  alphabet.json, source/bbh/vowels.json, verified paradigms for Reference
+  tables, Reading-block preset spec in ledger addendum.
 - In-flight at pause (all Sonnet agents; results NOT yet landed):
   (1) OSHB importer/gate-map/selections/generator agent — had begun editing
   `source/bbh/reader/gate-map.json` (uncommitted partial edit deliberately
