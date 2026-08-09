@@ -474,3 +474,14 @@ language caption under the Passages toggle (Strict: every word's grammar
 is within your current lesson, at most one unfamiliar word. Guided: up to
 three unfamiliar words, marked with dotted underlines), matching badge
 tooltips, and user-guide wording.
+
+## Addendum (user screenshot, 2026-08-09): underline noise — matcher fixes (into task #13)
+
+Gen 10:17 showed every word dotted-underlined. Two matcher bugs: OSHB
+gentilic nouns (Ng — the Hivite/Arkite/Sinite) are not excluded like
+proper nouns, so name-lists count as unknown content words (wrongly
+underlined AND wrongly scored guided); and compound tokens (ו/את) match
+vocab against the whole compound lemma instead of the core segment, so
+known vocabulary like the object marker fails to match. Task #13: Ng →
+proper-name-class, per-core-segment vocab matching, corpus re-score with
+documented tier shifts.
