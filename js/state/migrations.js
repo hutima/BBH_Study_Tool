@@ -823,7 +823,8 @@ export const STATE_MIGRATIONS = [
         readOrder: [],
         marks: {},
         lastPassageId: null,
-        initializedFromVocab: false
+        initializedFromVocab: false,
+        showChallenge: false
       };
       return saved;
     }

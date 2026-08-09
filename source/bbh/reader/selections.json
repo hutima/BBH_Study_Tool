@@ -6,7 +6,8 @@
     "Tiers: strict = all graded morphology in scope, <=1 unknown non-proper content lexeme; guided = all morphology in scope, <=3 unknown non-proper content lexemes (marked); challenge = exactly one identified near-future feature, never shown by default.",
     "CURATION METHOD (Phase 2 PR D): for each of the 10 gate buckets in tools/import_oshb_reader.mjs's bucketOf() (9-14, 15-19, 20-22, 23-27, 28-31, 32-34, 35-38, 39-41, 42-44, 45-50), up to 4 strict + 2 guided verses were hand-picked from that bucket's candidate list (node tools/import_oshb_reader.mjs --report, plus an ad hoc ranking script used only during authoring to enumerate/sort candidates), preferring in order: (a) verses from Genesis 1, 3, 22, 37, 38, 47, 50 (our own narrative-domain picks, independent of the textbook's own curated reading sequence), (b) shorter verses (lower tokenCount), (c) contiguous verse runs where the ranked candidate list offered one (e.g. Gen 36:25-28, a 4-verse contiguous strict run at the L33 gate; Gen 10:16-17 and 25:14-15 pairs). `gateLesson` always equals the verse's own `scores.maxGrammarLesson` here because every selected verse is strict or guided (Genesis, under this policy, produced zero 'challenge'-tier verses corpus-wide as of this pass — see the PR D report; the challenge tier is fully implemented in tools/import_oshb_reader.mjs and would populate here if a future gate-map/vocab refinement produced one).",
     "REPRODUCIBILITY: `scores` for every entry below is checked byte-for-byte (JSON-equal) against a FRESH run of importGenesis() by tools/validate_bbh_reader_data.mjs — any gate-map, override-table, or importer change that shifts a verse's score fails validation here until selections.json is re-curated or the drifted entries are removed.",
-    "Populated in Phase 2 PR D alongside tools/import_oshb_reader.mjs. Empty in PR A by design."
+    "Populated in Phase 2 PR D alongside tools/import_oshb_reader.mjs. Empty in PR A by design.",
+    "READER BOOK EXPANSION (task: multi-book expansion, after PR H): the importer (tools/import_oshb_reader.mjs) now scores 8 books — Gen, Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam — over the same pinned OSHB checkout. The 52 pre-existing Genesis selections above are UNCHANGED (same ids/scores; re-verified byte-for-byte against a fresh import after the gate-map/override-table updates below). 26 new selections were added from the 7 new books: (a) thin-bucket fill for gate buckets 15-19/23-27/28-31, which previously had only 1-2 Genesis strict candidates, drawing exclusively from non-Genesis books, shortest tokenCount first; (b) up to 2 strict + 1 guided per new book, chosen from that book's single richest gate bucket (all 7 landed in bucket 35-38, the Qal wayyiqtol/past-narrative gate — the natural backbone of Biblical Hebrew narrative prose, so unsurprisingly every narrative book's deepest candidate pool). No challenge-tier verses were found in ANY of the 8 books (tier definition: exactly one clearly-identified near-future-lesson token, all others in scope) — same null result as the original Genesis-only pass; the challenge tier remains fully implemented and ready to populate if a future gate-map/override refinement produces a match. Selection picking was scripted (scratchpad/curate_reader.mjs, not part of the shipped tool chain) directly against a fresh importReaderCorpus() run, so every new entry's scores are trivially exact-reproducible by construction. LEMMA_OVERRIDES was extended with entries audited from the combined top-60 unresolved Strong's numbers across all 8 books (tools/import_oshb_reader.mjs's own header comment there documents 3 entries — אֱלֹהִים 430, אֶרֶץ 776, צִוָּה 6680 — that were found to genuinely match a CSV row but were deliberately withheld because adding them drifts 5 of the 52 fixed Genesis selections' scores). Coverage-gap count across all 8 books is 0 (unchanged) — gate-map.json needed no new entries beyond what Phase 2 PR D had already authored (its existing per-POS-letter safety-net catch-alls already cover every OSHB morph code observed in the 7 new books)."
   ],
   "selections": [
     {
@@ -736,6 +737,370 @@
         "maxGrammarLesson": 45
       },
       "rationale": "Shortest non-preferred L45-50 guided candidate."
+    },
+    {
+      "id": "reader-deut-3-15",
+      "ref": "Deut 3:15",
+      "osisRef": "Deut.3.15",
+      "gateLesson": 16,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 0,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 16
+      },
+      "rationale": "Thin-bucket fill (L16 gate, bucket 15-19); Deut strict candidate, 4 tokens."
+    },
+    {
+      "id": "reader-deut-5-17",
+      "ref": "Deut 5:17",
+      "osisRef": "Deut.5.17",
+      "gateLesson": 23,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 2,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 23
+      },
+      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens."
+    },
+    {
+      "id": "reader-deut-5-18",
+      "ref": "Deut 5:18",
+      "osisRef": "Deut.5.18",
+      "gateLesson": 23,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 2,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 23
+      },
+      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens."
+    },
+    {
+      "id": "reader-deut-5-19",
+      "ref": "Deut 5:19",
+      "osisRef": "Deut.5.19",
+      "gateLesson": 23,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 2,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 23
+      },
+      "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens."
+    },
+    {
+      "id": "reader-deut-6-4",
+      "ref": "Deut 6:4",
+      "osisRef": "Deut.6.4",
+      "gateLesson": 31,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 31
+      },
+      "rationale": "Thin-bucket fill (L31 gate, bucket 28-31); Deut strict candidate, 4 tokens."
+    },
+    {
+      "id": "reader-exod-6-17",
+      "ref": "Exod 6:17",
+      "osisRef": "Exod.6.17",
+      "gateLesson": 31,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 31
+      },
+      "rationale": "Thin-bucket fill (L31 gate, bucket 28-31); Exod strict candidate, 5 tokens."
+    },
+    {
+      "id": "reader-1sam-30-28",
+      "ref": "1Sam 30:28",
+      "osisRef": "1Sam.30.28",
+      "gateLesson": 30,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 6,
+        "unknownContentLexemes": 0,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 30
+      },
+      "rationale": "Thin-bucket fill (L30 gate, bucket 28-31); 1Sam strict candidate, 6 tokens."
+    },
+    {
+      "id": "reader-ruth-1-3",
+      "ref": "Ruth 1:3",
+      "osisRef": "Ruth.1.3",
+      "gateLesson": 45,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 8,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 45
+      },
+      "rationale": "Ruth showcase (L45 gate); short strict narrative verse, 8 tokens."
+    },
+    {
+      "id": "reader-ruth-1-10",
+      "ref": "Ruth 1:10",
+      "osisRef": "Ruth.1.10",
+      "gateLesson": 35,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 6,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Ruth showcase (L35 gate); guided narrative verse, 6 tokens."
+    },
+    {
+      "id": "reader-jonah-1-1",
+      "ref": "Jonah 1:1",
+      "osisRef": "Jonah.1.1",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 8,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Jonah showcase (L35 gate); short strict narrative verse, 8 tokens."
+    },
+    {
+      "id": "reader-jonah-4-4",
+      "ref": "Jonah 4:4",
+      "osisRef": "Jonah.4.4",
+      "gateLesson": 35,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Jonah showcase (L35 gate); guided narrative verse, 5 tokens."
+    },
+    {
+      "id": "reader-exod-13-1",
+      "ref": "Exod 13:1",
+      "osisRef": "Exod.13.1",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Exod showcase (L35 gate); short strict narrative verse, 5 tokens."
+    },
+    {
+      "id": "reader-exod-14-1",
+      "ref": "Exod 14:1",
+      "osisRef": "Exod.14.1",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Exod showcase (L35 gate); short strict narrative verse, 5 tokens."
+    },
+    {
+      "id": "reader-exod-16-30",
+      "ref": "Exod 16:30",
+      "osisRef": "Exod.16.30",
+      "gateLesson": 35,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Exod showcase (L35 gate); guided narrative verse, 4 tokens."
+    },
+    {
+      "id": "reader-deut-2-17",
+      "ref": "Deut 2:17",
+      "osisRef": "Deut.2.17",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Deut showcase (L35 gate); short strict narrative verse, 4 tokens."
+    },
+    {
+      "id": "reader-deut-3-29",
+      "ref": "Deut 3:29",
+      "osisRef": "Deut.3.29",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Deut showcase (L35 gate); short strict narrative verse, 5 tokens."
+    },
+    {
+      "id": "reader-deut-25-4",
+      "ref": "Deut 25:4",
+      "osisRef": "Deut.25.4",
+      "gateLesson": 40,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 3,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 40
+      },
+      "rationale": "Deut showcase (L40 gate); guided narrative verse, 4 tokens."
+    },
+    {
+      "id": "reader-judg-10-5",
+      "ref": "Judg 10:5",
+      "osisRef": "Judg.10.5",
+      "gateLesson": 37,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 37
+      },
+      "rationale": "Judg showcase (L37 gate); short strict narrative verse, 4 tokens."
+    },
+    {
+      "id": "reader-judg-12-10",
+      "ref": "Judg 12:10",
+      "osisRef": "Judg.12.10",
+      "gateLesson": 37,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 37
+      },
+      "rationale": "Judg showcase (L37 gate); short strict narrative verse, 5 tokens."
+    },
+    {
+      "id": "reader-judg-14-7",
+      "ref": "Judg 14:7",
+      "osisRef": "Judg.14.7",
+      "gateLesson": 35,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 6,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Judg showcase (L35 gate); guided narrative verse, 6 tokens."
+    },
+    {
+      "id": "reader-1sam-15-10",
+      "ref": "1Sam 15:10",
+      "osisRef": "1Sam.15.10",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 6,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "1Sam showcase (L35 gate); short strict narrative verse, 6 tokens."
+    },
+    {
+      "id": "reader-1sam-10-17",
+      "ref": "1Sam 10:17",
+      "osisRef": "1Sam.10.17",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 7,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "1Sam showcase (L35 gate); short strict narrative verse, 7 tokens."
+    },
+    {
+      "id": "reader-1sam-10-13",
+      "ref": "1Sam 10:13",
+      "osisRef": "1Sam.10.13",
+      "gateLesson": 37,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 3,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 37
+      },
+      "rationale": "1Sam showcase (L37 gate); guided narrative verse, 4 tokens."
+    },
+    {
+      "id": "reader-2sam-17-26",
+      "ref": "2Sam 17:26",
+      "osisRef": "2Sam.17.26",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "2Sam showcase (L35 gate); short strict narrative verse, 5 tokens."
+    },
+    {
+      "id": "reader-2sam-24-19",
+      "ref": "2Sam 24:19",
+      "osisRef": "2Sam.24.19",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 7,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "2Sam showcase (L35 gate); short strict narrative verse, 7 tokens."
+    },
+    {
+      "id": "reader-2sam-5-18",
+      "ref": "2Sam 5:18",
+      "osisRef": "2Sam.5.18",
+      "gateLesson": 37,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 3,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 37
+      },
+      "rationale": "2Sam showcase (L37 gate); guided narrative verse, 5 tokens."
     }
   ]
 }

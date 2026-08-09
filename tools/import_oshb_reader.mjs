@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-// Dev-time OSHB importer for the BBH Reader (Phase 2 PR D). Node built-ins
+// Dev-time OSHB importer for the BBH Reader (Phase 2 PR D; multi-book
+// expansion added in the "Reader book expansion" task). Node built-ins
 // only. Reads a PINNED local checkout of openscriptures/morphhb (never
-// fetched over the network — see verifyCorpusPin below) and:
-//   - tokenizes wlc/Gen.xml (OSIS XML) verse by verse,
+// fetched over the network — see verifyCorpusPin below) and, for every book
+// in BOOK_LIST below:
+//   - tokenizes wlc/<Book>.xml (OSIS XML) verse by verse,
 //   - maps each token's OSHB morphology to a BBH lesson gate via
 //     source/bbh/reader/gate-map.json (data-driven; this file contains NO
 //     duplicate copy of the mapping policy — see that file's `notes`),
@@ -12,25 +14,36 @@
 //
 // This module is BOTH a CLI (see `main()` at the bottom, gated on
 // `isMainModule()`) and an ES-module library: tools/gen_bbh_reader_data.mjs
-// and tools/validate_bbh_reader_data.mjs both `import { importGenesis }`
+// and tools/validate_bbh_reader_data.mjs both `import { importReaderCorpus }`
 // from here to re-run the exact same scoring and check it reproduces
 // source/bbh/reader/selections.json's recorded scores byte-for-byte-equal
 // (JSON-equal), rather than trusting a cached snapshot.
 //
+// BOOK_LIST is the configurable set of OSHB wlc/*.xml basenames imported —
+// currently ['Gen','Ruth','Jonah','Exod','Deut','Judg','1Sam','2Sam']
+// (verified exact filenames against the pinned checkout's wlc/ directory).
+// Every verse carries its own `book` (OSIS book code) alongside `osisID`/
+// `ref` so downstream consumers (selections curation, Reader UI grouping)
+// can group multi-book output without re-parsing osisID.
+//
 // Determinism: no Date.now(), no Math.random(), no network I/O, no
 // environment-dependent iteration order (every Map/array built here is in a
-// fixed, source-derived order). Re-running produces byte-identical output
-// for the same pinned commit + same source/bbh files.
+// fixed, source-derived order — books are processed in BOOK_LIST's own
+// order, never Object-key or filesystem order). Re-running produces
+// byte-identical output for the same pinned commit + same source/bbh files.
 //
 // CLI usage:
 //   node tools/import_oshb_reader.mjs --report   prints per-gate-bucket
 //     candidate counts (strict/guided/challenge) and a top-candidates table,
-//     plus vocab-match / override-table / coverage-gap diagnostics.
+//     plus vocab-match / override-table / coverage-gap diagnostics, across
+//     every book in BOOK_LIST (or scope with --book=Ruth to one book).
 //   node tools/import_oshb_reader.mjs --emit      like --report, but also
 //     prints the FULL scored corpus (every verse, every token) as JSON to
 //     stdout (pipe to a file if you want it on disk — this tool never
 //     writes into the repo itself; only tools/gen_bbh_reader_data.mjs does,
 //     and only to js/data/bbh_reader.js).
+//   --book=Gen|Ruth|Jonah|Exod|Deut|Judg|1Sam|2Sam   scope --report/--emit
+//     to a single book (for per-book coverage/vocab-match audits).
 //
 // Corpus pin: /workspace/openscriptures/morphhb @
 // 6a5db284c715c18b239422e57bb89684e6a19f00 (tag v.2.2) — see
@@ -51,6 +64,13 @@ const CORPUS_PIN_PATH = path.join(ROOT, 'source/bbh/reader/corpus-pin.json');
 const GATE_MAP_PATH = path.join(ROOT, 'source/bbh/reader/gate-map.json');
 const VOCAB_CSV_PATH = path.join(ROOT, 'source/bbh/Beginning_Biblical_Hebrew_Vocabulary_by_Lesson.csv');
 const CHECKOUT_DIR = process.env.BBH_OSHB_CHECKOUT || '/workspace/openscriptures/morphhb';
+
+// wlc/*.xml basenames (OSIS book codes), imported in this fixed order.
+// Verified against the pinned checkout's wlc/ directory listing (all 8
+// present, exact case/spelling). Genesis first (Phase 2 PR D's original
+// scope, and the 52 pre-existing curated selections all live there), then
+// the "Reader book expansion" task's additions.
+export const BOOK_LIST = ['Gen', 'Ruth', 'Jonah', 'Exod', 'Deut', 'Judg', '1Sam', '2Sam'];
 
 // ─── 0. Corpus pin verification ────────────────────────────────────────────
 // Aborts (throws) unless the checkout's HEAD matches corpus-pin.json exactly.
@@ -80,24 +100,30 @@ export function verifyCorpusPin({ checkoutDir = CHECKOUT_DIR } = {}) {
   return { pin, checkoutDir, head };
 }
 
-// ─── 1. OSIS XML tokenizer (Gen.xml only) ──────────────────────────────────
-// Regex-based, not a general XML parser — Gen.xml's structure is narrow and
-// fully verified ahead of time (see the investigation notes in the PR D
-// report): <verse osisID="Gen.C.V"> directly contains zero or more <w>
-// elements (display text captured byte-for-byte, no entity decoding — OSHB's
-// Hebrew content never uses XML entities) plus <seg>/<note> siblings we
-// ignore. <note>...</note> blocks are stripped BEFORE <w> extraction because
-// a small number of verses embed a Kethiv/Qere apparatus
+// ─── 1. OSIS XML tokenizer (any single wlc/<Book>.xml file) ───────────────
+// Regex-based, not a general XML parser — every wlc/<Book>.xml file in OSHB
+// shares Gen.xml's narrow structure (verified for all 8 BOOK_LIST files
+// ahead of time, same investigation approach as the original PR D report):
+// <verse osisID="<Book>.C.V"> directly contains zero or more <w> elements
+// (display text captured byte-for-byte, no entity decoding — OSHB's Hebrew
+// content never uses XML entities) plus <seg>/<note> siblings we ignore.
+// <note>...</note> blocks are stripped BEFORE <w> extraction because a small
+// number of verses embed a Kethiv/Qere apparatus
 // (<note type="variant"><rdg><w>...qere...</w></rdg></note>) — the OUTER
 // <w type="x-ketiv"> (a direct child of <verse>) is the token that enters
 // our stream; the nested Qere alternative inside the note is intentionally
-// NOT tokenized (documented simplification — see PR D report; none of Gen 1,
-// 3, 22, 37, 38, 47, 50 contain a Kethiv/Qere pair, so this never affects the
-// curated selections).
-const VERSE_RE = /<verse osisID="(Gen\.\d+\.\d+)">([\s\S]*?)<\/verse>/g;
+// NOT tokenized (documented simplification — see PR D report). The book
+// code in the regex below is a parameter (any run of letters/digits, e.g.
+// "Gen", "1Sam") rather than hardcoded "Gen", so this same tokenizer serves
+// every BOOK_LIST entry.
 const NOTE_RE = /<note[\s\S]*?<\/note>/g;
 const W_RE = /<w\b([^>]*)>([^<]*)<\/w>/g;
 const ATTR_RE = /(\w[\w-]*)="([^"]*)"/g;
+
+function verseRegexFor(bookCode) {
+  const escaped = bookCode.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp(`<verse osisID="(${escaped}\\.\\d+\\.\\d+)">([\\s\\S]*?)<\\/verse>`, 'g');
+}
 
 function parseAttrs(attrStr) {
   const attrs = {};
@@ -108,14 +134,18 @@ function parseAttrs(attrStr) {
 }
 
 /**
- * @param {string} xmlText raw wlc/Gen.xml content (already read as utf8)
- * @returns {Array<{osisID:string, tokens:Array}>}
+ * @param {string} xmlText raw wlc/<Book>.xml content (already read as utf8)
+ * @param {string} bookCode OSIS book code this file belongs to (e.g. "Gen",
+ *   "1Sam") — used only to anchor the <verse osisID> regex to this book, so
+ *   a stray cross-reference in another book's <note> (already stripped
+ *   above) can never leak a verse in.
+ * @returns {Array<{osisID:string, book:string, tokens:Array}>}
  */
-export function parseGenesisXml(xmlText) {
+export function parseBookXml(xmlText, bookCode) {
   const verses = [];
+  const verseRe = verseRegexFor(bookCode);
   let vm;
-  VERSE_RE.lastIndex = 0;
-  while ((vm = VERSE_RE.exec(xmlText))) {
+  while ((vm = verseRe.exec(xmlText))) {
     const osisID = vm[1];
     const body = vm[2].replace(NOTE_RE, '');
     const tokens = [];
@@ -131,14 +161,24 @@ export function parseGenesisXml(xmlText) {
         display: wm[2] // EXACT byte-for-byte text from the XML, untouched
       });
     }
-    verses.push({ osisID, tokens });
+    verses.push({ osisID, book: bookCode, tokens });
   }
   return verses;
 }
 
+// Back-compat alias — Genesis-only callers (none remain in this repo, but
+// keeping the name avoids a silent breakage if something outside the repo's
+// own tools/ still imports it).
+export function parseGenesisXml(xmlText) {
+  return parseBookXml(xmlText, 'Gen');
+}
+
 export function osisRefToDisplay(osisID) {
-  // "Gen.1.1" -> "Gen 1:1"
-  const [book, chap, verse] = osisID.split('.');
+  // "Gen.1.1" -> "Gen 1:1"; "1Sam.1.1" -> "1Sam 1:1"
+  const parts = osisID.split('.');
+  const verse = parts.pop();
+  const chap = parts.pop();
+  const book = parts.join('.');
   return `${book} ${chap}:${verse}`;
 }
 
@@ -312,7 +352,63 @@ export const LEMMA_OVERRIDES = new Map([
   ['802', { vocabLesson: 6, note: 'אִשָּׁה "woman, wife" (Strong 802) — CSV L6 row; construct אֵשֶׁת and suffixed forms don\'t depointed-match אִשָּׁה.' }],
   ['1121', { vocabLesson: 7, note: 'בֵּן "son" (Strong 1121) — CSV L7 row בֵּן (בָּנִים); construct/plural/suffixed forms (בֶּן־, בְּנֵי, בְּנוֹ, ...) don\'t depointed-match the absolute singular citation form.' }],
   ['1961', { vocabLesson: 6, note: 'הָיָה "be, become" (Strong 1961) — CSV L6 lists both הָיָה (3ms) and הָיְתָה (3fs) as separate rows; every other PGN form (הָיוּ, אֶהְיֶה, יִהְיֶה, ...) fails to depointed-match either citation row.' }],
-  ['5750', { vocabLesson: null, note: 'עוֹד "still, yet, again" (Strong 5750, adverb D) — verified NOT present in the BBH vocab CSV; grammar gate resolves via the vocabLinked D-rule to unmapped.' }]
+  ['5750', { vocabLesson: null, note: 'עוֹד "still, yet, again" (Strong 5750, adverb D) — verified NOT present in the BBH vocab CSV; grammar gate resolves via the vocabLinked D-rule to unmapped.' }],
+
+  // ─── Added for the "Reader book expansion" task (Ruth/Jonah/Exod/Deut/
+  // Judg/1Sam/2Sam) — audited from --report's combined top-60 unresolved
+  // Strong's numbers across all 8 books (the per-book top-40 lists overlap
+  // heavily on these, since Strong's overrides are global; see that CLI
+  // report's "PER BOOK" section for the individual per-book frequencies).
+  // Same verification method as the table above: Hebrew-substring / English-
+  // gloss grep against the vocab CSV, cross-checked by hand.
+  // DELIBERATELY EXCLUDED despite genuinely matching a CSV row: אֱלֹהִים
+  // "God" (Strong 430, CSV L3), אֶרֶץ "land, earth" (Strong 776, CSV L9),
+  // and צִוָּה "command" (Strong 6680, Piel, CSV L35). Adding any of the
+  // three changes the recorded scores of pre-existing Genesis selections
+  // (430/776: reader-gen-1-1, reader-gen-24-4, reader-gen-10-20; 6680:
+  // reader-gen-50-12, reader-gen-7-5) — verified by re-running
+  // tools/validate_bbh_reader_data.mjs with each added. The Reader book
+  // expansion task requires those 52 pre-existing selections to stay
+  // byte-for-byte unchanged, so these three are intentionally left out of
+  // this table (their absence is NOT an oversight — see task report).
+  ['8085', { vocabLesson: 16, note: 'שָׁמַע "hear, listen" (Strong 8085) — CSV L16 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['3045', { vocabLesson: 19, note: 'יָדַע "know" (Strong 3045) — CSV L19 row; only the bare Qal citation form direct-matches (most attestations across the expansion books are imperfect/infinitive/participle forms).' }],
+  ['3427', { vocabLesson: 16, note: 'יָשַׁב "sit, inhabit, dwell" (Strong 3427) — CSV L16 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
+  ['5971', { vocabLesson: 15, note: 'עַם "people" (Strong 5971) — CSV L15 row עַם (עַמִּים); construct עַם־/plural/suffixed forms don\'t depointed-match the absolute singular.' }],
+  ['3027', { vocabLesson: 10, note: 'יָד "hand" (Strong 3027) — CSV L10 row יָד (יָדַיִם); construct יַד־/dual/suffixed forms (יָדוֹ, יָדְךָ, ...) don\'t depointed-match the absolute singular citation.' }],
+  ['1419', { vocabLesson: 32, note: 'גָּדוֹל "great" (Strong 1419) — CSV L32 row; feminine/plural/construct adjective forms (גְּדֹלָה, גְּדֹלִים, ...) don\'t depointed-match the masculine singular citation.' }],
+  ['3372', { vocabLesson: 38, note: 'יָרֵא "be afraid, fear" (Strong 3372) — CSV L38 row; only the bare Qal citation form direct-matches.' }],
+  ['4428', { vocabLesson: 9, note: 'מֶלֶךְ "king" (Strong 4428) — CSV L9 row מֶלֶךְ (מְלָכִים); construct מֶלֶךְ־/plural/suffixed forms (מַלְכּוֹ, מַלְכֵי, ...) don\'t depointed-match the absolute singular citation. Distinct from Strong 4427 מָלַךְ "reign" (the verb, CSV L23) despite the shared מלך consonants.' }],
+  ['5307', { vocabLesson: 42, note: 'נָפַל "fall" (Strong 5307) — CSV L42 row; only the bare Qal citation form direct-matches.' }],
+  ['8104', { vocabLesson: 15, note: 'שָׁמַר "guard, keep, watch" (Strong 8104) — CSV lists it at both L15 (שָׁמַר (נִשְׁמַר), infinitive/Nifal-noted headword) and L16 (fully conjugated Qal perfect paradigm); every PGN/stem/conjugation form beyond the bare citation forms fails to depointed-match, so this maps to the lower (L15) lesson per the "earliest attested" rule.' }],
+  ['1697', { vocabLesson: 5, note: 'דָּבָר "word, thing" (Strong 1697) — CSV L5 row; construct דְּבַר־/plural/suffixed forms (דְּבָרָיו, דִּבְרֵי, ...) don\'t depointed-match the absolute singular citation. Distinct from Strong 1696 דִּבֶּר "speak" (the Piel verb, already in this table) despite the shared דבר consonants.' }],
+  ['5650', { vocabLesson: 11, note: 'עֶבֶד "servant" (Strong 5650) — CSV L11 row עֶבֶד (עֲבָדִים); construct עֶבֶד־/plural/suffixed forms (עֲבָדָיו, עַבְדּוֹ, ...) don\'t depointed-match the absolute singular citation.' }],
+  ['6430', { vocabLesson: null, note: 'פְּלִשְׁתִּי "Philistine" (Strong 6430, gentilic noun Ng — high-frequency in Judges/1-2 Samuel) — verified NOT present in the BBH vocab CSV; grammar-gated normally via gate-map\'s N[cg] rules (not isProperName, since OSHB tags gentilics Ng rather than Np), so it correctly counts toward unknownContentLexemes rather than being silently excluded.' }],
+  ['5927', { vocabLesson: null, note: 'עָלָה "go up, ascend" (Strong 5927) — verified NOT present in the BBH vocab CSV.' }],
+  ['5674', { vocabLesson: null, note: 'עָבַר "cross over, pass through" (Strong 5674) — verified NOT present in the BBH vocab CSV (distinct from Strong 5647 עָבַד "serve/work", also verified absent, despite the shared עב consonants).' }],
+  ['5046', { vocabLesson: null, note: 'נָגַד (Hifil הִגִּיד) "tell, declare, report" (Strong 5046) — verified NOT present in the BBH vocab CSV.' }],
+  ['2022', { vocabLesson: null, note: 'הַר "mountain, hill" (Strong 2022) — verified NOT present in the BBH vocab CSV.' }],
+  ['2091', { vocabLesson: null, note: 'זָהָב "gold" (Strong 2091) — verified NOT present in the BBH vocab CSV.' }],
+  ['7969', { vocabLesson: null, note: 'שָׁלוֹשׁ/שְׁלֹשָׁה "three" (Strong 7969, numeral) — verified NOT present in the BBH vocab CSV as its own row; grammar-gated separately via gate-map\'s numeral override (L45).' }],
+  ['3701', { vocabLesson: null, note: 'כֶּסֶף "silver, money" (Strong 3701) — verified NOT present in the BBH vocab CSV.' }],
+  ['3820', { vocabLesson: null, note: 'לֵב "heart, mind" (Strong 3820) — verified NOT present in the BBH vocab CSV.' }],
+  ['3423', { vocabLesson: null, note: 'יָרַשׁ "possess, inherit, dispossess" (Strong 3423) — verified NOT present in the BBH vocab CSV.' }],
+  ['5647', { vocabLesson: null, note: 'עָבַד "serve, work" (Strong 5647, the verb) — verified NOT present in the BBH vocab CSV (distinct from Strong 5650 עֶבֶד "servant", the noun, which IS L11 vocab and already in this table).' }],
+  ['4421', { vocabLesson: null, note: 'מִלְחָמָה "war, battle" (Strong 4421) — verified NOT present in the BBH vocab CSV.' }],
+  ['6310', { vocabLesson: null, note: 'פֶּה "mouth" (Strong 6310) — verified NOT present in the BBH vocab CSV.' }],
+  ['4196', { vocabLesson: null, note: 'מִזְבֵּחַ "altar" (Strong 4196) — verified NOT present in the BBH vocab CSV.' }],
+  ['6030', { vocabLesson: null, note: 'עָנָה "answer, respond" (Strong 6030) — verified NOT present in the BBH vocab CSV.' }],
+  ['1242', { vocabLesson: null, note: 'בֹּקֶר "morning" (Strong 1242) — verified NOT present in the BBH vocab CSV.' }],
+  ['505', { vocabLesson: null, note: 'אֶלֶף "thousand" (Strong 505, numeral) — verified NOT present in the BBH vocab CSV.' }],
+  ['6086', { vocabLesson: null, note: 'עֵץ "tree, wood" (Strong 6086) — verified NOT present in the BBH vocab CSV.' }],
+  ['8432', { vocabLesson: null, note: 'תָּוֶךְ "midst" (Strong 8432, usually in the phrase בְּתוֹךְ "in the midst of") — verified NOT present in the BBH vocab CSV.' }],
+  ['727', { vocabLesson: null, note: 'אָרוֹן "ark, chest" (Strong 727) — verified NOT present in the BBH vocab CSV.' }],
+  ['68', { vocabLesson: null, note: 'אֶבֶן "stone" (Strong 68) — verified NOT present in the BBH vocab CSV.' }],
+  ['5493', { vocabLesson: null, note: 'סוּר "turn aside, depart" (Strong 5493) — verified NOT present in the BBH vocab CSV.' }],
+  ['3627', { vocabLesson: null, note: 'כְּלִי "vessel, weapon, implement" (Strong 3627) — verified NOT present in the BBH vocab CSV.' }],
+  ['4264', { vocabLesson: null, note: 'מַחֲנֶה "camp" (Strong 4264) — verified NOT present in the BBH vocab CSV.' }],
+  ['3548', { vocabLesson: null, note: 'כֹּהֵן "priest" (Strong 3548) — verified NOT present in the BBH vocab CSV.' }],
+  ['4057', { vocabLesson: null, note: 'מִדְבָּר "wilderness, desert" (Strong 4057) — verified NOT present in the BBH vocab CSV.' }]
 ]);
 
 /**
@@ -481,36 +577,54 @@ export function scoreVerse(classifiedTokens) {
 }
 
 // ─── 7. Top-level import ───────────────────────────────────────────────────
-export function importGenesis({ checkoutDir = CHECKOUT_DIR, verifyPin = true } = {}) {
+// Reads and scores every book in `books` (default BOOK_LIST), in that fixed
+// order, and returns a single flat `verses` array (each verse additionally
+// carries its own `book` field). Genesis is always processed first when
+// present, preserving the exact verse order/content the original 52
+// curated selections were scored against (byte-for-byte reproducibility is
+// unaffected either way — scoring is purely per-verse/per-token — but fixed
+// ordering keeps `--report`'s output and any future debugging deterministic
+// across runs).
+export function importReaderCorpus({ checkoutDir = CHECKOUT_DIR, verifyPin = true, books = BOOK_LIST } = {}) {
   let pinInfo = null;
   if (verifyPin) pinInfo = verifyCorpusPin({ checkoutDir });
   else pinInfo = { pin: readCorpusPin(), checkoutDir };
-
-  const genXmlPath = path.join(checkoutDir, 'wlc/Gen.xml');
-  const xmlText = readFileSync(genXmlPath, 'utf8');
-  const rawVerses = parseGenesisXml(xmlText);
 
   const vocabRows = loadVocabRows();
   const vocabIndex = buildVocabIndex(vocabRows);
   const gateMapDoc = loadGateMap();
   const compiledGateMap = compileGateMap(gateMapDoc);
 
-  const verses = rawVerses.map((v) => {
-    const classifiedTokens = v.tokens.map((token) => {
-      const segments = splitToken(token);
-      const classified = classifyToken(token, segments, compiledGateMap, vocabIndex);
-      return { token, segments, ...classified };
-    });
-    const scores = scoreVerse(classifiedTokens);
-    return {
-      osisID: v.osisID,
-      ref: osisRefToDisplay(v.osisID),
-      tokens: classifiedTokens,
-      scores
-    };
-  });
+  const verses = [];
+  for (const bookCode of books) {
+    const bookXmlPath = path.join(checkoutDir, `wlc/${bookCode}.xml`);
+    const xmlText = readFileSync(bookXmlPath, 'utf8');
+    const rawVerses = parseBookXml(xmlText, bookCode);
+    for (const v of rawVerses) {
+      const classifiedTokens = v.tokens.map((token) => {
+        const segments = splitToken(token);
+        const classified = classifyToken(token, segments, compiledGateMap, vocabIndex);
+        return { token, segments, ...classified };
+      });
+      const scores = scoreVerse(classifiedTokens);
+      verses.push({
+        osisID: v.osisID,
+        book: bookCode,
+        ref: osisRefToDisplay(v.osisID),
+        tokens: classifiedTokens,
+        scores
+      });
+    }
+  }
 
-  return { pin: pinInfo.pin, checkoutDir: pinInfo.checkoutDir, verses, vocabIndexSize: vocabIndex.size };
+  return { pin: pinInfo.pin, checkoutDir: pinInfo.checkoutDir, verses, vocabIndexSize: vocabIndex.size, books };
+}
+
+// Back-compat alias (Genesis-only, single-book import) — every in-repo
+// caller now uses importReaderCorpus (multi-book); kept so nothing outside
+// tools/ silently breaks if it still imports the old name.
+export function importGenesis(opts = {}) {
+  return importReaderCorpus({ ...opts, books: ['Gen'] });
 }
 
 // ─── 8. CLI ─────────────────────────────────────────────────────────────────
@@ -525,20 +639,30 @@ function bucketOf(lesson) {
 }
 
 function printReport(result) {
-  const { verses, vocabIndexSize, pin } = result;
+  const { verses, vocabIndexSize, pin, books } = result;
   console.log(`Corpus: ${pin.repository} @ ${pin.commit} (tag ${pin.tag})`);
+  console.log(`Books: ${books.join(', ')}`);
   console.log(`Vocab index: ${vocabIndexSize} distinct headword keys from the BBH vocab CSV.`);
-  console.log(`Genesis: ${verses.length} verses, ${verses.reduce((n, v) => n + v.tokens.length, 0)} tokens.\n`);
+  console.log(`Total: ${verses.length} verses, ${verses.reduce((n, v) => n + v.tokens.length, 0)} tokens.\n`);
 
   const tierCounts = { strict: 0, guided: 0, challenge: 0, none: 0 };
   const byBucket = new Map();
+  const byBook = new Map(); // book -> { verses, tokens, tierCounts, coverageGaps, unmatchedLemmaFreq }
   let coverageGaps = 0;
   const gapExamples = [];
   const unmatchedLemmaFreq = new Map();
 
   for (const v of verses) {
+    if (!byBook.has(v.book)) {
+      byBook.set(v.book, { verses: 0, tokens: 0, tierCounts: { strict: 0, guided: 0, challenge: 0, none: 0 }, coverageGaps: 0, unmatchedLemmaFreq: new Map() });
+    }
+    const bookAgg = byBook.get(v.book);
+    bookAgg.verses++;
+    bookAgg.tokens += v.tokens.length;
+
     const t = v.scores.tier || 'none';
     tierCounts[t]++;
+    bookAgg.tierCounts[t]++;
     if (t !== 'none') {
       const bucket = bucketOf(v.scores.effectiveGateLesson);
       if (!byBucket.has(bucket)) byBucket.set(bucket, { strict: [], guided: [], challenge: [] });
@@ -548,38 +672,62 @@ function printReport(result) {
       for (const c of tok.contributions) {
         if (c.kind === 'gap') {
           coverageGaps++;
-          if (gapExamples.length < 15) gapExamples.push(`${v.ref} morph="${tok.segments[c.segmentIndex].morph}"`);
+          bookAgg.coverageGaps++;
+          if (gapExamples.length < 30) gapExamples.push(`${v.ref} morph="${tok.segments[c.segmentIndex].morph}"`);
         }
       }
       if (tok.hasContentSegment && !tok.isProperName && tok.vocabLesson == null && tok.strongs) {
         unmatchedLemmaFreq.set(tok.strongs, (unmatchedLemmaFreq.get(tok.strongs) || 0) + 1);
+        bookAgg.unmatchedLemmaFreq.set(tok.strongs, (bookAgg.unmatchedLemmaFreq.get(tok.strongs) || 0) + 1);
       }
     }
   }
 
-  console.log('Tier totals (whole Genesis):', tierCounts);
+  console.log('Tier totals (all books combined):', tierCounts);
   console.log(`Coverage gaps (window-1 segment matched by NO gate-map entry, incl. safety-net catch-alls): ${coverageGaps}`);
   if (gapExamples.length) console.log('  examples:', gapExamples.join(' | '));
 
-  console.log('\nPer-bucket candidate counts (bucketed by effective gate lesson):');
-  const bucketOrder = ['<9', '9-14', '15-19', '20-22', '23-27', '28-31', '32-34', '35-38', '39-41', '42-44', '45-50', '50+'];
-  for (const b of bucketOrder) {
-    const entry = byBucket.get(b);
-    if (!entry) continue;
-    console.log(`  ${b}: strict=${entry.strict.length} guided=${entry.guided.length} challenge=${entry.challenge.length}`);
+  console.log('\nPer-book totals:');
+  for (const b of books) {
+    const agg = byBook.get(b);
+    if (!agg) continue;
+    console.log(`  ${b}: ${agg.verses} verses, ${agg.tokens} tokens, tiers=${JSON.stringify(agg.tierCounts)}, coverageGaps=${agg.coverageGaps}`);
   }
 
-  console.log('\nTop unmatched content-lexeme Strong\'s numbers (frequency, not yet in LEMMA_OVERRIDES with a resolving lesson):');
-  const top = [...unmatchedLemmaFreq.entries()]
-    .filter(([strongs]) => {
-      const o = LEMMA_OVERRIDES.get(strongs);
-      return !o || o.vocabLesson == null;
-    })
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 35);
+  console.log('\nPer-bucket candidate counts (bucketed by effective gate lesson, all books combined):');
+  const bucketOrder = ['<9', '9-14', '15-19', '20-22', '23-27', '28-31', '32-34', '35-38', '39-41', '42-44', '45-50', '50+'];
+  for (const bkt of bucketOrder) {
+    const entry = byBucket.get(bkt);
+    if (!entry) continue;
+    const byBookCounts = {};
+    for (const tier of ['strict', 'guided', 'challenge']) {
+      for (const v of entry[tier]) {
+        byBookCounts[v.book] = byBookCounts[v.book] || { strict: 0, guided: 0, challenge: 0 };
+        byBookCounts[v.book][tier]++;
+      }
+    }
+    console.log(`  ${bkt}: strict=${entry.strict.length} guided=${entry.guided.length} challenge=${entry.challenge.length} ${JSON.stringify(byBookCounts)}`);
+  }
+
+  console.log('\nTop unmatched content-lexeme Strong\'s numbers, ALL BOOKS (frequency, not yet in LEMMA_OVERRIDES with a resolving lesson):');
+  const filterUnresolved = ([strongs]) => {
+    const o = LEMMA_OVERRIDES.get(strongs);
+    return !o || o.vocabLesson == null;
+  };
+  const top = [...unmatchedLemmaFreq.entries()].filter(filterUnresolved).sort((a, b) => b[1] - a[1]).slice(0, 60);
   for (const [strongs, freq] of top) console.log(`  Strong ${strongs}: ${freq}x`);
 
-  return { tierCounts, byBucket, coverageGaps };
+  if (books.length > 1) {
+    console.log('\nTop unmatched content-lexeme Strong\'s numbers PER BOOK (top 40 each):');
+    for (const b of books) {
+      const agg = byBook.get(b);
+      if (!agg) continue;
+      const bookTop = [...agg.unmatchedLemmaFreq.entries()].filter(filterUnresolved).sort((a, b2) => b2[1] - a[1]).slice(0, 40);
+      console.log(`  ${b}:`, bookTop.map(([s, f]) => `${s}(${f}x)`).join(' '));
+    }
+  }
+
+  return { tierCounts, byBucket, byBook, coverageGaps };
 }
 
 function isMainModule() {
@@ -590,17 +738,20 @@ function main() {
   const args = process.argv.slice(2);
   const doReport = args.includes('--report');
   const doEmit = args.includes('--emit');
+  const bookArg = args.find((a) => a.startsWith('--book='));
+  const books = bookArg ? [bookArg.slice('--book='.length)] : BOOK_LIST;
   if (!doReport && !doEmit) {
-    console.log('Usage: node tools/import_oshb_reader.mjs --report | --emit');
+    console.log('Usage: node tools/import_oshb_reader.mjs --report | --emit [--book=Gen|Ruth|Jonah|Exod|Deut|Judg|1Sam|2Sam]');
     process.exitCode = 1;
     return;
   }
-  const result = importGenesis();
+  const result = importReaderCorpus({ books });
   printReport(result);
   if (doEmit) {
     console.log('\n--- FULL SCORED CORPUS (JSON) ---');
     console.log(JSON.stringify(result.verses.map((v) => ({
       osisID: v.osisID,
+      book: v.book,
       ref: v.ref,
       scores: v.scores,
       tokens: v.tokens.map((t) => ({

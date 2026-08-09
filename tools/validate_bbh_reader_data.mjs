@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-// Validator for the BBH Reader source files (Phase 2 PR D):
+// Validator for the BBH Reader source files (Phase 2 PR D; multi-book
+// expansion added in the "Reader book expansion" task):
 // source/bbh/reader/{corpus-pin.json, gate-map.json, selections.json}.
 // Mirrors the style of tools/validate_bbh_parsing_data.mjs: hand-maintained
 // authoritative sources are schema-checked, then cross-checked against a
@@ -11,19 +12,34 @@
 //   1. corpus-pin.json shape + non-empty attribution string.
 //   2. gate-map.json shape (every mapping entry has the fields the importer
 //      expects; every morphPattern compiles as a regex).
-//   3. selections.json shape (required fields, tier whitelist, unique ids).
-//   4. Corpus pin verification (delegated to importGenesis -> verifyCorpusPin
-//      -> aborts if the pinned checkout's HEAD doesn't match).
-//   5. Score reproducibility: every selection's recorded `scores` (and tier)
-//      must deep-equal what a fresh importGenesis() computes for that
-//      osisRef.
+//   3. selections.json shape (required fields, tier whitelist, unique ids,
+//      ref/osisRef book code in BOOK_LIST, challengeNote required iff
+//      tier==='challenge').
+//   4. Corpus pin verification (delegated to importReaderCorpus ->
+//      verifyCorpusPin -> aborts if the pinned checkout's HEAD doesn't
+//      match).
+//   5. Score reproducibility: every selection's recorded `scores` (and
+//      tier) must deep-equal what a fresh importReaderCorpus() computes for
+//      that osisRef. For tier==='challenge', the recorded `gateLesson` is
+//      checked against the fresh `effectiveGateLesson` (the lower, below-
+//      max lesson the passage is actually gated/visible at) rather than
+//      `gateLesson` (always the verse's raw maxGrammarLesson) — see the
+//      tier definition in source/bbh/reader/selections.json's notes and
+//      scoreVerse() in tools/import_oshb_reader.mjs.
 //   6. No unmapped tokens in any strict/guided selection (unmappedCount===0)
 //      — a selection can never expose an appendix-only/out-of-scope feature.
+//      No-future-token: no token may gate above a selection's own recorded
+//      gateLesson, EXCEPT for a tier==='challenge' selection's single
+//      flagged token at the verse's maxGrammarLesson (that's the whole
+//      point of the challenge tier — exactly one clearly-identified
+//      near-future feature; scoreVerse() only ever assigns 'challenge' when
+//      there is exactly one such token, so this exemption can never widen
+//      to more than one token without failing here).
 //   7. Display byte-equality: every token's display text, as produced by the
 //      importer, is checked against an INDEPENDENT fresh read+extraction of
-//      wlc/Gen.xml for literal byte equality (Buffer-level, not just JS
-//      string `===`) — proves no NFC normalization or other mutation crept
-//      in anywhere in the pipeline.
+//      the selection's own wlc/<Book>.xml for literal byte equality
+//      (Buffer-level, not just JS string `===`) — proves no NFC
+//      normalization or other mutation crept in anywhere in the pipeline.
 //
 // Usage: node tools/validate_bbh_reader_data.mjs
 // Exits nonzero (via process.exitCode) on any failure; prints a pass
@@ -35,9 +51,10 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import {
-  importGenesis,
+  importReaderCorpus,
   readCorpusPin,
   loadGateMap,
+  BOOK_LIST,
   ROOT
 } from './import_oshb_reader.mjs';
 
@@ -45,9 +62,11 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 void __dirname;
 
 const SELECTIONS_PATH = path.join(ROOT, 'source/bbh/reader/selections.json');
-const GEN_XML_PATH_REL = 'wlc/Gen.xml';
 
 const TIER_VALUES = new Set(['strict', 'guided', 'challenge']);
+const BOOK_RE_GROUP = BOOK_LIST.join('|');
+const REF_RE = new RegExp(`^(${BOOK_RE_GROUP}) \\d+:\\d+$`);
+const OSISREF_RE = new RegExp(`^(${BOOK_RE_GROUP})\\.\\d+\\.\\d+$`);
 const ID_RE = /^[a-z0-9][a-z0-9-]*$/;
 
 const failures = [];
@@ -173,11 +192,11 @@ function validateSelectionsShape(doc) {
     } else {
       ids.add(sel.id);
     }
-    if (typeof sel.ref !== 'string' || !/^Gen \d+:\d+$/.test(sel.ref)) {
-      fail('selection-ref', `${label}: ref "${sel.ref}" does not match "Gen C:V"`);
+    if (typeof sel.ref !== 'string' || !REF_RE.test(sel.ref)) {
+      fail('selection-ref', `${label}: ref "${sel.ref}" does not match "<Book> C:V" for a BOOK_LIST book (${BOOK_LIST.join(', ')})`);
     }
-    if (typeof sel.osisRef !== 'string' || !/^Gen\.\d+\.\d+$/.test(sel.osisRef)) {
-      fail('selection-ref', `${label}: osisRef "${sel.osisRef}" does not match "Gen.C.V"`);
+    if (typeof sel.osisRef !== 'string' || !OSISREF_RE.test(sel.osisRef)) {
+      fail('selection-ref', `${label}: osisRef "${sel.osisRef}" does not match "<Book>.C.V" for a BOOK_LIST book (${BOOK_LIST.join(', ')})`);
     } else if (osisRefs.has(sel.osisRef)) {
       fail('selection-ref', `duplicate osisRef "${sel.osisRef}"`);
     } else {
@@ -201,6 +220,13 @@ function validateSelectionsShape(doc) {
     if (typeof sel.rationale !== 'string' || sel.rationale.trim() === '') {
       fail('selection-rationale', `${label}: rationale is missing/empty`);
     }
+    if (sel.tier === 'challenge') {
+      if (typeof sel.challengeNote !== 'string' || sel.challengeNote.trim() === '') {
+        fail('selection-challenge-note', `${label}: tier is "challenge" but challengeNote is missing/empty (must name the single near-future feature)`);
+      }
+    } else if (sel.challengeNote !== undefined) {
+      fail('selection-challenge-note', `${label}: challengeNote is only valid on tier "challenge" selections`);
+    }
   }
   report(`selections: ${doc.selections.length} entries, shape OK (pass)`);
   return doc.selections;
@@ -214,7 +240,7 @@ function validateReproducibility(selections, freshVerses) {
   for (const sel of selections) {
     const fresh = byOsisID.get(sel.osisRef);
     if (!fresh) {
-      fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): verse not found in a fresh Genesis import`);
+      fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): verse not found in a fresh import`);
       continue;
     }
     const freshScores = {
@@ -230,35 +256,47 @@ function validateReproducibility(selections, freshVerses) {
         `selection "${sel.id}" (${sel.osisRef}): recorded scores ${JSON.stringify(sel.scores)} != fresh-import scores ${JSON.stringify(freshScores)}`
       );
     }
-    if (fresh.scores.gateLesson !== sel.gateLesson) {
+    // For tier==='challenge', the selection's recorded gateLesson is the
+    // LOWER effectiveGateLesson (below-max lesson the passage is actually
+    // gated at) — the whole point of the tier is exposing one token above
+    // that gate. For strict/guided, gateLesson is the ordinary raw
+    // maxGrammarLesson/gateLesson (the two are identical for those tiers).
+    const expectedGateLesson = sel.tier === 'challenge' ? fresh.scores.effectiveGateLesson : fresh.scores.gateLesson;
+    if (expectedGateLesson !== sel.gateLesson) {
       mismatchCount++;
-      fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded gateLesson ${sel.gateLesson} != fresh maxGrammarLesson ${fresh.scores.gateLesson}`);
+      fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded gateLesson ${sel.gateLesson} != fresh ${sel.tier === 'challenge' ? 'effectiveGateLesson' : 'gateLesson'} ${expectedGateLesson}`);
     }
-    if (fresh.scores.tier !== sel.tier && !(sel.tier === 'challenge' && fresh.scores.tier === 'challenge')) {
-      // strict/guided selections must still compute as strict/guided fresh;
-      // a verse recorded as strict may legitimately still compute as strict
-      // (tier is deterministic given the same tokenCount/unknownContentLexemes),
-      // so any mismatch here is a real drift.
-      if (fresh.scores.tier !== sel.tier) {
-        mismatchCount++;
-        fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded tier "${sel.tier}" != fresh tier "${fresh.scores.tier}"`);
-      }
+    if (fresh.scores.tier !== sel.tier) {
+      mismatchCount++;
+      fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded tier "${sel.tier}" != fresh tier "${fresh.scores.tier}"`);
     }
-    if ((sel.tier === 'strict' || sel.tier === 'guided') && fresh.scores.unmappedCount !== 0) {
+    if ((sel.tier === 'strict' || sel.tier === 'guided' || sel.tier === 'challenge') && fresh.scores.unmappedCount !== 0) {
       unmappedInSelectionCount++;
       fail('no-unmapped-in-selection', `selection "${sel.id}" (${sel.osisRef}): tier "${sel.tier}" but unmappedCount=${fresh.scores.unmappedCount} (must be 0)`);
     }
+    // No-future-token: every token must gate at or below the selection's
+    // own recorded gateLesson, EXCEPT a tier==='challenge' selection's
+    // single flagged token sitting at the verse's maxGrammarLesson — that
+    // token IS the "one clearly-identified near-future feature" the
+    // challenge tier exists to expose. scoreVerse() only ever assigns
+    // 'challenge' when exactly one token sits at maxGrammarLesson, so this
+    // exemption can never silently widen past one token.
+    let challengeExemptionsUsed = 0;
     for (const tok of fresh.tokens) {
       if (tok.tokenLesson != null && tok.tokenLesson > sel.gateLesson) {
-        fail('no-future-token', `selection "${sel.id}" (${sel.osisRef}): a token gates at L${tok.tokenLesson}, above the selection's own gateLesson ${sel.gateLesson}`);
+        if (sel.tier === 'challenge' && tok.tokenLesson === fresh.scores.maxGrammarLesson && challengeExemptionsUsed === 0) {
+          challengeExemptionsUsed++;
+          continue;
+        }
+        fail('no-future-token', `selection "${sel.id}" (${sel.osisRef}): a token gates at L${tok.tokenLesson}, above the selection's own gateLesson ${sel.gateLesson}${sel.tier === 'challenge' ? ' (beyond the single challenge-tier exemption)' : ''}`);
       }
     }
   }
   if (mismatchCount === 0) report(`reproducibility: all ${selections.length} selections' scores reproduce exactly from a fresh import (pass)`);
-  if (unmappedInSelectionCount === 0) report('no-unmapped-in-selection: 0 strict/guided selections contain an unmapped token (pass)');
+  if (unmappedInSelectionCount === 0) report('no-unmapped-in-selection: 0 selections (any tier) contain an unmapped token (pass)');
 }
 
-// ─── 7. Display byte-equality vs a fresh, independent read of Gen.xml ─────
+// ─── 7. Display byte-equality vs a fresh, independent read of wlc/<Book>.xml
 function extractRawTokenDisplays(xmlText, osisID) {
   const escaped = osisID.replace(/\./g, '\\.');
   const verseRe = new RegExp(`<verse osisID="${escaped}">([\\s\\S]*?)<\\/verse>`);
@@ -273,14 +311,23 @@ function extractRawTokenDisplays(xmlText, osisID) {
 }
 
 function validateByteEquality(selections, checkoutDir) {
-  const genXmlPath = path.join(checkoutDir, GEN_XML_PATH_REL);
-  const xmlText = readFileSync(genXmlPath, 'utf8'); // fresh, independent read
+  // Independently re-read each BOOK's own wlc/<Book>.xml exactly once
+  // (never trusting the importer's own read), keyed by OSIS book code
+  // (sel.osisRef's first "." segment).
+  const xmlByBook = new Map();
+  const bookOf = (osisID) => osisID.split('.')[0];
   let tokensChecked = 0;
   let mismatchCount = 0;
   for (const sel of selections) {
+    const book = bookOf(sel.osisRef);
+    if (!xmlByBook.has(book)) {
+      const bookXmlPath = path.join(checkoutDir, `wlc/${book}.xml`);
+      xmlByBook.set(book, readFileSync(bookXmlPath, 'utf8'));
+    }
+    const xmlText = xmlByBook.get(book);
     const rawDisplays = extractRawTokenDisplays(xmlText, sel.osisRef);
     if (!rawDisplays) {
-      fail('byte-equality', `selection "${sel.id}" (${sel.osisRef}): verse not found in an independent fresh read of Gen.xml`);
+      fail('byte-equality', `selection "${sel.id}" (${sel.osisRef}): verse not found in an independent fresh read of wlc/${book}.xml`);
       continue;
     }
     // Cross-check against what the importer produced for the same verse.
@@ -305,7 +352,7 @@ function validateByteEquality(selections, checkoutDir) {
     }
   }
   if (mismatchCount === 0) {
-    report(`byte-equality: ${tokensChecked} token display strings across ${selections.length} selections match wlc/Gen.xml byte-for-byte (pass)`);
+    report(`byte-equality: ${tokensChecked} token display strings across ${selections.length} selections match their wlc/<Book>.xml byte-for-byte (pass)`);
   }
 }
 
@@ -325,9 +372,9 @@ function main() {
   if (pin && selections.length && failures.length === 0) {
     let result;
     try {
-      result = importGenesis();
+      result = importReaderCorpus();
     } catch (err) {
-      fail('corpus-pin', `importGenesis() failed: ${err.message}`);
+      fail('corpus-pin', `importReaderCorpus() failed: ${err.message}`);
       result = null;
     }
     if (result) {

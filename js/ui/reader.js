@@ -1,9 +1,12 @@
-// Reader mode UI (Phase 2 PR D) — Cook & Holmstedt, Beginning Biblical Hebrew.
-// Renders the Reader options panel (lesson select + tier filter), the
-// passage list (grouped by gate-lesson bucket), the single-passage reading
-// view (tappable tokens + inline word-detail popover), the Reader analytics
-// section, and the CC BY 4.0 attribution line — owns click/change handling
-// for all of it.
+// Reader mode UI (Phase 2 PR D; multi-book grouping + challenge toggle
+// added by the Reader book expansion) — Cook & Holmstedt, Beginning
+// Biblical Hebrew. Renders the Reader options panel (lesson select + tier
+// filter + challenge-passages toggle), the passage list (grouped by BOOK,
+// then by gate-lesson bucket within each book — see groupByBookAndBucket),
+// the single-passage reading view (tappable tokens + inline word-detail
+// popover, challenge badge + flagged-feature note when applicable), the
+// Reader analytics section, and the CC BY 4.0 attribution line — owns
+// click/change handling for all of it.
 //
 // Hard boundary: this module imports NOTHING from other app modules — same
 // rule as js/ui/grammar.js (see that file's header). Gating here is a
@@ -76,37 +79,87 @@ function tierScoped(list, tier) {
   return tier === 'strict' ? list.filter((p) => p.tier === 'strict') : list;
 }
 
+// Challenge-tier passages (Reader book expansion) are ADDITIONALLY gated
+// behind runtime.reader.showChallenge, default off — a challenge passage
+// deliberately exposes exactly one near-future-lesson token, so it must
+// never appear unless the learner explicitly opts in, regardless of the
+// strict/guided tier filter above (challenge is its own axis, not a third
+// tier option in that toggle).
+function challengeScoped(list, showChallenge) {
+  return showChallenge ? list : list.filter((p) => p.tier !== 'challenge');
+}
+
+// ─── Book display names (Reader book expansion) ────────────────────────────
+// `p.book` is the OSHB/OSIS book code stored on every generated passage
+// (js/data/bbh_reader.js). Human-readable names for grouping headings and
+// the passage-view header; falls back to the raw code for any book this
+// table doesn't (yet) know about, same "unknowable renders as the raw
+// value" principle as decodeMorphSegment below.
+const BOOK_NAMES = {
+  Gen: 'Genesis', Ruth: 'Ruth', Jonah: 'Jonah', Exod: 'Exodus',
+  Deut: 'Deuteronomy', Judg: 'Judges', '1Sam': '1 Samuel', '2Sam': '2 Samuel'
+};
+function bookDisplayName(code) {
+  return BOOK_NAMES[code] || String(code ?? '');
+}
+
 // First gate lesson (at or after fromLesson) that has material matching the
 // tier filter — used for the empty-state guidance message. Mirrors
-// js/ui/grammar.js's firstLessonWithMaterial.
+// js/ui/grammar.js's firstLessonWithMaterial. Challenge-tier passages never
+// count here regardless of showChallenge — the empty-state message is about
+// ordinary strict/guided study material, not the opt-in challenge extra.
 function firstLessonWithMaterial(fromLesson, tier) {
   let min = null;
   getPassages().forEach((p) => {
     if (!Number.isInteger(p.gateLesson) || p.gateLesson < fromLesson) return;
+    if (p.tier === 'challenge') return;
     if (tier === 'strict' && p.tier !== 'strict') return;
     if (min === null || p.gateLesson < min) min = p.gateLesson;
   });
   return min;
 }
 
-// Group passages into the same 10-lesson buckets used elsewhere (Lessons
-// 1-10, 11-20, ... 41-50), sorted by bucket start then by gate lesson.
-function groupByBucket(passages) {
-  const buckets = {};
+// Canonical book display order (Reader book expansion) — mirrors
+// tools/import_oshb_reader.mjs's BOOK_LIST exactly (Gen first, since the
+// original 52 curated selections are all Genesis, then the 7 expansion
+// books in the order the importer processes them). Kept as a local
+// constant per CLAUDE.md's ES-module cache-hazard rule (a mirrored sentinel
+// rather than a new cross-module import) — if BOOK_LIST in the importer
+// ever changes, update this array too.
+const BOOK_ORDER = ['Gen', 'Ruth', 'Jonah', 'Exod', 'Deut', 'Judg', '1Sam', '2Sam'];
+function bookOrderIndex(code) {
+  const i = BOOK_ORDER.indexOf(code);
+  return i === -1 ? BOOK_ORDER.length : i;
+}
+
+// Group passages by BOOK (in BOOK_ORDER), then by the same 10-lesson gate
+// buckets used elsewhere (Lessons 1-10, 11-20, ... 41-50) within each book.
+function groupByBookAndBucket(passages) {
+  const byBook = new Map();
   passages.forEach((p) => {
-    const start = Math.floor((p.gateLesson - 1) / 10) * 10 + 1;
-    const end = Math.min(start + 9, 50);
-    const key = `${start}-${end}`;
-    if (!buckets[key]) buckets[key] = { start, end, passages: [] };
-    buckets[key].passages.push(p);
+    if (!byBook.has(p.book)) byBook.set(p.book, []);
+    byBook.get(p.book).push(p);
   });
-  return Object.keys(buckets)
-    .map((key) => buckets[key])
-    .sort((a, b) => a.start - b.start)
-    .map((b) => ({
-      ...b,
-      passages: b.passages.slice().sort((x, y) => (x.gateLesson - y.gateLesson) || String(x.ref).localeCompare(String(y.ref)))
-    }));
+  return [...byBook.keys()]
+    .sort((a, b) => bookOrderIndex(a) - bookOrderIndex(b) || String(a).localeCompare(String(b)))
+    .map((book) => {
+      const buckets = {};
+      byBook.get(book).forEach((p) => {
+        const start = Math.floor((p.gateLesson - 1) / 10) * 10 + 1;
+        const end = Math.min(start + 9, 50);
+        const key = `${start}-${end}`;
+        if (!buckets[key]) buckets[key] = { start, end, passages: [] };
+        buckets[key].passages.push(p);
+      });
+      const bucketList = Object.keys(buckets)
+        .map((key) => buckets[key])
+        .sort((a, b) => a.start - b.start)
+        .map((b) => ({
+          ...b,
+          passages: b.passages.slice().sort((x, y) => (x.gateLesson - y.gateLesson) || String(x.ref).localeCompare(String(y.ref)))
+        }));
+      return { book, bookName: bookDisplayName(book), buckets: bucketList };
+    });
 }
 
 // ─── OSHB Hebrew morphology code decoder ───────────────────────────────────
@@ -268,6 +321,18 @@ function renderReaderOptionsPanel() {
         <button class="theme-btn${state.tier !== 'strict' ? ' active' : ''}" type="button" onclick="readerSetTier('both')" title="Strict passages use only vocabulary already gated in by the current lesson; Guided passages may include a handful of not-yet-introduced words, marked with a dotted underline.">Strict + Guided</button>
       </div>
     </div>
+    <div class="reader-options-row">
+      <span class="reader-field-label">Challenge passages</span>
+      <button
+        id="readerChallengeToggle"
+        class="ctrl-btn reader-challenge-toggle-btn${state.showChallenge ? ' active' : ''}"
+        type="button"
+        role="switch"
+        aria-checked="${state.showChallenge ? 'true' : 'false'}"
+        onclick="readerSetShowChallenge(${state.showChallenge ? 'false' : 'true'})"
+        title="Challenge passages deliberately include one word from a lesson you haven't reached yet, flagged in the passage header. Off by default."
+      >${state.showChallenge ? 'Shown' : 'Hidden'}</button>
+    </div>
   `;
 }
 
@@ -286,6 +351,7 @@ function renderRecentlyRead(state, passages) {
 }
 
 function tierBadgeHtml(tier) {
+  if (tier === 'challenge') return '<span class="reader-tier-badge reader-tier-badge-challenge">challenge</span>';
   return tier === 'guided'
     ? '<span class="reader-tier-badge reader-tier-badge-guided">guided</span>'
     : '<span class="reader-tier-badge reader-tier-badge-strict">strict</span>';
@@ -303,7 +369,8 @@ function renderPassageRow(p, state) {
 
 function renderPassageList(state, passages) {
   const gated = gatedPassages(state.lesson);
-  const scoped = tierScoped(gated, state.tier);
+  const tierFiltered = tierScoped(gated, state.tier);
+  const scoped = challengeScoped(tierFiltered, !!state.showChallenge);
   if (!scoped.length) {
     const nextLesson = firstLessonWithMaterial(state.lesson, state.tier);
     const guidance = nextLesson
@@ -312,10 +379,14 @@ function renderPassageList(state, passages) {
     return `<div class="empty-state reader-empty-state"><div class="big hebrew-text" dir="rtl" lang="he">אבג</div>${escapeHtml(guidance)}</div>`;
   }
   const recentHtml = renderRecentlyRead(state, passages);
-  const groupsHtml = groupByBucket(scoped).map((g) => `
-    <div class="reader-group">
-      <div class="reader-group-heading">Lessons ${g.start}–${g.end}</div>
-      <div class="reader-passage-list">${g.passages.map((p) => renderPassageRow(p, state)).join('')}</div>
+  const groupsHtml = groupByBookAndBucket(scoped).map((bookGroup) => `
+    <div class="reader-book-group">
+      <div class="reader-book-heading">${escapeHtml(bookGroup.bookName)}</div>
+      ${bookGroup.buckets.map((g) => `
+        <div class="reader-group">
+          <div class="reader-group-heading">Lessons ${g.start}–${g.end}</div>
+          <div class="reader-passage-list">${g.passages.map((p) => renderPassageRow(p, state)).join('')}</div>
+        </div>`).join('')}
     </div>`).join('');
   return `${recentHtml}${groupsHtml}`;
 }
@@ -382,6 +453,7 @@ function renderPassageView(passage, state) {
         ${tierBadgeHtml(passage.tier)}
         <span class="reader-passage-tokens">${n} word${n === 1 ? '' : 's'} · Gate: Lesson ${passage.gateLesson}</span>
       </div>
+      ${passage.tier === 'challenge' && passage.challengeNote ? `<div class="reader-challenge-note">Challenge: ${escapeHtml(passage.challengeNote)}</div>` : ''}
       <div class="reader-hebrew-block hebrew-text" dir="rtl" lang="he">${tokensHtml}</div>
       ${popoverHtml}
     </div>`;
@@ -400,7 +472,14 @@ function renderReaderArea() {
     return;
   }
 
-  const openPassage = openPassageId ? getPassageById(openPassageId) : null;
+  let openPassage = openPassageId ? getPassageById(openPassageId) : null;
+  // A challenge passage can never render while the toggle is off — even if
+  // reached via a stale "recently read" chip or a saved lastPassageId from
+  // before the learner turned the toggle back off.
+  if (openPassage && openPassage.tier === 'challenge' && !state.showChallenge) {
+    openPassage = null;
+    openPassageId = null;
+  }
   if (openPassage) {
     area.innerHTML = renderPassageView(openPassage, state);
   } else {
@@ -470,10 +549,29 @@ export function readerSetTier(value) {
   render();
 }
 
+export function readerSetShowChallenge(value) {
+  const state = host.getState();
+  if (!state) return;
+  state.showChallenge = !!value;
+  // Turning the toggle off while looking at a challenge passage must not
+  // leave the reading view open on now-forbidden content.
+  if (!state.showChallenge && openPassageId) {
+    const openPassage = getPassageById(openPassageId);
+    if (openPassage && openPassage.tier === 'challenge') {
+      openPassageId = null;
+      activeTokenIdx = null;
+    }
+  }
+  host.saveState();
+  render();
+}
+
 export function readerOpenPassage(id) {
   const state = host.getState();
   if (!state) return;
-  if (!getPassageById(id)) return;
+  const passage = getPassageById(id);
+  if (!passage) return;
+  if (passage.tier === 'challenge' && !state.showChallenge) return;
   openPassageId = id;
   activeTokenIdx = null;
   state.lastPassageId = id;
@@ -543,7 +641,7 @@ export function renderReaderAnalytics() {
   collapse.style.display = '';
 
   const passages = getPassages();
-  const scoped = tierScoped(gatedPassages(state.lesson), state.tier);
+  const scoped = challengeScoped(tierScoped(gatedPassages(state.lesson), state.tier), !!state.showChallenge);
   const readInScope = scoped.filter((p) => state.readPassages && state.readPassages[p.id]).length;
 
   if (statusEl) statusEl.textContent = `${readInScope} / ${scoped.length} passages read at Lesson ${state.lesson} · ${markCount} marked for review`;

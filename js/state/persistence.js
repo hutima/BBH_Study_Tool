@@ -316,7 +316,11 @@ function sanitizeReaderState(candidate) {
     readOrder: sanitizeReaderReadOrder(src.readOrder, readPassages),
     marks: sanitizeReaderMarks(src.marks),
     lastPassageId: (typeof src.lastPassageId === 'string' && src.lastPassageId) ? src.lastPassageId : null,
-    initializedFromVocab: !!src.initializedFromVocab
+    initializedFromVocab: !!src.initializedFromVocab,
+    // Reader book expansion: default OFF, additive boolean (backward
+    // compatible with every pre-existing save/export, which sanitizes to
+    // false here exactly like every other missing-field default above).
+    showChallenge: !!src.showChallenge
   };
 }
 

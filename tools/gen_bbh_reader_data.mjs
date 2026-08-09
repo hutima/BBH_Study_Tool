@@ -35,7 +35,7 @@ import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { importGenesis, readCorpusPin, ROOT } from './import_oshb_reader.mjs';
+import { importReaderCorpus, readCorpusPin, ROOT } from './import_oshb_reader.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 void __dirname;
@@ -92,9 +92,15 @@ function buildToken(classifiedToken) {
 function buildPassage(selection, freshVerse) {
   return {
     id: selection.id,
+    book: freshVerse.book,
     ref: selection.ref,
     gateLesson: selection.gateLesson,
     tier: selection.tier,
+    // challengeNote: present only on tier:'challenge' selections — the
+    // single near-future feature this passage deliberately exposes beyond
+    // its own effective gate (see selections.json's per-entry field and
+    // js/ui/reader.js's challenge-toggle gating).
+    challengeNote: selection.tier === 'challenge' ? (selection.challengeNote || null) : undefined,
     tokens: freshVerse.tokens.map(buildToken)
   };
 }
@@ -121,13 +127,15 @@ const HEADER = [
   '// window.BBH_READER as a CLASSIC (non-module) script — same idiom as',
   '// js/data/bbh_vocab.js registering window.SETS and js/data/bbh_parsing.js',
   '// registering window.BBH_PARSING — so it can be dropped into index.html\'s',
-  '// plain <script> tags without touching the ES-module import graph. NOT YET',
-  '// wired into index.html or sw.js precache as of PR D — that lands with the',
-  '// Reader UI in a later PR; this file existing unused on disk is expected',
-  '// at this stage.',
+  '// plain <script> tags without touching the ES-module import graph. Wired',
+  '// into index.html\'s <script> tags and sw.js\'s precache list.',
   '//',
   '// Shape: { schemaVersion, attribution, corpusPin: {tag, commit},',
-  '// passages: [{ id, ref, gateLesson, tier, tokens: [{t,l,s,m,g,pn,v}] }] }.',
+  '// passages: [{ id, book, ref, gateLesson, tier, challengeNote?,',
+  '// tokens: [{t,l,s,m,g,pn,v}] }] }. `book` is the OSIS book code (Gen,',
+  '// Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam) — added by the multi-book',
+  '// Reader expansion; `challengeNote` is present only on tier:"challenge"',
+  '// passages.',
   '// Token field meanings are documented above buildToken() in',
   '// tools/gen_bbh_reader_data.mjs. `t` (display) is preserved byte-for-byte',
   '// from the Westminster Leningrad Codex text as distributed by OSHB — never',
@@ -153,7 +161,7 @@ function main() {
 
   const selectionsDoc = readJson(SELECTIONS_PATH);
   const pin = readCorpusPin();
-  const { verses } = importGenesis();
+  const { verses } = importReaderCorpus();
 
   const output = buildOutput(selectionsDoc, pin, verses);
   writeFileSync(OUT_PATH, writeReaderFile(output));

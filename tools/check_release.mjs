@@ -23,7 +23,8 @@
 //      (light regex parse — no execution of the generated file).
 //   5b. Same light-regex-parse treatment for the other generated data
 //      files: js/data/bbh_grammar.js registers exactly 300 questions,
-//      js/data/bbh_reader.js exactly 52 passages, js/data/bbh_alphabet.js
+//      js/data/bbh_reader.js exactly 78 passages (Reader book expansion:
+//      52 Genesis + 26 across Ruth/Jonah/Exod/Deut/Judg/1Sam/2Sam), js/data/bbh_alphabet.js
 //      exactly 23 letters + 12 vowels, js/data/bbh_reference_extra.js at
 //      least 40 sections.
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
@@ -332,8 +333,8 @@ function readDirSafe(dir) {
   } else {
     const src = readText(readerPath);
     const passageCount = [...src.matchAll(/"id":\s*"reader-[^"]+"/g)].length;
-    if (passageCount !== 52) fail(`check5b: expected 52 passages registered in ${readerPath}, found ${passageCount}`);
-    else report(`check5b: 52 passages registered in bbh_reader.js (pass)`);
+    if (passageCount !== 78) fail(`check5b: expected 78 passages registered in ${readerPath}, found ${passageCount}`);
+    else report(`check5b: 78 passages registered in bbh_reader.js (pass)`);
   }
 
   const alphabetPath = 'js/data/bbh_alphabet.js';
