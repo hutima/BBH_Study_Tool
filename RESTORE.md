@@ -27,7 +27,29 @@
   page provenance), plus the user-requested parsing UX round (grouped
   custom-set picker, 6-choice/all-that-apply Build, contrast panel, Mixed
   direction). Export format v4.
-- Current phase: PR D — public-text Reader (OSHB).
+- Current phase: PR D — public-text Reader (OSHB) — **paused mid-flight on
+  user token budget (2026-08-09); resume scheduled via send_later**.
+- In-flight at pause (all Sonnet agents; results NOT yet landed):
+  (1) OSHB importer/gate-map/selections/generator agent — had begun editing
+  `source/bbh/reader/gate-map.json` (uncommitted partial edit deliberately
+  left in the worktree); if its completion notification never arrives,
+  discard that dirty file and RE-RUN the task (fully specified in this
+  session's brief: data-driven gate map per the mapping policy, importer
+  over /workspace/openscriptures/morphhb wlc/Gen.xml with byte-exact
+  display preservation, tier scoring, 30-60 curated selections,
+  gen/validate tools, no UI wiring).
+  (2) Vocabulary 191→203 reconciliation report agent (read-only; writes
+  scratchpad/vocab-reconciliation.md — not yet written at pause; re-run if
+  absent). Confirmed vocab facts so far: L5 שָׁלוֹם omission; glossary L#
+  markers are the authoritative cross-check; glossary PDF location was
+  still being probed.
+- Landed just before pause: verified alphabet inventory committed at
+  `source/bbh/alphabet.json` (23 letters, 5 finals, book-faithful nulls);
+  PDF page map preserved at `docs/bbh-page-index.md`.
+- NOTE for a FRESH container: the PDF quarantine copy lives only in this
+  session's container (/tmp path known to this session). If the container
+  was reclaimed, ask the user to re-supply the PDF via a non-repository
+  channel before any further content verification. Never re-commit it.
 - User directives this session: (1) GitHub Pages is the primary deployment —
   app must stay static/build-free/subpath-relative; merging to the default
   branch deploys. (2) Optional lesson grouping by the textbook's 13
