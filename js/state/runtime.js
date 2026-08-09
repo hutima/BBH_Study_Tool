@@ -95,7 +95,20 @@ export const runtime = {
       number: true, suffix: true, state: true
     },
     attempts: {},             // { [formId]: { seen, recent, history } }
-    initializedFromVocab: false
+    initializedFromVocab: false,
+    // ── PR G (root journeys / by-feature scope / mobile options regroup) ──
+    // shuffleAll/customSetOn above stay the stored truth for those two
+    // scopes; rootFilter/dimValueFilter are truthy IFF the scope control's
+    // active mode is Root/By-feature (js/ui/parsing.js's getScopeMode
+    // derives the control's mode from all four together — see its header
+    // comment). journeyIndex is Root scope's persisted walk cursor;
+    // optionsOpen is the "More options" <details> collapse state.
+    // PROGRESS_EXPORT_VERSION stays 6 for these — additive keys, defaulted
+    // by sanitizeParsingState, never required by an older export.
+    rootFilter: null,         // string (a root) | null
+    dimValueFilter: null,     // { [dim]: string[] } | null
+    journeyIndex: 0,
+    optionsOpen: false
   },
 
   // ── Grammar Quiz mode (Phase 2 PR C) ─────────────────────────────────

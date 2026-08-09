@@ -509,6 +509,147 @@ test('orderDrillPool: deterministic for equal seeds (same pool/attempts/seed -> 
   assert.notDeepEqual(first, third, 'a different seed should be capable of producing a different tie-break order');
 });
 
+// ─── buildDrillPool: rootFilter (PR G) ───────────────────────────────────
+// Fixture note: none of the fixture forms above carry a `root` field. Add a
+// small root-bearing pair spanning two lessons so rootFilter can be tested
+// without disturbing any existing test's pool math.
+const ROOT_PARADIGMS = [
+  ...PARADIGMS,
+  {
+    id: 'root-verb-a',
+    category: 'verb',
+    label: 'Root fixture A (fixture)',
+    forms: [
+      {
+        id: 'root-verb-a-1',
+        display: 'שׁמר',
+        pos: 'verb',
+        root: 'שמר',
+        introducedLesson: 10,
+        source: { lesson: 10, page: 1 },
+        acceptedParses: [{ binyan: 'qal', conjugation: 'perfect', person: '3', gender: 'masculine', number: 'singular', suffix: null }]
+      }
+    ]
+  },
+  {
+    id: 'root-verb-b',
+    category: 'verb',
+    label: 'Root fixture B (fixture)',
+    forms: [
+      {
+        id: 'root-verb-b-1',
+        display: 'ישׁמר',
+        pos: 'verb',
+        root: 'שמר',
+        introducedLesson: 20,
+        source: { lesson: 20, page: 2 },
+        acceptedParses: [{ binyan: 'qal', conjugation: 'imperfect', person: '3', gender: 'masculine', number: 'singular', suffix: null }]
+      }
+    ]
+  }
+];
+
+test('buildDrillPool: rootFilter gathers every in-gate form sharing a root, across paradigms and lessons', () => {
+  const pool = buildDrillPool(ROOT_PARADIGMS, { lesson: 50, rootFilter: 'שמר' });
+  assert.deepEqual(pool.map((f) => f.id).sort(), ['root-verb-a-1', 'root-verb-b-1'].sort());
+});
+
+test('buildDrillPool: rootFilter still respects the lesson gate', () => {
+  const pool = buildDrillPool(ROOT_PARADIGMS, { lesson: 15, rootFilter: 'שמר' });
+  assert.deepEqual(pool.map((f) => f.id), ['root-verb-a-1'], 'lesson-20 root form must not leak at lesson 15');
+});
+
+test('buildDrillPool: rootFilter is mutually exclusive with focusParadigmId/customParadigmIds/shuffleAll — it wins even when those are also set', () => {
+  const pool = buildDrillPool(ROOT_PARADIGMS, {
+    lesson: 50,
+    rootFilter: 'שמר',
+    focusParadigmId: 'qal-perfect',
+    customParadigmIds: ['object-marker'],
+    shuffleAll: false
+  });
+  assert.deepEqual(pool.map((f) => f.id).sort(), ['root-verb-a-1', 'root-verb-b-1'].sort(),
+    'rootFilter must be checked as its own first branch, ignoring focus/custom/shuffle entirely');
+});
+
+// ─── buildDrillPool: dimValueFilter (PR G, "By feature") ─────────────────
+test('dimValueFilter: single dim/value keeps only matching forms', () => {
+  const pool = buildDrillPool(PARADIGMS, { lesson: 50, shuffleAll: true, dimValueFilter: { conjugation: ['imperfect'] } });
+  const ids = new Set(pool.map((f) => f.id));
+  assert.ok(ids.has('qal-imperfect-3ms'));
+  assert.ok(ids.has('qal-imperfect-3mp'));
+  assert.ok(!ids.has('qal-perfect-3ms'), 'perfect-conjugation form must be excluded');
+});
+
+test('dimValueFilter: multiple dims are ANDed (every filtered dim must independently match SOME acceptedParse)', () => {
+  // Ambiguous form has parses {person:2,gender:masc} and {person:3,gender:fem}.
+  // Filtering person=[2] AND gender=[feminine] independently: person=2
+  // matches the FIRST parse, gender=feminine matches the SECOND parse — not
+  // necessarily the same parse — so the form must still be kept.
+  const pool = buildDrillPool(PARADIGMS, {
+    lesson: 50, shuffleAll: true,
+    dimValueFilter: { person: ['2'], gender: ['feminine'] }
+  });
+  assert.ok(pool.map((f) => f.id).includes('qal-perfect-2ms-3fs-ambig'));
+
+  // A dim value that appears on NEITHER accepted parse excludes the form.
+  const poolNoMatch = buildDrillPool(PARADIGMS, {
+    lesson: 50, shuffleAll: true,
+    dimValueFilter: { person: ['1'] }
+  });
+  assert.ok(!poolNoMatch.map((f) => f.id).includes('qal-perfect-2ms-3fs-ambig'));
+});
+
+test('dimValueFilter: suffix values use the same "person-gender-number" serialization availableDimensionValues uses', () => {
+  const pool = buildDrillPool(PARADIGMS, {
+    lesson: 50, shuffleAll: true,
+    dimValueFilter: { suffix: ['3-masculine-singular'] }
+  });
+  assert.deepEqual(pool.map((f) => f.id), ['noun-suffixed-3ms']);
+});
+
+test('dimValueFilter: an empty value array for a dim is not a constraint (matches everything, same as omitting the dim)', () => {
+  const withEmpty = buildDrillPool(PARADIGMS, { lesson: 23, dimValueFilter: { state: [] } });
+  const withoutFilter = buildDrillPool(PARADIGMS, { lesson: 23 });
+  assert.deepEqual(withEmpty.map((f) => f.id).sort(), withoutFilter.map((f) => f.id).sort());
+});
+
+test('dimValueFilter composes with rootFilter (both apply)', () => {
+  const pool = buildDrillPool(ROOT_PARADIGMS, {
+    lesson: 50, rootFilter: 'שמר',
+    dimValueFilter: { conjugation: ['perfect'] }
+  });
+  assert.deepEqual(pool.map((f) => f.id), ['root-verb-a-1']);
+});
+
+// ─── orderDrillPool: journey mode (PR G) ─────────────────────────────────
+test('orderDrillPool journey mode: deterministic (introducedLesson asc, paradigm index asc, form index asc), no PRNG', () => {
+  const pool = buildDrillPool(ROOT_PARADIGMS, { lesson: 50, rootFilter: 'שמר' });
+  const ordered1 = orderDrillPool(pool, {}, 111, { mode: 'journey' }).map((f) => f.id);
+  const ordered2 = orderDrillPool(pool, {}, 999, { mode: 'journey' }).map((f) => f.id);
+  assert.deepEqual(ordered1, ['root-verb-a-1', 'root-verb-b-1'], 'lesson 10 form must precede the lesson 20 form');
+  assert.deepEqual(ordered1, ordered2, 'journey order must be identical across different seeds (no PRNG involved)');
+});
+
+test('orderDrillPool journey mode: stable tie-break preserves (paradigm index, form index) order for equal introducedLesson', () => {
+  // qal-perfect-3ms and qal-perfect-2ms-3fs-ambig share introducedLesson 5
+  // and both live in paradigm "qal-perfect", array positions 0 and 1.
+  const pool = buildDrillPool(PARADIGMS, { lesson: 5 });
+  const ordered = orderDrillPool(pool, {}, 42, { mode: 'journey' }).map((f) => f.id);
+  assert.deepEqual(ordered, ['qal-perfect-3ms', 'qal-perfect-2ms-3fs-ambig']);
+});
+
+test('orderDrillPool journey mode: ignores excludeKnown for pool MEMBERSHIP (journey mode itself does no filtering — caller controls membership via buildDrillPool)', () => {
+  const pool = buildDrillPool(ROOT_PARADIGMS, { lesson: 50, rootFilter: 'שמר' }); // excludeKnown NOT passed
+  let attempts = {};
+  const perDim = { binyan: 1, conjugation: 1, person: 1, gender: 1, number: 1, suffix: 1 };
+  attempts = recordAttempt(attempts, 'root-verb-a-1', perDim, { at: 1 });
+  attempts = recordAttempt(attempts, 'root-verb-a-1', perDim, { at: 2 });
+  assert.equal(isFormKnown(attempts, 'root-verb-a-1', ['binyan', 'conjugation', 'person', 'gender', 'number', 'suffix']), true);
+  const ordered = orderDrillPool(pool, attempts, 7, { mode: 'journey' }).map((f) => f.id);
+  assert.ok(ordered.includes('root-verb-a-1'), 'a KNOWN form must still appear in journey order — journey never drops known forms from the walk');
+  assert.deepEqual(ordered, ['root-verb-a-1', 'root-verb-b-1']);
+});
+
 // ─── summary ─────────────────────────────────────────────────────────────
 if (failed) {
   console.error(`\n${failed} test(s) failed.`);

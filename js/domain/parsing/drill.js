@@ -144,6 +144,26 @@ function dimensionValueKey(value) {
  *   when excluding known forms, each form is graded against the
  *   intersection of this list and its own applicableDimensions. If omitted,
  *   every applicable dimension of each form is treated as enabled.
+ * @param {?string} [opts.rootFilter=null] - PR G (root journeys). When set,
+ *   this is its OWN branch, checked FIRST and mutually exclusive with
+ *   focusParadigmId/customParadigmIds/shuffleAll: the pool is the full
+ *   cumulative gated pool (same base as shuffleAll) filtered to
+ *   `form.root === rootFilter`, ignoring the focus/custom/default-lesson
+ *   scoping below entirely.
+ * @param {?Object<string,string[]>} [opts.dimValueFilter=null] - PR G (by
+ *   feature). Applied AFTER the scope branch above (composes with any of
+ *   rootFilter/focusParadigmId/customParadigmIds/shuffleAll/default), so it
+ *   layers a value constraint onto whichever pool the scope branch produced.
+ *   For every key `dim` with a non-empty value array, a form is kept iff
+ *   SOME `acceptedParses` entry has `dim` and its serialized value is in
+ *   that array — checked independently per dim (not required to be the same
+ *   acceptedParse across dims). A dim with a missing/empty value array is
+ *   not a constraint (matches everything). Values are serialized with the
+ *   same algorithm `gates.js`'s `availableDimensionValues` uses (scalar ->
+ *   `String(value)`; `{person,gender,number}` -> `"person-gender-number"`)
+ *   so a caller can filter using exactly the values that function returns;
+ *   duplicated here (not imported) because gates.js does not export it and
+ *   this module may only extend existing exports, not add new ones.
  * @returns {object[]} forms (each carrying `paradigmId`, per gates.js).
  */
 export function buildDrillPool(paradigms, opts = {}) {
@@ -155,12 +175,16 @@ export function buildDrillPool(paradigms, opts = {}) {
     shuffleAll = false,
     excludeKnown = false,
     attempts = {},
-    enabledDims = null
+    enabledDims = null,
+    rootFilter = null,
+    dimValueFilter = null
   } = opts || {};
 
   let pool = availableForms(paradigms, lesson, { includeAppendix });
 
-  if (focusParadigmId) {
+  if (rootFilter) {
+    pool = pool.filter((form) => form.root === rootFilter);
+  } else if (focusParadigmId) {
     pool = pool.filter((form) => form.paradigmId === focusParadigmId);
   } else if (Array.isArray(customParadigmIds) && customParadigmIds.length) {
     const wanted = new Set(customParadigmIds);
@@ -170,8 +194,24 @@ export function buildDrillPool(paradigms, opts = {}) {
       (form) => form.introducedLesson === lesson || (includeAppendix && form.appendixOnly === true)
     );
   }
-  // shuffleAll === true (with no focus/custom scope): keep the full
+  // shuffleAll === true (with no root/focus/custom scope): keep the full
   // cumulative gated pool as-is.
+
+  if (dimValueFilter && typeof dimValueFilter === 'object') {
+    const dims = Object.keys(dimValueFilter).filter(
+      (dim) => Array.isArray(dimValueFilter[dim]) && dimValueFilter[dim].length
+    );
+    if (dims.length) {
+      pool = pool.filter((form) => dims.every((dim) => {
+        const allowed = new Set(dimValueFilter[dim]);
+        const parses = Array.isArray(form.acceptedParses) ? form.acceptedParses : [];
+        return parses.some((parse) => {
+          if (!parse || typeof parse !== 'object' || !(dim in parse)) return false;
+          return allowed.has(dimensionValueKey(parse[dim]));
+        });
+      }));
+    }
+  }
 
   if (excludeKnown) {
     pool = pool.filter((form) => {
@@ -202,10 +242,30 @@ export function buildDrillPool(paradigms, opts = {}) {
  * @param {object[]} pool - forms, e.g. the output of buildDrillPool.
  * @param {object} attempts - the attempts map (see recordAttempt).
  * @param {number} rngSeedInt - seed for the deterministic tie-break shuffle.
+ * @param {{mode?: 'journey'}} [opts] - PR G (root journeys). When
+ *   `opts.mode === 'journey'`, the unseen/seen/known bucketing and PRNG
+ *   tie-break above are bypassed entirely in favor of a fully deterministic
+ *   order: `introducedLesson` ascending, then (for ties) each form's
+ *   position in `pool` as passed in. No PRNG is used in this mode. This
+ *   relies on `pool` already being in (paradigm index asc, form index asc)
+ *   order for same-lesson ties — true of every pool this module produces,
+ *   since `buildDrillPool` delegates to `gates.js`'s `availableForms`, which
+ *   walks `paradigms` in array order and each paradigm's `forms` in array
+ *   order; `Array#sort` is stable in Node/V8 (see the comment above), so
+ *   that relative order survives as the tie-break here.
  * @returns {object[]} the same forms, reordered.
  */
-export function orderDrillPool(pool, attempts, rngSeedInt) {
+export function orderDrillPool(pool, attempts, rngSeedInt, opts = {}) {
   const forms = Array.isArray(pool) ? pool : [];
+
+  if (opts && opts.mode === 'journey') {
+    return forms.slice().sort((a, b) => {
+      const la = Number.isInteger(a && a.introducedLesson) ? a.introducedLesson : Infinity;
+      const lb = Number.isInteger(b && b.introducedLesson) ? b.introducedLesson : Infinity;
+      return la - lb;
+    });
+  }
+
   const att = attempts && typeof attempts === 'object' ? attempts : {};
   const seed = rngSeedInt >>> 0;
 
