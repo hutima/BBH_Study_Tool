@@ -361,10 +361,59 @@
   labeled) and stage D (independent wooden-translation review flipping the
   12 new `woodenStatus` fields to `"reviewed"`, release counts, smokes,
   `?v=21` bump, PR).
-- **Queue**: task #24 stage C (Psalms challenge-tier passages), stage D
-  (independent wooden-translation review of the 12 stage-B entries,
-  release counts, smokes, `?v=21` bump, PR) — staging plan in
-  docs/bbh-conversion-plan.md's task-24 addenda.
+- **Task #24 stage C IMPLEMENTED, UNCOMMITTED (2026-08-09)** — 8 new
+  CHALLENGE-TIER-ONLY Psalms selections (`reader-ch-ps-*` ids), the first
+  poetry in the Reader corpus, curated into
+  `source/bbh/reader/selections.json` (additions only — all 98
+  pre-existing entries verified deep-equal byte-identical after
+  regeneration). Full list + scores + rationale in
+  `docs/bbh-conversion-plan.md`'s task-24 addendum. Of the user-suggested
+  candidate pool (Ps 1, 23, 100, 117, 121, 150), only Psalm 121 produced
+  natural challenge-eligible verses via `scoreVerse()`'s existing
+  diagnostic (121:2 gate L22/feature L42 Qal participle, 121:8 gate
+  L23/feature L40 pronoun-suffixed verb) — every verse in Ps 1/23/100/117/
+  150 individually checked either scored ordinary strict/guided already
+  (no >=10-lesson gap above one feature) or had too many unknown content
+  lexemes, so per the task brief's own permission the other 6 entries
+  substitute equally famous, equally short psalm verses that DO score
+  into the challenge shape: Ps 95:3, Ps 113:5, Ps 113:6, Ps 114:1 (the
+  Exodus-Hallel opening), Ps 130:4, Ps 146:1. **Poetry labeling**: every
+  new `challengeNote` leads with a plain genre sentence ("Poetry — Psalm
+  N. Verse structure and word order differ from prose narrative.") before
+  the usual future-feature sentence — reuses the EXISTING
+  `.reader-challenge-note` UI in `js/ui/reader.js` verbatim, no new UI
+  mechanism added (screenshot:
+  `scratchpad/task24c_ps121_2_full.png`). All 8 `wooden` translations
+  author-drafted fresh from the Hebrew, `woodenStatus:"draft"` (stage D
+  reviews), following the corpus's house style (YHWH for the divine name,
+  Hebrew-transliterated proper names, literal word order preserved even
+  where poetic, e.g. Ps 95:3's verbless "For a great God is YHWH"). No
+  `LEMMA_OVERRIDES` added. Strong's glosses: 316/316 resolved (up from
+  300/300 pre-stage-C). `tools/check_release.mjs` check5b passage count
+  updated 98→106. Verified: `node tools/validate_bbh_reader_data.mjs` →
+  6/6 pass; `node tools/gen_bbh_reader_data.mjs` run twice → byte-identical
+  (sha1 `1e1e7008...` both times); the 98 pre-existing passages deep-equal
+  byte-identical (`scratchpad/task24c_diff98.mjs`, 0 mismatches); `node
+  tools/check_release.mjs` → 23 reports / 1 failure (the expected
+  `check6: source/bbh/ has uncommitted changes`, resolves to 24/0 once
+  committed). Playwright: `scratchpad/smoke_reader.mjs` (12 sections, 40
+  checks) reruns fully green unmodified (no counts in that file needed
+  updating — it never asserts a total passage count); new
+  `scratchpad/smoke_task24c.mjs` (18 checks) confirms all 8
+  `reader-ch-ps-*` ids/tier/poetry-note-prefix, and that with the Challenge
+  toggle OFF no `Ps ...` row renders at Lesson 22 while ON reveals them
+  with the challenge badge + poetry-labeled note, hiding again on toggle
+  OFF — all green. Files touched: `source/bbh/reader/selections.json`,
+  `js/data/bbh_reader.js` (regenerated), `tools/check_release.mjs`. NOT
+  committed per orchestrator instruction — working tree left for the
+  orchestrator. Next: stage D (independent wooden-translation review
+  flipping all 20 new `draft` `woodenStatus` fields — 12 from stage B + 8
+  from stage C — to `"reviewed"`, release counts, smokes, `?v=21` bump,
+  PR).
+- **Queue**: task #24 stage D (independent wooden-translation review of
+  the 12 stage-B + 8 stage-C entries, release counts, smokes, `?v=21`
+  bump, PR) — staging plan in docs/bbh-conversion-plan.md's task-24
+  addenda.
 
 ## Repository and PR state
 

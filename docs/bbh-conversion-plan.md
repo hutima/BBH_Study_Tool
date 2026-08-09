@@ -1013,4 +1013,112 @@ scratchpad dir, not the repo. Next: stage C (Psalms challenge-tier
 selections, poetry-labeled) and stage D (independent wooden-translation
 review flipping all 12 new entries' `woodenStatus` to `"reviewed"`,
 release counts, smokes, `?v=21` bump, PR). See RESTORE.md's task-24 stage-B
-entry for the full numbers. Next: stage B.
+entry for the full numbers.
+
+**Status: Stage C IMPLEMENTED, UNCOMMITTED (2026-08-09).** 8 new
+CHALLENGE-TIER-ONLY Psalms selections (`reader-ch-ps-*` ids) curated into
+`source/bbh/reader/selections.json` — the first poetry in the Reader
+corpus, additions-only (all 98 pre-existing entries deep-equal
+byte-identical after regeneration, verified via `scratchpad/
+task24c_diff98.mjs`, 0 mismatches).
+
+Method: every candidate was checked against `scoreVerse()`'s EXISTING
+challenge diagnostic (unchanged since task 13a) — `allMapped`,
+`unknownContentLexemes<=2`, a lower "in-scope" gate `G>=9` with
+`(maxGrammarLesson-G)>=10`, and 1-3 tokens at the verse's own single max
+lesson. Of the user-suggested candidate pool (Ps 1, 23, 100, 117, 121,
+150), every individual verse was queried (`scratchpad/task24c_query.mjs`,
+`task24c_scan2.mjs`): only Psalm 121 produced natural challenge-eligible
+verses — 121:2 (unknownContentLexemes 1, gate L22, one Qal participle
+עֹשֵׂה "maker of" previewing L42) and 121:8 (unknownContentLexemes 1, gate
+L23, two pronoun-suffixed infinitive-construct forms צֵאתְךָ/וּבוֹאֶךָ
+previewing L40) — every other verse in that pool (Ps 1:1/1:6, 23:1-6,
+100:1-5, 117:1-2, 121:1/3/4/6/7, 150:1-6) either landed in ordinary
+strict/guided tier already (no qualifying >=10-lesson single-feature gap)
+or exceeded the unknown-lexeme ceiling. Per the task brief's explicit
+permission to substitute, a broader scan
+(`scratchpad/task24c_scan.mjs`, 113 challenge-eligible candidates <=10
+tokens corpuswide, cross-referenced against a "famous chapter" list) found
+6 more equally short, equally recognizable psalm verses that DO score
+into the challenge shape: Ps 95:3 ("For a great God is YHWH, and a great
+king over all gods" — 2 Adjective forms, gate L20/feature L32), Ps 113:5
+("Who is like YHWH our God, who makes high to sit" — Hifil participle,
+gate L31/feature L42), Ps 113:6 (continues 113:5, "who makes low to see,
+in the heavens and in the earth" — Hifil participle, gate L24/feature
+L42), Ps 114:1 (the Exodus-Hallel opening, "When Yisrael went out from
+Mitsrayim, the house of Yaakov from a people of stammering speech" — Qal
+participle, gate L24/feature L42), Ps 130:4 ("For with you is the
+forgiveness, so that you may be feared" — Nifal imperfect, gate L22/
+feature L37, the Nifal/Hitpael stem floor), Ps 146:1 ("Praise Yah! Praise,
+O my soul, YHWH!" — 2 Piel imperative forms, gate L22/feature L39). One
+substitution candidate originally considered and rejected: Ps 19:1 (its
+own OSHB Hebrew-versification verse is the "To the choirmaster, a psalm
+of David" superscription, not the famous "the heavens declare" line,
+which is Hebrew Ps 19:2 and does not itself score challenge-eligible) —
+swapped for Ps 114:1, a genuinely famous full sentence.
+
+Poetry labeling (user requirement): every new `challengeNote` LEADS with
+a plain genre sentence — `"Poetry — Psalm N. Verse structure and word
+order differ from prose narrative."` — before the usual future-feature
+sentence (e.g. `"Contains 1 Qal participle form (עֹשֵׂה, \"maker of\") —
+Participles introduced in Lesson 42."`). This reuses the EXISTING
+`.reader-challenge-note` box in `js/ui/reader.js` (line ~636,
+unmodified) verbatim — no new UI mechanism, chip, or CSS was added,
+per the task brief's own preference; the existing badge + note machinery
+already fit. Verified end-to-end with a screenshot
+(`scratchpad/task24c_ps121_2_full.png`): opening `Ps 121:2` with the
+Challenge toggle on shows the `challenge` tier badge, the
+`⚠ Challenge: Poetry — Psalm 121. Verse structure and word order differ
+from prose narrative. Contains 1 Qal participle form (עֹשֵׂה, "maker
+of") — Participles introduced in Lesson 42.` note box, the Hebrew text,
+and (revealed) the wooden translation with its "not yet reviewed" draft
+caption.
+
+Wooden translations: all 8 author-drafted fresh from the Hebrew,
+`woodenStatus:"draft"` (stage D reviews), following the corpus's existing
+house style — `YHWH` for the divine name (never "the LORD"),
+Hebrew-transliterated proper names (`Yisrael`, `Mitsrayim`, `Yaakov`),
+and literal Hebrew word order preserved even where it reads as poetic
+inversion (Ps 95:3's verbless "For a great God is YHWH, and a great king
+over all gods"; Ps 113:5-6's "who makes high to sit ... who makes low to
+see"). No `LEMMA_OVERRIDES` entries added (every pick already reached its
+challenge shape without one).
+
+Strong's glosses: 316/316 distinct numbers resolved (0 missing; up from
+300/300 pre-stage-C).
+
+`tools/check_release.mjs` check5b passage count updated 98→106.
+Verification: `node tools/validate_bbh_reader_data.mjs` → 6/6 pass
+(reproducibility: all 106 selections' scores reproduce exactly from a
+fresh import, including the challenge sub-object for all 16 challenge-tier
+entries); `node tools/gen_bbh_reader_data.mjs` run twice → byte-identical
+(`js/data/bbh_reader.js` sha1 `1e1e7008...` both times); the 98
+pre-existing passages verified deep-equal byte-identical via a VM-sandboxed
+load-and-compare (`scratchpad/task24c_diff98.mjs`) — 0 mismatches; `node
+tools/check_release.mjs` → 23 reports / 1 failure (`check6: source/bbh/
+has uncommitted changes vs git HEAD` — expected while uncommitted, resolves
+to 24/0 once the orchestrator commits). Playwright:
+`scratchpad/smoke_reader.mjs` (12 sections, 40 checks) reruns fully green
+UNMODIFIED (that file asserts no total-passage-count, so stage C needed no
+edits there — confirmed by rerun, including its own book-heading/
+Genesis/challenge-toggle checks all still passing with 106 passages
+loaded). New `scratchpad/smoke_task24c.mjs` (18 checks, all green):
+sanity that exactly 8 `reader-ch-ps-*` passages are registered, all tier
+"challenge", all `challengeNote`s prefixed "Poetry —"; at Lesson 22 with
+the Challenge toggle OFF no `Ps ...` passage row renders; toggling ON
+reveals >=1 `Ps ...` row carrying the challenge badge; opening it shows
+the badge in the passage header AND a non-empty `.reader-challenge-note`
+containing "Poetry —" and a specific Psalm number; toggling back OFF
+hides the `Ps ...` rows again; zero console/page errors accrued across
+the whole run. Files touched: `source/bbh/reader/selections.json` (8 new
+entries + 1 new note, appended — 98 pre-existing entries untouched),
+`js/data/bbh_reader.js` (regenerated), `tools/check_release.mjs` (check5b
+count 98→106). NOT committed per orchestrator instruction — working tree
+left for the orchestrator. Scratchpad reports (`task24c_query.mjs`,
+`task24c_scan.mjs`, `task24c_scan2.mjs`, `task24c_detail.mjs`,
+`task24c_detail2.mjs`, `task24c_final.mjs`, `task24c_append.mjs`,
+`task24c_diff98.mjs`, `smoke_task24c.mjs`, `task24c_ps121_2_full.png`)
+live in this session's scratchpad dir, not the repo. Next: stage D
+(independent wooden-translation review flipping all 20 new `draft`
+`woodenStatus` fields — 12 from stage B + 8 from stage C — to
+`"reviewed"`, release counts, smokes, `?v=21` bump, PR).

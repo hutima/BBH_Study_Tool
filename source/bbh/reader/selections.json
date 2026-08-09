@@ -11,7 +11,8 @@
     "CHALLENGE TIER REWORK (task 13a, 2026-08-09 addenda \"matcher fixes\"/\"challenge tier rework\"/\"underline noise\"): two matcher bugs were fixed in tools/import_oshb_reader.mjs's classifyToken() — (1) OSHB gentilic nouns (Ng: the Hivite/Arkite/Sinite/Philistine/etc. nation-name family) are now pn-class (excluded from unknownContentLexemes, isProperName:true, plus a distinct isGentilic/gent:true flag), matching how proper names (Np) were already handled — previously a verse full of untaught gentilic names (e.g. Gen 10:16-17) was wrongly counted as several unknown content words; (2) compound-token vocab matching now also checks a pure-function-word token's own core segment (e.g. the object-marker segment of ו/את) against the vocab index even when that token has no N/V/A content segment, so taught particle vocabulary (את, CSV L15) surfaces its vocabLesson for display/underline purposes instead of silently reading null. The freeze on 3 previously-withheld LEMMA_OVERRIDES entries (אֱלֹהִים 430 CSV L3, אֶרֶץ 776 CSV L9, צִוָּה 6680 CSV L35) was also lifted. Re-scoring the whole 8-book corpus with these fixes changed 10 of the 78 pre-existing selections above: reader-gen-10-16 and reader-gen-10-17 improved guided->strict (unknownContentLexemes 3->0, the exact Gen 10:17 screenshot case); reader-gen-1-1 and reader-gen-24-4 improved guided->strict (430/776 override additions); reader-gen-10-20 and reader-2sam-5-18 stayed guided but dropped one unknownContentLexemes; reader-gen-50-12/reader-gen-38-2/reader-gen-7-5 stayed strict but dropped to 0 unknownContentLexemes. No selection's tier got worse. All other 69 selections' scores/tier/gateLesson are byte-identical to their pre-13a values (reader-deut-6-4 also changed, but from a SEPARATE, unrelated fix — see the large-letter tokenizer note below).",
     "The challenge tier itself was separately reworked (docs' \"challenge tier rework\" addendum): the ORIGINAL definition (\"exactly one near-future-lesson token, <=3 unknown content lexemes\") could structurally never fire (its own threshold was a strict subset of guided's, so guided always claimed the verse first — zero challenge candidates were ever found in any of the 8 books). scoreVerse() in tools/import_oshb_reader.mjs now computes challenge-eligibility as an INDEPENDENT diagnostic (`scores.challenge`), never overriding the primary strict/guided `tier` — an early draft that checked challenge before strict/guided (the only way to make the tighter threshold reachable) flipped 60+ of the 78 pre-existing selections into \"challenge\" purely because every ordinary short clause has \"one token at the single highest lesson (its main verb) plus a lower baseline\", which is completely normal sentence structure, not a rare/noteworthy shape. Keeping the two independent means a verse's primary tier is unaffected by whether it ALSO happens to be challenge-eligible; a curator opts a specific verse INTO the challenge tier explicitly (as done below). Two curation-quality floors beyond the doc's three numeric conditions: the lower gate G must be >= lesson 9 (bucketOf()'s own curation floor — below that is bare pronoun/article/preposition connective tissue with no real \"baseline\" to preview against), and the gap (maxGrammarLesson - G) must be >= 10 (so \"future feature\" means a meaningfully distant course unit, e.g. Past Narrative or Numerals, not just the next lesson or two over). Scanning all 8 books found 293 challenge-eligible verses across gate buckets 9-14 through 35-38 (none in 39-41/42-44/45-50 — see tools/import_oshb_reader.mjs --report's \"Challenge-eligible candidates\" section); 8 were curated below (reader-ch-* ids), one or two per bucket, spread across Gen/1Sam/Exod/2Sam and across feature types (Qal/Piel wayyiqtol, Hitpael wayyiqtol, Imperative, numerals), chosen for clean short clauses with a verified challengeNote.",
     "LARGE-LETTER TOKENIZER FIX (task 13a, found while authoring wooden translations): OSHB marks the two traditionally-enlarged Masoretic letters in the Shema (Deut 6:4 — שְׁמַע's ע and אֶחָד's ד) with a <seg type=\"x-large\"> tag NESTED inside the <w> element itself, which tools/import_oshb_reader.mjs's original regex-based tokenizer (requiring a <w> body with no \"<\" at all) silently failed to match — both tokens vanished from the stream rather than erroring. This is the ONLY nested-tag-inside-<w> case anywhere in the 8-book corpus (grep-verified: exactly 2 <seg type=\"x-large\"> occurrences total, both in this one verse). Fixed in W_RE/NESTED_SEG_RE (flattens the nested <seg> back to plain text, byte-identical to the unmarked word) with the identical fix mirrored in validate_bbh_reader_data.mjs's independent extractRawTokenDisplays(). reader-deut-6-4 (already a curated selection) went from 4 tokens/gate L31 (missing \"Hear\" and \"one\" entirely) to the correct 6 tokens/gate L45 (אֶחָד \"one\" is a numeral, gate-mapped to L45) — still tier:\"strict\" (1 unknown content lexeme, was 0). No other selection or verse in the corpus is affected (the only other <seg type=\"x-large\"> instance is the matching אֶחָד in the same verse).",
-    "TASK #24 STAGE B (Reader prose expansion, 2026-08-09): the importer (tools/import_oshb_reader.mjs) now scores 13 books (task #24 stage A added Josh/1Kgs/2Kgs/Esth/Ps to the prior 8). The 86 pre-existing selections above are UNCHANGED (same ids/scores; re-verified byte-for-byte against a fresh import). 12 new selections were added from the 4 new PROSE books (Josh/1Kgs/2Kgs/Esth — Psalms is stage C's job, challenge-tier poetry only, not curated here): 2 strict + 1 guided per book, chosen for (a) short (5-17 token) verses that score well at an honest gate, (b) thin-bucket fill where a good candidate existed (20-22, 23-27, 39-41, 42-44 all gained entries; 15-19/28-31/32-34 were left untouched — no strong short/pedagogical candidate was found there in these 4 books, per the \"do not force it\" instruction), and (c) pedagogically attractive narrative regions where the scores actually supported it: Josh 1 (commissioning)/Josh 24 (covenant renewal) flank the famous but non-scoring 1:9/24:15; 1Kgs 2 (David's charge to Solomon, \"be strong\")/1Kgs 3 (Solomon's judgment)/1Kgs 19 (Elijah told to anoint Elisha, bridging into the Elisha material); 2Kgs 2/5 (Elisha's Jericho-waters and Naaman narratives); Esth 2 (Mordecai introduced)/Esth 4 (the Esther-Mordecai-Hathach relay immediately surrounding \"for such a time as this\", 4:14, which does not itself score strict/guided — its neighbors 4:9/4:10/4:12/4:15/4:17 do). No new LEMMA_OVERRIDES entries were added (every selected verse already reached its tier without one; task 13a's own experience — 3 known-safe overrides drifting 5 Genesis scores — argued for leaving the override table untouched when not strictly needed). All 12 new `wooden` translations are author-drafted, `woodenStatus:\"draft\"` — NOT YET independently reviewed against token morphology; that is stage D's job, same convention as task 13a's original draft pass. `tools/check_release.mjs` check5b passage count updated 86->98; validator/generator both green, gen twice byte-identical, and the 86 pre-existing selections' scores/tier/gateLesson are untouched."
+    "TASK #24 STAGE B (Reader prose expansion, 2026-08-09): the importer (tools/import_oshb_reader.mjs) now scores 13 books (task #24 stage A added Josh/1Kgs/2Kgs/Esth/Ps to the prior 8). The 86 pre-existing selections above are UNCHANGED (same ids/scores; re-verified byte-for-byte against a fresh import). 12 new selections were added from the 4 new PROSE books (Josh/1Kgs/2Kgs/Esth — Psalms is stage C's job, challenge-tier poetry only, not curated here): 2 strict + 1 guided per book, chosen for (a) short (5-17 token) verses that score well at an honest gate, (b) thin-bucket fill where a good candidate existed (20-22, 23-27, 39-41, 42-44 all gained entries; 15-19/28-31/32-34 were left untouched — no strong short/pedagogical candidate was found there in these 4 books, per the \"do not force it\" instruction), and (c) pedagogically attractive narrative regions where the scores actually supported it: Josh 1 (commissioning)/Josh 24 (covenant renewal) flank the famous but non-scoring 1:9/24:15; 1Kgs 2 (David's charge to Solomon, \"be strong\")/1Kgs 3 (Solomon's judgment)/1Kgs 19 (Elijah told to anoint Elisha, bridging into the Elisha material); 2Kgs 2/5 (Elisha's Jericho-waters and Naaman narratives); Esth 2 (Mordecai introduced)/Esth 4 (the Esther-Mordecai-Hathach relay immediately surrounding \"for such a time as this\", 4:14, which does not itself score strict/guided — its neighbors 4:9/4:10/4:12/4:15/4:17 do). No new LEMMA_OVERRIDES entries were added (every selected verse already reached its tier without one; task 13a's own experience — 3 known-safe overrides drifting 5 Genesis scores — argued for leaving the override table untouched when not strictly needed). All 12 new `wooden` translations are author-drafted, `woodenStatus:\"draft\"` — NOT YET independently reviewed against token morphology; that is stage D's job, same convention as task 13a's original draft pass. `tools/check_release.mjs` check5b passage count updated 86->98; validator/generator both green, gen twice byte-identical, and the 86 pre-existing selections' scores/tier/gateLesson are untouched.",
+    "TASK #24 STAGE C (Psalms challenge-tier poetry, 2026-08-09): 8 challenge-tier-ONLY selections curated from Psalms (reader-ch-ps-* ids) — the first poetry in the Reader corpus. Every entry uses the SAME scoreVerse() challenge diagnostic as the original 8 challenge showcases (task 13a): unknownContentLexemes<=2, allMapped, a single lower \"in-scope\" gate G>=9 with (maxGrammarLesson-G)>=10, 1-3 tokens at the verse's own max lesson. Of the user-suggested candidate pool (Ps 1, 23, 100, 117, 121, 150), only Psalm 121 produced natural challenge-eligible verses (121:2, 121:8 — both included); every verse individually checked in Ps 1/23/100/117/150 either scored ordinary strict/guided already (no >=10-lesson gap above a single feature) or had too many unknown content lexemes, so 6 of the 8 entries substitute equally famous, equally short psalm verses that DO score into the challenge shape: Ps 95:3 (\"a great God is YHWH\"), Ps 113:5-6 (\"Who is like YHWH our God, who makes high to sit... who makes low to see\"), Ps 114:1 (the Exodus-Hallel opening, \"When Yisrael went out from Mitsrayim\"), Ps 130:4 (\"with you is forgiveness\"), Ps 146:1 (\"Praise Yah! Praise, O my soul, YHWH\"). Every challengeNote leads with a plain genre label (\"Poetry — Psalm N. Verse structure and word order differ from prose narrative.\") before the usual future-feature sentence, reusing the EXISTING challenge-note UI (js/ui/reader.js's reader-challenge-note box) — no new UI mechanism was added; the badge/caption machinery already fit. All 8 wooden translations are author-drafted fresh from the Hebrew, woodenStatus:\"draft\" (stage D reviews), following the corpus's existing house style (YHWH for the divine name, Hebrew-style transliterated proper names, literal Hebrew word order preserved even where it reads as poetic inversion — e.g. Ps 95:3's verbless \"for a great God is YHWH\"). No LEMMA_OVERRIDES entries added. The 98 pre-existing selections are byte-for-byte unchanged (re-verified against a fresh regeneration)."
   ],
   "selections": [
     {
@@ -1588,6 +1589,142 @@
       },
       "rationale": "Task #24 stage B (Reader prose expansion, Esther): pedagogically attractive pick — Esther's reply to Mordecai, immediately following \"for such a time as this\" (Esth 4:14), leading into her decision to approach the king.",
       "wooden": "And Esther said to reply to Mordecai:",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-ch-ps-95-3",
+      "ref": "Ps 95:3",
+      "osisRef": "Ps.95.3",
+      "gateLesson": 20,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 9,
+        "unknownContentLexemes": 0,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 32
+      },
+      "rationale": "Task #24 stage C (Psalms challenge tier): short verbless praise clause (\"for a great God is YHWH\") — construct/preposition material already in scope by L20, two Adjective forms (repeated) preview the adjective-inflection unit.",
+      "challengeNote": "Poetry — Psalm 95. Verse structure and word order differ from prose narrative. Contains 2 Adjective forms (גָּדוֹל, \"great\") — Adjective inflection introduced in Lesson 32.",
+      "wooden": "For a great God is YHWH, and a great king over all gods.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-ch-ps-113-5",
+      "ref": "Ps 113:5",
+      "osisRef": "Ps.113.5",
+      "gateLesson": 31,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 42
+      },
+      "rationale": "Task #24 stage C (Psalms challenge tier): \"Who is like YHWH our God\" — plural-noun-with-suffix material already in scope by L31, one Hifil participle previews the participle unit.",
+      "challengeNote": "Poetry — Psalm 113. Verse structure and word order differ from prose narrative. Contains 1 Hifil participle form (הַֽמַּגְבִּיהִי, \"the one who makes high\") — Participles introduced in Lesson 42.",
+      "wooden": "Who is like YHWH our God, who makes high to sit,",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-ch-ps-113-6",
+      "ref": "Ps 113:6",
+      "osisRef": "Ps.113.6",
+      "gateLesson": 24,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 4,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 42
+      },
+      "rationale": "Task #24 stage C (Psalms challenge tier): continues 113:5 — infinitive-construct material already in scope by L24, one Hifil participle previews the participle unit.",
+      "challengeNote": "Poetry — Psalm 113. Verse structure and word order differ from prose narrative. Contains 1 Hifil participle form (הַֽמַּשְׁפִּילִי, \"the one who makes low\") — Participles introduced in Lesson 42.",
+      "wooden": "who makes low to see, in the heavens and in the earth,",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-ch-ps-114-1",
+      "ref": "Ps 114:1",
+      "osisRef": "Ps.114.1",
+      "gateLesson": 24,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 7,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 42
+      },
+      "rationale": "Task #24 stage C (Psalms challenge tier): the famous Exodus-Hallel opening (\"When Yisrael went out from Mitsrayim\") — infinitive-construct/construct-chain material already in scope by L24, one Qal participle previews the participle unit.",
+      "challengeNote": "Poetry — Psalm 114. Verse structure and word order differ from prose narrative. Contains 1 Qal participle form (לֹעֵֽז, \"stammering, foreign-speaking\") — Participles introduced in Lesson 42.",
+      "wooden": "In Yisrael's going out from Mitsrayim, the house of Yaakov from a people of stammering speech,",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-ch-ps-121-2",
+      "ref": "Ps 121:2",
+      "osisRef": "Ps.121.2",
+      "gateLesson": 22,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 6,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 42
+      },
+      "rationale": "Task #24 stage C (Psalms challenge tier): from the user-suggested candidate pool — \"my help is from with YHWH\", attached-pronoun-on-noun material already in scope by L22, one Qal participle previews the participle unit.",
+      "challengeNote": "Poetry — Psalm 121. Verse structure and word order differ from prose narrative. Contains 1 Qal participle form (עֹשֵׂה, \"maker of\") — Participles introduced in Lesson 42.",
+      "wooden": "My help is from with YHWH, maker of heaven and earth.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-ch-ps-121-8",
+      "ref": "Ps 121:8",
+      "osisRef": "Ps.121.8",
+      "gateLesson": 23,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 7,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 40
+      },
+      "rationale": "Task #24 stage C (Psalms challenge tier): from the user-suggested candidate pool — Psalm 121's famous closing benediction, Qal-imperfect-verb material already in scope by L23, two pronoun-suffixed infinitive-construct forms preview the L40 attached-pronoun-on-verb unit.",
+      "challengeNote": "Poetry — Psalm 121. Verse structure and word order differ from prose narrative. Contains 2 pronoun-suffixed verb forms (צֵאתְךָ \"your going out\", וּבוֹאֶךָ \"and your coming\") — attached pronouns on verbs introduced in Lesson 40.",
+      "wooden": "YHWH will guard your going out and your coming in, from now and unto forever.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-ch-ps-130-4",
+      "ref": "Ps 130:4",
+      "osisRef": "Ps.130.4",
+      "gateLesson": 22,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 37
+      },
+      "rationale": "Task #24 stage C (Psalms challenge tier): \"for with you is forgiveness\", attached-pronoun/definite-article material already in scope by L22, one Nifal imperfect previews the Nifal/Hitpael stem floor.",
+      "challengeNote": "Poetry — Psalm 130. Verse structure and word order differ from prose narrative. Contains 1 Nifal imperfect form (תִּוָּרֵֽא, \"you will be feared\") — the Nifal/Hitpael stem floor introduced in Lesson 37.",
+      "wooden": "For with you is the forgiveness, so that you may be feared.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-ch-ps-146-1",
+      "ref": "Ps 146:1",
+      "osisRef": "Ps.146.1",
+      "gateLesson": 22,
+      "tier": "challenge",
+      "scores": {
+        "tokenCount": 6,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 39
+      },
+      "rationale": "Task #24 stage C (Psalms challenge tier): the opening \"Hallelujah\" praise-psalm formula, noun-with-suffix/object-marker material already in scope by L22, two Piel imperative forms preview the imperative unit.",
+      "challengeNote": "Poetry — Psalm 146. Verse structure and word order differ from prose narrative. Contains 2 Piel imperative forms (הַֽלְלוּ, הַלְלִי — both \"praise!\") — the Imperative introduced in Lesson 39.",
+      "wooden": "Praise Yah! Praise, O my soul, YHWH!",
       "woodenStatus": "draft"
     }
   ]

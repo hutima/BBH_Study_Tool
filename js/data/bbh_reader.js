@@ -8819,6 +8819,641 @@
             "lx": "מׇרְדְּכַי"
           }
         ]
+      },
+      {
+        "id": "reader-ch-ps-95-3",
+        "book": "Ps",
+        "ref": "Ps 95:3",
+        "gateLesson": 20,
+        "tier": "challenge",
+        "challengeNote": "Poetry — Psalm 95. Verse structure and word order differ from prose narrative. Contains 2 Adjective forms (גָּדוֹל, \"great\") — Adjective inflection introduced in Lesson 32.",
+        "wooden": "For a great God is YHWH, and a great king over all gods.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "כִּ֤י",
+            "l": "3588 a",
+            "s": "3588",
+            "m": "HC",
+            "g": 13,
+            "pn": false,
+            "v": 30,
+            "gl": "for, that, because, when",
+            "lx": "כִּי"
+          },
+          {
+            "t": "אֵ֣ל",
+            "l": "410",
+            "s": "410",
+            "m": "HNcmsa",
+            "g": 7,
+            "pn": false,
+            "v": 42,
+            "gl": "strength",
+            "lx": "אֵל"
+          },
+          {
+            "t": "גָּד֣וֹל",
+            "l": "1419 a",
+            "s": "1419",
+            "m": "HAamsa",
+            "g": 32,
+            "pn": false,
+            "v": 32,
+            "gl": "great",
+            "lx": "גָּדוֹל"
+          },
+          {
+            "t": "יְהוָ֑ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
+          },
+          {
+            "t": "וּ/מֶ֥לֶךְ",
+            "l": "c/4428",
+            "s": "4428",
+            "m": "HC/Ncmsa",
+            "g": 13,
+            "pn": false,
+            "v": 9,
+            "gl": "a king",
+            "lx": "מֶלֶךְ"
+          },
+          {
+            "t": "גָּ֝ד֗וֹל",
+            "l": "1419 a",
+            "s": "1419",
+            "m": "HAamsa",
+            "g": 32,
+            "pn": false,
+            "v": 32,
+            "gl": "great",
+            "lx": "גָּדוֹל"
+          },
+          {
+            "t": "עַל",
+            "l": "5921 a",
+            "s": "5921",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": 13,
+            "gl": "above",
+            "lx": "עַל"
+          },
+          {
+            "t": "כָּל",
+            "l": "3605",
+            "s": "3605",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 11,
+            "gl": "the whole",
+            "lx": "כֹּל"
+          },
+          {
+            "t": "אֱלֹהִֽים",
+            "l": "430",
+            "s": "430",
+            "m": "HNcmpa",
+            "g": 10,
+            "pn": false,
+            "v": 3,
+            "gl": "gods in the ordinary sense",
+            "lx": "אֱלֹהִים"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-ps-113-5",
+        "book": "Ps",
+        "ref": "Ps 113:5",
+        "gateLesson": 31,
+        "tier": "challenge",
+        "challengeNote": "Poetry — Psalm 113. Verse structure and word order differ from prose narrative. Contains 1 Hifil participle form (הַֽמַּגְבִּיהִי, \"the one who makes high\") — Participles introduced in Lesson 42.",
+        "wooden": "Who is like YHWH our God, who makes high to sit,",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "מִ֭י",
+            "l": "4310",
+            "s": "4310",
+            "m": "HTi",
+            "g": 14,
+            "pn": false,
+            "v": 6,
+            "gl": "who?",
+            "lx": "מִי"
+          },
+          {
+            "t": "כַּ/יהוָ֣ה",
+            "l": "k/3068",
+            "s": "3068",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": 13,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
+          },
+          {
+            "t": "אֱלֹהֵ֑י/נוּ",
+            "l": "430",
+            "s": "430",
+            "m": "HNcmpc/Sp1cp",
+            "g": 31,
+            "pn": false,
+            "v": 3,
+            "gl": "gods in the ordinary sense",
+            "lx": "אֱלֹהִים"
+          },
+          {
+            "t": "הַֽ/מַּגְבִּיהִ֥י",
+            "l": "d/1361",
+            "s": "1361",
+            "m": "HTd/Vhrmsc",
+            "g": 42,
+            "pn": false,
+            "v": null,
+            "gl": "to soar",
+            "lx": "גָּבַהּ"
+          },
+          {
+            "t": "לָ/שָֽׁבֶת",
+            "l": "l/3427",
+            "s": "3427",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": 16,
+            "gl": "to sit down",
+            "lx": "יָשַׁב"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-ps-113-6",
+        "book": "Ps",
+        "ref": "Ps 113:6",
+        "gateLesson": 24,
+        "tier": "challenge",
+        "challengeNote": "Poetry — Psalm 113. Verse structure and word order differ from prose narrative. Contains 1 Hifil participle form (הַֽמַּשְׁפִּילִי, \"the one who makes low\") — Participles introduced in Lesson 42.",
+        "wooden": "who makes low to see, in the heavens and in the earth,",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "הַֽ/מַּשְׁפִּילִ֥י",
+            "l": "d/8213",
+            "s": "8213",
+            "m": "HTd/Vhrmsc",
+            "g": 42,
+            "pn": false,
+            "v": null,
+            "gl": "to depress or sink",
+            "lx": "שָׁפֵל"
+          },
+          {
+            "t": "לִ/רְא֑וֹת",
+            "l": "l/7200",
+            "s": "7200",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": null,
+            "gl": "to see",
+            "lx": "רָאָה"
+          },
+          {
+            "t": "בַּ/שָּׁמַ֥יִם",
+            "l": "b/8064",
+            "s": "8064",
+            "m": "HRd/Ncmpa",
+            "g": 13,
+            "pn": false,
+            "v": 13,
+            "gl": "the sky",
+            "lx": "שָׁמַיִם"
+          },
+          {
+            "t": "וּ/בָ/אָֽרֶץ",
+            "l": "c/b/776",
+            "s": "776",
+            "m": "HC/Rd/Ncbsa",
+            "g": 13,
+            "pn": false,
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-ps-114-1",
+        "book": "Ps",
+        "ref": "Ps 114:1",
+        "gateLesson": 24,
+        "tier": "challenge",
+        "challengeNote": "Poetry — Psalm 114. Verse structure and word order differ from prose narrative. Contains 1 Qal participle form (לֹעֵֽז, \"stammering, foreign-speaking\") — Participles introduced in Lesson 42.",
+        "wooden": "In Yisrael's going out from Mitsrayim, the house of Yaakov from a people of stammering speech,",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "בְּ/צֵ֣את",
+            "l": "b/3318",
+            "s": "3318",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": 22,
+            "gl": "to go",
+            "lx": "יָצָא"
+          },
+          {
+            "t": "יִ֭שְׂרָאֵל",
+            "l": "3478",
+            "s": "3478",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jisrael",
+            "lx": "יִשְׂרָאֵל"
+          },
+          {
+            "t": "מִ/מִּצְרָ֑יִם",
+            "l": "m/4714",
+            "s": "4714",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": null,
+            "gl": "Mitsrajim",
+            "lx": "מִצְרַיִם"
+          },
+          {
+            "t": "בֵּ֥ית",
+            "l": "1004 b",
+            "s": "1004",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 8,
+            "gl": "a house",
+            "lx": "בַּיִת"
+          },
+          {
+            "t": "יַ֝עֲקֹ֗ב",
+            "l": "3290",
+            "s": "3290",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jaakob",
+            "lx": "יַעֲקֹב"
+          },
+          {
+            "t": "מֵ/עַ֥ם",
+            "l": "m/5971 a",
+            "s": "5971",
+            "m": "HR/Ncmsa",
+            "g": 13,
+            "pn": false,
+            "v": 13,
+            "gl": "a people",
+            "lx": "עַם"
+          },
+          {
+            "t": "לֹעֵֽז",
+            "l": "3937",
+            "s": "3937",
+            "m": "HVqrmsa",
+            "g": 42,
+            "pn": false,
+            "v": null,
+            "gl": "to speak in a foreign tongue",
+            "lx": "לָעַז"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-ps-121-2",
+        "book": "Ps",
+        "ref": "Ps 121:2",
+        "gateLesson": 22,
+        "tier": "challenge",
+        "challengeNote": "Poetry — Psalm 121. Verse structure and word order differ from prose narrative. Contains 1 Qal participle form (עֹשֵׂה, \"maker of\") — Participles introduced in Lesson 42.",
+        "wooden": "My help is from with YHWH, maker of heaven and earth.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "עֶ֭זְרִ/י",
+            "l": "5828",
+            "s": "5828",
+            "m": "HNcmsc/Sp1cs",
+            "g": 22,
+            "pn": false,
+            "v": null,
+            "gl": "aid",
+            "lx": "עֵזֶר"
+          },
+          {
+            "t": "מֵ/עִ֣ם",
+            "l": "m/5973 b",
+            "s": "5973",
+            "m": "HR/R",
+            "g": 13,
+            "pn": false,
+            "v": 13,
+            "gl": "adverb or preposition",
+            "lx": "עִם"
+          },
+          {
+            "t": "יְהוָ֑ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
+          },
+          {
+            "t": "עֹ֝שֵׂ֗ה",
+            "l": "6213 a",
+            "s": "6213",
+            "m": "HVqrmsc",
+            "g": 42,
+            "pn": false,
+            "v": 15,
+            "gl": "to do or make",
+            "lx": "עָשָׂה"
+          },
+          {
+            "t": "שָׁמַ֥יִם",
+            "l": "8064",
+            "s": "8064",
+            "m": "HNcmpa",
+            "g": 10,
+            "pn": false,
+            "v": 13,
+            "gl": "the sky",
+            "lx": "שָׁמַיִם"
+          },
+          {
+            "t": "וָ/אָֽרֶץ",
+            "l": "c/776",
+            "s": "776",
+            "m": "HC/Ncbsa",
+            "g": 13,
+            "pn": false,
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-ps-121-8",
+        "book": "Ps",
+        "ref": "Ps 121:8",
+        "gateLesson": 23,
+        "tier": "challenge",
+        "challengeNote": "Poetry — Psalm 121. Verse structure and word order differ from prose narrative. Contains 2 pronoun-suffixed verb forms (צֵאתְךָ \"your going out\", וּבוֹאֶךָ \"and your coming\") — attached pronouns on verbs introduced in Lesson 40.",
+        "wooden": "YHWH will guard your going out and your coming in, from now and unto forever.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "יְֽהוָ֗ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
+          },
+          {
+            "t": "יִשְׁמָר",
+            "l": "8104",
+            "s": "8104",
+            "m": "HVqi3ms",
+            "g": 23,
+            "pn": false,
+            "v": 15,
+            "gl": "to hedge about",
+            "lx": "שָׁמַר"
+          },
+          {
+            "t": "צֵאתְ/ךָ֥",
+            "l": "3318",
+            "s": "3318",
+            "m": "HVqc/Sp2ms",
+            "g": 40,
+            "pn": false,
+            "v": 22,
+            "gl": "to go",
+            "lx": "יָצָא"
+          },
+          {
+            "t": "וּ/בוֹאֶ֑/ךָ",
+            "l": "c/935",
+            "s": "935",
+            "m": "HC/Vqc/Sp2ms",
+            "g": 40,
+            "pn": false,
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
+          },
+          {
+            "t": "מֵֽ֝/עַתָּ֗ה",
+            "l": "m/6258",
+            "s": "6258",
+            "m": "HR/D",
+            "g": 13,
+            "pn": false,
+            "v": 30,
+            "gl": "at this time",
+            "lx": "עַתָּה"
+          },
+          {
+            "t": "וְ/עַד",
+            "l": "c/5704",
+            "s": "5704",
+            "m": "HC/R",
+            "g": 13,
+            "pn": false,
+            "v": null,
+            "gl": "as far",
+            "lx": "עַד"
+          },
+          {
+            "t": "עוֹלָֽם",
+            "l": "5769",
+            "s": "5769",
+            "m": "HNcmsa",
+            "g": 7,
+            "pn": false,
+            "v": null,
+            "gl": "concealed",
+            "lx": "עוֹלָם"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-ps-130-4",
+        "book": "Ps",
+        "ref": "Ps 130:4",
+        "gateLesson": 22,
+        "tier": "challenge",
+        "challengeNote": "Poetry — Psalm 130. Verse structure and word order differ from prose narrative. Contains 1 Nifal imperfect form (תִּוָּרֵֽא, \"you will be feared\") — the Nifal/Hitpael stem floor introduced in Lesson 37.",
+        "wooden": "For with you is the forgiveness, so that you may be feared.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "כִּֽי",
+            "l": "3588 a",
+            "s": "3588",
+            "m": "HC",
+            "g": 13,
+            "pn": false,
+            "v": null,
+            "gl": "for, that, because, when",
+            "lx": "כִּי"
+          },
+          {
+            "t": "עִמְּ/ךָ֥",
+            "l": "5973 a",
+            "s": "5973",
+            "m": "HR/Sp2ms",
+            "g": 22,
+            "pn": false,
+            "v": null,
+            "gl": "adverb or preposition",
+            "lx": "עִם"
+          },
+          {
+            "t": "הַ/סְּלִיחָ֑ה",
+            "l": "d/5547",
+            "s": "5547",
+            "m": "HTd/Ncfsa",
+            "g": 8,
+            "pn": false,
+            "v": null,
+            "gl": "pardon",
+            "lx": "סְלִיחָה"
+          },
+          {
+            "t": "לְ֝מַ֗עַן",
+            "l": "4616",
+            "s": "4616",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": 30,
+            "gl": "heed",
+            "lx": "מַעַן"
+          },
+          {
+            "t": "תִּוָּרֵֽא",
+            "l": "3372",
+            "s": "3372",
+            "m": "HVNi2ms",
+            "g": 37,
+            "pn": false,
+            "v": 38,
+            "gl": "to fear",
+            "lx": "יָרֵא"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-ps-146-1",
+        "book": "Ps",
+        "ref": "Ps 146:1",
+        "gateLesson": 22,
+        "tier": "challenge",
+        "challengeNote": "Poetry — Psalm 146. Verse structure and word order differ from prose narrative. Contains 2 Piel imperative forms (הַֽלְלוּ, הַלְלִי — both \"praise!\") — the Imperative introduced in Lesson 39.",
+        "wooden": "Praise Yah! Praise, O my soul, YHWH!",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "הַֽלְלוּ",
+            "l": "1984 b",
+            "s": "1984",
+            "m": "HVpv2mp",
+            "g": 39,
+            "pn": false,
+            "v": null,
+            "gl": "to be clear",
+            "lx": "הָלַל"
+          },
+          {
+            "t": "יָ֡הּ",
+            "l": "3050",
+            "s": "3050",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jah",
+            "lx": "יָהּ"
+          },
+          {
+            "t": "הַלְלִ֥י",
+            "l": "1984 b",
+            "s": "1984",
+            "m": "HVpv2fs",
+            "g": 39,
+            "pn": false,
+            "v": null,
+            "gl": "to be clear",
+            "lx": "הָלַל"
+          },
+          {
+            "t": "נַ֝פְשִׁ֗/י",
+            "l": "5315",
+            "s": "5315",
+            "m": "HNcbsc/Sp1cs",
+            "g": 22,
+            "pn": false,
+            "v": 34,
+            "gl": "a breathing creature",
+            "lx": "נֶפֶשׁ"
+          },
+          {
+            "t": "אֶת",
+            "l": "853",
+            "s": "853",
+            "m": "HTo",
+            "g": 1,
+            "pn": false,
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
+          },
+          {
+            "t": "יְהוָֽה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
+          }
+        ]
       }
     ]
   };
