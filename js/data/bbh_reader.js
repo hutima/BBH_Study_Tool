@@ -7450,7 +7450,7 @@
         "gateLesson": 42,
         "tier": "strict",
         "wooden": "And the inhabitants of Gibeon heard what Joshua had done to Jericho and to Ai.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/יֹשְׁבֵ֨י",
@@ -7560,7 +7560,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And Joshua sent the people away, each to his inheritance.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יְשַׁלַּ֤ח",
@@ -7636,8 +7636,8 @@
         "ref": "Josh 1:16",
         "gateLesson": 40,
         "tier": "guided",
-        "wooden": "And they answered Joshua, saying, 'All that you have commanded us we will do, and wherever you send us we will go.'",
-        "woodenStatus": "draft",
+        "wooden": "And they answered Joshua, saying, 'All that you have commanded us we will do, and to all that you send us we will go.'",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַֽ/יַּעֲנ֔וּ",
@@ -7791,7 +7791,7 @@
         "gateLesson": 42,
         "tier": "strict",
         "wooden": "I am going the way of all the earth; be strong, and be a man.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "אָנֹכִ֣י",
@@ -7890,7 +7890,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And the son of this woman died at night, because she lay on him.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יָּ֛מָת",
@@ -7988,8 +7988,8 @@
         "ref": "1Kgs 19:16",
         "gateLesson": 23,
         "tier": "guided",
-        "wooden": "And Jehu son of Nimshi you shall anoint as king over Israel, and Elisha son of Shaphat from Abel-meholah you shall anoint as prophet in your place.",
-        "woodenStatus": "draft",
+        "wooden": "And Jehu son of Nimshi you shall anoint as king over Yisrael, and Elisha son of Shaphat from Abel-meholah you shall anoint as prophet in your place.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אֵת֙",
@@ -8186,8 +8186,8 @@
         "ref": "2Kgs 2:22",
         "gateLesson": 37,
         "tier": "strict",
-        "wooden": "So the waters were healed to this day, according to the word of Elisha which he spoke.",
-        "woodenStatus": "draft",
+        "wooden": "And the waters were healed to this day, according to the word of Elisha which he spoke.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֵּרָפ֣וּ",
@@ -8296,8 +8296,8 @@
         "ref": "2Kgs 13:22",
         "gateLesson": 20,
         "tier": "strict",
-        "wooden": "And Hazael king of Aram oppressed Israel all the days of Jehoahaz.",
-        "woodenStatus": "draft",
+        "wooden": "And Hazael king of Aram oppressed Yisrael all the days of Jehoahaz.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַֽ/חֲזָאֵל֙",
@@ -8406,8 +8406,8 @@
         "ref": "2Kgs 5:19",
         "gateLesson": 39,
         "tier": "guided",
-        "wooden": "And he said to him, 'Go in peace.' And he went from him a stretch of land.",
-        "woodenStatus": "draft",
+        "wooden": "And he said to him, 'Go in peace.' And he went from with him a stretch of land.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֹּ֥אמֶר",
@@ -8505,8 +8505,8 @@
         "ref": "Esth 2:5",
         "gateLesson": 22,
         "tier": "strict",
-        "wooden": "There was a Jewish man in Susa the citadel, and his name was Mordecai son of Jair son of Shimei son of Kish, a Benjaminite.",
-        "woodenStatus": "draft",
+        "wooden": "A Jewish man was in Susa the citadel, and his name was Mordecai son of Jair son of Shimei son of Kish, a Benjaminite.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "אִ֣ישׁ",
@@ -8683,8 +8683,8 @@
         "ref": "Esth 4:10",
         "gateLesson": 40,
         "tier": "strict",
-        "wooden": "And Esther said to Hathach, and commanded him for Mordecai:",
-        "woodenStatus": "draft",
+        "wooden": "And Esther said to Hathach, and commanded him to Mordecai:",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/תֹּ֤אמֶר",
@@ -8761,7 +8761,7 @@
         "gateLesson": 35,
         "tier": "guided",
         "wooden": "And Esther said to reply to Mordecai:",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/תֹּ֥אמֶר",
@@ -8828,7 +8828,7 @@
         "tier": "challenge",
         "challengeNote": "Poetry — Psalm 95. Verse structure and word order differ from prose narrative. Contains 2 Adjective forms (גָּדוֹל, \"great\") — Adjective inflection introduced in Lesson 32.",
         "wooden": "For a great God is YHWH, and a great king over all gods.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "כִּ֤י",
@@ -8939,7 +8939,7 @@
         "tier": "challenge",
         "challengeNote": "Poetry — Psalm 113. Verse structure and word order differ from prose narrative. Contains 1 Hifil participle form (הַֽמַּגְבִּיהִי, \"the one who makes high\") — Participles introduced in Lesson 42.",
         "wooden": "Who is like YHWH our God, who makes high to sit,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "מִ֭י",
@@ -9006,7 +9006,7 @@
         "tier": "challenge",
         "challengeNote": "Poetry — Psalm 113. Verse structure and word order differ from prose narrative. Contains 1 Hifil participle form (הַֽמַּשְׁפִּילִי, \"the one who makes low\") — Participles introduced in Lesson 42.",
         "wooden": "who makes low to see, in the heavens and in the earth,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "הַֽ/מַּשְׁפִּילִ֥י",
@@ -9062,7 +9062,7 @@
         "tier": "challenge",
         "challengeNote": "Poetry — Psalm 114. Verse structure and word order differ from prose narrative. Contains 1 Qal participle form (לֹעֵֽז, \"stammering, foreign-speaking\") — Participles introduced in Lesson 42.",
         "wooden": "In Yisrael's going out from Mitsrayim, the house of Yaakov from a people of stammering speech,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "בְּ/צֵ֣את",
@@ -9151,7 +9151,7 @@
         "tier": "challenge",
         "challengeNote": "Poetry — Psalm 121. Verse structure and word order differ from prose narrative. Contains 1 Qal participle form (עֹשֵׂה, \"maker of\") — Participles introduced in Lesson 42.",
         "wooden": "My help is from with YHWH, maker of heaven and earth.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "עֶ֭זְרִ/י",
@@ -9229,7 +9229,7 @@
         "tier": "challenge",
         "challengeNote": "Poetry — Psalm 121. Verse structure and word order differ from prose narrative. Contains 2 pronoun-suffixed verb forms (צֵאתְךָ \"your going out\", וּבוֹאֶךָ \"and your coming\") — attached pronouns on verbs introduced in Lesson 40.",
         "wooden": "YHWH will guard your going out and your coming in, from now and unto forever.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "יְֽהוָ֗ה",
@@ -9318,7 +9318,7 @@
         "tier": "challenge",
         "challengeNote": "Poetry — Psalm 130. Verse structure and word order differ from prose narrative. Contains 1 Nifal imperfect form (תִּוָּרֵֽא, \"you will be feared\") — the Nifal/Hitpael stem floor introduced in Lesson 37.",
         "wooden": "For with you is the forgiveness, so that you may be feared.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "כִּֽי",
@@ -9385,7 +9385,7 @@
         "tier": "challenge",
         "challengeNote": "Poetry — Psalm 146. Verse structure and word order differ from prose narrative. Contains 2 Piel imperative forms (הַֽלְלוּ, הַלְלִי — both \"praise!\") — the Imperative introduced in Lesson 39.",
         "wooden": "Praise Yah! Praise, O my soul, YHWH!",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "הַֽלְלוּ",

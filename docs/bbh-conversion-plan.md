@@ -1122,3 +1122,131 @@ live in this session's scratchpad dir, not the repo. Next: stage D
 (independent wooden-translation review flipping all 20 new `draft`
 `woodenStatus` fields — 12 from stage B + 8 from stage C — to
 `"reviewed"`, release counts, smokes, `?v=21` bump, PR).
+
+**Status: Stage D IMPLEMENTED, UNCOMMITTED (2026-08-09) — TASK #24
+COMPLETE pending orchestrator commit+PR.** Independent review (a fresh
+reviewer session, not the author of stages B/C) of all 20 `draft`
+selections against their own token-level OSHB morphology (person/gender/
+number, binyan/stem, conjugation, suffixes, construct chains,
+definiteness, word order) plus the corpus's existing house style
+(transliterated proper-name conventions already set by earlier reviewed
+entries, "And" for wayyiqtol clause-opens, "from with" for מֵאִתּ/מֵעִם,
+the copyrighted-phrasing spot-guard).
+
+**Verdict: 13 clean / 7 fixed.** Clean (no change beyond the
+`woodenStatus` flip): `reader-josh-9-3`, `reader-josh-24-28`,
+`reader-1kgs-2-2`, `reader-1kgs-3-19` ("because she lay on him" closely
+matches ESV/NASB — flagged and judged unavoidable, since every major
+translation converges on this short causal clause independently, not
+evidence of copying; left as literal and accurate), `reader-esth-4-15`,
+and all 8 `reader-ch-ps-*` entries (95:3, 113:5, 113:6, 114:1, 121:2,
+121:8, 130:4, 146:1 — each checked for the same idiom-convergence
+question, e.g. "go in peace"/"your going out and your coming in", and
+judged necessary/unavoidable literal renderings, not copied phrasing).
+Fixed (7, one line each):
+- `reader-josh-1-16`: "and wherever you send us we will go" →
+  "and to all that you send us we will go" — restores the Hebrew's own
+  parallel structure with clause 1 ("all that you commanded us we will
+  do"), which the draft's paraphrase had broken; the paraphrase also
+  verbatim-echoed NIV's own wording for this verse (spot-guard hit).
+- `reader-1kgs-19-16`: "over Israel" → "over Yisrael" — the corpus
+  already established "Yisrael" as its transliteration convention for
+  this name in 3 prior reviewed entries (`reader-deut-6-4`,
+  `reader-2sam-17-26`, `reader-ch-exod-6-11`); the draft used the English
+  form instead.
+- `reader-2kgs-13-22`: "oppressed Israel" → "oppressed Yisrael" — same
+  fix, same reason.
+- `reader-2kgs-2-22`: "So the waters were healed" → "And the waters were
+  healed" — the corpus's wayyiqtol clause-opens are 58/58 "And" among
+  reviewed entries; this draft's unique "So" also happened to match
+  KJV's own "So the waters were healed..." connective exactly.
+- `reader-2kgs-5-19`: "went from him" → "went from with him" — the token
+  is מֵ/אִתּ/וֹ (מ + אֵת/אִתּ "with" + suffix), and stage C's own
+  `reader-ch-ps-121-2` ("My help is from with YHWH") already set the
+  "from with" precedent for this exact preposition-chain pattern in this
+  same review batch; the draft dropped "with".
+- `reader-esth-2-5`: "There was a Jewish man in Susa the citadel..." →
+  "A Jewish man was in Susa the citadel..." — the Hebrew here is
+  Subject-before-verb (אִישׁ יְהוּדִי הָיָה), not the verb-initial
+  וַיְהִי pattern the corpus's existing "there was" renderings correctly
+  mirror elsewhere (e.g. `reader-gen-1-13`'s "And there was evening");
+  preserving the Hebrew's actual word order also moves the sentence away
+  from ESV's own near-identical "there was a Jew in Susa the citadel".
+- `reader-esth-4-10`: "commanded him for Mordecai" → "commanded him to
+  Mordecai" — אֶל is literally "to"; the immediately following selection
+  `reader-esth-4-15` renders the identical construction ("to reply to
+  Mordecai") correctly, so this was an internal inconsistency within the
+  same 2-verse Esther relay, not just a word-choice call.
+
+**Verification proof.** Field-level diff of a fresh
+`node tools/gen_bbh_reader_data.mjs` regeneration against HEAD's
+`js/data/bbh_reader.js` (`scratchpad/field_diff.mjs`, a VM-sandboxed
+load-and-compare per passage id): exactly the 20 reviewed passages
+differ, and for every one of them the ONLY changed keys are `wooden`
+and/or `woodenStatus` (7 changed both, 13 changed `woodenStatus` only) —
+the other 86 passages, and every other field (`tokens`, `scores`,
+`rationale`, `challengeNote`, `gateLesson`, `tier`, ...) on all 106, are
+byte-identical, and the top-level `schemaVersion`/`attribution`/
+`corpusPin` are unchanged. Two `gen_bbh_reader_data.mjs` reruns produced
+byte-identical output both times (sha1 `7b32e2d5fa4dd8d46eaa9e4e4714b44a0e69f837`).
+
+`tools/validate_bbh_reader_data.mjs` gained a new check, `no-draft-wooden`
+(the task brief's explicit ask: check whether the validator enforces
+reviewed-only, and add it if not — it didn't) — fails release if ANY
+selection still carries `woodenStatus:"draft"`. Negative-tested: flipping
+one entry back to `"draft"` makes the validator fail with exit code 1 and
+the correct message naming the offending id; restoring it passes again
+(6→7 report lines, same pass/fail semantics as every other check in the
+file). This check runs as one of `tools/check_release.mjs`'s subprocess
+checks, so it is release-blocking, not just a standalone dev-tool
+warning.
+
+`node tools/check_release.mjs`: on a clean tree (verified via a
+`git stash`/`git stash pop` round-trip that fully restored every pending
+change afterward — confirmed by `git diff --stat` and the `js/data/
+bbh_reader.js` sha1 both matching pre-stash) → **24 reports, 0
+failures**. On the actual (intentionally uncommitted) working tree →
+same 24 reports minus check6 (`source/bbh/ has uncommitted changes vs
+git HEAD`) — the expected, same-as-every-prior-uncommitted-stage state.
+
+`?v=20` → `?v=21` bumped across `index.html`/`sw.js`/`styles.css`/
+`pages/memorization.html`/`docs/index-structure.md` (`CACHE_NAME` synced
+in `sw.js`). While in `docs/index-structure.md` for the bump, also
+corrected two now-stale "52 curated ... passages" mentions (pre-existing
+staleness from stages B/C not updating this doc, not new drift from this
+stage) to the current 106. User guide (`index.html`) Reader copy updated
+in both the mode-description paragraph and the existing 2026-08
+changelog entry's Reader bullet (edited in place, no new entry — per
+CLAUDE.md's changelog rule): book list now reads Genesis/Ruth/Jonah/
+Exodus/Deuteronomy/Judges/Joshua/1&ndash;2 Samuel/1&ndash;2 Kings/Esther;
+the Challenge tier's "one passage" wording (now inaccurate — up to 16
+challenge passages can be simultaneously visible by Lesson 40, verified
+by script) was generalized to "a small number of passages"/"a curated
+set of passages"; the Psalms poetry Challenge material is called out
+explicitly; and "labeled draft or independently reviewed" was retired in
+favor of "independently-reviewed" now that zero drafts remain.
+
+**Playwright.** `scratchpad/smoke_reader.mjs` (12 sections) reruns fully
+green at baseline (GA `gtag.js` route stub + `serviceWorkers: 'block'`),
+including its own wooden-caption check now reading "Unofficial literal
+rendering — machine-drafted, independently reviewed" for a live passage
+(previously this ran against a still-draft corpus). `scratchpad/
+smoke_task24c.mjs` (18 checks) reruns fully green unmodified. A new ad
+hoc spot-check (`scratchpad/spotcheck_fix.mjs`) opened `reader-esth-2-5`
+directly via `window.readerOpenPassage()`, revealed its wooden
+translation, and confirmed it now renders the FIXED text "A Jewish man
+was in Susa the citadel..." (not the pre-review "There was a Jewish
+man...") with the "independently reviewed" caption.
+
+Files touched: `source/bbh/reader/selections.json` (20 `woodenStatus`
+flips, 7 with corrected `wooden` text), `js/data/bbh_reader.js`
+(regenerated), `tools/validate_bbh_reader_data.mjs` (new
+`no-draft-wooden` check), `index.html`, `sw.js`, `styles.css`,
+`pages/memorization.html`, `docs/index-structure.md`. NOT committed —
+per the task brief, stage D is an independent fresh-reviewer pass and
+leaves the working tree for the orchestrator to review and commit as the
+final piece of the task #24 PR (stages A/B/C are already separate commits
+on `claude/new-session-988x25` — `0198a27`/`71ff7e3`/`879ed81` — none yet
+merged to `Main`). **Task #24 (Reader prose/poetry expansion, all four
+stages) is now functionally complete; only the orchestrator's commit and
+PR remain.**

@@ -398,7 +398,7 @@ function renderReaderOptionsPanel() {
         <button class="theme-btn${state.tier !== 'strict' ? ' active' : ''}" type="button" onclick="readerSetTier('both')" title="Strict: ${escapeHtml(STRICT_TIER_CAPTION)}. Guided: ${escapeHtml(GUIDED_TIER_CAPTION)}.">Strict + Guided</button>
       </div>
     </div>
-    <div class="reader-tier-caption"><strong>Strict</strong> &mdash; ${escapeHtml(STRICT_TIER_CAPTION)}. <strong>Guided</strong> &mdash; ${escapeHtml(GUIDED_TIER_CAPTION)}.</div>
+    <div class="reader-tier-caption"><strong>Strict</strong> &mdash; ${escapeHtml(STRICT_TIER_CAPTION)}. <strong>Guided</strong> &mdash; ${escapeHtml(GUIDED_TIER_CAPTION)}. Names appear in gold; they don't count as vocabulary.</div>
     ${challengeRow}
   `;
 }

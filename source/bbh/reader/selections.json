@@ -1413,7 +1413,7 @@
       },
       "rationale": "Task #24 stage B (Reader prose expansion, Joshua): thin-bucket fill (L42 gate, bucket 42-44); the Gibeonites' plan is set in motion by news of Jericho and Ai, all-mapped/0 unknown content lexemes.",
       "wooden": "And the inhabitants of Gibeon heard what Joshua had done to Jericho and to Ai.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-josh-24-28",
@@ -1429,7 +1429,7 @@
       },
       "rationale": "Task #24 stage B (Reader prose expansion, Joshua): pedagogically attractive pick — the closing verse of Joshua 24's covenant-renewal scene (\"as for me and my house\", 24:15, does not itself score strict/guided); short 6-token wayyiqtol clause.",
       "wooden": "And Joshua sent the people away, each to his inheritance.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-josh-1-16",
@@ -1444,8 +1444,8 @@
         "maxGrammarLesson": 40
       },
       "rationale": "Task #24 stage B (Reader prose expansion, Joshua): pedagogically attractive pick — the people's pledge of obedience answering Joshua's commissioning speech (Josh 1:9 \"be strong and courageous\" does not itself score strict/guided).",
-      "wooden": "And they answered Joshua, saying, 'All that you have commanded us we will do, and wherever you send us we will go.'",
-      "woodenStatus": "draft"
+      "wooden": "And they answered Joshua, saying, 'All that you have commanded us we will do, and to all that you send us we will go.'",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1kgs-2-2",
@@ -1461,7 +1461,7 @@
       },
       "rationale": "Task #24 stage B (Reader prose expansion, 1 Kings): thin-bucket fill (L42 gate, bucket 42-44); David's charge to Solomon on his deathbed — pedagogically attractive \"be strong\" theme.",
       "wooden": "I am going the way of all the earth; be strong, and be a man.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1kgs-3-19",
@@ -1477,7 +1477,7 @@
       },
       "rationale": "Task #24 stage B (Reader prose expansion, 1 Kings): Solomon's judgment narrative (the two women and the living child) — pedagogically attractive Solomon-wisdom material; short 8-token clause.",
       "wooden": "And the son of this woman died at night, because she lay on him.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1kgs-19-16",
@@ -1492,8 +1492,8 @@
         "maxGrammarLesson": 23
       },
       "rationale": "Task #24 stage B (Reader prose expansion, 1 Kings): thin-bucket fill (L23 gate, bucket 23-27, previously only 2 guided candidates in the whole corpus); the LORD's charge to Elijah to anoint Elisha as prophet — bridges the Elijah (1Kgs 18) and Elisha (2Kgs 2/5) material.",
-      "wooden": "And Jehu son of Nimshi you shall anoint as king over Israel, and Elisha son of Shaphat from Abel-meholah you shall anoint as prophet in your place.",
-      "woodenStatus": "draft"
+      "wooden": "And Jehu son of Nimshi you shall anoint as king over Yisrael, and Elisha son of Shaphat from Abel-meholah you shall anoint as prophet in your place.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2kgs-2-22",
@@ -1508,8 +1508,8 @@
         "maxGrammarLesson": 37
       },
       "rationale": "Task #24 stage B (Reader prose expansion, 2 Kings): pedagogically attractive pick — Elisha's healing of the waters at Jericho (2Kgs 2), the closing formula of the miracle narrative.",
-      "wooden": "So the waters were healed to this day, according to the word of Elisha which he spoke.",
-      "woodenStatus": "draft"
+      "wooden": "And the waters were healed to this day, according to the word of Elisha which he spoke.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2kgs-13-22",
@@ -1524,8 +1524,8 @@
         "maxGrammarLesson": 20
       },
       "rationale": "Task #24 stage B (Reader prose expansion, 2 Kings): thin-bucket fill (L20 gate, bucket 20-22); a short historical-summary clause on Hazael's oppression of Israel.",
-      "wooden": "And Hazael king of Aram oppressed Israel all the days of Jehoahaz.",
-      "woodenStatus": "draft"
+      "wooden": "And Hazael king of Aram oppressed Yisrael all the days of Jehoahaz.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2kgs-5-19",
@@ -1540,8 +1540,8 @@
         "maxGrammarLesson": 39
       },
       "rationale": "Task #24 stage B (Reader prose expansion, 2 Kings): pedagogically attractive pick — Elisha's dismissal of Naaman (2Kgs 5) after the healing, \"go in peace.\"",
-      "wooden": "And he said to him, 'Go in peace.' And he went from him a stretch of land.",
-      "woodenStatus": "draft"
+      "wooden": "And he said to him, 'Go in peace.' And he went from with him a stretch of land.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-esth-2-5",
@@ -1556,8 +1556,8 @@
         "maxGrammarLesson": 22
       },
       "rationale": "Task #24 stage B (Reader prose expansion, Esther): thin-bucket fill (L22 gate, bucket 20-22); introduces Mordecai the Jew in Susa the citadel, opening the book's central family.",
-      "wooden": "There was a Jewish man in Susa the citadel, and his name was Mordecai son of Jair son of Shimei son of Kish, a Benjaminite.",
-      "woodenStatus": "draft"
+      "wooden": "A Jewish man was in Susa the citadel, and his name was Mordecai son of Jair son of Shimei son of Kish, a Benjaminite.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-esth-4-10",
@@ -1572,8 +1572,8 @@
         "maxGrammarLesson": 40
       },
       "rationale": "Task #24 stage B (Reader prose expansion, Esther): pedagogically attractive pick — part of the Esther/Mordecai/Hathach message relay leading to \"for such a time as this\" (Esth 4:14, which does not itself score strict/guided).",
-      "wooden": "And Esther said to Hathach, and commanded him for Mordecai:",
-      "woodenStatus": "draft"
+      "wooden": "And Esther said to Hathach, and commanded him to Mordecai:",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-esth-4-15",
@@ -1589,7 +1589,7 @@
       },
       "rationale": "Task #24 stage B (Reader prose expansion, Esther): pedagogically attractive pick — Esther's reply to Mordecai, immediately following \"for such a time as this\" (Esth 4:14), leading into her decision to approach the king.",
       "wooden": "And Esther said to reply to Mordecai:",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-ps-95-3",
@@ -1606,7 +1606,7 @@
       "rationale": "Task #24 stage C (Psalms challenge tier): short verbless praise clause (\"for a great God is YHWH\") — construct/preposition material already in scope by L20, two Adjective forms (repeated) preview the adjective-inflection unit.",
       "challengeNote": "Poetry — Psalm 95. Verse structure and word order differ from prose narrative. Contains 2 Adjective forms (גָּדוֹל, \"great\") — Adjective inflection introduced in Lesson 32.",
       "wooden": "For a great God is YHWH, and a great king over all gods.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-ps-113-5",
@@ -1623,7 +1623,7 @@
       "rationale": "Task #24 stage C (Psalms challenge tier): \"Who is like YHWH our God\" — plural-noun-with-suffix material already in scope by L31, one Hifil participle previews the participle unit.",
       "challengeNote": "Poetry — Psalm 113. Verse structure and word order differ from prose narrative. Contains 1 Hifil participle form (הַֽמַּגְבִּיהִי, \"the one who makes high\") — Participles introduced in Lesson 42.",
       "wooden": "Who is like YHWH our God, who makes high to sit,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-ps-113-6",
@@ -1640,7 +1640,7 @@
       "rationale": "Task #24 stage C (Psalms challenge tier): continues 113:5 — infinitive-construct material already in scope by L24, one Hifil participle previews the participle unit.",
       "challengeNote": "Poetry — Psalm 113. Verse structure and word order differ from prose narrative. Contains 1 Hifil participle form (הַֽמַּשְׁפִּילִי, \"the one who makes low\") — Participles introduced in Lesson 42.",
       "wooden": "who makes low to see, in the heavens and in the earth,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-ps-114-1",
@@ -1657,7 +1657,7 @@
       "rationale": "Task #24 stage C (Psalms challenge tier): the famous Exodus-Hallel opening (\"When Yisrael went out from Mitsrayim\") — infinitive-construct/construct-chain material already in scope by L24, one Qal participle previews the participle unit.",
       "challengeNote": "Poetry — Psalm 114. Verse structure and word order differ from prose narrative. Contains 1 Qal participle form (לֹעֵֽז, \"stammering, foreign-speaking\") — Participles introduced in Lesson 42.",
       "wooden": "In Yisrael's going out from Mitsrayim, the house of Yaakov from a people of stammering speech,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-ps-121-2",
@@ -1674,7 +1674,7 @@
       "rationale": "Task #24 stage C (Psalms challenge tier): from the user-suggested candidate pool — \"my help is from with YHWH\", attached-pronoun-on-noun material already in scope by L22, one Qal participle previews the participle unit.",
       "challengeNote": "Poetry — Psalm 121. Verse structure and word order differ from prose narrative. Contains 1 Qal participle form (עֹשֵׂה, \"maker of\") — Participles introduced in Lesson 42.",
       "wooden": "My help is from with YHWH, maker of heaven and earth.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-ps-121-8",
@@ -1691,7 +1691,7 @@
       "rationale": "Task #24 stage C (Psalms challenge tier): from the user-suggested candidate pool — Psalm 121's famous closing benediction, Qal-imperfect-verb material already in scope by L23, two pronoun-suffixed infinitive-construct forms preview the L40 attached-pronoun-on-verb unit.",
       "challengeNote": "Poetry — Psalm 121. Verse structure and word order differ from prose narrative. Contains 2 pronoun-suffixed verb forms (צֵאתְךָ \"your going out\", וּבוֹאֶךָ \"and your coming\") — attached pronouns on verbs introduced in Lesson 40.",
       "wooden": "YHWH will guard your going out and your coming in, from now and unto forever.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-ps-130-4",
@@ -1708,7 +1708,7 @@
       "rationale": "Task #24 stage C (Psalms challenge tier): \"for with you is forgiveness\", attached-pronoun/definite-article material already in scope by L22, one Nifal imperfect previews the Nifal/Hitpael stem floor.",
       "challengeNote": "Poetry — Psalm 130. Verse structure and word order differ from prose narrative. Contains 1 Nifal imperfect form (תִּוָּרֵֽא, \"you will be feared\") — the Nifal/Hitpael stem floor introduced in Lesson 37.",
       "wooden": "For with you is the forgiveness, so that you may be feared.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-ps-146-1",
@@ -1725,7 +1725,7 @@
       "rationale": "Task #24 stage C (Psalms challenge tier): the opening \"Hallelujah\" praise-psalm formula, noun-with-suffix/object-marker material already in scope by L22, two Piel imperative forms preview the imperative unit.",
       "challengeNote": "Poetry — Psalm 146. Verse structure and word order differ from prose narrative. Contains 2 Piel imperative forms (הַֽלְלוּ, הַלְלִי — both \"praise!\") — the Imperative introduced in Lesson 39.",
       "wooden": "Praise Yah! Praise, O my soul, YHWH!",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     }
   ]
 }
