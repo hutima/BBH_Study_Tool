@@ -240,6 +240,16 @@ into user-sensible modules/groupings, designed mobile-first (current
 controls still clunky per user feedback). Tracked as follow-up task; not
 part of the Phase 2 definition of done.
 
+**Status: shipped (PR G)** — see `docs/bbh-parsing-depth-review.md` for the
+review (§1-§3) and the adopted implementation plan (§4, amended in full by
+§5). Landed: `buildDrillPool`'s `rootFilter` branch + `dimValueFilter`
+("By feature") filter and `orderDrillPool`'s deterministic `journey` mode
+(`js/domain/parsing/drill.js`); the Focused/Root journey (verbs)/By feature/
+Shuffle/Custom scope control, root journey map + "Drill this root", and the
+primary-bar + collapsed "More options" mobile regroup (`js/ui/parsing.js`);
+`runtime.parsing.rootFilter`/`dimValueFilter`/`journeyIndex`/`optionsOpen`
+(additive, `PROGRESS_EXPORT_VERSION` unchanged at 6). Cache bumped to `?v=7`.
+
 ## Addendum (user mobile feedback, 2026-08-09): PR H punch list
 
 From live mobile testing screenshots: (1) remove the decade lesson presets
@@ -251,3 +261,14 @@ generation from the 209-card deck); (4) fix #grammarSection mobile layout
 (question card overlaps options/score strip; header/mode-bar collision);
 (5) vocab Hard/Uncertain/Easy rating buttons leak into Parsing mode via
 syncLayoutVisibility — hide outside vocab. Ships as PR H after PR G.
+
+## Addendum (user request, 2026-08-09): Reader literal glosses (after PR H)
+
+Tap-to-reveal per-passage LITERAL word-by-word glosses in Reader mode,
+assembled at generation time from verified sources only: matched
+vocab-card glosses → new `source/bbh/reader/reader_glosses.json`
+(transcribed from the textbook glossary's own entries for exactly the
+lemmas appearing in the 52 curated passages that lack vocab matches,
+page-verified) → proper-name renderings → honest gap markers. Never
+invented glosses, never a copyrighted Bible translation (standing project
+rule). UI: per-passage reveal control, interlinear line under tokens.
