@@ -12,11 +12,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=3">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=3">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=3">
+<link rel="manifest" href="manifest.json?v=4">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=4">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=4">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=3">
+<link rel="stylesheet" href="styles.css?v=4">
 <script>
 (function(){
   try {
@@ -69,6 +69,7 @@
     <div class="mode-group app-profile-group" role="group" aria-label="Study mode shortcut">
       <button class="mode-btn active" id="modeShortcutVocabBtn" type="button" onclick="setStudyMode('vocab')">Vocab</button>
       <button class="mode-btn" id="modeShortcutParsingBtn" type="button" onclick="setStudyMode('parsing')">Parsing</button>
+      <button class="mode-btn" id="modeShortcutGrammarBtn" type="button" onclick="setStudyMode('grammar')">Grammar</button>
     </div>
     <button class="quick-btn" type="button" onclick="openAnalyticsOverlay()">Progress</button>
     <button class="quick-btn" type="button" onclick="openShortcutsModal()">User guide</button>
@@ -160,6 +161,14 @@
       <div id="parsingOptionsPanel"></div>
     </details>
     <div class="parsing-area" id="parsingArea"></div>
+  </section>
+
+  <section class="grammar-section" id="grammarSection" style="display:none">
+    <details class="utility-section" id="grammarOptionsDetails" open>
+      <summary>Grammar Quiz options</summary>
+      <div id="grammarOptionsPanel"></div>
+    </details>
+    <div class="grammar-area" id="grammarArea"></div>
   </section>
 
   <div class="card-area" id="cardArea">
@@ -347,6 +356,19 @@
       </summary>
       <div class="analytics-collapse-body">
         <div id="analyticsParsingBody"></div>
+      </div>
+    </details>
+
+    <details class="analytics-collapse" id="analyticsGrammarCollapse" data-collapse-key="grammarSection" style="display:none">
+      <summary class="analytics-collapse-summary">
+        <span class="analytics-collapse-caret" aria-hidden="true">▾</span>
+        <div class="analytics-collapse-title-wrap">
+          <h3>Grammar Quiz</h3>
+          <p class="analytics-collapse-summary-status" id="analyticsGrammarSummaryStatus">Grammar Quiz progress.</p>
+        </div>
+      </summary>
+      <div class="analytics-collapse-body">
+        <div id="analyticsGrammarBody"></div>
       </div>
     </details>
 
@@ -611,11 +633,12 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=3"></script>
-<script defer src="js/data/bbh_reference_data.js?v=3"></script>
-<script defer src="js/data/bbh_parsing.js?v=3"></script>
-<script defer src="js/logic/pos_logic.js?v=3"></script>
-<script defer src="js/pwa/swUpdate.js?v=3"></script>
-<script type="module" src="js/app/main.js?v=3"></script>
+<script defer src="js/data/bbh_vocab.js?v=4"></script>
+<script defer src="js/data/bbh_reference_data.js?v=4"></script>
+<script defer src="js/data/bbh_parsing.js?v=4"></script>
+<script defer src="js/data/bbh_grammar.js?v=4"></script>
+<script defer src="js/logic/pos_logic.js?v=4"></script>
+<script defer src="js/pwa/swUpdate.js?v=4"></script>
+<script type="module" src="js/app/main.js?v=4"></script>
 </body>
 </html>

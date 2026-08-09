@@ -777,6 +777,30 @@ export const STATE_MIGRATIONS = [
       };
       return saved;
     }
+  },
+
+  {
+    // Phase 2 PR C: introduces runtime.grammar. Any save/export from before
+    // this landed has no `grammar` key at all; seed the v1 default shape so
+    // downstream restore code (persistence.js sanitizeGrammarState) always
+    // sees a well-formed object. A save that already has SOME `grammar`
+    // object (even a malformed one from a future version) is left alone —
+    // sanitizeGrammarState fills in per-field defaults for anything odd.
+    name: 'grammar-state-v1-init',
+    match(saved) {
+      return !isPlainObject(saved.grammar);
+    },
+    migrate(saved) {
+      saved.grammar = {
+        schemaVersion: 1,
+        lesson: 1,
+        reviewMissed: false,
+        difficulty: 'all',
+        attempts: {},
+        initializedFromVocab: false
+      };
+      return saved;
+    }
   }
 ];
 

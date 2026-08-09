@@ -183,7 +183,7 @@ function sanitizeParsingState(candidate) {
     schemaVersion: 1,
     lesson,
     focusedParadigmId: (typeof src.focusedParadigmId === 'string' && src.focusedParadigmId) ? src.focusedParadigmId : null,
-    direction: src.direction === 'build' ? 'build' : 'parse',
+    direction: src.direction === 'build' ? 'build' : src.direction === 'mixed' ? 'mixed' : 'parse',
     shuffleAll: !!src.shuffleAll,
     customSetOn: !!src.customSetOn,
     customSet: sanitizeParsingCustomSet(src.customSet),
@@ -191,6 +191,50 @@ function sanitizeParsingState(candidate) {
     includeAppendix: !!src.includeAppendix,
     dims: sanitizeParsingDims(src.dims),
     attempts: sanitizeParsingAttempts(src.attempts),
+    initializedFromVocab: !!src.initializedFromVocab
+  };
+}
+
+// ── Grammar Quiz state sanitize (Phase 2 PR C) ────────────────────────────
+// runtime.grammar is owned/mutated by js/ui/grammar.js, but persistence.js
+// (like every other persisted subtree) is responsible for validating it on
+// the way in from localStorage or an imported JSON file. Backward
+// compatible: a v3 export or a save from before this landed has no
+// `grammar` key at all, which sanitizes to the v1 default shape below (see
+// store.js PROGRESS_EXPORT_VERSION comment).
+function sanitizeGrammarAttemptRecent(list) {
+  return (Array.isArray(list) ? list : [])
+    .filter((v) => v === 0 || v === 1)
+    .slice(-5);
+}
+
+function sanitizeGrammarAttempts(input) {
+  const src = isPlainObject(input) ? input : {};
+  const out = {};
+  Object.keys(src).forEach((qid) => {
+    const rec = src[qid];
+    if (!isPlainObject(rec)) return;
+    const seen = Number.isFinite(rec.seen) ? Math.max(0, Math.round(rec.seen)) : 0;
+    const correct = Number.isFinite(rec.correct) ? Math.max(0, Math.min(seen, Math.round(rec.correct))) : 0;
+    out[qid] = {
+      seen,
+      correct,
+      recent: sanitizeGrammarAttemptRecent(rec.recent),
+      lastAt: Number.isFinite(rec.lastAt) ? rec.lastAt : 0
+    };
+  });
+  return out;
+}
+
+function sanitizeGrammarState(candidate) {
+  const src = isPlainObject(candidate) ? candidate : {};
+  const lesson = Number.isInteger(src.lesson) && src.lesson >= 1 && src.lesson <= 50 ? src.lesson : 1;
+  return {
+    schemaVersion: 1,
+    lesson,
+    reviewMissed: !!src.reviewMissed,
+    difficulty: src.difficulty === 'core' ? 'core' : 'all',
+    attempts: sanitizeGrammarAttempts(src.attempts),
     initializedFromVocab: !!src.initializedFromVocab
   };
 }
@@ -272,7 +316,10 @@ export function buildPersistedStatePayload(options = {}) {
     // Parsing mode (Phase 2 PR B) — fully independent subtree, never touches
     // vocab SRS/marks/progress fields above. Re-sanitized on the way out so
     // a save is never persisted in a structurally-broken shape.
-    parsing: sanitizeParsingState(runtime.parsing)
+    parsing: sanitizeParsingState(runtime.parsing),
+    // Grammar Quiz mode (Phase 2 PR C) — likewise fully independent, never
+    // touches vocab SRS/marks/progress or the parsing subtree above.
+    grammar: sanitizeGrammarState(runtime.grammar)
   }, options);
 }
 
@@ -311,6 +358,9 @@ function sanitizeImportedState(candidate) {
   // Parsing mode (Phase 2 PR B). A v2 export predates this field entirely —
   // sanitizeParsingState defaults it, matching a fresh install.
   state.parsing = sanitizeParsingState(candidate.parsing);
+  // Grammar Quiz mode (Phase 2 PR C). A v2/v3 export predates this field
+  // entirely — sanitizeGrammarState defaults it, matching a fresh install.
+  state.grammar = sanitizeGrammarState(candidate.grammar);
 
   const usage = host.ensureUsageStats(candidate.appUsageStats);
   state.appUsageStats = {
@@ -959,6 +1009,9 @@ export function restoreState() {
     // below, so it restores unconditionally, before the "nothing selected"
     // early return that only concerns the vocab deck/cursor.
     runtime.parsing = sanitizeParsingState(saved.parsing);
+    // Grammar Quiz mode (Phase 2 PR C) — likewise fully independent of the
+    // vocab deck below; restores unconditionally for the same reason.
+    runtime.grammar = sanitizeGrammarState(saved.grammar);
 
     if (!runtime.selectedKeys.length) {
       host.clearSpacedUndoSnapshot();

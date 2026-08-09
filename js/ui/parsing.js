@@ -88,6 +88,44 @@ function dimensionValuesEqualLocal(pickValue, parseValue) {
   return pickValue === parseValue;
 }
 
+// Parse-summary "Contrast" block: up to 3 other in-gate forms from the SAME
+// paradigm whose accepted parse differs from the drilled form's in EXACTLY
+// one currently-graded dimension — e.g. after drilling the 3ms Qal perfect,
+// show the 3fs form as "Gender: fem." A dimension missing from either side
+// makes that pair non-comparable (skipped) rather than a false "differs by
+// one". Ties (more than 3 qualifying neighbors) are broken deterministically
+// by form id — no randomness, same drilled form always yields the same
+// Contrast set for a given lesson/appendix gate.
+function computeContrastForms(state, form, gradedDims) {
+  if (!form || !Array.isArray(gradedDims) || !gradedDims.length) return [];
+  const gated = availableForms(getParadigms(), state.lesson, { includeAppendix: state.includeAppendix });
+  const candidates = gated.filter((f) => f.paradigmId === form.paradigmId && f.id !== form.id);
+  const results = [];
+  candidates.forEach((candidate) => {
+    let found = null;
+    (form.acceptedParses || []).forEach((fp) => {
+      if (found) return;
+      (candidate.acceptedParses || []).forEach((cp) => {
+        if (found) return;
+        const diffDims = [];
+        let comparable = true;
+        for (const d of gradedDims) {
+          const fHas = fp && typeof fp === 'object' && d in fp;
+          const cHas = cp && typeof cp === 'object' && d in cp;
+          if (!fHas || !cHas) { comparable = false; break; }
+          if (!dimensionValuesEqualLocal(fp[d], cp[d])) diffDims.push(d);
+        }
+        if (comparable && diffDims.length === 1) {
+          found = { diffDim: diffDims[0], diffValue: cp[diffDims[0]] };
+        }
+      });
+    });
+    if (found) results.push({ form: candidate, diffDim: found.diffDim, diffValue: found.diffValue });
+  });
+  results.sort((a, b) => a.form.id.localeCompare(b.form.id));
+  return results.slice(0, 3);
+}
+
 function parseSuffixSerialized(serialized) {
   const parts = String(serialized).split('-');
   if (parts.length !== 3) return null;
@@ -212,10 +250,47 @@ function seedForForm(formId) {
   return (hashStringToInt(String(formId)) ^ (host.getSessionSeed() >>> 0)) >>> 0;
 }
 
+// buildFormChoices (drill.js) only ever guarantees the target form itself
+// among its returned `choices` — any OTHER form that also legitimately
+// matches the target's parse (a feature-identical homograph, e.g. the Qal
+// imperfect 2ms/3fs pair) is deliberately excluded from `choices` so a
+// single-answer Build question never accidentally shows 2 "right answers".
+// For the "all that apply" variant we want the OPPOSITE when such a
+// homograph is in scope: swap it into a wrong-answer slot so the learner
+// faces the real ambiguity instead of a single canonical pick. Presentation-
+// only reshuffle of the ids drill.js already computed — never touches
+// drill.js's contract, never invents a new "accepted" relationship.
+function augmentBuildChoicesForAllThatApply(choices, acceptedIds, targetId, maxExtra) {
+  const result = Array.isArray(choices) ? choices.slice() : [];
+  const acceptedSet = new Set(acceptedIds || []);
+  const displayed = new Set(result);
+  const extras = (acceptedIds || []).filter((id) => id !== targetId && !displayed.has(id));
+  let injected = 0;
+  for (const id of extras) {
+    if (injected >= maxExtra) break;
+    const replaceIdx = result.findIndex((cid) => cid !== targetId && !acceptedSet.has(cid));
+    if (replaceIdx === -1) break;
+    result[replaceIdx] = id;
+    displayed.add(id);
+    injected += 1;
+  }
+  return result;
+}
+
 // ─── Module-local (non-persisted) walk state ───────────────────────────────
 let currentForm = null;   // the form currently being asked about (full record)
 let avoidFormId = null;   // set by Next so the reordered pool doesn't repeat it
 let lastResult = null;    // graded result driving the summary render
+
+// Which UI a card actually renders as when direction === 'mixed': computed
+// once per card in startCardFor and read by renderParsingArea. For
+// direction 'parse'/'build' this always mirrors state.direction.
+let currentCardDirection = 'parse';
+// Advances once per card started while direction === 'mixed' — combined
+// with the session seed (never Math.random) to deterministically alternate
+// Parse/Build. Not persisted: a reload simply restarts the alternation,
+// which is fine since nothing about "known"/grading depends on it.
+let mixedCounter = 0;
 
 let parseSteps = [];
 let parseStepIndex = 0;
@@ -223,6 +298,10 @@ let parsePicks = {};
 
 let buildChoiceIds = null;
 let buildAcceptedIds = null;
+// "All that apply" Build variant — set when 2+ of the DISPLAYED choices are
+// legitimate matches for the target parse (see augmentBuildChoicesForAllThatApply).
+let buildMultiSelect = false;
+let buildPicks = new Set();
 
 function applyAttempt(state, formId, perDim) {
   state.attempts = recordAttempt(state.attempts, formId, perDim, { at: Date.now() });
@@ -236,24 +315,35 @@ function finishParse(state) {
   lastResult = { mode: 'parse', form: currentForm, picks: { ...parsePicks }, perDim };
 }
 
+// Deterministic Parse/Build alternation for direction === 'mixed'. Driven
+// by the session seed (never Math.random) + a per-card counter, so within a
+// session cards genuinely alternate; across a reload the alternation simply
+// restarts (nothing gradeable depends on which half a card lands in).
+function nextMixedDirection() {
+  const parity = (mixedCounter + (host.getSessionSeed() >>> 0)) % 2;
+  mixedCounter += 1;
+  return parity === 0 ? 'parse' : 'build';
+}
+
 function startCardFor(form, state) {
   currentForm = form;
   lastResult = null;
-  if (state.direction === 'build') {
+  const effectiveDirection = state.direction === 'mixed' ? nextMixedDirection() : state.direction;
+  currentCardDirection = effectiveDirection;
+  if (effectiveDirection === 'build') {
     buildChoiceIds = null;
     buildAcceptedIds = null;
-    const enabledDims = getEnabledDims(state);
-    const gradedDims = applicableDimensions(form).filter((d) => enabledDims.includes(d));
+    buildMultiSelect = false;
+    buildPicks = new Set();
     const { choices, acceptedIds } = buildFormChoices(getParadigms(), form, {
       lesson: state.lesson,
       includeAppendix: state.includeAppendix,
-      count: 4,
+      count: 6,
       rngSeedInt: seedForForm(form.id)
     });
-    buildChoiceIds = choices;
+    buildChoiceIds = augmentBuildChoicesForAllThatApply(choices, acceptedIds, form.id, 2);
     buildAcceptedIds = acceptedIds;
-    // Kept for readability at call sites even though unused directly here.
-    void gradedDims;
+    buildMultiSelect = buildChoiceIds.filter((id) => acceptedIds.includes(id)).length >= 2;
   } else {
     const enabledDims = getEnabledDims(state);
     parseSteps = applicableDimensions(form).filter((d) => enabledDims.includes(d));
@@ -269,6 +359,43 @@ function pickAndStart(pool, state) {
   if (avoidFormId && pick && pick.id === avoidFormId && ordered.length > 1) pick = ordered[1];
   avoidFormId = null;
   startCardFor(pick, state);
+}
+
+// A flat 58-paradigm checklist is not user-friendly (user feedback) — group
+// by category (verb/noun/adjective/pronoun/particle/numeral) behind native
+// <details>/<summary> so it's keyboard-accessible with no custom JS focus
+// handling. Each group header shows "n of m selected" and a tri-state
+// select-all/clear button. Groups with nothing in scope at the current
+// lesson+appendix gate are simply omitted (gatedParadigms is already gated).
+function renderCustomSetGroups(state, gatedParadigms) {
+  const byCategory = {};
+  gatedParadigms.forEach((p) => {
+    if (!byCategory[p.category]) byCategory[p.category] = [];
+    byCategory[p.category].push(p);
+  });
+  const groups = CATEGORY_ORDER.filter((cat) => byCategory[cat] && byCategory[cat].length).map((cat) => {
+    const list = byCategory[cat];
+    const total = list.length;
+    const selected = list.filter((p) => state.customSet[p.id]).length;
+    const allSelected = selected === total && total > 0;
+    const items = list.map((p) => `
+      <label class="parsing-custom-item">
+        <input type="checkbox" onchange="parsingToggleCustomSetParadigm('${escapeHtml(p.id)}', this.checked)"${state.customSet[p.id] ? ' checked' : ''}>
+        <span>${escapeHtml(p.label)}</span>
+      </label>`).join('');
+    return `
+      <details class="parsing-custom-group"${selected > 0 ? ' open' : ''}>
+        <summary class="parsing-custom-group-summary">
+          <span class="parsing-custom-group-label">${escapeHtml(CATEGORY_LABELS[cat] || cat)}</span>
+          <span class="parsing-custom-group-count">${selected} of ${total} selected</span>
+        </summary>
+        <div class="parsing-custom-group-body">
+          <button class="ctrl-btn parsing-custom-group-toggle" type="button" onclick="parsingToggleCustomSetGroup('${escapeHtml(cat)}')">${allSelected ? 'Clear' : 'Select all'}</button>
+          <div class="parsing-custom-set-list">${items}</div>
+        </div>
+      </details>`;
+  }).join('');
+  return groups || '<div class="parsing-empty-note">No paradigms available at this lesson yet.</div>';
 }
 
 // ─── Rendering: options panel ───────────────────────────────────────────
@@ -299,11 +426,7 @@ function renderParsingOptionsPanel() {
     paradigmOptions += '</optgroup>';
   });
 
-  const customChecklist = gatedParadigms.map((p) => `
-    <label class="parsing-custom-item">
-      <input type="checkbox" onchange="parsingToggleCustomSetParadigm('${escapeHtml(p.id)}', this.checked)"${state.customSet[p.id] ? ' checked' : ''}>
-      <span>${escapeHtml(p.label)}</span>
-    </label>`).join('');
+  const customGroupsHtml = renderCustomSetGroups(state, gatedParadigms);
 
   const gatedForms = getGatedPool(state);
   const applicableDimSet = new Set();
@@ -332,13 +455,14 @@ function renderParsingOptionsPanel() {
     </div>
     <details class="parsing-options-section" open>
       ${toggleHtml({ id: 'parsingCustomSetToggle', label: 'Custom set', checked: !!state.customSetOn, onclick: 'parsingToggleCustomSet()', title: 'Limit practice to the paradigms checked below instead of the full lesson scope.' })}
-      <div class="parsing-custom-set-list" id="parsingCustomSetList">${customChecklist || '<div class="parsing-empty-note">No paradigms available at this lesson yet.</div>'}</div>
+      <div class="parsing-custom-set-groups" id="parsingCustomSetList">${customGroupsHtml}</div>
     </details>
     <div class="parsing-options-row">
       <span class="parsing-field-label">Direction</span>
-      <div class="theme-switcher" id="parsingDirectionToggle" role="group" aria-label="Parse or build the form">
+      <div class="theme-switcher" id="parsingDirectionToggle" role="group" aria-label="Parse, build, or mix the form">
         <button class="theme-btn${state.direction === 'parse' ? ' active' : ''}" type="button" onclick="parsingSetDirection('parse')">Parse</button>
         <button class="theme-btn${state.direction === 'build' ? ' active' : ''}" type="button" onclick="parsingSetDirection('build')">Build the Form</button>
+        <button class="theme-btn${state.direction === 'mixed' ? ' active' : ''}" type="button" onclick="parsingSetDirection('mixed')" title="Alternate Parse and Build cards within one session.">Mixed</button>
       </div>
     </div>
     ${dimToggles ? `<div class="parsing-toggle-grid parsing-dim-toggles">${dimToggles}</div>` : ''}
@@ -417,13 +541,22 @@ function renderBuildQuestion(state) {
   const choiceButtons = (buildChoiceIds || []).map((id) => {
     const f = getFormById(id);
     if (!f) return '';
-    return `<button class="ctrl-btn parsing-choice-btn parsing-build-choice" type="button" onclick="parsingPickBuildChoice('${escapeHtml(id)}')" dir="rtl" lang="he">${escapeHtml(f.display)}</button>`;
+    if (buildMultiSelect) {
+      const picked = buildPicks.has(id);
+      return `<button class="ctrl-btn parsing-choice-btn parsing-build-choice${picked ? ' parsing-build-choice-picked' : ''}" type="button" role="checkbox" aria-checked="${picked ? 'true' : 'false'}" data-form-id="${escapeHtml(id)}" onclick="parsingToggleBuildPick('${escapeHtml(id)}')" dir="rtl" lang="he">${escapeHtml(f.display)}</button>`;
+    }
+    return `<button class="ctrl-btn parsing-choice-btn parsing-build-choice" type="button" data-form-id="${escapeHtml(id)}" onclick="parsingPickBuildChoice('${escapeHtml(id)}')" dir="rtl" lang="he">${escapeHtml(f.display)}</button>`;
   }).join('');
+  const progressLabel = buildMultiSelect ? 'Select every form that matches' : 'Build the form';
+  const checkBtn = buildMultiSelect
+    ? `<button class="ctrl-btn quick-primary parsing-build-check-btn" type="button" onclick="parsingCheckBuildPicks()">Check</button>`
+    : '';
   return `
     <div class="parsing-card">
       <div class="parsing-build-prompt">${escapeHtml(promptLabel)}</div>
-      <div class="parsing-progress">Build the form</div>
+      <div class="parsing-progress">${escapeHtml(progressLabel)}</div>
       <div class="parsing-step-grid">${choiceButtons}</div>
+      ${checkBtn}
     </div>`;
 }
 
@@ -450,18 +583,46 @@ function renderSummary(state) {
       table += '</tr>';
     });
     table += '</tbody></table>';
-    body = `<div class="parsing-summary-picks">${pickRows}</div>${table}`;
+    const contrastForms = computeContrastForms(state, form, gradedDims);
+    const contrastHtml = contrastForms.length ? `
+      <div class="parsing-summary-contrast">
+        <div class="parsing-summary-pick-row-header">Contrast</div>
+        <ul class="parsing-contrast-list">${contrastForms.map((c) => `
+          <li class="parsing-contrast-item">
+            <span class="parsing-contrast-form" dir="rtl" lang="he">${escapeHtml(c.form.display)}</span>
+            <span class="parsing-contrast-diff">${escapeHtml(DIM_TOGGLE_LABELS[c.diffDim] || c.diffDim)}: ${escapeHtml(formatDimValue(c.diffDim, c.diffValue))}</span>
+          </li>`).join('')}</ul>
+      </div>` : '';
+    body = `<div class="parsing-summary-picks">${pickRows}</div>${table}${contrastHtml}`;
   } else {
-    const pickedForm = getFormById(r.pickedId);
+    const pickedForm = r.multiSelect ? null : getFormById(r.pickedId);
     const legit = (r.choiceIds || []).map((id) => {
       const f = getFormById(id);
       if (!f) return '';
       const ok = (r.acceptedIds || []).includes(id);
-      return `<li class="${ok ? 'parsing-cell-right' : ''}" dir="rtl" lang="he">${ok ? '✓ ' : ''}${escapeHtml(f.display)}</li>`;
+      const picked = r.multiSelect ? (r.pickedIds || []).includes(id) : id === r.pickedId;
+      let cls = '';
+      if (ok && picked) cls = 'parsing-cell-right';
+      else if (ok && !picked) cls = 'parsing-also-correct';
+      else if (!ok && picked) cls = 'parsing-cell-wrong';
+      const pickedTag = picked ? ' <span class="parsing-picked-tag">(picked)</span>' : '';
+      return `<li class="${cls}" dir="rtl" lang="he">${ok ? '✓ ' : ''}${escapeHtml(f.display)}${pickedTag}</li>`;
     }).join('');
+    let resultLabel;
+    let resultClass;
+    if (r.multiSelect) {
+      resultLabel = r.creditLevel === 'full' ? 'Correct — every match selected' : r.creditLevel === 'partial' ? 'Partial credit' : 'Not quite';
+      resultClass = r.creditLevel === 'full' ? 'parsing-result-correct' : r.creditLevel === 'partial' ? 'parsing-result-partial' : 'parsing-result-wrong';
+    } else {
+      resultLabel = r.correct ? 'Correct' : 'Not quite';
+      resultClass = r.correct ? 'parsing-result-correct' : 'parsing-result-wrong';
+    }
+    const pickedRow = r.multiSelect
+      ? `<div class="parsing-summary-pick-row"><span>You selected</span><span>${(r.pickedIds || []).length} form${(r.pickedIds || []).length === 1 ? '' : 's'}</span></div>`
+      : `<div class="parsing-summary-pick-row"><span>You picked</span><span dir="rtl" lang="he">${escapeHtml(pickedForm ? pickedForm.display : '')}</span></div>`;
     body = `
-      <div class="parsing-build-result ${r.correct ? 'parsing-result-correct' : 'parsing-result-wrong'}">${r.correct ? 'Correct' : 'Not quite'}</div>
-      <div class="parsing-summary-pick-row"><span>You picked</span><span dir="rtl" lang="he">${escapeHtml(pickedForm ? pickedForm.display : '')}</span></div>
+      <div class="parsing-build-result ${resultClass}">${escapeHtml(resultLabel)}</div>
+      ${pickedRow}
       <div class="parsing-build-legit">
         <div class="parsing-summary-pick-row-header">Legitimate answers among the choices shown</div>
         <ul class="parsing-build-legit-list">${legit}</ul>
@@ -517,7 +678,7 @@ function renderParsingArea() {
 
   if (lastResult) {
     area.innerHTML = renderSummary(state);
-  } else if (state.direction === 'build') {
+  } else if (currentCardDirection === 'build') {
     area.innerHTML = renderBuildQuestion(state);
   } else {
     area.innerHTML = renderParseStep(state);
@@ -601,6 +762,24 @@ export function parsingToggleCustomSetParadigm(paradigmId, checked) {
   render();
 }
 
+export function parsingToggleCustomSetGroup(category) {
+  const state = host.getState();
+  if (!state) return;
+  const gated = availableParadigms(getParadigms(), state.lesson, { includeAppendix: state.includeAppendix });
+  const groupIds = gated.filter((p) => p.category === category).map((p) => p.id);
+  if (!groupIds.length) return;
+  const allSelected = groupIds.every((id) => state.customSet[id]);
+  const next = { ...state.customSet };
+  groupIds.forEach((id) => {
+    if (allSelected) delete next[id];
+    else next[id] = true;
+  });
+  state.customSet = next;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
 export function parsingToggleExcludeKnown() {
   const state = host.getState();
   if (!state) return;
@@ -623,8 +802,9 @@ export function parsingToggleAppendix() {
 export function parsingSetDirection(direction) {
   const state = host.getState();
   if (!state) return;
-  state.direction = direction === 'build' ? 'build' : 'parse';
+  state.direction = direction === 'build' ? 'build' : direction === 'mixed' ? 'mixed' : 'parse';
   currentForm = null;
+  mixedCounter = 0;
   host.saveState();
   render();
 }
@@ -674,6 +854,55 @@ export function parsingPickBuildChoice(pickedId) {
   applyAttempt(state, currentForm.id, perDim);
   lastResult = {
     mode: 'build', form: currentForm, pickedId, correct,
+    choiceIds: buildChoiceIds, acceptedIds: buildAcceptedIds, perDim
+  };
+  render();
+}
+
+// "All that apply" Build variant — toggles a choice's selection without
+// grading (grading happens on parsingCheckBuildPicks, mirroring a real
+// "select all, then submit" interaction rather than grading on first tap).
+export function parsingToggleBuildPick(id) {
+  if (!currentForm || !buildMultiSelect) return;
+  const next = new Set(buildPicks);
+  if (next.has(id)) next.delete(id);
+  else next.add(id);
+  buildPicks = next;
+  render();
+}
+
+// Grades an "all that apply" Build attempt. The gradeable "accepted set" is
+// restricted to whichever accepted ids are actually DISPLAYED (an accepted
+// homograph the learner never had the option to pick can't be held against
+// or for them) — full credit iff the picks equal that set exactly; partial
+// when picks are a proper subset with no wrong picks; wrong otherwise.
+// recordAttempt only supports a 0|1 perDim contract (no persisted partial-
+// credit shape), so per the Build-mode pattern already established by
+// parsingPickBuildChoice: full credit records all graded dims as 1,
+// anything less records them all as 0.
+export function parsingCheckBuildPicks() {
+  const state = host.getState();
+  if (!state || !currentForm || !buildMultiSelect) return;
+  const displayedAccepted = new Set((buildChoiceIds || []).filter((id) => (buildAcceptedIds || []).includes(id)));
+  const picks = new Set(buildPicks);
+  const hasWrongPick = [...picks].some((id) => !displayedAccepted.has(id));
+  let creditLevel;
+  if (hasWrongPick || picks.size === 0) {
+    // An empty selection is a non-answer, not a "no wrong picks" subset.
+    creditLevel = 'wrong';
+  } else if (picks.size === displayedAccepted.size) {
+    creditLevel = 'full';
+  } else {
+    creditLevel = 'partial';
+  }
+  const enabledDims = getEnabledDims(state);
+  const gradedDims = applicableDimensions(currentForm).filter((d) => enabledDims.includes(d));
+  const perDim = {};
+  gradedDims.forEach((d) => { perDim[d] = creditLevel === 'full' ? 1 : 0; });
+  applyAttempt(state, currentForm.id, perDim);
+  lastResult = {
+    mode: 'build', form: currentForm, multiSelect: true,
+    pickedIds: [...picks], creditLevel,
     choiceIds: buildChoiceIds, acceptedIds: buildAcceptedIds, perDim
   };
   render();
