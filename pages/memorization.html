@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Beginning Biblical Hebrew &mdash; Reference</title>
-<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=14">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=15">
 <style>
 
 @font-face {
@@ -49,6 +49,10 @@
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+/* Long unbroken tokens (e.g. source-file paths in <code>) have no natural
+   wrap point and can force page-level horizontal overflow on narrow
+   viewports; let them break rather than pushing the page wider. */
+code { overflow-wrap: break-word; word-break: break-word; }
 body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: var(--bg); color: var(--fg); line-height: 1.5; }
 .toggle { position: fixed; top: 0; left: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; margin: 0; padding: 0; border: 0; }
 .page { min-height: 100vh; background: var(--bg); color: var(--fg); padding-bottom: 56px; }
@@ -75,13 +79,40 @@ h2:first-child { margin-top: 6px; }
 h3 { color: var(--accent-strong); font-size: 1.02rem; margin: 22px 0 8px; }
 .section-note { color: var(--muted); font-size: .88rem; max-width: 760px; }
 .table-note { color: var(--muted); font-size: .82rem; margin: 6px 0 8px; }
-.table-wrap { overflow-x: auto; margin: 10px 0 20px; border: 1px solid var(--border-soft); border-radius: 10px; }
-table.ref-table { width: 100%; border-collapse: collapse; font-size: .92rem; background: var(--panel); }
+/* Scroll container that wraps every .table-wrap (added by enhanceTableWraps()
+   at runtime for both the static #paradigms tables and the generated extra-
+   reference tables) — owns the right-edge fade hint, hidden once scrolled to
+   the end or when the table never overflows. */
+.table-scroll { position: relative; margin: 10px 0 20px; }
+.table-scroll .table-wrap { margin: 0; }
+.table-scroll::after {
+  content: '';
+  position: absolute; top: 0; right: 0; bottom: 0; width: 26px;
+  background: linear-gradient(to right, transparent, var(--panel));
+  pointer-events: none; border-radius: 0 10px 10px 0;
+  opacity: 1; transition: opacity .15s ease;
+}
+.table-scroll.at-end::after { opacity: 0; }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; border: 1px solid var(--border-soft); border-radius: 10px; }
+/* width:max-content + min-width:100% (not a bare width:100%) is what lets a
+   wide table actually exceed its container and become scrollable instead of
+   being force-fit (cells shrinking, words breaking mid-word) — the root
+   cause of the "cut off / no scroll affordance" bug this task fixes. */
+table.ref-table { width: max-content; min-width: 100%; border-collapse: collapse; font-size: .92rem; background: var(--panel); }
 table.ref-table caption { text-align: left; caption-side: top; color: var(--caption); font-weight: 600; padding: 10px 12px 6px; font-size: .88rem; }
-table.ref-table th, table.ref-table td { padding: 8px 12px; border-top: 1px solid var(--border-soft); text-align: left; vertical-align: top; }
+table.ref-table th, table.ref-table td { padding: 8px 12px; border-top: 1px solid var(--border-soft); text-align: left; vertical-align: top; white-space: nowrap; }
 table.ref-table thead th { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; border-top: none; }
 td.heb, th.heb { font-family: 'Noto Serif Hebrew', 'SBL Hebrew', 'Ezra SIL', 'Taamey Frank CLM', 'David CLM', serif; font-size: 1.15rem; }
 td.pgn { color: var(--muted); font-size: .82rem; white-space: nowrap; }
+/* Sticky first column: same background as the table itself so cells
+   scrolling underneath never show through as "transparent". */
+table.ref-table th:first-child, table.ref-table td:first-child { position: sticky; left: 0; z-index: 1; background: var(--panel); }
+table.ref-table thead th:first-child { z-index: 2; }
+@media (max-width: 600px) {
+  table.ref-table th, table.ref-table td { padding: 5px 8px; font-size: .9em; }
+  table.ref-table thead th { white-space: normal; }
+  table.ref-table th.heb, table.ref-table td.heb { font-size: 1.15rem; }
+}
 .script-notes { margin: 10px 0 22px; }
 .script-notes ul { margin: 6px 0; padding-left: 1.2rem; }
 .script-notes li { margin: 6px 0; }
@@ -101,17 +132,45 @@ footer { padding: 30px 16px 10px; color: var(--muted); font-size: .82rem; text-a
 footer p { max-width: 700px; margin: 4px auto; }
 .fallback-note { color: #d98c8c; font-size: .85rem; }
 
-/* Extended reference (js/data/bbh_reference_extra.js render, #extraReferenceContainer) */
-.extra-group { margin-bottom: 18px; }
-.extra-section-title { color: var(--accent-strong); font-size: .96rem; margin: 20px 0 4px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
-.extra-section-title:first-of-type { margin-top: 6px; }
+/* Extended reference (js/data/bbh_reference_extra.js render, #extraReferenceContainer).
+   Sections are pre-sorted into textbook (lesson) order by the generator;
+   this renderer just lays each one out as its own collapsed-by-default
+   <details>, so no thematic group headers/CSS are needed here any more. */
+.extra-controls { display: flex; gap: 8px; margin: 10px 0 14px; }
+.extra-controls button { border: 1px solid var(--border); color: var(--accent-strong); background: var(--panel); border-radius: 999px; padding: 6px 12px; font-size: .78rem; cursor: pointer; font-family: inherit; }
+details.extra-section { border: 1px solid var(--border-soft); border-radius: 10px; background: var(--panel); margin: 10px 0; padding: 2px 6px; }
+details.extra-section > summary { cursor: pointer; padding: 10px 10px; font-size: .96rem; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+details.extra-section[open] > summary { margin-bottom: 2px; }
+.extra-section-title-text { color: var(--accent-strong); font-weight: 600; }
 .extra-section-ref { color: var(--muted); font-size: .76rem; font-weight: 400; }
-tr.table-note-row td { color: var(--muted); font-size: .8rem; font-style: italic; border-top: none; padding-top: 0; padding-bottom: 10px; }
-.extra-footnotes { color: var(--muted); font-size: .82rem; margin: -6px 0 20px; padding-left: 1.2rem; }
+.extra-section-content { padding: 0 8px 12px; }
+tr.table-note-row td { color: var(--muted); font-size: .8rem; font-style: italic; border-top: none; padding-top: 0; padding-bottom: 10px; white-space: normal; }
+.extra-footnotes { color: var(--muted); font-size: .82rem; margin: -6px 0 4px; padding-left: 1.2rem; }
 .extra-footnotes li { margin: 4px 0; }
 details.appendix-group { border: 1px dashed var(--border); border-radius: 10px; background: var(--panel); padding: 10px 14px 4px; margin: 18px 0; }
-details.appendix-group summary { cursor: pointer; padding: 6px 0; font-size: .92rem; color: var(--accent-strong); }
-details.appendix-group[open] summary { margin-bottom: 8px; }
+details.appendix-group > summary { cursor: pointer; padding: 6px 0; font-size: .92rem; color: var(--accent-strong); }
+details.appendix-group[open] > summary { margin-bottom: 8px; }
+details.appendix-group details.extra-section { background: var(--bg); }
+
+/* Alphabet + vowel chart stacked-card layout (<=600px): both the table and
+   the card list are always rendered; the media query alone decides which is
+   visible, no JS resize handling. */
+.ref-cards { display: none; list-style: none; margin: 0 0 10px; padding: 0; flex-direction: column; gap: 8px; }
+.ref-card { display: flex; gap: 12px; align-items: flex-start; border: 1px solid var(--border-soft); border-radius: 10px; background: var(--bg); padding: 10px 12px; }
+.ref-card-glyph { flex: 0 0 auto; min-width: 44px; text-align: center; font-family: 'Noto Serif Hebrew', 'SBL Hebrew', 'Ezra SIL', 'Taamey Frank CLM', 'David CLM', serif; }
+.ref-card-letter { font-size: 1.6rem; display: block; line-height: 1.15; }
+.ref-card-final { font-size: 1.05rem; display: block; color: var(--muted); margin-top: 1px; }
+.ref-card-body { flex: 1 1 auto; min-width: 0; }
+.ref-card-name { font-size: .82rem; margin-bottom: 3px; }
+.ref-card-name .heb { font-family: 'Noto Serif Hebrew', 'SBL Hebrew', 'Ezra SIL', 'Taamey Frank CLM', 'David CLM', serif; font-size: 1.1rem; margin-right: 8px; }
+.ref-card-name .eng { color: var(--muted); }
+.ref-card-sound { font-size: .82rem; margin-bottom: 5px; }
+.ref-card-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.ref-badge { display: inline-block; border: 1px solid var(--border); color: var(--accent-strong); border-radius: 999px; padding: 2px 8px; font-size: .68rem; }
+@media (max-width: 600px) {
+  details.extra-section[data-cards="1"] .table-scroll { display: none; }
+  details.extra-section[data-cards="1"] .ref-cards { display: flex; }
+}
 
 </style>
 </head>
@@ -360,7 +419,11 @@ details.appendix-group[open] summary { margin-bottom: 8px; }
 
 <section id="extra-reference">
 <h2>Extended reference (alphabet, vowels &amp; paradigms)</h2>
-<p class="section-note">Rendered from <code>js/data/bbh_reference_extra.js</code>, generated from <code>source/bbh/alphabet.json</code>, <code>source/bbh/vowels.json</code>, and <code>source/bbh/parsing/paradigms.json</code>. Every table cites its own source lesson or appendix page. Hebrew forms are always shown pointed. Forms that appear only in the textbook&rsquo;s appendixes (never inside a numbered lesson) are grouped separately below under &ldquo;Appendix forms&rdquo; and collapsed by default.</p>
+<p class="section-note">Rendered from <code>js/data/bbh_reference_extra.js</code>, generated from <code>source/bbh/alphabet.json</code>, <code>source/bbh/vowels.json</code>, and <code>source/bbh/parsing/paradigms.json</code>. Sections run in textbook (lesson) order &mdash; the alphabet chart first, then vowels, then each paradigm table at the lesson it&rsquo;s introduced. Every table cites its own source lesson or appendix page. Hebrew forms are always shown pointed. Forms that appear only in the textbook&rsquo;s appendixes (never inside a numbered lesson) are grouped separately below under &ldquo;Appendix forms&rdquo;. Each table is collapsed by default &mdash; tap its title to expand; your expand/collapse choices are remembered on this device.</p>
+<div class="extra-controls">
+<button id="extra-expand-all" type="button">Expand all</button>
+<button id="extra-collapse-all" type="button">Collapse all</button>
+</div>
 <div id="extraReferenceContainer"><p class="section-note">Loading extended reference&hellip;</p></div>
 </section>
 
@@ -382,9 +445,41 @@ details.appendix-group[open] summary { margin-bottom: 8px; }
 <p>Content on this page is derived from a user-supplied lesson-by-lesson revision guide for <em>Beginning Biblical Hebrew: A Grammar and Illustrated Reader</em> by John A. Cook and Robert D. Holmstedt (Baker Academic). This tool and its content are not affiliated with, endorsed by, or reviewed by the authors or publisher.</p>
 </footer>
 </div>
-<script src="../js/data/bbh_reference_data.js?v=14"></script>
-<script src="../js/data/bbh_reference_extra.js?v=14"></script>
+<script src="../js/data/bbh_reference_data.js?v=15"></script>
+<script src="../js/data/bbh_reference_extra.js?v=15"></script>
 <script>
+
+// ── Shared table-scroll enhancement (task #19) ──
+// Wraps every .table-wrap (static #paradigms tables *and* the generated
+// extra-reference tables) in a .table-scroll ancestor that owns the
+// right-edge fade hint, and keeps that hint's "at-end" class in sync with
+// scroll position / content width. Safe to call more than once — already-
+// wrapped .table-wrap elements are left alone.
+function updateFadeState(wrap, scrollDiv) {
+  var atEnd = wrap.scrollWidth <= wrap.clientWidth + 1 || (wrap.scrollLeft + wrap.clientWidth >= wrap.scrollWidth - 1);
+  scrollDiv.classList.toggle('at-end', atEnd);
+}
+function enhanceTableWraps(root) {
+  var wraps = (root || document).querySelectorAll('.table-wrap');
+  wraps.forEach(function (wrap) {
+    var scrollDiv = wrap.parentElement;
+    if (!scrollDiv || !scrollDiv.classList.contains('table-scroll')) {
+      scrollDiv = document.createElement('div');
+      scrollDiv.className = 'table-scroll';
+      wrap.parentNode.insertBefore(scrollDiv, wrap);
+      scrollDiv.appendChild(wrap);
+      wrap.addEventListener('scroll', function () { updateFadeState(wrap, scrollDiv); }, { passive: true });
+    }
+    updateFadeState(wrap, scrollDiv);
+  });
+}
+function refreshTableFades(root) {
+  (root || document).querySelectorAll('.table-wrap').forEach(function (wrap) {
+    var scrollDiv = wrap.parentElement;
+    if (scrollDiv && scrollDiv.classList.contains('table-scroll')) updateFadeState(wrap, scrollDiv);
+  });
+}
+window.addEventListener('resize', function () { refreshTableFades(document); });
 
 (function () {
   // ── Extended reference (alphabet/vowels/paradigms) — js/data/bbh_reference_extra.js ──
@@ -392,17 +487,25 @@ details.appendix-group[open] summary { margin-bottom: 8px; }
   // happens at the bottom of this IIFE (see "Run" below) so nothing here
   // depends on execution order / hoisting timing.
 
+  var COLLAPSE_STORAGE_KEY = 'bbhStudyToolReferenceStateV1';
+
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   var HEB_RE = /[֐-׿]/;
 
+  // pageCount (set by the generator only when it merged 2+ pages into one
+  // ref, e.g. "22-23" or "a-13-a-14") decides "p." vs "pp." — cheaper and
+  // more robust than pattern-matching the page string, since appendix page
+  // labels like "a-12" already contain a hyphen even when unmerged.
   function formatSourceRef(refs) {
     if (!Array.isArray(refs) || !refs.length) return '';
     return refs.map(function (r) {
-      if (r && r.lesson != null) return 'Lesson ' + r.lesson + ', p. ' + r.page;
-      if (r && r.appendix != null) return 'Appendix ' + r.appendix + ', p. ' + r.page;
+      if (!r) return '';
+      var label = r.pageCount > 1 ? 'pp.' : 'p.';
+      if (r.lesson != null) return 'Lesson ' + r.lesson + ', ' + label + ' ' + r.page;
+      if (r.appendix != null) return 'Appendix ' + r.appendix + ', ' + label + ' ' + r.page;
       return '';
     }).filter(Boolean).join('; ');
   }
@@ -415,10 +518,9 @@ details.appendix-group[open] summary { margin-bottom: 8px; }
     return '<td>' + esc(text) + '</td>';
   }
 
-  function buildSectionTableHtml(section) {
+  function buildTableHtml(section) {
     var columns = Array.isArray(section.columns) ? section.columns : [];
     var rows = Array.isArray(section.rows) ? section.rows : [];
-    var refText = formatSourceRef(section.sourceRef);
     var theadHtml = '<thead><tr>' + columns.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead>';
     var bodyHtml = rows.map(function (row) {
       var cells = Array.isArray(row.cells) ? row.cells : [];
@@ -428,77 +530,126 @@ details.appendix-group[open] summary { margin-bottom: 8px; }
       }
       return tr;
     }).join('');
-    var footnotesHtml = '';
-    if (Array.isArray(section.footnotes) && section.footnotes.length) {
-      footnotesHtml = '<ul class="extra-footnotes">' + section.footnotes.map(function (f) {
-        var src = f.source ? formatSourceRef([f.source]) : '';
-        return '<li>' + esc(f.text) + (src ? ' <span class="table-note">(' + esc(src) + ')</span>' : '') + '</li>';
-      }).join('') + '</ul>';
-    }
-    return (
-      '<h4 class="extra-section-title" id="' + esc(section.id) + '">' + esc(section.title) +
-      (refText ? '<span class="extra-section-ref">' + esc(refText) + '</span>' : '') + '</h4>' +
-      '<div class="table-wrap"><table class="ref-table">' + theadHtml + '<tbody>' + bodyHtml + '</tbody></table></div>' +
-      footnotesHtml
-    );
+    return '<div class="table-wrap"><table class="ref-table">' + theadHtml + '<tbody>' + bodyHtml + '</tbody></table></div>';
   }
 
-  // Classifies a section into a display group by inspecting its id/title —
-  // see docs/bbh-conversion-plan.md / the PR E task spec for the group list.
-  // appendixOnly always wins regardless of grammatical category: those
-  // tables are grouped by "where the book prints them" (an appendix, never
-  // a numbered lesson), not by part of speech.
-  function classifySection(s) {
-    if (s.appendixOnly) return 'appendix';
-    if (s.id === 'alphabet-chart') return 'alphabet';
-    if (s.id === 'vowel-chart') return 'vowels';
-    if (s.id === 'pron-demonstrative') return 'adjdemo';
-    if (s.id === 'pron-subject' || s.id === 'particle-l-possession') return 'pronouns';
-    if (s.id.indexOf('noun-') === 0) return 'nouns';
-    if (s.id.indexOf('verb-') === 0) return 'verbs';
-    if (s.id.indexOf('numeral-') === 0) return 'numerals';
-    if (s.id === 'particle-interrogative-words') return 'interrogatives';
-    return 'other';
+  function buildFootnotesHtml(section) {
+    if (!Array.isArray(section.footnotes) || !section.footnotes.length) return '';
+    return '<ul class="extra-footnotes">' + section.footnotes.map(function (f) {
+      var src = f.source ? formatSourceRef([f.source]) : '';
+      return '<li>' + esc(f.text) + (src ? ' <span class="table-note">(' + esc(src) + ')</span>' : '') + '</li>';
+    }).join('') + '</ul>';
   }
 
-  var GROUP_ORDER = [
-    { key: 'alphabet', title: 'Alphabet' },
-    { key: 'vowels', title: 'Vowels' },
-    { key: 'pronouns', title: 'Pronouns' },
-    { key: 'adjdemo', title: 'Adjectives &amp; Demonstratives' },
-    { key: 'nouns', title: 'Nouns' },
-    { key: 'verbs', title: 'Verbs' },
-    { key: 'numerals', title: 'Numerals' },
-    { key: 'interrogatives', title: 'Interrogatives' },
-    { key: 'other', title: 'Other' }
-  ];
+  // Alphabet/vowel-chart cards (<=600px stacked layout). Cell order is fixed
+  // by tools/gen_bbh_reference_extra.mjs's buildAlphabetChartSection /
+  // buildVowelChartSection — indices below match those columns exactly.
+  function buildAlphabetCardsHtml(section) {
+    var items = (section.rows || []).map(function (row) {
+      var c = row.cells || [];
+      var letter = c[0], final = c[1], nameHeb = c[2], nameEng = c[3], sound = c[4], begadkefat = c[5], guttural = c[6];
+      var badges = '';
+      if (begadkefat === 'Yes') badges += '<span class="ref-badge">Begadkefat</span>';
+      if (guttural === 'Yes') badges += '<span class="ref-badge">Guttural</span>';
+      var finalHtml = (final && final !== '—') ? '<span class="ref-card-final">' + esc(final) + '</span>' : '';
+      return '<li class="ref-card">' +
+        '<div class="ref-card-glyph" dir="rtl" lang="he"><span class="ref-card-letter">' + esc(letter) + '</span>' + finalHtml + '</div>' +
+        '<div class="ref-card-body">' +
+          '<div class="ref-card-name"><span class="heb" dir="rtl" lang="he">' + esc(nameHeb) + '</span><span class="eng">' + esc(nameEng) + '</span></div>' +
+          '<div class="ref-card-sound">' + esc(sound) + '</div>' +
+          (badges ? '<div class="ref-card-badges">' + badges + '</div>' : '') +
+        '</div></li>';
+    }).join('');
+    return '<ul class="ref-cards">' + items + '</ul>';
+  }
+
+  function buildVowelCardsHtml(section) {
+    var items = (section.rows || []).map(function (row) {
+      var c = row.cells || [];
+      var sign = c[0], nameHeb = c[1], nameEng = c[2], soundClass = c[3], length = c[4], sound = c[5];
+      return '<li class="ref-card">' +
+        '<div class="ref-card-glyph" dir="rtl" lang="he"><span class="ref-card-letter">' + esc(sign) + '</span></div>' +
+        '<div class="ref-card-body">' +
+          '<div class="ref-card-name"><span class="heb" dir="rtl" lang="he">' + esc(nameHeb) + '</span><span class="eng">' + esc(nameEng) + '</span></div>' +
+          '<div class="ref-card-sound">' + esc(sound) + '</div>' +
+          '<div class="ref-card-badges"><span class="ref-badge">' + esc(soundClass) + '</span><span class="ref-badge">' + esc(length) + '</span></div>' +
+        '</div></li>';
+    }).join('');
+    return '<ul class="ref-cards">' + items + '</ul>';
+  }
+
+  var CARD_BUILDERS = { 'alphabet-chart': buildAlphabetCardsHtml, 'vowel-chart': buildVowelCardsHtml };
+
+  // Every section renders as its own collapsed-by-default <details> —
+  // sections already arrive in textbook (lesson) order from the generator
+  // (task #19 addendum A), so no thematic group headers are needed here.
+  function buildSectionDetailsHtml(section) {
+    var refText = formatSourceRef(section.sourceRef);
+    var cardBuilder = CARD_BUILDERS[section.id];
+    var cardsHtml = cardBuilder ? cardBuilder(section) : '';
+    return '<details class="extra-section" id="' + esc(section.id) + '" data-section-id="' + esc(section.id) + '"' +
+      (cardBuilder ? ' data-cards="1"' : '') + '>' +
+      '<summary><span class="extra-section-title-text">' + esc(section.title) + '</span>' +
+      (refText ? '<span class="extra-section-ref">' + esc(refText) + '</span>' : '') + '</summary>' +
+      '<div class="extra-section-content">' + cardsHtml + buildTableHtml(section) + buildFootnotesHtml(section) + '</div>' +
+      '</details>';
+  }
 
   function buildExtraReferenceHtml(sections) {
-    var byGroup = {};
-    var appendixSections = [];
-    sections.forEach(function (s) {
-      var g = classifySection(s);
-      if (g === 'appendix') { appendixSections.push(s); return; }
-      if (!byGroup[g]) byGroup[g] = [];
-      byGroup[g].push(s);
-    });
+    var normal = sections.filter(function (s) { return !s.appendixOnly; });
+    var appendixSections = sections.filter(function (s) { return s.appendixOnly; });
 
-    var html = '';
-    GROUP_ORDER.forEach(function (g) {
-      var list = byGroup[g.key];
-      if (!list || !list.length) return;
-      html += '<div class="extra-group"><h3>' + g.title + '</h3>' +
-        list.map(buildSectionTableHtml).join('') + '</div>';
-    });
+    var html = normal.map(buildSectionDetailsHtml).join('');
 
     if (appendixSections.length) {
-      html += '<details class="appendix-group" id="appendix-forms-group">' +
+      html += '<details class="appendix-group" id="appendix-forms-group" data-section-id="appendix-forms-group">' +
         '<summary><strong>Appendix forms</strong> <span class="table-note">(' + appendixSections.length + ' tables &mdash; attested only in Appendix B/C, not a numbered lesson)</span></summary>' +
         '<p class="section-note">These paradigms are printed only in the textbook&rsquo;s appendixes, never inside a numbered lesson &mdash; included here for reference completeness, not as part of the lesson-by-lesson introduction sequence.</p>' +
-        appendixSections.map(buildSectionTableHtml).join('') +
+        appendixSections.map(buildSectionDetailsHtml).join('') +
         '</details>';
     }
     return html;
+  }
+
+  function readCollapseState() {
+    try {
+      var raw = localStorage.getItem(COLLAPSE_STORAGE_KEY);
+      if (raw) return JSON.parse(raw) || {};
+    } catch (err) {}
+    return {};
+  }
+  function writeCollapseState(state) {
+    try { localStorage.setItem(COLLAPSE_STORAGE_KEY, JSON.stringify(state)); } catch (err) {}
+  }
+
+  // Wires persistence (all <details data-section-id> inside the extended-
+  // reference section, including the nested ones under "Appendix forms")
+  // plus the Expand all / Collapse all controls.
+  function wireCollapseState(container) {
+    var state = readCollapseState();
+    var detailsEls = container.querySelectorAll('details[data-section-id]');
+    detailsEls.forEach(function (d) {
+      var id = d.getAttribute('data-section-id');
+      if (state[id] === true) d.open = true;
+      d.addEventListener('toggle', function () {
+        state[id] = d.open;
+        writeCollapseState(state);
+        if (d.open) refreshTableFades(d);
+      });
+    });
+
+    function setAll(open) {
+      detailsEls.forEach(function (d) {
+        d.open = open;
+        state[d.getAttribute('data-section-id')] = open;
+      });
+      writeCollapseState(state);
+      if (open) refreshTableFades(container);
+    }
+    var expandBtn = document.getElementById('extra-expand-all');
+    var collapseBtn = document.getElementById('extra-collapse-all');
+    if (expandBtn) expandBtn.addEventListener('click', function () { setAll(true); });
+    if (collapseBtn) collapseBtn.addEventListener('click', function () { setAll(false); });
   }
 
   // ── Run ──
@@ -510,6 +661,7 @@ details.appendix-group[open] summary { margin-bottom: 8px; }
       extraContainer.innerHTML = '<p class="fallback-note">Extended reference data (js/data/bbh_reference_extra.js) did not load, so the alphabet/vowel/paradigm tables below cannot be shown here. The verified paradigm tables above are unaffected.</p>';
     } else {
       extraContainer.innerHTML = buildExtraReferenceHtml(sections);
+      wireCollapseState(extraContainer);
     }
   }
 })();
@@ -539,6 +691,10 @@ details.appendix-group[open] summary { margin-bottom: 8px; }
   });
   container.innerHTML = html;
 })();
+
+// Run last so both the static #paradigms tables and the two dynamic
+// sections above (already injected synchronously) get wrapped/measured.
+enhanceTableWraps(document);
 
 </script>
 </body>

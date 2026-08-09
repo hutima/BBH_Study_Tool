@@ -49,6 +49,63 @@ function sourceSortKey(src) {
   return `1-${src.appendix}-${String(pageNum).padStart(6, '0')}`;
 }
 
+// Splits a page label into a numeric run so adjacent pages can be detected:
+// "23" -> { prefix: "", num: 23 }; "a-14" -> { prefix: "a-", num: 14 }.
+// Returns null when the page has no trailing digits to compare.
+function parsePageRun(page) {
+  const m = String(page).match(/^(.*?)(\d+)$/);
+  if (!m) return null;
+  return { prefix: m[1], num: parseInt(m[2], 10) };
+}
+
+// Groups a same-lesson/same-appendix run of refs (already page-sorted) into
+// contiguous-page runs, e.g. pages [22, 23] -> one run of two pages.
+function buildContiguousRuns(items) {
+  const runs = [];
+  for (const item of items) {
+    const parsed = parsePageRun(item.page);
+    const last = runs[runs.length - 1];
+    if (parsed && last && last.parsedLast && parsed.prefix === last.parsedLast.prefix && parsed.num === last.parsedLast.num + 1) {
+      last.pages.push(item.page);
+      last.parsedLast = parsed;
+    } else {
+      runs.push({ base: item, pages: [item.page], parsedLast: parsed });
+    }
+  }
+  return runs;
+}
+
+// Merges refs that share a lesson (or appendix) into a single ref per group:
+// a contiguous run of pages becomes "first-last" (e.g. "22-23"); multiple
+// runs within the same group are comma-joined (e.g. "22-23, 25"). A group
+// with only one page is left untouched (no pageCount marker added) so the
+// renderer's singular "p." label is unaffected. sourceRef entries must
+// already be sorted by sourceSortKey (same-lesson/appendix pages adjacent)
+// before calling this.
+function mergeAdjacentSourceRefs(sortedRefs) {
+  const groups = [];
+  for (const r of sortedRefs) {
+    const key = r.lesson != null ? `L${r.lesson}` : `A${r.appendix}`;
+    const last = groups[groups.length - 1];
+    if (last && last.key === key) last.items.push(r);
+    else groups.push({ key, items: [r] });
+  }
+  const merged = [];
+  for (const g of groups) {
+    const runs = buildContiguousRuns(g.items);
+    if (runs.length === 1 && runs[0].pages.length === 1) {
+      merged.push(runs[0].base);
+      continue;
+    }
+    const pageStr = runs
+      .map((run) => (run.pages.length > 1 ? `${run.pages[0]}-${run.pages[run.pages.length - 1]}` : `${run.pages[0]}`))
+      .join(', ');
+    const totalPages = runs.reduce((n, run) => n + run.pages.length, 0);
+    merged.push({ ...runs[0].base, page: pageStr, pageCount: totalPages });
+  }
+  return merged;
+}
+
 function dedupedSortedSourceRefs(items, sourceOf) {
   const map = new Map();
   for (const item of items) {
@@ -57,7 +114,8 @@ function dedupedSortedSourceRefs(items, sourceOf) {
     const key = JSON.stringify(src);
     if (!map.has(key)) map.set(key, src);
   }
-  return [...map.values()].sort((a, b) => sourceSortKey(a).localeCompare(sourceSortKey(b)));
+  const sorted = [...map.values()].sort((a, b) => sourceSortKey(a).localeCompare(sourceSortKey(b)));
+  return mergeAdjacentSourceRefs(sorted);
 }
 
 function humanize(v) {
@@ -272,6 +330,30 @@ const PARADIGM_SECTION_IDS = [
   'particle-interrogative-words'
 ];
 
+// Textbook-order sort (task #19 addendum A): non-appendix sections are
+// ordered by earliest source lesson ascending — alphabet (L1), vowels
+// (L2/L3), then each paradigm section by its introducedLesson. Appendix-only
+// sections (never printed inside a numbered lesson) are excluded from that
+// sort and kept as a separate trailing group, in their original relative
+// order, for the renderer's collapsed "Appendix forms" group. Array.sort is
+// stable (spec-guaranteed since ES2019 / all supported Node versions), so
+// ties keep PARADIGM_SECTION_IDS's authored order deterministically.
+function sectionEarliestLesson(section) {
+  if (section.introducedLesson != null) return section.introducedLesson;
+  const refLessons = (section.sourceRef || []).filter((r) => r.lesson != null).map((r) => r.lesson);
+  if (refLessons.length) return Math.min(...refLessons);
+  const rowLessons = (section.rows || []).filter((r) => r.introducedLesson != null).map((r) => r.introducedLesson);
+  if (rowLessons.length) return Math.min(...rowLessons);
+  return Infinity;
+}
+
+function sortSectionsByLesson(sections) {
+  const dated = sections.filter((s) => !s.appendixOnly);
+  const appendixOnly = sections.filter((s) => s.appendixOnly);
+  dated.sort((a, b) => sectionEarliestLesson(a) - sectionEarliestLesson(b));
+  return [...dated, ...appendixOnly];
+}
+
 function buildSections() {
   const alphabetData = readJson(ALPHABET_PATH);
   const vowelsData = readJson(VOWELS_PATH);
@@ -284,7 +366,7 @@ function buildSections() {
   for (const id of PARADIGM_SECTION_IDS) {
     sections.push(buildParadigmSection(id, byId));
   }
-  return sections;
+  return sortSectionsByLesson(sections);
 }
 
 function writeReferenceExtraFile(sections) {
