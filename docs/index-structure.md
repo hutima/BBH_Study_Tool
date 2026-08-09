@@ -1,8 +1,8 @@
 # `index.html` structure notes
 
-Navigation map for the root `index.html` (~640 lines, Phase 2 PR D build —
-Vocabulary + Parsing + Grammar Quiz + Reader). Keep this in sync when you
-change the file — see "Maintenance rules" in `CLAUDE.md`.
+Navigation map for the root `index.html` (~723 lines, Phase 2 PR E build —
+Vocabulary + Parsing + Grammar Quiz + Reader + Lesson 0 Alphabet). Keep this
+in sync when you change the file — see "Maintenance rules" in `CLAUDE.md`.
 
 Line numbers are approximate (drift a few lines between edits). When in
 doubt, grep for the `id` rather than trusting a line number.
@@ -15,9 +15,9 @@ doubt, grep for the `id` rather than trusting a line number.
 1    <!DOCTYPE html> / <head>          ← pre-paint theme bootstrap, manifest/icons, stylesheet
 44   <body>
 45     <div class="app">               ← main shell (in-flow UI, everything that scrolls)
-199    overlays (modals)               ← siblings of .app, position:fixed, shown/hidden by JS
-591    <script> block                  ← classic data scripts + pos_logic.js shim + main.js module
-597  </body>
+227    overlays (modals)               ← siblings of .app, position:fixed, shown/hidden by JS
+713    <script> block                  ← classic data scripts + pos_logic.js shim + main.js module
+722  </body>
 ```
 
 Every `<div class="consent-overlay" …>` is a top-level sibling of `.app` —
@@ -35,16 +35,16 @@ never nest a new overlay inside `.app`.
         `data-theme` / `data-font-family` / `data-text-size` on `<html>`
         before first paint to avoid a flash of the wrong theme. Don't move
         this above the stylesheet link.
-- `<link rel="stylesheet" href="styles.css?v=5">` (line 19)
+- `<link rel="stylesheet" href="styles.css?v=6">` (line 19)
 
-> Cache-bust: every asset URL ends in `?v=5`. Bump the number on release
+> Cache-bust: every asset URL ends in `?v=6`. Bump the number on release
 > (see "Cache-bust" in `CLAUDE.md`). The same number lives in `sw.js`
 > (`CACHE_NAME` + `APP_SHELL_PATHS`) — both must agree, and
 > `tools/check_release.mjs` enforces it.
 
 ---
 
-## `<div class="app">` (45–197)
+## `<div class="app">` (45–225)
 
 In-document order:
 
@@ -55,17 +55,18 @@ In-document order:
 | 65–74    | `.quick-start`                            | Choose session / Start studying / `.mode-group` (`#modeShortcutVocabBtn` + `#modeShortcutParsingBtn` + `#modeShortcutGrammarBtn` + `#modeShortcutReaderBtn`, all `onclick="setStudyMode(...)"`) / Progress / User guide / `#modeShortcutMemorizationBtn` link to `pages/memorization.html` ("Reference"). |
 | 76       | `.ornament`                               | Decorative `✦ · · · ✦`. |
 | 78–146   | `<details id="advancedSettingsDetails">`  | "Advanced review settings" — **vocab-only; hidden when `studyMode==='parsing'` or `'grammar'`** (`syncLayoutVisibility()` in `js/app/main.js`). Contains `.display-prefs` (Font Serif/Sans, Text size Medium/Large/X-Large, **Vowel points** Pointed/Unpointed — `setShowPoints`, `js/utils/hebrewText.js` `stripHebrewPoints` — and **Transliteration** Show/Hide — `setShowTranslit`), then `#controlsBar` (see below), then the always-open `#progressToolsGroup` frame (Export/Import progress buttons, `exportProgressJson` / `triggerImportProgress`). |
-| 104–137  | └ `#controlsBar`                          | Six toggles, each `installToggleInfoButtons()`-injected with a small `(i)` info button: `#shuffleToggle` (`toggleShuffle`), `#hardReviewToggle` (`toggleHardVocabReview` — drills cards missed 10+ times, confidence < 40%), `#directionToggle` (`toggleDirection`, "English → Hebrew" label — `runtime.directionToGreek` is the underlying field name, kept for the SRS/mark-store key scheme, see `CLAUDE.md`), `#spacedToggle` (`toggleSpacedRepetition`), `#cadenceToggle` ("2-month pace", `toggleSpacingCadence`, inverted: ON = 2-month intensive preset, OFF = default 8-month relaxed preset — `js/domain/srs/constants.js` `SRS_CADENCE_PRESETS`), `#unspacedDailyResetToggle` (`toggleUnspacedDailyReset`, 5 AM local daily archive-clear). No "Required only"/starred-vocab toggle — all 191 BBH cards are `required: true` (see conversion plan decision 5); no split vocab/grammar selection. |
-| 148–155  | `<details id="resetActionsDetails">`      | "Reset actions" — a sibling `<details>` after `#advancedSettingsDetails`, not nested inside it. **Vocab-only; hidden when `studyMode==='parsing'` or `'grammar'`.** Reshuffle (`reshuffleEligible`), Reset deck (`#resetDeckBtn` → `resetCurrentDeck`), Reset stats (`openResetStatsModal`). |
-| 157–163  | `<section id="parsingSection">`           | **Phase 2 PR B.** Hidden (`style="display:none"`) unless `studyMode==='parsing'`; toggled by the same `syncLayoutVisibility()` branch that hides the vocab sections above/below it (and `#grammarSection`, below). `<details id="parsingOptionsDetails">` wraps `#parsingOptionsPanel` (lesson/paradigm selects, scope toggles, dimension toggles, reset/clear buttons); `#parsingArea` (empty-state / step-walk / Build-choices / summary). Both are populated by `js/ui/parsing.js`'s `renderParsingPanel()`, called from `syncLayoutVisibility()` — see that module's header for the full id list (`parsingLessonSelect`, `parsingParadigmSelect`, `parsingShuffleAllToggle`, `parsingCustomSetToggle`/`parsingCustomSetList`, `parsingExcludeKnownToggle`, `parsingAppendixToggle`, `parsingDirectionToggle`, `parsingDim<Name>Toggle` ×7, `parsingResetKnownBtn`, `parsingClearStatsBtn`). |
-| 165–170  | `<section id="grammarSection">`           | **Phase 2 PR C.** Hidden (`style="display:none"`) unless `studyMode==='grammar'`; toggled by the same `syncLayoutVisibility()` branch. `<details id="grammarOptionsDetails">` wraps `#grammarOptionsPanel` (lesson select, Review-missed toggle, Difficulty All/Core-only switcher); `#grammarArea` (empty-state / question card / answer summary, with an in-session score strip at the top). Both are populated by `js/ui/grammar.js`'s `renderGrammarPanel()`, called from `syncLayoutVisibility()` — see that module's header for the full id list (`grammarLessonSelect`, `grammarReviewMissedToggle`, `grammarDifficultyToggle`). |
-| ~172–178 | `<section id="readerSection">`            | **New (Phase 2 PR D).** Hidden (`style="display:none"`) unless `studyMode==='reader'`; toggled by the same `syncLayoutVisibility()` branch. `<details id="readerOptionsDetails">` wraps `#readerOptionsPanel` (lesson select 1–50, Strict-only/Strict+Guided tier toggle); `#readerArea` (passage list grouped by gate-lesson bucket, or the single-passage reading view with tappable tokens + inline word-detail popover); `#readerAttribution` (required CC BY 4.0 line, always visible under the area). All three are populated by `js/ui/reader.js`'s `renderReaderPanel()`, called from `syncLayoutVisibility()` — see that module's header for the full id list and the morphology-code decoder. Reads `window.BBH_READER` (52 curated OSHB passages). |
-| ~180–185 | `#cardArea`                               | **Main flashcard mount (vocab only; hidden when `studyMode` is `'parsing'`, `'grammar'`, or `'reader'`).** Ships a placeholder `.empty-state` (Hebrew "אבג" + "Tap to choose a session…"); `renderCard()` in `js/ui/render.js` replaces it. |
-| ~187–192 | `#navRow`                                 | Prev (`navigate(-1)`) / `#spacedUndoBtn` (`restoreSpacedUndo`) / `#navResetBtn` (`resetCurrentDeck`) / `#navNextBtn` (`handleNavNext` → `navigate(1)`). Vocab only; hidden in Parsing/Grammar/Reader mode (each owns its own in-section navigation instead). |
-| ~194–197 | `#markRow`                                | Hard (`again`) / Uncertain (`pass`) / Easy (`easy`) via `markCard(outcome)`. Vocab only; hidden in Parsing/Grammar/Reader mode. |
-| ~199–202 | `#ffRow`                                  | Fast-forward 1 day / 1 week (`fastForwardOneDay` / `fastForwardOneWeek`) — advances the SRS clock for testing/catch-up. Vocab only; hidden in Parsing/Grammar/Reader mode. |
-| ~204–214 | `<section class="review-shell">`          | `#reviewPanel` → `#reviewDeckTag`, `#reviewStats` (confidence/due breakdown + collapsible due-by-day histogram, `buildDueHistogramHtml` in `js/ui/progress.js`), `#reviewSortRow`, `#reviewList`. Vocab only; hidden in Parsing/Grammar/Reader mode (each has its own analytics section instead — see `#analyticsParsingCollapse` / `#analyticsGrammarCollapse` / `#analyticsReaderCollapse` below). |
-| ~208–210 | `<footer class="app-footer">`             | "Contact author" link (`openContactAuthorModal()`). |
+| 104–137  | └ `#controlsBar`                          | Six toggles, each `installToggleInfoButtons()`-injected with a small `(i)` info button: `#shuffleToggle` (`toggleShuffle`), `#hardReviewToggle` (`toggleHardVocabReview` — drills cards missed 10+ times, confidence < 40%), `#directionToggle` (`toggleDirection`, "English → Hebrew" label — `runtime.directionToGreek` is the underlying field name, kept for the SRS/mark-store key scheme, see `CLAUDE.md`), `#spacedToggle` (`toggleSpacedRepetition`), `#cadenceToggle` ("2-month pace", `toggleSpacingCadence`, inverted: ON = 2-month intensive preset, OFF = default 8-month relaxed preset — `js/domain/srs/constants.js` `SRS_CADENCE_PRESETS`), `#unspacedDailyResetToggle` (`toggleUnspacedDailyReset`, 5 AM local daily archive-clear). No "Required only"/starred-vocab toggle — all 209 BBH cards are `required: true` (see conversion plan decision 5); no split vocab/grammar selection. |
+| 150–157  | `<details id="resetActionsDetails">`      | "Reset actions" — a sibling `<details>` after `#advancedSettingsDetails`, not nested inside it. **Vocab-only; hidden when `studyMode==='parsing'` or `'grammar'`.** Reshuffle (`reshuffleEligible`), Reset deck (`#resetDeckBtn` → `resetCurrentDeck`), Reset stats (`openResetStatsModal`). |
+| 159–165  | `<section id="parsingSection">`           | **Phase 2 PR B.** Hidden (`style="display:none"`) unless `studyMode==='parsing'`; toggled by the same `syncLayoutVisibility()` branch that hides the vocab sections above/below it (and `#grammarSection`, below). `<details id="parsingOptionsDetails">` wraps `#parsingOptionsPanel` (lesson/paradigm selects, scope toggles, dimension toggles, reset/clear buttons); `#parsingArea` (empty-state / step-walk / Build-choices / summary). Both are populated by `js/ui/parsing.js`'s `renderParsingPanel()`, called from `syncLayoutVisibility()` — see that module's header for the full id list (`parsingLessonSelect`, `parsingParadigmSelect`, `parsingShuffleAllToggle`, `parsingCustomSetToggle`/`parsingCustomSetList`, `parsingExcludeKnownToggle`, `parsingAppendixToggle`, `parsingDirectionToggle`, `parsingDim<Name>Toggle` ×7, `parsingResetKnownBtn`, `parsingClearStatsBtn`). |
+| 167–173  | `<section id="grammarSection">`           | **Phase 2 PR C.** Hidden (`style="display:none"`) unless `studyMode==='grammar'`; toggled by the same `syncLayoutVisibility()` branch. `<details id="grammarOptionsDetails">` wraps `#grammarOptionsPanel` (lesson select, Review-missed toggle, Difficulty All/Core-only switcher); `#grammarArea` (empty-state / question card / answer summary, with an in-session score strip at the top). Both are populated by `js/ui/grammar.js`'s `renderGrammarPanel()`, called from `syncLayoutVisibility()` — see that module's header for the full id list (`grammarLessonSelect`, `grammarReviewMissedToggle`, `grammarDifficultyToggle`). |
+| 175–182  | `<section id="readerSection">`            | **Phase 2 PR D.** Hidden (`style="display:none"`) unless `studyMode==='reader'`; toggled by the same `syncLayoutVisibility()` branch. `<details id="readerOptionsDetails">` wraps `#readerOptionsPanel` (lesson select 1–50, Strict-only/Strict+Guided tier toggle); `#readerArea` (passage list grouped by gate-lesson bucket, or the single-passage reading view with tappable tokens + inline word-detail popover); `#readerAttribution` (required CC BY 4.0 line, always visible under the area). All three are populated by `js/ui/reader.js`'s `renderReaderPanel()`, called from `syncLayoutVisibility()` — see that module's header for the full id list and the morphology-code decoder. Reads `window.BBH_READER` (52 curated OSHB passages). |
+| 184–190  | `#cardArea`                               | **Main flashcard mount (vocab only; hidden when `studyMode` is `'parsing'`, `'grammar'`, or `'reader'`).** Ships a placeholder `.empty-state` (Hebrew "אבג" + "Tap to choose a session…"); `renderCard()` in `js/ui/render.js` replaces it. |
+| 191–197  | `#navRow`                                 | Prev (`navigate(-1)`) / `#spacedUndoBtn` (`restoreSpacedUndo`) / `#navResetBtn` (`resetCurrentDeck`) / `#navNextBtn` (`handleNavNext` → `navigate(1)`). Vocab only; hidden in Parsing/Grammar/Reader mode (each owns its own in-section navigation instead). |
+| 198–203  | `#markRow`                                | Hard (`again`) / Uncertain (`pass`) / Easy (`easy`) via `markCard(outcome)`. Vocab only; hidden in Parsing/Grammar/Reader mode. |
+| 204–208  | `#ffRow`                                  | Fast-forward 1 day / 1 week (`fastForwardOneDay` / `fastForwardOneWeek`) — advances the SRS clock for testing/catch-up. Vocab only; hidden in Parsing/Grammar/Reader mode. |
+| 209–219  | `<section class="review-shell">`          | `#reviewPanel` → `#reviewDeckTag`, `#reviewStats` (confidence/due breakdown + collapsible due-by-day histogram, `buildDueHistogramHtml` in `js/ui/progress.js`), `#reviewSortRow`, `#reviewList`. Vocab only; hidden in Parsing/Grammar/Reader mode (each has its own analytics section instead — see `#analyticsParsingCollapse` / `#analyticsGrammarCollapse` / `#analyticsReaderCollapse` below). |
+| 221–223  | `<footer class="app-footer">`             | "Contact author" link (`openContactAuthorModal()`). |
+| —        | (Lesson 0 Alphabet)                       | Has NO row in `.app` — its entry point (`.alphabet-lesson0-section`) lives inside `#studySelectorOverlay` below, and its own overlay (`#alphabetOverlay`) is a sibling of `.app`, not a section within it. |
 
 ---
 
@@ -77,39 +78,50 @@ in `js/ui/modals.js` and `js/ui/navigation.js`, wired via `main.js`.
 
 | Lines    | id                            | Purpose |
 |---------:|-------------------------------|---------|
-| 199–216  | `#transferOverlay`            | Import/export progress (textarea + file picker) — `js/state/persistence.js`. |
-| 217–388  | `#analyticsOverlay`           | Progress/analytics dashboard — hero XP/streak, chapter mastery grid, records, stubborn/slipping/most-improved lists, achievements, (Phase 2 PR B) `#analyticsParsingCollapse` (`data-collapse-key="parsingSection"`, `#analyticsParsingBody` — Parsing accuracy/known-status/trend/recent-forms; hidden via inline `style="display:none"` until at least one parsing attempt exists), (Phase 2 PR C) `#analyticsGrammarCollapse` (`data-collapse-key="grammarSection"`, `#analyticsGrammarBody` — overall accuracy, per-lesson-block accuracy, top-5 weakest concept tags, missed-question count; same hide-until-first-attempt behavior), and (Phase 2 PR D) `#analyticsReaderCollapse` (`data-collapse-key="readerSection"`, `#analyticsReaderBody` — passages read in the current lesson/tier scope vs. total, passages read overall, review-marks count; hidden until at least one passage is read or one token is marked). Rendered by `renderAnalyticsOverlay()` in `js/ui/analytics.js`, which calls each section through its own host hook (`host.renderParsingSection()` / `host.renderGrammarSection()` / `host.renderReaderSection()`) wired to `js/ui/parsing.js`'s `renderParsingAnalytics()` / `js/ui/grammar.js`'s `renderGrammarAnalytics()` / `js/ui/reader.js`'s `renderReaderAnalytics()` in `main.js`'s `configureAnalytics(...)` — analytics.js itself never imports parsing.js, grammar.js, or reader.js. Labels read "Lesson N" (not "Chapter N"). |
-| 349–374  | `#studySelectorOverlay`       | "Choose session" — the six lesson-range presets (Lessons 1–10 / 11–20 / … / All, `js/data/setMeta.js` `SESSION_WEEK_META`) plus the individual-lesson chapter selector, built by `js/ui/selectors.js`. |
-| 375–430  | `#shortcutsOverlay`           | User guide / keyboard shortcuts + the inline **changelog** (see "Changelog" in `CLAUDE.md` for the editing rules). |
-| 431–464  | `#consentOverlay`             | First-run disclaimer / consent gate (`initializeConsentGate`, `handleConsentAction`). |
-| 465–490  | `#resetSpacedOverlay`         | Scoped reset for spaced-repetition progress (timing-only / full progress / smooth). |
-| 491–506  | `#resetStatsOverlay`          | "Reset stats" modal — keep settings vs. reset to first-launch start. |
-| 507–528  | `#resetUnspacedOverlay`       | Scoped reset for unspaced marks. |
-| 529–540  | `#refreshAvailableOverlay`    | Service-worker "Update available" prompt (`acceptRefreshAvailable`, wired at the bottom of `main.js`). |
-| 541–552  | `#toggleInfoOverlay`          | Small modal showing a toggle's own `title` text — surfaced for touch devices where hover tooltips never appear (`showToggleInfo` / `installToggleInfoButtons` in `main.js`). |
-| 553–575  | `#contactAuthorOverlay`       | Author contact card. |
-| 576–590  | `#installInstructionsOverlay`| PWA "Add to Home Screen" how-to (`js/ui/pwaInstall.js`). |
+| 227–244  | `#transferOverlay`            | Import/export progress (textarea + file picker) — `js/state/persistence.js`. |
+| 245–415  | `#analyticsOverlay`           | Progress/analytics dashboard — hero XP/streak, chapter mastery grid, records, stubborn/slipping/most-improved lists, achievements, (Phase 2 PR B) `#analyticsParsingCollapse` (`data-collapse-key="parsingSection"`, `#analyticsParsingBody` — Parsing accuracy/known-status/trend/recent-forms; hidden via inline `style="display:none"` until at least one parsing attempt exists), (Phase 2 PR C) `#analyticsGrammarCollapse` (`data-collapse-key="grammarSection"`, `#analyticsGrammarBody` — overall accuracy, per-lesson-block accuracy, top-5 weakest concept tags, missed-question count; same hide-until-first-attempt behavior), and (Phase 2 PR D) `#analyticsReaderCollapse` (`data-collapse-key="readerSection"`, `#analyticsReaderBody` — passages read in the current lesson/tier scope vs. total, passages read overall, review-marks count; hidden until at least one passage is read or one token is marked). Rendered by `renderAnalyticsOverlay()` in `js/ui/analytics.js`, which calls each section through its own host hook (`host.renderParsingSection()` / `host.renderGrammarSection()` / `host.renderReaderSection()`) wired to `js/ui/parsing.js`'s `renderParsingAnalytics()` / `js/ui/grammar.js`'s `renderGrammarAnalytics()` / `js/ui/reader.js`'s `renderReaderAnalytics()` in `main.js`'s `configureAnalytics(...)` — analytics.js itself never imports parsing.js, grammar.js, or reader.js. Note: Lesson 0 Alphabet has NO analytics section anywhere in this overlay — see `js/ui/alphabet.js`'s header. Labels read "Lesson N" (not "Chapter N"). |
+| 416–447  | `#studySelectorOverlay`       | "Choose session" — a `.alphabet-lesson0-section` row (**"Lesson 0 · Alphabet"** button, `onclick="openAlphabetOverlay()"`) sits ABOVE "Deselect all", visually separated and NOT part of `selectedKeys`/presets/vocab counts (see `js/ui/alphabet.js`), then the six lesson-range presets + 13 "Unit" reading-block presets (`js/data/setMeta.js` `SESSION_WEEK_META`, all in one `#sessionsGrid`) plus the individual-lesson chapter selector (`#chaptersGrid`), built by `js/ui/selectors.js`. |
+| 448–471  | `#alphabetOverlay`            | **New (Phase 2 PR E).** Lesson 0 Alphabet practice — a lightweight standalone overlay (flip card, Again/Got it, Shuffle, progress line, reset link), entirely owned by `js/ui/alphabet.js` (its own open/close functions, not `modals.js`). See that module's header for the isolation rules. |
+| 473–528  | `#shortcutsOverlay`           | User guide / keyboard shortcuts, with a subsection per mode (Vocabulary incl. Lesson 0 + Units, Parsing, Grammar, Reader) + the inline **changelog** (see "Changelog" in `CLAUDE.md` for the editing rules). |
+| 551–583  | `#consentOverlay`             | First-run disclaimer / consent gate (`initializeConsentGate`, `handleConsentAction`) — includes the on-device-storage privacy line. |
+| 586–611  | `#resetSpacedOverlay`         | Scoped reset for spaced-repetition progress (timing-only / full progress / smooth). |
+| 612–627  | `#resetStatsOverlay`          | "Reset stats" modal — keep settings vs. reset to first-launch start. |
+| 628–649  | `#resetUnspacedOverlay`       | Scoped reset for unspaced marks. |
+| 650–661  | `#refreshAvailableOverlay`    | Service-worker "Update available" prompt (`acceptRefreshAvailable`, wired at the bottom of `main.js`). |
+| 662–673  | `#toggleInfoOverlay`          | Small modal showing a toggle's own `title` text — surfaced for touch devices where hover tooltips never appear (`showToggleInfo` / `installToggleInfoButtons` in `main.js`). |
+| 674–696  | `#contactAuthorOverlay`       | Author contact card. |
+| 697–     | `#installInstructionsOverlay`| PWA "Add to Home Screen" how-to (`js/ui/pwaInstall.js`). |
 
 ---
 
-## Script block (~648–655)
+## Script block (~713–721)
 
 ```html
-<script defer src="js/data/bbh_vocab.js?v=5"></script>
-<script defer src="js/data/bbh_reference_data.js?v=5"></script>
-<script defer src="js/data/bbh_parsing.js?v=5"></script>
-<script defer src="js/data/bbh_grammar.js?v=5"></script>
-<script defer src="js/data/bbh_reader.js?v=5"></script>
-<script defer src="js/logic/pos_logic.js?v=5"></script>
-<script defer src="js/pwa/swUpdate.js?v=5"></script>
-<script type="module" src="js/app/main.js?v=5"></script>
+<script defer src="js/data/bbh_vocab.js?v=6"></script>
+<script defer src="js/data/bbh_reference_data.js?v=6"></script>
+<script defer src="js/data/bbh_parsing.js?v=6"></script>
+<script defer src="js/data/bbh_grammar.js?v=6"></script>
+<script defer src="js/data/bbh_reader.js?v=6"></script>
+<script defer src="js/data/bbh_alphabet.js?v=6"></script>
+<script defer src="js/logic/pos_logic.js?v=6"></script>
+<script defer src="js/pwa/swUpdate.js?v=6"></script>
+<script type="module" src="js/app/main.js?v=6"></script>
 ```
 
 - **`js/data/bbh_vocab.js`** — classic deferred script, self-registers
   `window.SETS["1".."50"] = {label, type:'lesson', cards}` (generated; never
   hand-edit — see the data-regeneration rule in `CLAUDE.md`).
 - **`js/data/bbh_reference_data.js`** — classic deferred script, the
-  paradigm/reference data also consumed by `pages/memorization.html`.
+  paradigm/reference data also consumed by `pages/memorization.html`
+  (which also loads the sibling `js/data/bbh_reference_extra.js` — the 42
+  alphabet/vowel/paradigm Extended reference sections — directly itself;
+  that file is NOT a script tag in `index.html`, only in
+  `pages/memorization.html`, since index.html has no use for it).
+- **`js/data/bbh_alphabet.js`** — classic deferred script (Phase 2 PR E,
+  Lesson 0), self-registers `window.BBH_ALPHABET = {schemaVersion, letters}`
+  (23 letters) — generated by `tools/gen_bbh_alphabet_data.mjs` from
+  `source/bbh/alphabet.json`, never hand-edited. Read only by
+  `js/ui/alphabet.js`.
 - **`js/data/bbh_parsing.js`** — classic deferred script (Phase 2 PR B),
   self-registers `window.BBH_PARSING = {schemaVersion, paradigms, lessonGates}`
   — generated by `tools/gen_bbh_parsing_data.mjs`, never hand-edited. Read
@@ -177,6 +189,20 @@ see their own header comments. Being brand-new files, none of `parsing.js`,
 `grammar.js`, or `reader.js` carries any of the
 cross-version cache-hazard risk the paragraph above warns about; that risk
 applies to *existing* shipped modules' export lists, not new files.
+
+`js/ui/alphabet.js` (Phase 2 PR E, Lesson 0 addendum) is likewise not a
+classic script tag — it's a brand-new ES module reached only through
+`main.js`'s `import { configureAlphabet, ... } from '../ui/alphabet.js'`.
+Strictest isolation of any UI module so far: it imports NOTHING at all, not
+even a gates helper — there's no lesson gating in Lesson 0, all 23 letters
+are always available. It owns its OWN overlay open/close
+(`openAlphabetOverlay`/`closeAlphabetOverlay`/`isAlphabetOverlayOpen`),
+unlike every other overlay in the table above, which go through
+`js/ui/modals.js`. `js/ui/keyboard.js` wires its Escape-to-close and its
+`isAlphabetOverlayOpen`/`closeAlphabetOverlay` params are `typeof`-guarded
+the same way `isInstallInstructionsOpen` is, for the same SW cross-version
+reason. Being a brand-new file, it carries none of the cross-version
+cache-hazard risk either.
 
 ---
 

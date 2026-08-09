@@ -34,6 +34,8 @@
 // │   js/domain/gamification/   XP math, levels, usage-stats primitives │
 // │   js/domain/grammar/        grammar-support HTML                    │
 // │   js/ui/reader.js           Reader tab (drills + verses)            │
+// │   js/ui/alphabet.js         Lesson 0 Alphabet practice (own overlay,│
+// │                             own runtime.alphabet subtree)           │
 // │   js/ui/keyboard.js         keyboard shortcuts                      │
 // │   js/ui/toast.js            level-up / badge toast queue            │
 // │   js/ui/touchTapBridge.js   iOS synthetic-tap polyfill              │
@@ -215,6 +217,20 @@ import {
   readerOpenPassage, readerBackToList, readerToggleToken,
   readerToggleMarkForReview, readerToggleReadStatus
 } from '../ui/reader.js';
+
+// UI — Lesson 0 Alphabet practice (Phase 2 PR E). New file; imports NOTHING
+// from other app modules (see js/ui/alphabet.js header) — same isolation as
+// grammar.js/reader.js. Owns its own overlay (open/close live here, not in
+// modals.js) and its own runtime.alphabet subtree, fully independent of
+// vocab/parsing/grammar/reader. Configured like every other UI module via
+// configureAlphabet(deps); its click/change handlers are added to
+// GLOBAL_CLICK_HANDLERS below, same as every other onclick="..." surface.
+import {
+  configureAlphabet,
+  isAlphabetOverlayOpen, openAlphabetOverlay, closeAlphabetOverlay,
+  alphabetFlip, alphabetMarkAgain, alphabetMarkGotIt,
+  alphabetShuffle, alphabetResetProgress
+} from '../ui/alphabet.js';
 
 // UI
 import { installKeyboardShortcuts } from '../ui/keyboard.js';
@@ -523,6 +539,10 @@ configureReader({
     isPlainObject(runtime.modeSelections?.vocab) && Array.isArray(runtime.modeSelections.vocab.selectedKeys)
   ) ? runtime.modeSelections.vocab.selectedKeys
     : (runtime.studyMode === 'vocab' ? runtime.selectedKeys : []),
+  saveState: () => saveState()
+});
+configureAlphabet({
+  getState: () => runtime.alphabet,
   saveState: () => saveState()
 });
 configurePersistence({
@@ -2494,6 +2514,7 @@ installKeyboardShortcuts({
   isToggleInfoModalOpen, closeToggleInfoModal,
   isContactAuthorModalOpen, closeContactAuthorModal,
   isInstallInstructionsOpen, closeInstallInstructions,
+  isAlphabetOverlayOpen, closeAlphabetOverlay,
   isDisclaimerModalOpen, isTransferModalOpen, closeTransferModal,
   isReviewDeckMode,
   getSelectedKeys: () => runtime.selectedKeys,
@@ -2542,7 +2563,12 @@ const GLOBAL_CLICK_HANDLERS = {
   // Phase 2 PR D: Reader mode (js/ui/reader.js) click/change handlers.
   readerSetLesson, readerSetTier,
   readerOpenPassage, readerBackToList, readerToggleToken,
-  readerToggleMarkForReview, readerToggleReadStatus
+  readerToggleMarkForReview, readerToggleReadStatus,
+  // Phase 2 PR E: Lesson 0 Alphabet practice (js/ui/alphabet.js) click
+  // handlers, including its own overlay open/close.
+  openAlphabetOverlay, closeAlphabetOverlay,
+  alphabetFlip, alphabetMarkAgain, alphabetMarkGotIt,
+  alphabetShuffle, alphabetResetProgress
 };
 if (typeof globalThis !== 'undefined') Object.assign(globalThis, GLOBAL_CLICK_HANDLERS);
 if (typeof window !== 'undefined' && window !== globalThis) Object.assign(window, GLOBAL_CLICK_HANDLERS);
@@ -2610,6 +2636,15 @@ if (!runtime.reader || typeof runtime.reader !== 'object') {
     marks: {},
     lastPassageId: null,
     initializedFromVocab: false
+  };
+}
+// Same mixed-version guard for runtime.alphabet (Phase 2 PR E). Shape
+// mirrors runtime.js's `alphabet` default — keep the two in sync.
+if (!runtime.alphabet || typeof runtime.alphabet !== 'object') {
+  runtime.alphabet = {
+    schemaVersion: 1,
+    known: {},
+    seen: {}
   };
 }
 // Rebuild after restore: runtime.appProfile may have changed, affecting grammar summary text

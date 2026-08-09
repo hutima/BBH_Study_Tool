@@ -1,122 +1,113 @@
 # BBH Reference Page — Content Gaps
 
-This is an honest inventory of paradigms and reference material that
-`pages/memorization.html` does **not** attempt to show in full, because the
-only content authorities for this project —
-`source/bbh/Beginning_Biblical_Hebrew_Revision_Guide.md` and
-`source/bbh/Beginning_Biblical_Hebrew_Vocabulary_by_Lesson.csv` — do not print
-the complete form set. The reference page quotes those sources verbatim and
-never invents, completes, or "fixes" a Hebrew form, so anything the sources
-only describe in prose (recognition traits, partial paradigms, endings/markers
-only) is listed here instead of being presented as a full table.
+This is an honest inventory of paradigms and reference material for
+`pages/memorization.html`. Most of the original gaps below have since been
+closed by `js/data/bbh_reference_extra.js` (42 alphabet/vowel/paradigm
+sections, generated from `source/bbh/alphabet.json`,
+`source/bbh/vowels.json`, and `source/bbh/parsing/paradigms.json` — see the
+"Extended reference" section on the Reference page). Each closed gap below
+says exactly where its content now lives. The reference page still quotes
+its sources verbatim and never invents, completes, or "fixes" a Hebrew form
+that a source doesn't itself print in full — what's left open (bottom of
+this file) is content nobody has yet transcribed/verified from the physical
+textbook.
 
-For each gap: what is missing, why, and exactly what would need to be checked
-against the textbook (Cook & Holmstedt, *Beginning Biblical Hebrew: A Grammar
-and Illustrated Reader*, Baker Academic) to fill it in correctly.
+For each entry: what was missing, why, and (for closed ones) where it now
+lives; (for open ones) exactly what would need to be checked against the
+textbook (Cook & Holmstedt, *Beginning Biblical Hebrew: A Grammar and
+Illustrated Reader*, Baker Academic) to fill it in.
 
-## 1. Full alphabet chart with letter names
+## Closed gaps
 
-- **What's missing:** A complete 23-consonant table (letter, name, sound,
-  final form where applicable, begadkefat/guttural flags).
-- **What the source gives:** Lesson 1 (p. 21) gives only counts and category
-  descriptions in prose — "Hebrew has twenty-three consonants", the five
-  letters with final forms (ך, ם, ן, ף, ץ, without stating which base letter
-  each corresponds to), the six בגדכפת letters, and the four gutturals
-  (א, ה, ח, ע) — not a letter-by-letter chart with names and transliteration
-  values.
-- **Verification needed:** The full alphabet table on or near textbook p. 21,
-  including each letter's name and standard transliteration.
+### 1. Full alphabet chart with letter names — CLOSED
 
-## 2. Vowel-sign chart as a table
+Now on the Reference page's Extended reference → **Alphabet** group
+(`alphabet-chart` section, 23 rows: letter, final form, Hebrew/English name,
+sound, begadkefat/guttural flags) and in the Lesson 0 · Alphabet practice
+deck (`js/ui/alphabet.js` / `js/data/bbh_alphabet.js`), both sourced from
+`source/bbh/alphabet.json` (Lesson 1, pp. 22–23).
 
-- **What's missing:** A row-per-sign table of vowel points (sign, name,
-  transliteration, long/short class).
-- **What the source gives:** Lesson 2 (p. 26) gives prose value equivalences
-  ("patach/qamets = a; segol = e; tsere = ey; chireq = i; qamets-chatuf/cholem
-  = o; qibbuts/shureq = u") and notes about מָלֵא (matres lectionis) and
-  קָמֶץ חָטוּף — quoted as a prose list on the reference page rather than
-  reformatted into a table, since the source itself does not tabulate sign
-  shapes.
-- **Verification needed:** The full vowel chart (sign glyphs placed under/
-  over/after a sample consonant) at or near textbook p. 26.
+### 2. Vowel-sign chart as a table — CLOSED
 
-## 3. Full Qal Imperfect conjugation of a strong verb
+Now on the Reference page's Extended reference → **Vowels** group
+(`vowel-chart` section, 12 rows: sign, Hebrew/English name, sound class,
+length, sound, mater) plus 4 sheva-rule footnotes, sourced from
+`source/bbh/vowels.json` (Lessons 2–3, pp. 26, 29).
 
-- **What's missing:** A complete Qal Imperfect paradigm (all 3ms/3fs/2ms/2fs/
-  1cs/3mp/3fp/2mp/2fp/1cp forms) of a strong root such as שׁמר.
-- **What the source gives:** Lessons 23 and 27 (pp. 71, 81) state only the
-  person prefix/suffix markers and patterns (e.g. "3ms י-", "3mp י-…-וּ"),
-  not forms attached to a specific root. The reference page presents these as
-  a markers table, explicitly labeled as markers/patterns only.
-- **Verification needed:** The full Qal Imperfect paradigm table for a strong
-  verb (commonly שׁמר or קטל) near textbook pp. 71–82.
+### 3. Full Qal Imperfect conjugation of a strong verb — CLOSED
 
-## 4. Full Qal Perfect plural forms
+Now on the Reference page's Extended reference → **Verbs** group
+(`verb-qal-imperfect` section, שמר, 8 rows) plus the related
+`verb-qal-perfect`, `verb-qal-participle`, `verb-qal-imperative`,
+`verb-qal-jussive`, `verb-qal-infinitive`, and
+`verb-qal-adverbial-infinitive` sections, sourced from
+`source/bbh/parsing/paradigms.json` (Lessons 16–42).
 
-- **What's missing:** Complete plural Qal Perfect forms of a strong verb
-  (3cp/2mp/2fp/1cp attached to a root).
-- **What the source gives:** Lesson 19 (p. 62) states only the plural
-  endings in prose ("3cp -וּ, 2mp -תֶּם, 2fp -תֶּן, 1cp -נוּ"), not full
-  forms. The reference page's plural-endings table is explicitly labeled
-  "endings only."
-- **Verification needed:** The full plural Qal Perfect paradigm (e.g. of
-  שׁמר) near textbook p. 62.
+### 4. Full Qal Perfect plural forms — CLOSED
 
-## 5. Binyan paradigm tables (Piel/Hifil, Nifal/Hitpael)
+Now part of the `verb-qal-perfect` section (Extended reference → Verbs),
+which prints the full singular + plural Qal Perfect of שמר (and the parallel
+`verb-haya-perfect` section for the irregular הָיָה).
 
-- **What's missing:** Full conjugation tables for the derived binyanim
-  (Piel, Hifil, Nifal, Hitpael, and the passive Pual/Hofal) — Perfect,
-  Imperfect, Infinitive, Participle forms.
-- **What the source gives:** Lesson 15 (p. 53) only lists the names of the
-  seven primary binyanim (Qal, Nifal, Piel, Pual, Hitpael, Hifil, Hofal) and
-  describes Perfect vs. Imperfect aspect in general terms. Lesson 29 (p. 85)
-  gives recognition traits only for Piel/Hifil (e.g. "Piel is normally
-  recognized by dagesh in the second root consonant... Hifil has הִ- in the
-  Perfect, normally patach under the Imperfect prefix, and chireq or tsere in
-  the second syllable"). Lesson 37 (p. 104) gives recognition traits only for
-  Nifal/Hitpael (e.g. "Niphal Perfects and Participles characteristically
-  have a prefixed נ... Hitpael has dagesh in the second root consonant and
-  patah under the first root consonant"). None of these lessons print an
-  actual conjugated paradigm table.
-- **Verification needed:** Full paradigm tables for each derived binyan near
-  textbook pp. 85–90 (Piel/Hifil) and pp. 104–106 (Nifal/Hitpael).
+### 5. Binyan paradigm tables (Piel/Hifil, Nifal/Hitpael) — CLOSED (as
+recognition-form tables, not full conjugations)
 
-## 6. Construct-form (סְמִיכוּת) tables
+The Reference page's Extended reference → Verbs group has
+`verb-piel-recognition`, `verb-hifil-recognition`, `verb-nifal-recognition`,
+and `verb-hitpael-recognition` sections (Perfect/Imperfect/Imperative
+recognition forms per binyan, as the textbook itself prints them — recognition
+traits, not full paradigm tables, because that is what Lessons 29/37 print).
+The two forms Pual is attested with anywhere in the book are in the
+appendix-only `verb-pual-appendix` section. Parsing mode's domain data
+(`source/bbh/parsing/paradigms.json`) also drives drillable recognition of
+all seven binyanim. A **full conjugated paradigm table** per derived binyan
+(every PGN cell filled in) is not printed anywhere in the source and remains
+unverified — see "Still open" below if that's ever wanted.
 
-- **What's missing:** A table of construct-state endings for masculine/
-  feminine singular and plural/dual nouns (the regular construct changes).
-- **What the source gives:** Lesson 20 (p. 64) describes the construct
-  relationship conceptually ("bound/construct noun followed by host noun...
-  recognize the appropriate construct form; especially masculine plural/
-  dual construct endings and feminine construct changes") without printing
-  the actual ending forms in a table.
-- **Verification needed:** The construct-ending table (absolute vs.
-  construct, by gender/number) near textbook p. 64.
+### 6. Construct-form (סְמִיכוּת) tables — CLOSED
 
-## 7. Attached-pronoun suffix paradigms (on nouns and prepositions)
+Now on the Reference page's Extended reference → **Nouns** group
+(`noun-bound-construct` section: absolute vs. construct by gender/number,
+Lesson 20, p. 64), plus the irregular-noun construct forms in
+`noun-irregular`, `noun-irregular-bayit`, `noun-irregular-ir`,
+`noun-irregular-yom`, and the segolate paradigm in `noun-segolate`.
 
-- **What's missing:** Full pronominal-suffix paradigm tables attached to
-  singular-noun-pattern and plural-noun-pattern hosts (1cs/2ms/2fs/3ms/3fs/
-  1cp/2mp/2fp/3mp/3fp suffixes).
-- **What the source gives:** Lesson 22 (p. 68) and Lesson 31 (p. 91) describe
-  the mechanism in prose (construct-form host, feminine -ת before a suffix,
-  singular-noun vs. plural-noun suffix sets, prepositions taking the
-  plural-noun suffix set, the special אֹת-/אוֹת- allomorph of the object
-  marker before a suffix) but do not print the suffix forms themselves in a
-  table.
-- **Verification needed:** The full attached-pronoun suffix tables (for
-  singular- and plural-noun hosts) near textbook pp. 68 and 91.
+### 7. Attached-pronoun suffix paradigms (on nouns and prepositions) — CLOSED
 
-## 8. Numerals table
+Noun-host suffix sets are in `noun-attached-sg` / `noun-attached-pl`
+(Extended reference → Nouns, Lessons 22/31). The preposition-host suffix
+sets (אֶל, עַל, עַד, תַּחַת, כְּמוֹ/כְּ, מִן, the direct object marker
+אֵת/אוֹת, and לְ of possession) are in the `particle-prep-attached-*`,
+`particle-object-marker`, and `particle-l-possession` sections — the
+preposition ones are appendix-only (Appendix B), so they render collapsed
+inside the Reference page's "Appendix forms" group; לְ of possession is a
+main-lesson item (Lessons 9/17) and renders in the open Pronouns group.
 
-- **What's missing:** A cardinal/ordinal numerals table (1–10, 11–19,
-  tens, hundreds) with masculine and feminine forms.
-- **What the source gives:** Lesson 45 (p. 125) gives only descriptive
-  traits ("One behaves as an adjective... 2-10 behave as nouns... Cardinals
-  3-10 use the opposite-gender form... Numbers 11-19 consist of 1-9 plus
-  ten... tens 20-90 are plural forms of 2-9... Hundreds are built from
-  מֵאָה") plus two vocabulary items (שְׁנֵים עָשָׂר "twelve", masculine form
-  only; שְׁנַיִם/שְׁתַּיִם "two" from Lesson 31). No numerals table is
-  printed.
-- **Verification needed:** The full cardinal/ordinal numerals table near
-  textbook p. 125.
+### 8. Numerals table — CLOSED
+
+Now on the Reference page's Extended reference → **Numerals** group:
+`numeral-cardinal-1-10`, `numeral-ordinal-1-10`, `numeral-11-19`,
+`numeral-tens`, and `numeral-hundreds` sections, sourced from
+`source/bbh/parsing/paradigms.json` (Lessons 29/45).
+
+## Still open
+
+- **Full conjugated paradigm tables for the derived binyanim** (every
+  PGN cell of Piel/Pual/Hifil/Hofal/Nifal/Hitpael filled in, not just the
+  recognition-form set the textbook itself prints) — would need
+  verification against a fuller paradigm appendix than the book provides;
+  not attempted, see gap 5 above.
+- **Weak-verb (final-guttural, hollow, etc.) conjugation tables** — the
+  textbook's own guttural/weak-root notes are woven through individual
+  lessons rather than collected into paradigm tables; nothing here has been
+  transcribed or verified yet. This is also listed as deferred drill content
+  in `CLAUDE.md`.
+- **Anything else not yet cross-checked against the physical textbook.** The
+  content that *is* on the Reference page (both the original paradigm
+  section and the 42 Extended reference sections) has been transcribed from
+  `source/bbh/Beginning_Biblical_Hebrew_Revision_Guide.md`,
+  `source/bbh/alphabet.json`, `source/bbh/vowels.json`, and
+  `source/bbh/parsing/paradigms.json` — treat any paradigm not present in
+  one of those source files as unverified until someone checks it against
+  the book and adds it there (never by hand-editing the generated
+  `js/data/*.js` files — see the data-regeneration rule in `CLAUDE.md`).

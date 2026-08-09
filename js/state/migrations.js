@@ -827,6 +827,30 @@ export const STATE_MIGRATIONS = [
       };
       return saved;
     }
+  },
+
+  {
+    // Phase 2 PR E: introduces runtime.alphabet (Lesson 0 alphabet
+    // practice — completely separate from vocab/parsing/grammar/reader, no
+    // SRS, excluded from vocab stats/export counts). Any save/export from
+    // before this landed has no `alphabet` key at all; seed the v1 default
+    // shape so downstream restore code (persistence.js
+    // sanitizeAlphabetState) always sees a well-formed object. A save that
+    // already has SOME `alphabet` object (even a malformed one from a
+    // future version) is left alone — sanitizeAlphabetState fills in
+    // per-field defaults for anything odd.
+    name: 'alphabet-state-v1-init',
+    match(saved) {
+      return !isPlainObject(saved.alphabet);
+    },
+    migrate(saved) {
+      saved.alphabet = {
+        schemaVersion: 1,
+        known: {},
+        seen: {}
+      };
+      return saved;
+    }
   }
 ];
 

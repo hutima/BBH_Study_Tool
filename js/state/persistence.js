@@ -295,6 +295,43 @@ function sanitizeReaderState(candidate) {
   };
 }
 
+// ── Alphabet practice state sanitize (Phase 2 PR E — Lesson 0) ───────────
+// runtime.alphabet is owned/mutated by js/ui/alphabet.js, but persistence.js
+// (like every other persisted subtree) is responsible for validating it on
+// the way in from localStorage or an imported JSON file. Backward
+// compatible: a v2-v5 export or a save from before this landed has no
+// `alphabet` key at all, which sanitizes to the v1 default shape below (see
+// store.js PROGRESS_EXPORT_VERSION comment). Completely independent of the
+// vocab SRS/marks/progress and the parsing/grammar/reader subtrees — no XP,
+// no streaks, no achievements, and never folded into any vocab count.
+function sanitizeAlphabetKnown(input) {
+  const src = isPlainObject(input) ? input : {};
+  const out = {};
+  Object.keys(src).forEach((id) => {
+    if (src[id] === true) out[id] = true;
+  });
+  return out;
+}
+
+function sanitizeAlphabetSeen(input) {
+  const src = isPlainObject(input) ? input : {};
+  const out = {};
+  Object.keys(src).forEach((id) => {
+    const n = Number(src[id]);
+    if (Number.isFinite(n) && n > 0) out[id] = Math.round(n);
+  });
+  return out;
+}
+
+function sanitizeAlphabetState(candidate) {
+  const src = isPlainObject(candidate) ? candidate : {};
+  return {
+    schemaVersion: 1,
+    known: sanitizeAlphabetKnown(src.known),
+    seen: sanitizeAlphabetSeen(src.seen)
+  };
+}
+
 // ── Persisted-state payload + sanitization for import ────────────────────
 
 export function buildPersistedStatePayload(options = {}) {
@@ -379,7 +416,12 @@ export function buildPersistedStatePayload(options = {}) {
     // Reader mode (Phase 2 PR D) — likewise fully independent, never
     // touches vocab SRS/marks/progress or the parsing/grammar subtrees
     // above. No SRS interaction of any kind.
-    reader: sanitizeReaderState(runtime.reader)
+    reader: sanitizeReaderState(runtime.reader),
+    // Lesson 0 Alphabet practice (Phase 2 PR E) — likewise fully
+    // independent, never touches vocab SRS/marks/progress or the parsing/
+    // grammar/reader subtrees above, and never contributes to any vocab
+    // count in `summary` below.
+    alphabet: sanitizeAlphabetState(runtime.alphabet)
   }, options);
 }
 
@@ -424,6 +466,10 @@ function sanitizeImportedState(candidate) {
   // Reader mode (Phase 2 PR D). A v2/v3/v4 export predates this field
   // entirely — sanitizeReaderState defaults it, matching a fresh install.
   state.reader = sanitizeReaderState(candidate.reader);
+  // Lesson 0 Alphabet practice (Phase 2 PR E). A v2-v5 export predates this
+  // field entirely — sanitizeAlphabetState defaults it, matching a fresh
+  // install.
+  state.alphabet = sanitizeAlphabetState(candidate.alphabet);
 
   const usage = host.ensureUsageStats(candidate.appUsageStats);
   state.appUsageStats = {
@@ -1078,6 +1124,10 @@ export function restoreState() {
     // Reader mode (Phase 2 PR D) — likewise fully independent of the vocab
     // deck below; restores unconditionally for the same reason.
     runtime.reader = sanitizeReaderState(saved.reader);
+    // Lesson 0 Alphabet practice (Phase 2 PR E) — likewise fully
+    // independent of the vocab deck below; restores unconditionally for the
+    // same reason.
+    runtime.alphabet = sanitizeAlphabetState(saved.alphabet);
 
     if (!runtime.selectedKeys.length) {
       host.clearSpacedUndoSnapshot();

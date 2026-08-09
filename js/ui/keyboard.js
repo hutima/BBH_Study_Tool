@@ -19,6 +19,8 @@ export function installKeyboardShortcuts(deps) {
     closeContactAuthorModal,
     isInstallInstructionsOpen,
     closeInstallInstructions,
+    isAlphabetOverlayOpen,
+    closeAlphabetOverlay,
     isDisclaimerModalOpen,
     isTransferModalOpen,
     closeTransferModal,
@@ -39,10 +41,15 @@ export function installKeyboardShortcuts(deps) {
     // before the shortcuts check (topmost wins). Guarded with typeof for SW
     // cross-version safety: an old cached main.js won't pass these in its deps.
     if (e.key === 'Escape' && typeof isInstallInstructionsOpen === 'function' && isInstallInstructionsOpen()) { closeInstallInstructions(); return; }
+    // Alphabet overlay (Phase 2 PR E) can open stacked on top of the study
+    // selector, so close it first (topmost wins) — guarded with typeof for
+    // SW cross-version safety, same as isInstallInstructionsOpen above: an
+    // old cached main.js won't pass these in its deps.
+    if (e.key === 'Escape' && typeof isAlphabetOverlayOpen === 'function' && isAlphabetOverlayOpen()) { closeAlphabetOverlay(); return; }
     if (e.key === 'Escape' && isShortcutsModalOpen()) { closeShortcutsModal(); return; }
     if (e.key === 'Escape' && isToggleInfoModalOpen()) { closeToggleInfoModal(); return; }
     if (e.key === 'Escape' && isTransferModalOpen()) { closeTransferModal(); return; }
-    if (isDisclaimerModalOpen() || isTransferModalOpen() || isAnalyticsModalOpen() || isStudySelectorOpen() || isShortcutsModalOpen() || isToggleInfoModalOpen() || isContactAuthorModalOpen() || (typeof isInstallInstructionsOpen === 'function' && isInstallInstructionsOpen())) return;
+    if (isDisclaimerModalOpen() || isTransferModalOpen() || isAnalyticsModalOpen() || isStudySelectorOpen() || isShortcutsModalOpen() || isToggleInfoModalOpen() || isContactAuthorModalOpen() || (typeof isInstallInstructionsOpen === 'function' && isInstallInstructionsOpen()) || (typeof isAlphabetOverlayOpen === 'function' && isAlphabetOverlayOpen())) return;
     if (!isReviewDeckMode() || !getSelectedKeys().length) return;
 
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }

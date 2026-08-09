@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1" name="viewport"/>
 <title>Beginning Biblical Hebrew &mdash; Reference</title>
-<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=5">
+<link rel="icon" type="image/svg+xml" href="../favicon.svg?v=6">
 <style>
 
 @font-face {
@@ -101,6 +101,18 @@ footer { padding: 30px 16px 10px; color: var(--muted); font-size: .82rem; text-a
 footer p { max-width: 700px; margin: 4px auto; }
 .fallback-note { color: #d98c8c; font-size: .85rem; }
 
+/* Extended reference (js/data/bbh_reference_extra.js render, #extraReferenceContainer) */
+.extra-group { margin-bottom: 18px; }
+.extra-section-title { color: var(--accent-strong); font-size: .96rem; margin: 20px 0 4px; display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.extra-section-title:first-of-type { margin-top: 6px; }
+.extra-section-ref { color: var(--muted); font-size: .76rem; font-weight: 400; }
+tr.table-note-row td { color: var(--muted); font-size: .8rem; font-style: italic; border-top: none; padding-top: 0; padding-bottom: 10px; }
+.extra-footnotes { color: var(--muted); font-size: .82rem; margin: -6px 0 20px; padding-left: 1.2rem; }
+.extra-footnotes li { margin: 4px 0; }
+details.appendix-group { border: 1px dashed var(--border); border-radius: 10px; background: var(--panel); padding: 10px 14px 4px; margin: 18px 0; }
+details.appendix-group summary { cursor: pointer; padding: 6px 0; font-size: .92rem; color: var(--accent-strong); }
+details.appendix-group[open] summary { margin-bottom: 8px; }
+
 </style>
 </head>
 <body id="top">
@@ -153,6 +165,7 @@ footer p { max-width: 700px; margin: 4px auto; }
 <p class="unofficial-note">This is an unofficial, independently produced study aid. It is not affiliated with, endorsed by, or sponsored by the authors or Baker Academic.</p>
 <nav aria-label="Section index" class="toc">
 <a href="#paradigms">Paradigm tables</a>
+<a href="#extra-reference">Extended reference</a>
 <a href="#lessons">Lessons 1&ndash;50</a>
 <a href="#top">Top</a>
 </nav>
@@ -345,6 +358,12 @@ footer p { max-width: 700px; margin: 4px auto; }
 
 </section>
 
+<section id="extra-reference">
+<h2>Extended reference (alphabet, vowels &amp; paradigms)</h2>
+<p class="section-note">Rendered from <code>js/data/bbh_reference_extra.js</code>, generated from <code>source/bbh/alphabet.json</code>, <code>source/bbh/vowels.json</code>, and <code>source/bbh/parsing/paradigms.json</code>. Every table cites its own source lesson or appendix page. Hebrew forms are always shown pointed. Forms that appear only in the textbook&rsquo;s appendixes (never inside a numbered lesson) are grouped separately below under &ldquo;Appendix forms&rdquo; and collapsed by default.</p>
+<div id="extraReferenceContainer"><p class="section-note">Loading extended reference&hellip;</p></div>
+</section>
+
 <section id="lessons">
 <h2>Per-lesson revision concepts (Lessons 1&ndash;50)</h2>
 <p class="section-note">Rendered from <code>js/data/bbh_reference_data.js</code>, generated from the same revision guide. Expand a lesson to see its recognition-checklist bullets and whether it introduces vocabulary.</p>
@@ -363,8 +382,137 @@ footer p { max-width: 700px; margin: 4px auto; }
 <p>Content on this page is derived from a user-supplied lesson-by-lesson revision guide for <em>Beginning Biblical Hebrew: A Grammar and Illustrated Reader</em> by John A. Cook and Robert D. Holmstedt (Baker Academic). This tool and its content are not affiliated with, endorsed by, or reviewed by the authors or publisher.</p>
 </footer>
 </div>
-<script src="../js/data/bbh_reference_data.js?v=5"></script>
+<script src="../js/data/bbh_reference_data.js?v=6"></script>
+<script src="../js/data/bbh_reference_extra.js?v=6"></script>
 <script>
+
+(function () {
+  // ── Extended reference (alphabet/vowels/paradigms) — js/data/bbh_reference_extra.js ──
+  // All helper functions/constants are defined first; the actual DOM write
+  // happens at the bottom of this IIFE (see "Run" below) so nothing here
+  // depends on execution order / hoisting timing.
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  var HEB_RE = /[֐-׿]/;
+
+  function formatSourceRef(refs) {
+    if (!Array.isArray(refs) || !refs.length) return '';
+    return refs.map(function (r) {
+      if (r && r.lesson != null) return 'Lesson ' + r.lesson + ', p. ' + r.page;
+      if (r && r.appendix != null) return 'Appendix ' + r.appendix + ', p. ' + r.page;
+      return '';
+    }).filter(Boolean).join('; ');
+  }
+
+  function cellHtml(value) {
+    var text = String(value == null ? '' : value);
+    if (HEB_RE.test(text)) {
+      return '<td class="heb" dir="rtl" lang="he"><span class="val">' + esc(text) + '</span></td>';
+    }
+    return '<td>' + esc(text) + '</td>';
+  }
+
+  function buildSectionTableHtml(section) {
+    var columns = Array.isArray(section.columns) ? section.columns : [];
+    var rows = Array.isArray(section.rows) ? section.rows : [];
+    var refText = formatSourceRef(section.sourceRef);
+    var theadHtml = '<thead><tr>' + columns.map(function (c) { return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead>';
+    var bodyHtml = rows.map(function (row) {
+      var cells = Array.isArray(row.cells) ? row.cells : [];
+      var tr = '<tr>' + cells.map(cellHtml).join('') + '</tr>';
+      if (row.ambiguityNote) {
+        tr += '<tr class="table-note-row"><td colspan="' + Math.max(columns.length, 1) + '">' + esc(row.ambiguityNote) + '</td></tr>';
+      }
+      return tr;
+    }).join('');
+    var footnotesHtml = '';
+    if (Array.isArray(section.footnotes) && section.footnotes.length) {
+      footnotesHtml = '<ul class="extra-footnotes">' + section.footnotes.map(function (f) {
+        var src = f.source ? formatSourceRef([f.source]) : '';
+        return '<li>' + esc(f.text) + (src ? ' <span class="table-note">(' + esc(src) + ')</span>' : '') + '</li>';
+      }).join('') + '</ul>';
+    }
+    return (
+      '<h4 class="extra-section-title" id="' + esc(section.id) + '">' + esc(section.title) +
+      (refText ? '<span class="extra-section-ref">' + esc(refText) + '</span>' : '') + '</h4>' +
+      '<div class="table-wrap"><table class="ref-table">' + theadHtml + '<tbody>' + bodyHtml + '</tbody></table></div>' +
+      footnotesHtml
+    );
+  }
+
+  // Classifies a section into a display group by inspecting its id/title —
+  // see docs/bbh-conversion-plan.md / the PR E task spec for the group list.
+  // appendixOnly always wins regardless of grammatical category: those
+  // tables are grouped by "where the book prints them" (an appendix, never
+  // a numbered lesson), not by part of speech.
+  function classifySection(s) {
+    if (s.appendixOnly) return 'appendix';
+    if (s.id === 'alphabet-chart') return 'alphabet';
+    if (s.id === 'vowel-chart') return 'vowels';
+    if (s.id === 'pron-demonstrative') return 'adjdemo';
+    if (s.id === 'pron-subject' || s.id === 'particle-l-possession') return 'pronouns';
+    if (s.id.indexOf('noun-') === 0) return 'nouns';
+    if (s.id.indexOf('verb-') === 0) return 'verbs';
+    if (s.id.indexOf('numeral-') === 0) return 'numerals';
+    if (s.id === 'particle-interrogative-words') return 'interrogatives';
+    return 'other';
+  }
+
+  var GROUP_ORDER = [
+    { key: 'alphabet', title: 'Alphabet' },
+    { key: 'vowels', title: 'Vowels' },
+    { key: 'pronouns', title: 'Pronouns' },
+    { key: 'adjdemo', title: 'Adjectives &amp; Demonstratives' },
+    { key: 'nouns', title: 'Nouns' },
+    { key: 'verbs', title: 'Verbs' },
+    { key: 'numerals', title: 'Numerals' },
+    { key: 'interrogatives', title: 'Interrogatives' },
+    { key: 'other', title: 'Other' }
+  ];
+
+  function buildExtraReferenceHtml(sections) {
+    var byGroup = {};
+    var appendixSections = [];
+    sections.forEach(function (s) {
+      var g = classifySection(s);
+      if (g === 'appendix') { appendixSections.push(s); return; }
+      if (!byGroup[g]) byGroup[g] = [];
+      byGroup[g].push(s);
+    });
+
+    var html = '';
+    GROUP_ORDER.forEach(function (g) {
+      var list = byGroup[g.key];
+      if (!list || !list.length) return;
+      html += '<div class="extra-group"><h3>' + g.title + '</h3>' +
+        list.map(buildSectionTableHtml).join('') + '</div>';
+    });
+
+    if (appendixSections.length) {
+      html += '<details class="appendix-group" id="appendix-forms-group">' +
+        '<summary><strong>Appendix forms</strong> <span class="table-note">(' + appendixSections.length + ' tables &mdash; attested only in Appendix B/C, not a numbered lesson)</span></summary>' +
+        '<p class="section-note">These paradigms are printed only in the textbook&rsquo;s appendixes, never inside a numbered lesson &mdash; included here for reference completeness, not as part of the lesson-by-lesson introduction sequence.</p>' +
+        appendixSections.map(buildSectionTableHtml).join('') +
+        '</details>';
+    }
+    return html;
+  }
+
+  // ── Run ──
+  var extraContainer = document.getElementById('extraReferenceContainer');
+  if (extraContainer) {
+    var extra = window.BBH_REFERENCE_EXTRA;
+    var sections = (extra && Array.isArray(extra.sections)) ? extra.sections : [];
+    if (!sections.length) {
+      extraContainer.innerHTML = '<p class="fallback-note">Extended reference data (js/data/bbh_reference_extra.js) did not load, so the alphabet/vowel/paradigm tables below cannot be shown here. The verified paradigm tables above are unaffected.</p>';
+    } else {
+      extraContainer.innerHTML = buildExtraReferenceHtml(sections);
+    }
+  }
+})();
 
 (function () {
   var container = document.getElementById('lesson-list');

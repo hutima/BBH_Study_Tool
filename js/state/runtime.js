@@ -137,6 +137,23 @@ export const runtime = {
     initializedFromVocab: false
   },
 
+  // ── Lesson 0: Alphabet practice (PR E) ────────────────────────────────
+  // Completely separate from every vocab/parsing/grammar/reader subtree
+  // above: no SRS, no XP/streaks/achievements, never touches selectedKeys/
+  // presets, and is excluded from vocab stats and export vocab counts (see
+  // docs/bbh-conversion-plan.md "Lesson 0 — Alphabet practice" addendum).
+  // Owned/mutated only by js/ui/alphabet.js (via the live reference handed
+  // back from configureAlphabet's getState hook) and restored/persisted by
+  // js/state/persistence.js's sanitizeAlphabetState. `known`/`seen` are
+  // plain maps keyed by the letter's stable `order` (1-23) as a string.
+  // SYNC: js/app/main.js keeps a mirrored copy of this default shape in its
+  // mixed-version guard after restoreState() — update both together.
+  alphabet: {
+    schemaVersion: 1,
+    known: {},   // { [letterOrder]: true }
+    seen: {}     // { [letterOrder]: reviewCount }
+  },
+
   // ── Persisted directional stores (rebuilt from localStorage) ────────
   deckStates: {},
   globalWordMarks: {},
