@@ -576,3 +576,14 @@ deterministic bucket ordering has no per-session entropy). Fix: fresh
 session seed at init (PARSING_SESSION_SEED convention — Date.now() once,
 never persisted/graded) shuffling WITHIN the unseen/weak/rest priority
 buckets; type-interleaving retained.
+
+## Addendum (user policy change, 2026-08-09): Google Analytics reintroduced
+
+The repo owner has reversed the no-telemetry rule and supplied their own
+GA4 property (G-J5HGG50J92). Ships with the task-21 release: snippet in
+index.html + pages/memorization.html; check_release telemetry check
+reworked to REQUIRE exactly G-J5HGG50J92 and FORBID the retired Greek-app
+property G-YH11KQB6QX; user-guide privacy copy updated (on-device study
+progress unchanged; anonymous usage measurement disclosed); CLAUDE.md
+telemetry rule rewritten accordingly. Consent-gating offered, owner to
+decide; unconditional load unless requested.
