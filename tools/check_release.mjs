@@ -15,6 +15,11 @@
 //      line; every such occurrence is printed as a non-fatal report.
 //   5. js/data/bbh_vocab.js registers exactly 50 lessons and 209 cards
 //      (light regex parse — no execution of the generated file).
+//   5b. Same light-regex-parse treatment for the other generated data
+//      files: js/data/bbh_grammar.js registers exactly 300 questions,
+//      js/data/bbh_reader.js exactly 52 passages, js/data/bbh_alphabet.js
+//      exactly 23 letters, js/data/bbh_reference_extra.js at least 40
+//      sections.
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
 //   7. Zero case-insensitive 'googletagmanager', 'google-analytics',
 //      'gtag(', or 'G-YH11KQB6QX' in the live load graph — the app ships
@@ -256,6 +261,57 @@ function readDirSafe(dir) {
     if (lessonCount === 50 && cardCount === 209) {
       report('check5: 50 lessons / 209 cards registered in bbh_vocab.js (pass)');
     }
+  }
+}
+
+// ── Check 5b: bbh_grammar.js / bbh_reader.js / bbh_alphabet.js /
+// bbh_reference_extra.js register their expected generated-data counts ──
+// (light regex parse — no execution of the generated files, same style as
+// check5 above).
+{
+  const grammarPath = 'js/data/bbh_grammar.js';
+  if (!existsSync(path.join(ROOT, grammarPath))) {
+    fail(`check5b: ${grammarPath} not found`);
+  } else {
+    const src = readText(grammarPath);
+    const questionCount = [...src.matchAll(/"id":\s*"gq-[^"]+"/g)].length;
+    if (questionCount !== 300) fail(`check5b: expected 300 questions registered in ${grammarPath}, found ${questionCount}`);
+    else report(`check5b: 300 questions registered in bbh_grammar.js (pass)`);
+  }
+
+  const readerPath = 'js/data/bbh_reader.js';
+  if (!existsSync(path.join(ROOT, readerPath))) {
+    fail(`check5b: ${readerPath} not found`);
+  } else {
+    const src = readText(readerPath);
+    const passageCount = [...src.matchAll(/"id":\s*"reader-[^"]+"/g)].length;
+    if (passageCount !== 52) fail(`check5b: expected 52 passages registered in ${readerPath}, found ${passageCount}`);
+    else report(`check5b: 52 passages registered in bbh_reader.js (pass)`);
+  }
+
+  const alphabetPath = 'js/data/bbh_alphabet.js';
+  if (!existsSync(path.join(ROOT, alphabetPath))) {
+    fail(`check5b: ${alphabetPath} not found`);
+  } else {
+    const src = readText(alphabetPath);
+    const letterCount = [...src.matchAll(/"order":\s*\d+/g)].length;
+    if (letterCount !== 23) fail(`check5b: expected 23 letters registered in ${alphabetPath}, found ${letterCount}`);
+    else report(`check5b: 23 letters registered in bbh_alphabet.js (pass)`);
+  }
+
+  const refExtraPath = 'js/data/bbh_reference_extra.js';
+  if (!existsSync(path.join(ROOT, refExtraPath))) {
+    fail(`check5b: ${refExtraPath} not found`);
+  } else {
+    const src = readText(refExtraPath);
+    // Section objects sit one level under `sections: [...]`, indented 8
+    // spaces (`"id": "alphabet-chart"`); row objects nested inside a
+    // section's `rows: [...]` are indented 12 spaces (`"id":
+    // "alphabet-chart-1"`) — anchor on the 8-space indent so only
+    // top-level sections are counted, not their rows.
+    const sectionCount = [...src.matchAll(/^ {8}"id":\s*"[^"]+"/gm)].length;
+    if (sectionCount < 40) fail(`check5b: expected >=40 sections registered in ${refExtraPath}, found ${sectionCount}`);
+    else report(`check5b: ${sectionCount} sections registered in bbh_reference_extra.js (>=40, pass)`);
   }
 }
 
