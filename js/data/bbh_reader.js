@@ -42,7 +42,7 @@
         "gateLesson": 13,
         "tier": "strict",
         "wooden": "and Kesed, and Chazo, and Pildash, and Jidlaph, and Bethuel.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אֶת",
@@ -163,7 +163,7 @@
         "gateLesson": 13,
         "tier": "strict",
         "wooden": "and Mishma, and Dumah, and Massa,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וּ/מִשְׁמָ֥ע",
@@ -207,7 +207,7 @@
         "gateLesson": 13,
         "tier": "strict",
         "wooden": "Chadad, and Tema, Jetur, Naphish, and Kedemah.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "חֲדַ֣ד",
@@ -273,7 +273,7 @@
         "gateLesson": 13,
         "tier": "strict",
         "wooden": "and Hadoram, and Uzal, and Diklah,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אֶת",
@@ -350,7 +350,7 @@
         "gateLesson": 13,
         "tier": "strict",
         "wooden": "and the Jebusite, and the Amorite, and the Girgashite,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אֶת",
@@ -430,7 +430,7 @@
         "gateLesson": 13,
         "tier": "strict",
         "wooden": "and the Hivite, and the Arkite, and the Sinite,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אֶת",
@@ -510,7 +510,7 @@
         "gateLesson": 16,
         "tier": "strict",
         "wooden": "And Joktan fathered Almodad, and Sheleph, and Chatsarmaveth, and Jerach,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/יָקְטָ֣ן",
@@ -631,7 +631,7 @@
         "gateLesson": 16,
         "tier": "strict",
         "wooden": "Therefore he called the well Beer-Lachai-Roi; behold, between Kadesh and between Bered.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "עַל",
@@ -773,8 +773,8 @@
         "ref": "Gen 1:1",
         "gateLesson": 16,
         "tier": "strict",
-        "wooden": "In beginning, God created the heavens and the earth.",
-        "woodenStatus": "draft",
+        "wooden": "In beginning, God created the sky and the earth.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "בְּ/רֵאשִׁ֖ית",
@@ -862,7 +862,7 @@
         "gateLesson": 16,
         "tier": "guided",
         "wooden": "And Arpakshad fathered Shelach, and Shelach fathered Eber.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אַרְפַּכְשַׁ֖ד",
@@ -961,7 +961,7 @@
         "gateLesson": 22,
         "tier": "strict",
         "wooden": "Uz his firstborn, and Buz his brother, and Kemuel father of Aram.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "אֶת",
@@ -1082,7 +1082,7 @@
         "gateLesson": 20,
         "tier": "strict",
         "wooden": "And the sons of Dan: Chushim.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וּ/בְנֵי",
@@ -1125,8 +1125,8 @@
         "ref": "Gen 35:24",
         "gateLesson": 20,
         "tier": "strict",
-        "wooden": "The sons of Rachel: Joseph and Binyamin.",
-        "woodenStatus": "draft",
+        "wooden": "The sons of Rachel: Yoseph and Binyamin.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "בְּנֵ֣י",
@@ -1181,7 +1181,7 @@
         "gateLesson": 20,
         "tier": "strict",
         "wooden": "And the sons of Gomer: Ashkenaz, and Riphath, and Togarmah.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וּ/בְנֵ֖י",
@@ -1247,7 +1247,7 @@
         "gateLesson": 22,
         "tier": "guided",
         "wooden": "And Kenaan fathered Tsidon his firstborn, and Cheth,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וּ/כְנַ֗עַן",
@@ -1335,7 +1335,7 @@
         "gateLesson": 22,
         "tier": "guided",
         "wooden": "As for me, behold, my covenant is with you, and you shall become father of a multitude of nations.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "אֲנִ֕י",
@@ -1434,7 +1434,7 @@
         "gateLesson": 23,
         "tier": "strict",
         "wooden": "If not, to the house of my father you shall go, and to my clan, and you shall take a woman for my son.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "אִם",
@@ -1566,7 +1566,7 @@
         "gateLesson": 23,
         "tier": "strict",
         "wooden": "For to my land and to my birthplace you shall go, and you shall take a woman for my son, for Yitschak.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "כִּ֧י",
@@ -1686,8 +1686,8 @@
         "ref": "Gen 20:18",
         "gateLesson": 25,
         "tier": "guided",
-        "wooden": "For closing, YHWH had closed every womb belonging to the house of Abimelek, on account of the word of Sarah, wife of Abraham.",
-        "woodenStatus": "draft",
+        "wooden": "For closing, YHWH had closed up every womb belonging to the house of Abimelek, on account of the word of Sarah, wife of Abraham.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "כִּֽי",
@@ -1851,8 +1851,8 @@
         "ref": "Gen 24:1",
         "gateLesson": 29,
         "tier": "strict",
-        "wooden": "And Abraham was old, come into days, and YHWH had blessed Abraham in everything.",
-        "woodenStatus": "draft",
+        "wooden": "And Abraham was old, come into the days, and YHWH had blessed Abraham in everything.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אַבְרָהָ֣ם",
@@ -1962,7 +1962,7 @@
         "gateLesson": 29,
         "tier": "guided",
         "wooden": "For your salvation I have waited, YHWH.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "לִֽ/ישׁוּעָתְ/ךָ֖",
@@ -2006,7 +2006,7 @@
         "gateLesson": 31,
         "tier": "guided",
         "wooden": "Shimon and Levi are brothers; weapons of violence are their swords.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "שִׁמְע֥וֹן",
@@ -2083,7 +2083,7 @@
         "gateLesson": 33,
         "tier": "strict",
         "wooden": "And these are the sons of Anah: Dishon; and Oholibamah daughter of Anah.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אֵ֥לֶּה",
@@ -2171,7 +2171,7 @@
         "gateLesson": 33,
         "tier": "strict",
         "wooden": "And these are the sons of Dishan: Chemdan, and Eshban, and Jithran, and Keran.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אֵ֖לֶּה",
@@ -2259,7 +2259,7 @@
         "gateLesson": 33,
         "tier": "strict",
         "wooden": "These are the sons of Etser: Bilhan, and Zaavan, and Akan.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "אֵ֖לֶּה",
@@ -2336,7 +2336,7 @@
         "gateLesson": 33,
         "tier": "strict",
         "wooden": "These are the sons of Dishan: Uz and Aran.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "אֵ֥לֶּה",
@@ -2402,7 +2402,7 @@
         "gateLesson": 33,
         "tier": "guided",
         "wooden": "These are the sons of Cham, according to their clans, according to their tongues, in their lands, in their nations.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "אֵ֣לֶּה",
@@ -2490,7 +2490,7 @@
         "gateLesson": 33,
         "tier": "guided",
         "wooden": "And these are the generations of Esav, father of Edom, in the hill country of Seir.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אֵ֛לֶּה",
@@ -2577,8 +2577,8 @@
         "ref": "Gen 37:1",
         "gateLesson": 35,
         "tier": "strict",
-        "wooden": "And Jaakob dwelt in the land of his father's sojournings, in the land of Kenaan.",
-        "woodenStatus": "draft",
+        "wooden": "And Jaakob dwelt in the land of the sojournings of his father, in the land of Kenaan.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֵּ֣שֶׁב",
@@ -2666,7 +2666,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And Jehudah took a woman for Er his firstborn, and her name was Tamar.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יִּקַּ֧ח",
@@ -2754,7 +2754,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And Jaakob blessed Paroh, and he went out from before the face of Paroh.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יְבָ֥רֶךְ",
@@ -2842,7 +2842,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And Yitschak dwelt in Gerar.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֵּ֥שֶׁב",
@@ -2886,7 +2886,7 @@
         "gateLesson": 35,
         "tier": "guided",
         "wooden": "And there was evening, and there was morning, a third day.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַֽ/יְהִי",
@@ -2963,7 +2963,7 @@
         "gateLesson": 35,
         "tier": "guided",
         "wooden": "And there was evening, and there was morning, a fourth day.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַֽ/יְהִי",
@@ -3040,7 +3040,7 @@
         "gateLesson": 40,
         "tier": "strict",
         "wooden": "And his sons did for him thus, just as he had commanded them.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יַּעֲשׂ֥וּ",
@@ -3117,7 +3117,7 @@
         "gateLesson": 40,
         "tier": "strict",
         "wooden": "And Jehudah saw there a daughter of a Kenaanite man, and his name was Shua, and he took her, and he came to her.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יַּרְא",
@@ -3250,7 +3250,7 @@
         "gateLesson": 40,
         "tier": "strict",
         "wooden": "And he overtook them, and he spoke to them these words.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַֽ/יַּשִּׂגֵ֑/ם",
@@ -3327,7 +3327,7 @@
         "gateLesson": 40,
         "tier": "strict",
         "wooden": "And Noach did according to all that YHWH had commanded him.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יַּ֖עַשׂ",
@@ -3404,7 +3404,7 @@
         "gateLesson": 39,
         "tier": "guided",
         "wooden": "And God said, 'Let light be,' and light was.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֹּ֥אמֶר",
@@ -3481,7 +3481,7 @@
         "gateLesson": 40,
         "tier": "guided",
         "wooden": "And Paroh said, 'Go up and bury your father, just as he made you swear.'",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֹּ֖אמֶר",
@@ -3580,7 +3580,7 @@
         "gateLesson": 42,
         "tier": "strict",
         "wooden": "And he lodged there that night, and he took from what had come into his hand a gift for Esav his brother.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יָּ֥לֶן",
@@ -3712,7 +3712,7 @@
         "gateLesson": 42,
         "tier": "strict",
         "wooden": "And they took Lot and his property, son of the brother of Abram, and they went, and he was dwelling in Sedom.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יִּקְח֨וּ",
@@ -3855,7 +3855,7 @@
         "gateLesson": 42,
         "tier": "strict",
         "wooden": "And you shall say, 'To your servant, to Jaakob'; it is a gift sent to my lord, to Esav; and behold, also he is behind us.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אָֽמַרְתָּ֙",
@@ -3998,7 +3998,7 @@
         "gateLesson": 42,
         "tier": "strict",
         "wooden": "It is the word that I spoke to Paroh: what God is doing he has shown to Paroh.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "ה֣וּא",
@@ -4140,8 +4140,8 @@
         "ref": "Gen 37:19",
         "gateLesson": 42,
         "tier": "guided",
-        "wooden": "And they said, each man to his brother, 'Behold, this master of dreams is coming.'",
-        "woodenStatus": "draft",
+        "wooden": "And they said, each man to his brother, 'Behold, this master of the dreams is coming.'",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֹּאמְר֖וּ",
@@ -4251,7 +4251,7 @@
         "gateLesson": 42,
         "tier": "guided",
         "wooden": "And they said, 'Like a prostitute should he treat our sister?'",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֹּאמְר֑וּ",
@@ -4317,7 +4317,7 @@
         "gateLesson": 45,
         "tier": "strict",
         "wooden": "And the two daughters of Lot conceived by their father.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַֽ/תַּהֲרֶ֛יןָ",
@@ -4383,7 +4383,7 @@
         "gateLesson": 45,
         "tier": "strict",
         "wooden": "Therefore he called that place Beer-Sheba, for there the two of them swore.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "עַל",
@@ -4515,7 +4515,7 @@
         "gateLesson": 45,
         "tier": "strict",
         "wooden": "Two by two they came to Noach, into the ark, male and female, just as God had commanded Noach.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "שְׁנַ֨יִם",
@@ -4680,7 +4680,7 @@
         "gateLesson": 45,
         "tier": "strict",
         "wooden": "And Laban went into the tent of Jaakob, and into the tent of Leah, and into the tent of the two maidservants, and he did not find; and he went out from the tent of Leah, and he went into the tent of Rachel.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יָּבֹ֨א",
@@ -4878,7 +4878,7 @@
         "gateLesson": 45,
         "tier": "guided",
         "wooden": "And Bethuel fathered Rivkah; these eight Milkah bore to Nachor, brother of Abraham.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וּ/בְתוּאֵ֖ל",
@@ -5010,7 +5010,7 @@
         "gateLesson": 45,
         "tier": "guided",
         "wooden": "And he gathered them into custody three days.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֶּאֱסֹ֥ף",
@@ -5087,7 +5087,7 @@
         "gateLesson": 16,
         "tier": "strict",
         "wooden": "And to Makir I gave the Gilad.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וּ/לְ/מָכִ֖יר",
@@ -5142,7 +5142,7 @@
         "gateLesson": 23,
         "tier": "strict",
         "wooden": "You shall not murder.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "לֹ֖א",
@@ -5175,7 +5175,7 @@
         "gateLesson": 23,
         "tier": "strict",
         "wooden": "And you shall not commit adultery.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/לֹ֖א",
@@ -5208,7 +5208,7 @@
         "gateLesson": 23,
         "tier": "strict",
         "wooden": "And you shall not steal.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/לֹ֖א",
@@ -5240,8 +5240,8 @@
         "ref": "Deut 6:4",
         "gateLesson": 45,
         "tier": "strict",
-        "wooden": "Hear, Israel: YHWH our God, YHWH one.",
-        "woodenStatus": "draft",
+        "wooden": "Hear, Yisrael: YHWH our God, YHWH one.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "שְׁמַ֖ע",
@@ -5318,7 +5318,7 @@
         "gateLesson": 31,
         "tier": "strict",
         "wooden": "The sons of Gereshon: Libni and Shimi, according to their clans.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "בְּנֵ֥י",
@@ -5384,7 +5384,7 @@
         "gateLesson": 30,
         "tier": "strict",
         "wooden": "and to those who were in Aroer, and to those who were in Siphmoth, and to those who were in Eshtemoa,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/לַ/אֲשֶׁ֧ר",
@@ -5461,7 +5461,7 @@
         "gateLesson": 45,
         "tier": "strict",
         "wooden": "And Elimelek, husband of Naomi, died, and she was left, she and her two sons.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יָּ֥מָת",
@@ -5560,7 +5560,7 @@
         "gateLesson": 35,
         "tier": "guided",
         "wooden": "And they said to her, 'For with you we will return to your people.'",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/תֹּאמַ֖רְנָה",
@@ -5637,7 +5637,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And the word of YHWH was to Jonah son of Amittai, saying,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַֽ/יְהִי֙",
@@ -5736,7 +5736,7 @@
         "gateLesson": 35,
         "tier": "guided",
         "wooden": "And YHWH said, 'Does it burn well for you?'",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֹּ֣אמֶר",
@@ -5802,7 +5802,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And YHWH spoke to Mosheh, saying,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יְדַבֵּ֥ר",
@@ -5868,7 +5868,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And YHWH spoke to Mosheh, saying,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יְדַבֵּ֥ר",
@@ -5934,7 +5934,7 @@
         "gateLesson": 35,
         "tier": "guided",
         "wooden": "And the people rested on the seventh day.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יִּשְׁבְּת֥וּ",
@@ -5989,7 +5989,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And YHWH spoke to me, saying,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יְדַבֵּ֥ר",
@@ -6044,7 +6044,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And we dwelt in the valley opposite Beth-Peor.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/נֵּ֣שֶׁב",
@@ -6110,7 +6110,7 @@
         "gateLesson": 40,
         "tier": "guided",
         "wooden": "You shall not muzzle an ox in its threshing.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "לֹא",
@@ -6165,7 +6165,7 @@
         "gateLesson": 37,
         "tier": "strict",
         "wooden": "And Jair died, and he was buried in Kamon.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יָּ֣מָת",
@@ -6220,7 +6220,7 @@
         "gateLesson": 37,
         "tier": "strict",
         "wooden": "And Ibtsan died, and he was buried in Beth-Lechem.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יָּ֣מָת",
@@ -6286,7 +6286,7 @@
         "gateLesson": 35,
         "tier": "guided",
         "wooden": "And he went down, and he spoke to the woman, and she was right in the eyes of Shimshon.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֵּ֖רֶד",
@@ -6363,7 +6363,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And the word of YHWH was to Shemuel, saying,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַֽ/יְהִי֙",
@@ -6440,7 +6440,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And Shemuel summoned the people to YHWH at the Mitspah.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יַּצְעֵ֤ק",
@@ -6528,7 +6528,7 @@
         "gateLesson": 37,
         "tier": "guided",
         "wooden": "And he finished from prophesying, and he came to the high place.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יְכַל֙",
@@ -6582,8 +6582,8 @@
         "ref": "2Sam 17:26",
         "gateLesson": 35,
         "tier": "strict",
-        "wooden": "And Israel and Abshalom camped in the land of the Gilad.",
-        "woodenStatus": "draft",
+        "wooden": "And Yisrael and Abshalom camped in the land of the Gilad.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יִּ֤חַן",
@@ -6649,7 +6649,7 @@
         "gateLesson": 35,
         "tier": "strict",
         "wooden": "And David went up according to the word of Gad, just as YHWH had commanded.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יַּ֤עַל",
@@ -6737,7 +6737,7 @@
         "gateLesson": 37,
         "tier": "guided",
         "wooden": "And the Philistines came, and they spread out in the valley of Rephaim.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וּ/פְלִשְׁתִּ֖ים",
@@ -6805,7 +6805,7 @@
         "tier": "challenge",
         "challengeNote": "Contains 1 Past Narrative (wayyiqtol) form — introduced in Lesson 35.",
         "wooden": "And he went up from there to Beer-Sheba.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יַּ֥עַל",
@@ -6861,7 +6861,7 @@
         "tier": "challenge",
         "challengeNote": "Contains 2 Past Narrative (wayyiqtol) forms — introduced in Lesson 35.",
         "wooden": "And he rose and went, and Jehonathan came to the city.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יָּ֖קָם",
@@ -6928,7 +6928,7 @@
         "tier": "challenge",
         "challengeNote": "Contains 1 Past Narrative (wayyiqtol) form — introduced in Lesson 35.",
         "wooden": "And he said, 'Servant of Abraham am I.'",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יֹּאמַ֑ר",
@@ -6983,8 +6983,8 @@
         "gateLesson": 20,
         "tier": "challenge",
         "challengeNote": "Contains 1 Hitpael wayyiqtol form (וַיִּשְׁתַּחוּ, \"and he bowed down\") — the Nifal/Hitpael stem floor introduced in Lesson 37.",
-        "wooden": "And Abraham bowed down before the people of the land.",
-        "woodenStatus": "draft",
+        "wooden": "And Abraham bowed down before the face of the people of the land.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יִּשְׁתַּ֨חוּ֙",
@@ -7051,7 +7051,7 @@
         "tier": "challenge",
         "challengeNote": "Contains 1 Piel Past-Narrative (wayyiqtol) form — introduced in Lesson 35.",
         "wooden": "And God spoke to Noach, saying,",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וַ/יְדַבֵּ֥ר",
@@ -7117,8 +7117,8 @@
         "gateLesson": 29,
         "tier": "challenge",
         "challengeNote": "Contains 2 Imperative forms (בֹּא \"go!\", דַבֵּר \"speak!\") — the Imperative introduced in Lesson 39.",
-        "wooden": "Go, speak to Paroh, king of Mitsrayim, that he send away the sons of Israel from his land.",
-        "woodenStatus": "draft",
+        "wooden": "Go, speak to Paroh, king of Mitsrayim, that he send away the sons of Yisrael from his land.",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "בֹּ֣א",
@@ -7251,7 +7251,7 @@
         "tier": "challenge",
         "challengeNote": "Contains 1 numeral form (שְׁלֹשָׁה \"three\") — Numerals introduced in Lesson 45.",
         "wooden": "And David, he was the small one, and the three great ones went after Shaul.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/דָוִ֖ד",
@@ -7351,7 +7351,7 @@
         "tier": "challenge",
         "challengeNote": "Contains 1 numeral form (שָׁלֹשׁ \"three\") — Numerals introduced in Lesson 45.",
         "wooden": "And Abshalom fled, and he went to Geshur, and he was there three years.",
-        "woodenStatus": "draft",
+        "woodenStatus": "reviewed",
         "tokens": [
           {
             "t": "וְ/אַבְשָׁל֥וֹם",

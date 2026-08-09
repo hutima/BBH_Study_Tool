@@ -27,7 +27,7 @@
       },
       "rationale": "Genesis 22 (preferred narrative domain); short genealogical clause, only conjunction/preposition-level grammar beyond vocab.",
       "wooden": "and Kesed, and Chazo, and Pildash, and Jidlaph, and Bethuel.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-25-14",
@@ -43,7 +43,7 @@
       },
       "rationale": "Shortest L13 candidate; contiguous with 25:15 below.",
       "wooden": "and Mishma, and Dumah, and Massa,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-25-15",
@@ -59,7 +59,7 @@
       },
       "rationale": "Contiguous run with 25:14.",
       "wooden": "Chadad, and Tema, Jetur, Naphish, and Kedemah.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-27",
@@ -75,7 +75,7 @@
       },
       "rationale": "Short genealogical name-list clause at the L13 (conjunction/preposition) gate.",
       "wooden": "and Hadoram, and Uzal, and Diklah,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-16",
@@ -91,7 +91,7 @@
       },
       "rationale": "Contiguous run with 10:17; genealogical list at the L13 gate with a couple of unknown proper-adjacent lexemes.",
       "wooden": "and the Jebusite, and the Amorite, and the Girgashite,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-17",
@@ -107,7 +107,7 @@
       },
       "rationale": "Contiguous run with 10:16.",
       "wooden": "and the Hivite, and the Arkite, and the Sinite,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-26",
@@ -123,7 +123,7 @@
       },
       "rationale": "Only L16-gate (Qal perfect singular) strict candidate short enough to curate; genealogical clause.",
       "wooden": "And Joktan fathered Almodad, and Sheleph, and Chatsarmaveth, and Jerach,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-16-14",
@@ -139,7 +139,7 @@
       },
       "rationale": "Second L16-gate strict candidate; etiological naming clause.",
       "wooden": "Therefore he called the well Beer-Lachai-Roi; behold, between Kadesh and between Bered.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-1-1",
@@ -154,8 +154,8 @@
         "maxGrammarLesson": 16
       },
       "rationale": "The opening verse of Genesis 1 (preferred chapter); Qal perfect 3ms בָּרָא is the gate.",
-      "wooden": "In beginning, God created the heavens and the earth.",
-      "woodenStatus": "draft"
+      "wooden": "In beginning, God created the sky and the earth.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-24",
@@ -171,7 +171,7 @@
       },
       "rationale": "Second available L16-gate guided candidate; genealogical clause.",
       "wooden": "And Arpakshad fathered Shelach, and Shelach fathered Eber.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-22-21",
@@ -187,7 +187,7 @@
       },
       "rationale": "Genesis 22 (preferred); construct-state genealogical list, gate L22 (suffix on a singular host).",
       "wooden": "Uz his firstborn, and Buz his brother, and Kemuel father of Aram.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-46-23",
@@ -203,7 +203,7 @@
       },
       "rationale": "Shortest L20 (construct state) candidate.",
       "wooden": "And the sons of Dan: Chushim.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-35-24",
@@ -218,8 +218,8 @@
         "maxGrammarLesson": 20
       },
       "rationale": "Short L20 construct-state genealogical clause.",
-      "wooden": "The sons of Rachel: Joseph and Binyamin.",
-      "woodenStatus": "draft"
+      "wooden": "The sons of Rachel: Yoseph and Binyamin.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-3",
@@ -235,7 +235,7 @@
       },
       "rationale": "Short L20 construct-state genealogical clause.",
       "wooden": "And the sons of Gomer: Ashkenaz, and Riphath, and Togarmah.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-15",
@@ -251,7 +251,7 @@
       },
       "rationale": "Shortest available L20-22 guided candidate.",
       "wooden": "And Kenaan fathered Tsidon his firstborn, and Cheth,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-17-4",
@@ -267,7 +267,7 @@
       },
       "rationale": "Short L22 guided candidate (covenant-formula clause).",
       "wooden": "As for me, behold, my covenant is with you, and you shall become father of a multitude of nations.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-24-38",
@@ -283,7 +283,7 @@
       },
       "rationale": "Only strict candidate at the L23 (Qal imperfect singular) gate.",
       "wooden": "If not, to the house of my father you shall go, and to my clan, and you shall take a woman for my son.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-24-4",
@@ -299,7 +299,7 @@
       },
       "rationale": "Shorter of the two available L23-25 guided candidates.",
       "wooden": "For to my land and to my birthplace you shall go, and you shall take a woman for my son, for Yitschak.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-20-18",
@@ -314,8 +314,8 @@
         "maxGrammarLesson": 25
       },
       "rationale": "Second available L23-25 guided candidate (L25 adverbial-infinitive gate).",
-      "wooden": "For closing, YHWH had closed every womb belonging to the house of Abimelek, on account of the word of Sarah, wife of Abraham.",
-      "woodenStatus": "draft"
+      "wooden": "For closing, YHWH had closed up every womb belonging to the house of Abimelek, on account of the word of Sarah, wife of Abraham.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-24-1",
@@ -330,8 +330,8 @@
         "maxGrammarLesson": 29
       },
       "rationale": "Only strict candidate at the L29 (Piel/Hifil floor) gate.",
-      "wooden": "And Abraham was old, come into days, and YHWH had blessed Abraham in everything.",
-      "woodenStatus": "draft"
+      "wooden": "And Abraham was old, come into the days, and YHWH had blessed Abraham in everything.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-49-18",
@@ -347,7 +347,7 @@
       },
       "rationale": "Shortest available L28-31 guided candidate (Jacob’s Blessing).",
       "wooden": "For your salvation I have waited, YHWH.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-49-5",
@@ -363,7 +363,7 @@
       },
       "rationale": "Second-shortest available L28-31 guided candidate.",
       "wooden": "Shimon and Levi are brothers; weapons of violence are their swords.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-25",
@@ -379,7 +379,7 @@
       },
       "rationale": "First of a 4-verse contiguous strict run (36:25-28) at the L33 (demonstrative/Edomite genealogy) gate.",
       "wooden": "And these are the sons of Anah: Dishon; and Oholibamah daughter of Anah.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-26",
@@ -395,7 +395,7 @@
       },
       "rationale": "Contiguous run with 36:25/27/28.",
       "wooden": "And these are the sons of Dishan: Chemdan, and Eshban, and Jithran, and Keran.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-27",
@@ -411,7 +411,7 @@
       },
       "rationale": "Contiguous run with 36:25/26/28.",
       "wooden": "These are the sons of Etser: Bilhan, and Zaavan, and Akan.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-28",
@@ -427,7 +427,7 @@
       },
       "rationale": "Contiguous run with 36:25/26/27.",
       "wooden": "These are the sons of Dishan: Uz and Aran.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-10-20",
@@ -443,7 +443,7 @@
       },
       "rationale": "Short L32-34 guided candidate, genealogical summary clause.",
       "wooden": "These are the sons of Cham, according to their clans, according to their tongues, in their lands, in their nations.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-36-9",
@@ -459,7 +459,7 @@
       },
       "rationale": "Short L32-34 guided candidate, genealogical heading clause.",
       "wooden": "And these are the generations of Esav, father of Edom, in the hill country of Seir.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-37-1",
@@ -474,8 +474,8 @@
         "maxGrammarLesson": 35
       },
       "rationale": "Genesis 37 (preferred, opens the Joseph narrative); Past-Narrative (wayyiqtol) gate L35.",
-      "wooden": "And Jaakob dwelt in the land of his father's sojournings, in the land of Kenaan.",
-      "woodenStatus": "draft"
+      "wooden": "And Jaakob dwelt in the land of the sojournings of his father, in the land of Kenaan.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-38-6",
@@ -491,7 +491,7 @@
       },
       "rationale": "Genesis 38 (preferred); wayyiqtol gate L35.",
       "wooden": "And Jehudah took a woman for Er his firstborn, and her name was Tamar.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-47-10",
@@ -507,7 +507,7 @@
       },
       "rationale": "Genesis 47 (preferred); wayyiqtol gate L35.",
       "wooden": "And Jaakob blessed Paroh, and he went out from before the face of Paroh.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-26-6",
@@ -523,7 +523,7 @@
       },
       "rationale": "Shortest overall L35-38 strict candidate (3 tokens).",
       "wooden": "And Yitschak dwelt in Gerar.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-1-13",
@@ -539,7 +539,7 @@
       },
       "rationale": "Genesis 1 (preferred); the day-refrain formula, wayyiqtol gate L35.",
       "wooden": "And there was evening, and there was morning, a third day.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-1-19",
@@ -555,7 +555,7 @@
       },
       "rationale": "Genesis 1 (preferred); the day-refrain formula, wayyiqtol gate L35.",
       "wooden": "And there was evening, and there was morning, a fourth day.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-50-12",
@@ -571,7 +571,7 @@
       },
       "rationale": "Genesis 50 (preferred, closing chapter); attached object-pronoun-on-verb gate L40.",
       "wooden": "And his sons did for him thus, just as he had commanded them.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-38-2",
@@ -587,7 +587,7 @@
       },
       "rationale": "Genesis 38 (preferred); L40 verb-suffix gate.",
       "wooden": "And Jehudah saw there a daughter of a Kenaanite man, and his name was Shua, and he took her, and he came to her.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-44-6",
@@ -603,7 +603,7 @@
       },
       "rationale": "Short L39-41 (imperative/jussive/verb-suffix) strict candidate.",
       "wooden": "And he overtook them, and he spoke to them these words.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-7-5",
@@ -619,7 +619,7 @@
       },
       "rationale": "Short L39-41 strict candidate.",
       "wooden": "And Noach did according to all that YHWH had commanded him.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-1-3",
@@ -635,7 +635,7 @@
       },
       "rationale": "Genesis 1 (preferred); “Let there be light” jussive, gate L39.",
       "wooden": "And God said, 'Let light be,' and light was.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-50-6",
@@ -651,7 +651,7 @@
       },
       "rationale": "Genesis 50 (preferred); L40 verb-suffix gate.",
       "wooden": "And Paroh said, 'Go up and bury your father, just as he made you swear.'",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-32-14",
@@ -667,7 +667,7 @@
       },
       "rationale": "Shortest available L42-44 (participle) strict candidate.",
       "wooden": "And he lodged there that night, and he took from what had come into his hand a gift for Esav his brother.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-14-12",
@@ -683,7 +683,7 @@
       },
       "rationale": "Short L42-44 strict candidate.",
       "wooden": "And they took Lot and his property, son of the brother of Abram, and they went, and he was dwelling in Sedom.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-32-19",
@@ -699,7 +699,7 @@
       },
       "rationale": "Short L42-44 strict candidate.",
       "wooden": "And you shall say, 'To your servant, to Jaakob'; it is a gift sent to my lord, to Esav; and behold, also he is behind us.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-41-28",
@@ -715,7 +715,7 @@
       },
       "rationale": "Short L42-44 strict candidate.",
       "wooden": "It is the word that I spoke to Paroh: what God is doing he has shown to Paroh.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-37-19",
@@ -730,8 +730,8 @@
         "maxGrammarLesson": 42
       },
       "rationale": "Genesis 37 (preferred); L42 participle gate, the only preferred-chapter guided candidate in this bucket.",
-      "wooden": "And they said, each man to his brother, 'Behold, this master of dreams is coming.'",
-      "woodenStatus": "draft"
+      "wooden": "And they said, each man to his brother, 'Behold, this master of the dreams is coming.'",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-34-31",
@@ -747,7 +747,7 @@
       },
       "rationale": "Shortest non-preferred L42-44 guided candidate.",
       "wooden": "And they said, 'Like a prostitute should he treat our sister?'",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-19-36",
@@ -763,7 +763,7 @@
       },
       "rationale": "Shortest available L45-50 (numeral) strict candidate.",
       "wooden": "And the two daughters of Lot conceived by their father.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-21-31",
@@ -779,7 +779,7 @@
       },
       "rationale": "Short L45-50 strict candidate (numeral-bearing place-naming clause).",
       "wooden": "Therefore he called that place Beer-Sheba, for there the two of them swore.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-7-9",
@@ -795,7 +795,7 @@
       },
       "rationale": "L45-50 strict candidate.",
       "wooden": "Two by two they came to Noach, into the ark, male and female, just as God had commanded Noach.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-31-33",
@@ -811,7 +811,7 @@
       },
       "rationale": "L45-50 strict candidate.",
       "wooden": "And Laban went into the tent of Jaakob, and into the tent of Leah, and into the tent of the two maidservants, and he did not find; and he went out from the tent of Leah, and he went into the tent of Rachel.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-22-23",
@@ -827,7 +827,7 @@
       },
       "rationale": "Genesis 22 (preferred); the only preferred-chapter guided candidate at the L45 numeral gate.",
       "wooden": "And Bethuel fathered Rivkah; these eight Milkah bore to Nachor, brother of Abraham.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-gen-42-17",
@@ -843,7 +843,7 @@
       },
       "rationale": "Shortest non-preferred L45-50 guided candidate.",
       "wooden": "And he gathered them into custody three days.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-3-15",
@@ -859,7 +859,7 @@
       },
       "rationale": "Thin-bucket fill (L16 gate, bucket 15-19); Deut strict candidate, 4 tokens.",
       "wooden": "And to Makir I gave the Gilad.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-5-17",
@@ -875,7 +875,7 @@
       },
       "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens.",
       "wooden": "You shall not murder.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-5-18",
@@ -891,7 +891,7 @@
       },
       "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens.",
       "wooden": "And you shall not commit adultery.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-5-19",
@@ -907,7 +907,7 @@
       },
       "rationale": "Thin-bucket fill (L23 gate, bucket 23-27); Deut strict candidate, 2 tokens.",
       "wooden": "And you shall not steal.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-6-4",
@@ -922,8 +922,8 @@
         "maxGrammarLesson": 45
       },
       "rationale": "Thin-bucket fill; the Shema (Deut 6:4). Originally recorded at L31/4 tokens before task 13a's large-letter tokenizer fix (see tools/import_oshb_reader.mjs's W_RE/NESTED_SEG_RE): OSHB marks the traditionally-enlarged שְׁמַע/אֶחָד with a nested <seg type=\"x-large\"> the old regex-based tokenizer silently dropped both tokens for. Now 6 tokens, gate L45 (the closing numeral אֶחָד \"one\").",
-      "wooden": "Hear, Israel: YHWH our God, YHWH one.",
-      "woodenStatus": "draft"
+      "wooden": "Hear, Yisrael: YHWH our God, YHWH one.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-exod-6-17",
@@ -939,7 +939,7 @@
       },
       "rationale": "Thin-bucket fill (L31 gate, bucket 28-31); Exod strict candidate, 5 tokens.",
       "wooden": "The sons of Gereshon: Libni and Shimi, according to their clans.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1sam-30-28",
@@ -955,7 +955,7 @@
       },
       "rationale": "Thin-bucket fill (L30 gate, bucket 28-31); 1Sam strict candidate, 6 tokens.",
       "wooden": "and to those who were in Aroer, and to those who were in Siphmoth, and to those who were in Eshtemoa,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ruth-1-3",
@@ -971,7 +971,7 @@
       },
       "rationale": "Ruth showcase (L45 gate); short strict narrative verse, 8 tokens.",
       "wooden": "And Elimelek, husband of Naomi, died, and she was left, she and her two sons.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ruth-1-10",
@@ -987,7 +987,7 @@
       },
       "rationale": "Ruth showcase (L35 gate); guided narrative verse, 6 tokens.",
       "wooden": "And they said to her, 'For with you we will return to your people.'",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-jonah-1-1",
@@ -1003,7 +1003,7 @@
       },
       "rationale": "Jonah showcase (L35 gate); short strict narrative verse, 8 tokens.",
       "wooden": "And the word of YHWH was to Jonah son of Amittai, saying,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-jonah-4-4",
@@ -1019,7 +1019,7 @@
       },
       "rationale": "Jonah showcase (L35 gate); guided narrative verse, 5 tokens.",
       "wooden": "And YHWH said, 'Does it burn well for you?'",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-exod-13-1",
@@ -1035,7 +1035,7 @@
       },
       "rationale": "Exod showcase (L35 gate); short strict narrative verse, 5 tokens.",
       "wooden": "And YHWH spoke to Mosheh, saying,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-exod-14-1",
@@ -1051,7 +1051,7 @@
       },
       "rationale": "Exod showcase (L35 gate); short strict narrative verse, 5 tokens.",
       "wooden": "And YHWH spoke to Mosheh, saying,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-exod-16-30",
@@ -1067,7 +1067,7 @@
       },
       "rationale": "Exod showcase (L35 gate); guided narrative verse, 4 tokens.",
       "wooden": "And the people rested on the seventh day.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-2-17",
@@ -1083,7 +1083,7 @@
       },
       "rationale": "Deut showcase (L35 gate); short strict narrative verse, 4 tokens.",
       "wooden": "And YHWH spoke to me, saying,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-3-29",
@@ -1099,7 +1099,7 @@
       },
       "rationale": "Deut showcase (L35 gate); short strict narrative verse, 5 tokens.",
       "wooden": "And we dwelt in the valley opposite Beth-Peor.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-deut-25-4",
@@ -1115,7 +1115,7 @@
       },
       "rationale": "Deut showcase (L40 gate); guided narrative verse, 4 tokens.",
       "wooden": "You shall not muzzle an ox in its threshing.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-judg-10-5",
@@ -1131,7 +1131,7 @@
       },
       "rationale": "Judg showcase (L37 gate); short strict narrative verse, 4 tokens.",
       "wooden": "And Jair died, and he was buried in Kamon.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-judg-12-10",
@@ -1147,7 +1147,7 @@
       },
       "rationale": "Judg showcase (L37 gate); short strict narrative verse, 5 tokens.",
       "wooden": "And Ibtsan died, and he was buried in Beth-Lechem.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-judg-14-7",
@@ -1163,7 +1163,7 @@
       },
       "rationale": "Judg showcase (L35 gate); guided narrative verse, 6 tokens.",
       "wooden": "And he went down, and he spoke to the woman, and she was right in the eyes of Shimshon.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1sam-15-10",
@@ -1179,7 +1179,7 @@
       },
       "rationale": "1Sam showcase (L35 gate); short strict narrative verse, 6 tokens.",
       "wooden": "And the word of YHWH was to Shemuel, saying,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1sam-10-17",
@@ -1195,7 +1195,7 @@
       },
       "rationale": "1Sam showcase (L35 gate); short strict narrative verse, 7 tokens.",
       "wooden": "And Shemuel summoned the people to YHWH at the Mitspah.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-1sam-10-13",
@@ -1211,7 +1211,7 @@
       },
       "rationale": "1Sam showcase (L37 gate); guided narrative verse, 4 tokens.",
       "wooden": "And he finished from prophesying, and he came to the high place.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2sam-17-26",
@@ -1226,8 +1226,8 @@
         "maxGrammarLesson": 35
       },
       "rationale": "2Sam showcase (L35 gate); short strict narrative verse, 5 tokens.",
-      "wooden": "And Israel and Abshalom camped in the land of the Gilad.",
-      "woodenStatus": "draft"
+      "wooden": "And Yisrael and Abshalom camped in the land of the Gilad.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2sam-24-19",
@@ -1243,7 +1243,7 @@
       },
       "rationale": "2Sam showcase (L35 gate); short strict narrative verse, 7 tokens.",
       "wooden": "And David went up according to the word of Gad, just as YHWH had commanded.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-2sam-5-18",
@@ -1259,7 +1259,7 @@
       },
       "rationale": "2Sam showcase (L37 gate); guided narrative verse, 5 tokens.",
       "wooden": "And the Philistines came, and they spread out in the valley of Rephaim.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-gen-26-23",
@@ -1276,7 +1276,7 @@
       "rationale": "Challenge showcase (gate L13): clean 4-token wayyiqtol clause (Isaac's itinerary) — every word is L13-or-below narrative-connective/place-name material except the single Past Narrative verb.",
       "challengeNote": "Contains 1 Past Narrative (wayyiqtol) form — introduced in Lesson 35.",
       "wooden": "And he went up from there to Beer-Sheba.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-1sam-21-1",
@@ -1293,7 +1293,7 @@
       "rationale": "Challenge showcase (gate L16): two Past Narrative wayyiqtol verbs (קם, וילך) back-to-back in a 5-token clause, everything else already in scope by L16 (Qal perfect) — a clean \"2 future forms, same feature\" example.",
       "challengeNote": "Contains 2 Past Narrative (wayyiqtol) forms — introduced in Lesson 35.",
       "wooden": "And he rose and went, and Jehonathan came to the city.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-gen-24-34",
@@ -1310,7 +1310,7 @@
       "rationale": "Challenge showcase (gate L20): short self-introduction clause (\"I am Abraham's servant\") — construct-noun/pronoun material already in scope by L20, one wayyiqtol verb previews Past Narrative.",
       "challengeNote": "Contains 1 Past Narrative (wayyiqtol) form — introduced in Lesson 35.",
       "wooden": "And he said, 'Servant of Abraham am I.'",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-gen-23-12",
@@ -1326,8 +1326,8 @@
       },
       "rationale": "Challenge showcase (gate L20): Abraham bowing before the Hittites — construct-chain/preposition material already in scope by L20, one Hitpael wayyiqtol verb previews the Nifal/Hitpael stem floor.",
       "challengeNote": "Contains 1 Hitpael wayyiqtol form (וַיִּשְׁתַּחוּ, \"and he bowed down\") — the Nifal/Hitpael stem floor introduced in Lesson 37.",
-      "wooden": "And Abraham bowed down before the people of the land.",
-      "woodenStatus": "draft"
+      "wooden": "And Abraham bowed down before the face of the people of the land.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-gen-8-15",
@@ -1344,7 +1344,7 @@
       "rationale": "Challenge showcase (gate L24): the recurring \"God spoke to X, saying\" narrative formula — infinitive construct לֵאמֹר already in scope by L24, one Piel wayyiqtol verb previews Past Narrative.",
       "challengeNote": "Contains 1 Piel Past-Narrative (wayyiqtol) form — introduced in Lesson 35.",
       "wooden": "And God spoke to Noach, saying,",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-exod-6-11",
@@ -1360,8 +1360,8 @@
       },
       "rationale": "Challenge showcase (gate L29): \"Go, speak to Pharaoh...\" — 0 unknown content lexemes, entirely Piel/Qal perfect-or-lower material in scope by L29 except two paired Imperative verbs opening the verse.",
       "challengeNote": "Contains 2 Imperative forms (בֹּא \"go!\", דַבֵּר \"speak!\") — the Imperative introduced in Lesson 39.",
-      "wooden": "Go, speak to Paroh, king of Mitsrayim, that he send away the sons of Israel from his land.",
-      "woodenStatus": "draft"
+      "wooden": "Go, speak to Paroh, king of Mitsrayim, that he send away the sons of Yisrael from his land.",
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-1sam-17-14",
@@ -1378,7 +1378,7 @@
       "rationale": "Challenge showcase (gate L32): David introduced as the youngest of the brothers — adjective inflection (קָטָן/גְּדֹלִים) already in scope by L32, one numeral previews the numerals unit.",
       "challengeNote": "Contains 1 numeral form (שְׁלֹשָׁה \"three\") — Numerals introduced in Lesson 45.",
       "wooden": "And David, he was the small one, and the three great ones went after Shaul.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     },
     {
       "id": "reader-ch-2sam-13-38",
@@ -1395,7 +1395,7 @@
       "rationale": "Challenge showcase (gate L35): Absalom's flight to Geshur — Past Narrative wayyiqtol material already in scope by L35, one cardinal numeral previews the numerals unit.",
       "challengeNote": "Contains 1 numeral form (שָׁלֹשׁ \"three\") — Numerals introduced in Lesson 45.",
       "wooden": "And Abshalom fled, and he went to Geshur, and he was there three years.",
-      "woodenStatus": "draft"
+      "woodenStatus": "reviewed"
     }
   ]
 }
