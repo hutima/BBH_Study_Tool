@@ -39,7 +39,7 @@
         "In other positions it is normally silent.",
         "Under gutturals, שְׁוָא is commonly replaced by a composite sheva: חֲטַף־פַּתַח, חֲטַף־סֶגוֹל, or חֲטַף־קָמֶץ."
       ],
-      "vocabCount": 3
+      "vocabCount": 4
     },
     {
       "lesson": 4,
@@ -101,7 +101,7 @@
         "The interrogative הֲ attaches to the beginning of a clause and marks a yes-no question.",
         "Do not confuse article הַ, which modifies a noun, with interrogative הֲ, which marks the clause."
       ],
-      "vocabCount": 2
+      "vocabCount": 4
     },
     {
       "lesson": 9,
@@ -150,7 +150,7 @@
         "Both may function as copular expressions.",
         "Translate idiomatically according to context rather than preserving Hebrew word order mechanically."
       ],
-      "vocabCount": 2
+      "vocabCount": 4
     },
     {
       "lesson": 13,
@@ -163,7 +163,7 @@
         "Before a normal consonant, attached מִן commonly assimilates its nun and places דָּגֵשׁ חָזָק in the following consonant.",
         "מִן may instead remain a separate word joined by מַקֵּף; it does not assimilate before a guttural."
       ],
-      "vocabCount": 6
+      "vocabCount": 10
     },
     {
       "lesson": 14,
@@ -380,7 +380,7 @@
         "Subordinating conjunctions link a subordinate clause to a main clause.",
         "כִּי may introduce a reason clause or an object/complement clause; interpret the relationship from context."
       ],
-      "vocabCount": 6
+      "vocabCount": 12
     },
     {
       "lesson": 31,
@@ -418,7 +418,7 @@
         "Far demonstratives are identical to third-person personal pronouns: הוּא, הִיא, הֵמָּה, and הֵנָּה.",
         "Select the demonstrative that agrees with its referent in gender and number."
       ],
-      "vocabCount": 1
+      "vocabCount": 4
     },
     {
       "lesson": 34,

@@ -13,7 +13,7 @@
 //   4. Zero case-insensitive 'duff' / 'koine' / 'greekflashcards' in that same
 //      graph. Bare 'greek' is allowed ONLY inside a `//` or `/* */` comment
 //      line; every such occurrence is printed as a non-fatal report.
-//   5. js/data/bbh_vocab.js registers exactly 50 lessons and 191 cards
+//   5. js/data/bbh_vocab.js registers exactly 50 lessons and 209 cards
 //      (light regex parse — no execution of the generated file).
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
 //   7. Zero case-insensitive 'googletagmanager', 'google-analytics',
@@ -242,7 +242,7 @@ function readDirSafe(dir) {
   if (!gaHits) report(`check7: 0 googletagmanager/google-analytics/gtag(/G-YH11KQB6QX hits across ${filesToScan.length} live-graph files (pass)`);
 }
 
-// ── Check 5: bbh_vocab.js registers 50 lessons / 191 cards ──────────────
+// ── Check 5: bbh_vocab.js registers 50 lessons / 209 cards ──────────────
 {
   const vocabPath = 'js/data/bbh_vocab.js';
   if (!existsSync(path.join(ROOT, vocabPath))) {
@@ -252,9 +252,9 @@ function readDirSafe(dir) {
     const lessonCount = [...src.matchAll(/window\.SETS\[["']\d+["']\]\s*=/g)].length;
     const cardCount = [...src.matchAll(/"id":\s*"[^"]+"/g)].length;
     if (lessonCount !== 50) fail(`check5: expected 50 lessons registered, found ${lessonCount}`);
-    if (cardCount !== 191) fail(`check5: expected 191 cards, found ${cardCount}`);
-    if (lessonCount === 50 && cardCount === 191) {
-      report('check5: 50 lessons / 191 cards registered in bbh_vocab.js (pass)');
+    if (cardCount !== 209) fail(`check5: expected 209 cards, found ${cardCount}`);
+    if (lessonCount === 50 && cardCount === 209) {
+      report('check5: 50 lessons / 209 cards registered in bbh_vocab.js (pass)');
     }
   }
 }

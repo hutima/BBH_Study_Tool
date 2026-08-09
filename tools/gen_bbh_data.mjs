@@ -374,6 +374,25 @@ function writeSetMetaFile(lessons) {
   for (let n = 1; n <= TOTAL_LESSONS; n += 1) allLessons.push(n);
   sessionWeekMeta.all = { label: 'All Lessons', lessons: allLessons };
 
+  // Second preset group ("Units (Reading blocks)"): the textbook's own 13
+  // illustrated-Reading breakpoints from the TOC (Phase 2 ledger addendum,
+  // 2026-08-08). Keys are additive — the five rng1..rng5 decade presets and
+  // "all" above are untouched; getSessions() in js/app/main.js iterates
+  // Object.keys(SESSION_WEEK_META) generically, so these surface as extra
+  // session-preset entries with no UI-file changes required.
+  const READING_BLOCKS = [
+    [1, 9], [10, 14], [15, 18], [19, 22], [23, 26], [27, 30], [31, 34],
+    [35, 38], [39, 41], [42, 44], [45, 46], [47, 48], [49, 50]
+  ];
+  READING_BLOCKS.forEach(([start, end], idx) => {
+    const lessonsInBlock = [];
+    for (let n = start; n <= end; n += 1) lessonsInBlock.push(n);
+    sessionWeekMeta[`unit${idx + 1}`] = {
+      label: `Unit ${idx + 1} (L${start}–${end})`,
+      lessons: lessonsInBlock
+    };
+  });
+
   const weekFirstChapter = {};
   Object.keys(chapterToWeek).forEach((chapStr) => {
     const ch = Number(chapStr);
@@ -391,7 +410,9 @@ function writeSetMetaFile(lessons) {
   parts.push('// is the same data under its natural BBH name.\n');
   parts.push('export const LESSON_TITLES = CHAPTER_TITLES;\n\n');
 
-  parts.push('// Six range presets for the lesson selector: five 10-lesson blocks plus "all".\n');
+  parts.push('// Range presets for the lesson selector: five 10-lesson decade blocks, "all",\n');
+  parts.push('// plus 13 "Unit" reading-block presets (the textbook\'s own illustrated-\n');
+  parts.push('// Reading breakpoints) as a second preset group — 19 keys total.\n');
   parts.push(`export const SESSION_WEEK_META = ${JSON.stringify(sessionWeekMeta, null, 2)};\n\n`);
 
   parts.push('// Lesson number -> range index (1..5), derived from SESSION_WEEK_META rng1..rng5.\n');

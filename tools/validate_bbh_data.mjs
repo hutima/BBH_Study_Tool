@@ -146,8 +146,8 @@ function loadClassicScript(filePath, globalName) {
 function checkCsv() {
   const csvRecords = readCsv();
 
-  if (csvRecords.length !== 191) {
-    fail('csv-row-count', `expected 191 data rows, found ${csvRecords.length}`);
+  if (csvRecords.length !== 209) {
+    fail('csv-row-count', `expected 209 data rows, found ${csvRecords.length}`);
   }
 
   for (const rec of csvRecords) {
@@ -233,8 +233,8 @@ function checkVocab() {
     }
   }
 
-  if (totalCards !== 191) {
-    fail('vocab-card-count', `expected 191 total cards across all lessons, found ${totalCards}`);
+  if (totalCards !== 209) {
+    fail('vocab-card-count', `expected 209 total cards across all lessons, found ${totalCards}`);
   }
 }
 
@@ -279,9 +279,26 @@ async function checkSetMeta() {
     return;
   }
   const presetKeys = Object.keys(SESSION_WEEK_META);
-  if (presetKeys.length !== 6) {
-    fail('setmeta-shape', `expected 6 presets in SESSION_WEEK_META, found ${presetKeys.length} (${presetKeys.join(', ')})`);
+  if (presetKeys.length !== 19) {
+    fail('setmeta-shape', `expected 19 presets in SESSION_WEEK_META (5 decade + all + 13 reading-block units), found ${presetKeys.length} (${presetKeys.join(', ')})`);
   }
+  const expectedUnitRanges = [
+    [1, 9], [10, 14], [15, 18], [19, 22], [23, 26], [27, 30], [31, 34],
+    [35, 38], [39, 41], [42, 44], [45, 46], [47, 48], [49, 50]
+  ];
+  expectedUnitRanges.forEach(([start, end], idx) => {
+    const key = `unit${idx + 1}`;
+    const preset = SESSION_WEEK_META[key];
+    if (!preset || !Array.isArray(preset.lessons)) {
+      fail('setmeta-units', `missing reading-block preset "${key}"`);
+      return;
+    }
+    const expected = [];
+    for (let n = start; n <= end; n += 1) expected.push(n);
+    if (JSON.stringify(preset.lessons) !== JSON.stringify(expected)) {
+      fail('setmeta-units', `preset "${key}" lessons ${JSON.stringify(preset.lessons)} != expected ${JSON.stringify(expected)}`);
+    }
+  });
   for (const key of presetKeys) {
     const preset = SESSION_WEEK_META[key];
     const lessons = Array.isArray(preset) ? preset : preset && preset.lessons;
@@ -308,7 +325,7 @@ async function main() {
     for (const f of failures) console.error(`  ${f}`);
     process.exitCode = 1;
   } else {
-    console.log('OK — all BBH data checks passed (191 cards, 50 lessons, unique ids, point-strip safety, 6 in-range presets).');
+    console.log('OK — all BBH data checks passed (209 cards, 50 lessons, unique ids, point-strip safety, 19 in-range presets).');
   }
 }
 
