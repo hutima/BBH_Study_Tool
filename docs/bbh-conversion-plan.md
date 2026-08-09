@@ -904,3 +904,22 @@ for Josh/1Kgs/2Kgs/Esth/Ps; (B) prose selections curated + scored +
 glosses + wooden translations (committable per book); (C) Psalms
 challenge-tier passages, poetry-labeled; (D) independent
 wooden-translation review, release counts, smokes, ?v=21 bump, PR.
+
+**Status: Stage A IMPLEMENTED, UNCOMMITTED (2026-08-09).** `BOOK_LIST` in
+`tools/import_oshb_reader.mjs` extended 8→13 books (`+Josh, 1Kgs, 2Kgs,
+Esth, Ps`, codes/slugs matching task #23's `gen_bbh_advanced_vocab.mjs`
+`BOOK_META`). Corpus pin re-verified against
+`source/bbh/reader/corpus-pin.json`. Gate-map coverage: **0 gaps** in all
+5 new books and in the combined 13-book run — the existing per-POS
+catch-alls absorb Psalms' poetic register too, same finding as task #14's
+prose expansion; no `gate-map.json` edit needed. Lemma audit: combined
+top-40 unresolved content lemmas across the 5 books (2,496 candidates
+total) written for stage B/C, no overrides added this stage. Regeneration
+proof: `js/data/bbh_reader.js` byte-identical across two
+`gen_bbh_reader_data.mjs` reruns (sha1-verified) — the 86 existing
+selections are untouched, the importer only gained capability.
+`check_release.mjs` → 24/0 unchanged, `?v=20` untouched. Only file
+touched: `tools/import_oshb_reader.mjs`. Reports:
+`scratchpad/task24a_gatemap_gaps.md`, `scratchpad/task24a_lemma_audit.md`
+(session scratchpad, not committed). See RESTORE.md's task-24 stage-A
+entry for the full numbers. Next: stage B.

@@ -294,8 +294,49 @@
   new `scratchpad/smoke_task26.mjs`, one-line fix to
   `scratchpad/smoke_book_vocab.mjs`. NOT committed per orchestrator
   instruction — working tree left for the orchestrator to review/commit.
-- **Queue**: task #24 (Reader: more prose books + simple-poetry challenge
-  tier), addendum already drafted in docs/bbh-conversion-plan.md.
+- **Task #26 merged** as `60675d6` (PR #23, merge commit `3d79adf`,
+  `?v=20` — LIVE release): app-wide toggle-row alignment (vocab
+  `#controlsBar` 6 rows, grammar Review-missed, reader Challenge-passages)
+  to task #25's switch-then-label-then-(i) shape; full detail in
+  `docs/bbh-conversion-plan.md`'s task-26 addendum (see its "Status:
+  IMPLEMENTED, UNCOMMITTED" line, now superseded by this merge).
+- **Task #24 STAGE A implemented, uncommitted (2026-08-09)** — importer/
+  coverage groundwork only, no new selections, `js/data/bbh_reader.js`
+  untouched. `tools/import_oshb_reader.mjs`'s `BOOK_LIST` extended from 8
+  to 13 books (`+Josh, 1Kgs, 2Kgs, Esth, Ps`, codes matching task #23's
+  `gen_bbh_advanced_vocab.mjs` `BOOK_META` slugs `josh/1kgs/2kgs/esth/ps`),
+  plus its header/CLI-usage comments; corpus pin re-verified
+  (`/workspace/openscriptures/morphhb` HEAD = `6a5db284c7...`, matches
+  `source/bbh/reader/corpus-pin.json`). **Coverage: 0 gate-map gaps** in
+  all 5 new books individually and in the combined 13-book run (Josh 658v/
+  10,051t, 1Kgs 817v/13,140t, 2Kgs 719v/12,281t, Esth 167v/3,045t, Ps
+  2,527v/19,587t — Psalms' poetic register raised no new *morph codes* the
+  existing per-POS catch-alls don't already absorb, same finding as task
+  #14's 7-book pass). No `gate-map.json` edit needed or made — report at
+  `scratchpad/task24a_gatemap_gaps.md` (this session's scratchpad, not
+  committed). **Lemma audit**: combined top-40 most-frequent unresolved
+  content lemmas across the 5 new books with zero `LEMMA_OVERRIDES` entry
+  (2,496 candidates total, top 40 tabulated) written to
+  `scratchpad/task24a_lemma_audit.md` for stage B/C curation to consume;
+  notably poetry-flavored (עוֹלָם, חֶסֶד, הלל, רָשָׁע, אֲדֹנָי) plus
+  royal-narrative terms (מָלַךְ, נָבִיא, כִּסֵּא) and Joshua's
+  Levitical-city-list-specific מִגְרָשׁ (58/58 occurrences in Joshua
+  alone). No overrides added (per instruction — stage B/C's job; none of
+  the 40 would have collided with the already-frozen-then-lifted Genesis
+  set anyway). **Regeneration proof**: `node tools/gen_bbh_reader_data.mjs`
+  run twice, `js/data/bbh_reader.js` byte-identical both times (same sha1
+  `4d4689aa...` before/after, `git diff --exit-code` clean) — the 86
+  existing selections are unaffected; the importer only gained CAPABILITY.
+  `node tools/check_release.mjs` → 24 reports / 0 failures, unchanged from
+  before this stage (`?v=20` untouched, check6 confirms `source/bbh/`
+  untouched). Only file touched: `tools/import_oshb_reader.mjs`. NOT
+  committed per orchestrator instruction — working tree left for the
+  orchestrator. Next: stage B (prose selections curated + scored + glosses
+  + wooden translations for the 5 new books, from the lemma audit above).
+- **Queue**: task #24 stages B (prose curation for the 5 new books), C
+  (Psalms challenge-tier passages), D (independent wooden-translation
+  review, release counts, smokes, `?v=21` bump, PR) — staging plan in
+  docs/bbh-conversion-plan.md's task-24 addenda.
 
 ## Repository and PR state
 
@@ -397,14 +438,19 @@
 
 ## Current work and file ownership
 
-- No agents in flight. Task #25 (parsing UX round) is merged (`cbe0e04`,
-  PR #22, merge commit `81c8903`) — `Main` is live at `?v=19`. Working
-  tree on `claude/new-session-988x25` (branched from `Main` tip
-  `81c8903`, ledger commit `c51b314` on top) carries task #26 (app-wide
-  toggle-row alignment) IMPLEMENTED, UNCOMMITTED — see the Resume status
-  bullet above and the addendum in `docs/bbh-conversion-plan.md` for full
-  detail. Live release remains `?v=19` until this is committed/merged;
-  the working tree itself is already bumped to `?v=20`.
+- No agents in flight. Task #25 (`cbe0e04`, PR #22, merge `81c8903`) and
+  task #26 (`60675d6`, PR #23, merge `3d79adf`) are both merged — `Main`
+  is live at `?v=20`. Working tree on `claude/new-session-988x25` (branched
+  from `Main` tip `3d79adf`, ledger commit `044de02` on top) carries task
+  #24 STAGE A (Reader importer/coverage groundwork — see the Resume status
+  bullet above and docs/bbh-conversion-plan.md's task-24 staging addendum)
+  IMPLEMENTED, UNCOMMITTED. Only `tools/import_oshb_reader.mjs` is
+  modified; `js/data/bbh_reader.js` and every shipped asset are untouched,
+  `?v=` stays `20` (unchanged by this stage, per instruction — bumps at
+  stage D). Scratchpad reports (`task24a_gatemap_gaps.md`,
+  `task24a_lemma_audit.md`, `task24a_audit.mjs`,
+  `task24a_audit_raw.txt`, `task24a_full_report.txt`) live in this
+  session's scratchpad dir, not the repo.
 
 ## Content counts
 
