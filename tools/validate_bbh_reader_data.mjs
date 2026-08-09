@@ -14,27 +14,32 @@
 //      expects; every morphPattern compiles as a regex).
 //   3. selections.json shape (required fields, tier whitelist, unique ids,
 //      ref/osisRef book code in BOOK_LIST, challengeNote required iff
-//      tier==='challenge').
+//      tier==='challenge', wooden/woodenStatus present on every entry —
+//      task 13a).
 //   4. Corpus pin verification (delegated to importReaderCorpus ->
 //      verifyCorpusPin -> aborts if the pinned checkout's HEAD doesn't
 //      match).
 //   5. Score reproducibility: every selection's recorded `scores` (and
 //      tier) must deep-equal what a fresh importReaderCorpus() computes for
-//      that osisRef. For tier==='challenge', the recorded `gateLesson` is
-//      checked against the fresh `effectiveGateLesson` (the lower, below-
-//      max lesson the passage is actually gated/visible at) rather than
-//      `gateLesson` (always the verse's raw maxGrammarLesson) — see the
-//      tier definition in source/bbh/reader/selections.json's notes and
-//      scoreVerse() in tools/import_oshb_reader.mjs.
-//   6. No unmapped tokens in any strict/guided selection (unmappedCount===0)
-//      — a selection can never expose an appendix-only/out-of-scope feature.
-//      No-future-token: no token may gate above a selection's own recorded
-//      gateLesson, EXCEPT for a tier==='challenge' selection's single
-//      flagged token at the verse's maxGrammarLesson (that's the whole
-//      point of the challenge tier — exactly one clearly-identified
-//      near-future feature; scoreVerse() only ever assigns 'challenge' when
-//      there is exactly one such token, so this exemption can never widen
-//      to more than one token without failing here).
+//      that osisRef. For tier==='challenge' (task 13a rework), challenge
+//      eligibility is an INDEPENDENT diagnostic (`fresh.scores.challenge`)
+//      separate from the primary strict/guided `tier`/`gateLesson` — see
+//      scoreVerse()'s header comment in tools/import_oshb_reader.mjs for
+//      why the two must never be conflated. A challenge selection's
+//      recorded `gateLesson` is checked against `fresh.scores.challenge.
+//      gateLesson` (the lower, below-max lesson the passage is actually
+//      gated/visible at), not `fresh.scores.gateLesson` (always the verse's
+//      raw maxGrammarLesson, and irrelevant to a challenge selection).
+//   6. No unmapped tokens in any strict/guided/challenge selection
+//      (unmappedCount===0) — a selection can never expose an appendix-only/
+//      out-of-scope feature. No-future-token: no token may gate above a
+//      selection's own recorded gateLesson, EXCEPT for a tier==='challenge'
+//      selection's own flagged future-feature tokens (1-3, all sharing the
+//      verse's single maxGrammarLesson — the "one clearly-identified
+//      near-future feature TYPE" the challenge tier exists to expose).
+//      The exemption count is capped at the verse's own
+//      fresh.scores.challenge.futureTokenCount, so it can never silently
+//      widen past what the verse actually earned.
 //   7. Display byte-equality: every token's display text, as produced by the
 //      importer, is checked against an INDEPENDENT fresh read+extraction of
 //      the selection's own wlc/<Book>.xml for literal byte equality
@@ -64,6 +69,7 @@ void __dirname;
 const SELECTIONS_PATH = path.join(ROOT, 'source/bbh/reader/selections.json');
 
 const TIER_VALUES = new Set(['strict', 'guided', 'challenge']);
+const WOODEN_STATUS_VALUES = new Set(['draft', 'reviewed', 'revised']);
 const BOOK_RE_GROUP = BOOK_LIST.join('|');
 const REF_RE = new RegExp(`^(${BOOK_RE_GROUP}) \\d+:\\d+$`);
 const OSISREF_RE = new RegExp(`^(${BOOK_RE_GROUP})\\.\\d+\\.\\d+$`);
@@ -227,6 +233,20 @@ function validateSelectionsShape(doc) {
     } else if (sel.challengeNote !== undefined) {
       fail('selection-challenge-note', `${label}: challengeNote is only valid on tier "challenge" selections`);
     }
+    // wooden/woodenStatus (task 13a, "LLM wooden translations permitted"
+    // addendum): a dev-time-authored literal English rendering, stored here
+    // as the authoritative source and embedded verbatim by
+    // tools/gen_bbh_reader_data.mjs. woodenStatus is a small closed set —
+    // "draft" (authored, not yet independently reviewed) is the only value
+    // this task ever writes; "reviewed"/"revised" etc. are reserved for a
+    // SEPARATE later review pass (never self-certified here — see the task
+    // brief) to update in place without needing a schema change.
+    if (typeof sel.wooden !== 'string' || sel.wooden.trim() === '') {
+      fail('selection-wooden', `${label}: wooden is missing/empty`);
+    }
+    if (!WOODEN_STATUS_VALUES.has(sel.woodenStatus)) {
+      fail('selection-wooden', `${label}: woodenStatus "${sel.woodenStatus}" not in ${[...WOODEN_STATUS_VALUES].join('|')}`);
+    }
   }
   report(`selections: ${doc.selections.length} entries, shape OK (pass)`);
   return doc.selections;
@@ -256,39 +276,53 @@ function validateReproducibility(selections, freshVerses) {
         `selection "${sel.id}" (${sel.osisRef}): recorded scores ${JSON.stringify(sel.scores)} != fresh-import scores ${JSON.stringify(freshScores)}`
       );
     }
-    // For tier==='challenge', the selection's recorded gateLesson is the
-    // LOWER effectiveGateLesson (below-max lesson the passage is actually
-    // gated at) — the whole point of the tier is exposing one token above
-    // that gate. For strict/guided, gateLesson is the ordinary raw
-    // maxGrammarLesson/gateLesson (the two are identical for those tiers).
-    const expectedGateLesson = sel.tier === 'challenge' ? fresh.scores.effectiveGateLesson : fresh.scores.gateLesson;
-    if (expectedGateLesson !== sel.gateLesson) {
-      mismatchCount++;
-      fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded gateLesson ${sel.gateLesson} != fresh ${sel.tier === 'challenge' ? 'effectiveGateLesson' : 'gateLesson'} ${expectedGateLesson}`);
-    }
-    if (fresh.scores.tier !== sel.tier) {
+    // tier==='challenge' selections are validated against the INDEPENDENT
+    // `fresh.scores.challenge` diagnostic (see scoreVerse()'s header
+    // comment in tools/import_oshb_reader.mjs for why challenge-eligibility
+    // is deliberately never folded into the primary `tier`/`gateLesson`
+    // fields checked above for strict/guided). For strict/guided, gateLesson
+    // is the ordinary raw maxGrammarLesson/gateLesson (unchanged).
+    if (sel.tier === 'challenge') {
+      const ch = fresh.scores.challenge;
+      if (!ch || !ch.eligible) {
+        mismatchCount++;
+        fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded tier "challenge" but a fresh import finds it NOT challenge-eligible`);
+      } else {
+        if (ch.gateLesson !== sel.gateLesson) {
+          mismatchCount++;
+          fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded gateLesson ${sel.gateLesson} != fresh challenge.gateLesson ${ch.gateLesson}`);
+        }
+      }
+    } else if (fresh.scores.tier !== sel.tier) {
       mismatchCount++;
       fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded tier "${sel.tier}" != fresh tier "${fresh.scores.tier}"`);
+    } else if (fresh.scores.gateLesson !== sel.gateLesson) {
+      mismatchCount++;
+      fail('reproducibility', `selection "${sel.id}" (${sel.osisRef}): recorded gateLesson ${sel.gateLesson} != fresh gateLesson ${fresh.scores.gateLesson}`);
     }
     if ((sel.tier === 'strict' || sel.tier === 'guided' || sel.tier === 'challenge') && fresh.scores.unmappedCount !== 0) {
       unmappedInSelectionCount++;
       fail('no-unmapped-in-selection', `selection "${sel.id}" (${sel.osisRef}): tier "${sel.tier}" but unmappedCount=${fresh.scores.unmappedCount} (must be 0)`);
     }
     // No-future-token: every token must gate at or below the selection's
-    // own recorded gateLesson, EXCEPT a tier==='challenge' selection's
-    // single flagged token sitting at the verse's maxGrammarLesson — that
-    // token IS the "one clearly-identified near-future feature" the
-    // challenge tier exists to expose. scoreVerse() only ever assigns
-    // 'challenge' when exactly one token sits at maxGrammarLesson, so this
-    // exemption can never silently widen past one token.
+    // own recorded gateLesson, EXCEPT a tier==='challenge' selection's own
+    // flagged future-feature tokens (1-3, all sharing the verse's single
+    // maxGrammarLesson — the "one clearly-identified near-future feature
+    // TYPE" the challenge tier exists to expose). The exemption count is
+    // capped at fresh.scores.challenge.futureTokenCount (scoreVerse() only
+    // ever marks a verse challenge-eligible when that count is 1-3), so
+    // this can never silently widen past what the verse actually earned.
+    const challengeBudget = sel.tier === 'challenge' && fresh.scores.challenge
+      ? fresh.scores.challenge.futureTokenCount
+      : 0;
     let challengeExemptionsUsed = 0;
     for (const tok of fresh.tokens) {
       if (tok.tokenLesson != null && tok.tokenLesson > sel.gateLesson) {
-        if (sel.tier === 'challenge' && tok.tokenLesson === fresh.scores.maxGrammarLesson && challengeExemptionsUsed === 0) {
+        if (sel.tier === 'challenge' && tok.tokenLesson === fresh.scores.maxGrammarLesson && challengeExemptionsUsed < challengeBudget) {
           challengeExemptionsUsed++;
           continue;
         }
-        fail('no-future-token', `selection "${sel.id}" (${sel.osisRef}): a token gates at L${tok.tokenLesson}, above the selection's own gateLesson ${sel.gateLesson}${sel.tier === 'challenge' ? ' (beyond the single challenge-tier exemption)' : ''}`);
+        fail('no-future-token', `selection "${sel.id}" (${sel.osisRef}): a token gates at L${tok.tokenLesson}, above the selection's own gateLesson ${sel.gateLesson}${sel.tier === 'challenge' ? ' (beyond the challenge-tier exemption budget)' : ''}`);
       }
     }
   }
@@ -297,6 +331,13 @@ function validateReproducibility(selections, freshVerses) {
 }
 
 // ─── 7. Display byte-equality vs a fresh, independent read of wlc/<Book>.xml
+// wRe/nested-<seg> flattening mirrors tools/import_oshb_reader.mjs's own
+// W_RE/NESTED_SEG_RE exactly (task 13a large-letter tokenizer fix, e.g.
+// Deut.6.4's שְׁמַע/אֶחָד) — this function must independently reproduce
+// what the importer does, not just what the importer used to do, or this
+// check would start failing (or worse, silently passing on a WRONG count)
+// the moment the importer's own tokenizer changed shape.
+const NESTED_SEG_RE = /<seg\b[^>]*>([^<]*)<\/seg>/g;
 function extractRawTokenDisplays(xmlText, osisID) {
   const escaped = osisID.replace(/\./g, '\\.');
   const verseRe = new RegExp(`<verse osisID="${escaped}">([\\s\\S]*?)<\\/verse>`);
@@ -304,9 +345,11 @@ function extractRawTokenDisplays(xmlText, osisID) {
   if (!m) return null;
   const body = m[1].replace(/<note[\s\S]*?<\/note>/g, '');
   const displays = [];
-  const wRe = /<w\b[^>]*>([^<]*)<\/w>/g;
+  const wRe = /<w\b[^>]*>((?:[^<]|<seg\b[^>]*>[^<]*<\/seg>)*)<\/w>/g;
   let wm;
-  while ((wm = wRe.exec(body))) displays.push(wm[1]);
+  while ((wm = wRe.exec(body))) {
+    displays.push(wm[1].indexOf('<seg') === -1 ? wm[1] : wm[1].replace(NESTED_SEG_RE, '$1'));
+  }
   return displays;
 }
 

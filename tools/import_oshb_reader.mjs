@@ -116,8 +116,28 @@ export function verifyCorpusPin({ checkoutDir = CHECKOUT_DIR } = {}) {
 // code in the regex below is a parameter (any run of letters/digits, e.g.
 // "Gen", "1Sam") rather than hardcoded "Gen", so this same tokenizer serves
 // every BOOK_LIST entry.
+//
+// LARGE-LETTER TOKENIZER FIX (task 13a, found while authoring wooden
+// translations): OSHB marks a handful of traditionally-enlarged Masoretic
+// letters with a NESTED <seg type="x-large">...</seg> INSIDE the <w>
+// element itself (verified: exactly 2 occurrences across all 8 BOOK_LIST
+// books, both in Deut.6.4 — the Shema's שְׁמַע and אֶחָד). The original
+// W_RE (`<w\b([^>]*)>([^<]*)<\/w>`) requires the <w> body to contain no
+// `<` at all, so it silently fails to match either of those two <w>
+// elements — not an error, just two tokens vanishing from the stream,
+// which is worse: Deut.6.4 (already a curated selection,
+// reader-deut-6-4) was silently missing its own "Hear" and "one" (the
+// verse's first and last words) from both scoring and the emitted Reader
+// passage. W_RE below now also accepts an interleaving of plain text and
+// <seg ...>text</seg> runs inside a <w>; the nested <seg> wrapper is then
+// stripped (keeping its inner text) when building `display`, so the
+// reconstructed text is byte-identical to the un-marked-up word. No other
+// nested-tag shape has been observed inside a <w> in any of the 8 books
+// (this <seg type="x-large"> case is the only one), so this fix is
+// intentionally narrow rather than a general XML-nesting parser.
 const NOTE_RE = /<note[\s\S]*?<\/note>/g;
-const W_RE = /<w\b([^>]*)>([^<]*)<\/w>/g;
+const W_RE = /<w\b([^>]*)>((?:[^<]|<seg\b[^>]*>[^<]*<\/seg>)*)<\/w>/g;
+const NESTED_SEG_RE = /<seg\b[^>]*>([^<]*)<\/seg>/g;
 const ATTR_RE = /(\w[\w-]*)="([^"]*)"/g;
 
 function verseRegexFor(bookCode) {
@@ -153,12 +173,20 @@ export function parseBookXml(xmlText, bookCode) {
     W_RE.lastIndex = 0;
     while ((wm = W_RE.exec(body))) {
       const attrs = parseAttrs(wm[1]);
+      // Flatten any nested <seg type="x-large">letter</seg> markup (see the
+      // header comment above) back to plain text — the result is
+      // byte-identical to the word's text with the large-letter markup
+      // simply not present, i.e. exactly what tools/validate_bbh_reader_
+      // data.mjs's OWN independent extractRawTokenDisplays() (fixed the
+      // same way) produces, so the byte-equality check still means what it
+      // says. A <w> with no nested <seg> is untouched (replace is a no-op).
+      const display = wm[2].indexOf('<seg') === -1 ? wm[2] : wm[2].replace(NESTED_SEG_RE, '$1');
       tokens.push({
         id: attrs.id || null,
         type: attrs.type || null, // e.g. "x-ketiv"
         lemmaRaw: attrs.lemma || null,
         morphRaw: attrs.morph || null,
-        display: wm[2] // EXACT byte-for-byte text from the XML, untouched
+        display // EXACT byte-for-byte text from the XML (nested <seg> markup flattened, see above)
       });
     }
     verses.push({ osisID, book: bookCode, tokens });
@@ -361,16 +389,20 @@ export const LEMMA_OVERRIDES = new Map([
   // report's "PER BOOK" section for the individual per-book frequencies).
   // Same verification method as the table above: Hebrew-substring / English-
   // gloss grep against the vocab CSV, cross-checked by hand.
-  // DELIBERATELY EXCLUDED despite genuinely matching a CSV row: אֱלֹהִים
-  // "God" (Strong 430, CSV L3), אֶרֶץ "land, earth" (Strong 776, CSV L9),
-  // and צִוָּה "command" (Strong 6680, Piel, CSV L35). Adding any of the
-  // three changes the recorded scores of pre-existing Genesis selections
+  // The freeze below was LIFTED in task 13a ("matcher fixes... re-score the
+  // whole corpus... the freeze on Genesis scores is LIFTED for this pass").
+  // All three deliberately-withheld entries are now added. This DOES
+  // change the recorded scores of 5 pre-existing Genesis selections
   // (430/776: reader-gen-1-1, reader-gen-24-4, reader-gen-10-20; 6680:
-  // reader-gen-50-12, reader-gen-7-5) — verified by re-running
-  // tools/validate_bbh_reader_data.mjs with each added. The Reader book
-  // expansion task requires those 52 pre-existing selections to stay
-  // byte-for-byte unchanged, so these three are intentionally left out of
-  // this table (their absence is NOT an oversight — see task report).
+  // reader-gen-50-12, reader-gen-7-5) — see task 13a's report for the
+  // full tier-change table; source/bbh/reader/selections.json's `scores`/
+  // `tier`/`gateLesson` for those 5 entries (and any others affected by
+  // the gentilic/compound-token fixes above) were re-derived from a fresh
+  // importReaderCorpus() run and are no longer required to stay byte-for-
+  // byte identical to the pre-13a values.
+  ['430', { vocabLesson: 3, note: 'אֱלֹהִים "God, gods" (Strong 430) — CSV L3 row; morphologically-plural noun whose construct/suffixed forms (אֱלֹהֵי, אֱלֹהָיו, ...) don\'t depointed-match the absolute citation form. Previously withheld (see task 13a) to avoid drifting 5 pre-existing Genesis selection scores; that freeze is now lifted.' }],
+  ['776', { vocabLesson: 9, note: 'אֶרֶץ "land, earth" (Strong 776) — CSV L9 row אֶרֶץ (אֲרָצוֹת); construct אֶרֶץ־/plural/suffixed forms don\'t depointed-match the absolute singular citation. Previously withheld (see task 13a); freeze now lifted.' }],
+  ['6680', { vocabLesson: 35, note: 'צִוָּה "command" (Strong 6680, Piel) — CSV L35 row; only the bare Piel perfect 3ms citation form direct-matches (most attestations are wayyiqtol/imperfect/infinitive forms). Previously withheld (see task 13a); freeze now lifted.' }],
   ['8085', { vocabLesson: 16, note: 'שָׁמַע "hear, listen" (Strong 8085) — CSV L16 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
   ['3045', { vocabLesson: 19, note: 'יָדַע "know" (Strong 3045) — CSV L19 row; only the bare Qal citation form direct-matches (most attestations across the expansion books are imperfect/infinitive/participle forms).' }],
   ['3427', { vocabLesson: 16, note: 'יָשַׁב "sit, inhabit, dwell" (Strong 3427) — CSV L16 row; only the bare Qal perfect 3ms citation form direct-matches.' }],
@@ -383,7 +415,7 @@ export const LEMMA_OVERRIDES = new Map([
   ['8104', { vocabLesson: 15, note: 'שָׁמַר "guard, keep, watch" (Strong 8104) — CSV lists it at both L15 (שָׁמַר (נִשְׁמַר), infinitive/Nifal-noted headword) and L16 (fully conjugated Qal perfect paradigm); every PGN/stem/conjugation form beyond the bare citation forms fails to depointed-match, so this maps to the lower (L15) lesson per the "earliest attested" rule.' }],
   ['1697', { vocabLesson: 5, note: 'דָּבָר "word, thing" (Strong 1697) — CSV L5 row; construct דְּבַר־/plural/suffixed forms (דְּבָרָיו, דִּבְרֵי, ...) don\'t depointed-match the absolute singular citation. Distinct from Strong 1696 דִּבֶּר "speak" (the Piel verb, already in this table) despite the shared דבר consonants.' }],
   ['5650', { vocabLesson: 11, note: 'עֶבֶד "servant" (Strong 5650) — CSV L11 row עֶבֶד (עֲבָדִים); construct עֶבֶד־/plural/suffixed forms (עֲבָדָיו, עַבְדּוֹ, ...) don\'t depointed-match the absolute singular citation.' }],
-  ['6430', { vocabLesson: null, note: 'פְּלִשְׁתִּי "Philistine" (Strong 6430, gentilic noun Ng — high-frequency in Judges/1-2 Samuel) — verified NOT present in the BBH vocab CSV; grammar-gated normally via gate-map\'s N[cg] rules (not isProperName, since OSHB tags gentilics Ng rather than Np), so it correctly counts toward unknownContentLexemes rather than being silently excluded.' }],
+  ['6430', { vocabLesson: null, note: 'פְּלִשְׁתִּי "Philistine" (Strong 6430, gentilic noun Ng — high-frequency in Judges/1-2 Samuel) — verified NOT present in the BBH vocab CSV; grammar-gated normally via gate-map\'s N[cg] rules (still L7/L10/L20 by inflection, same as before task 13a). As of task 13a\'s gentilic fix, Ng tokens are pn-class (excluded from unknownContentLexemes like a proper name, plus a distinct gent:true flag) regardless of this entry\'s vocabLesson:null, so this override now only affects vocabLesson/gl provenance, not scoring.' }],
   ['5927', { vocabLesson: null, note: 'עָלָה "go up, ascend" (Strong 5927) — verified NOT present in the BBH vocab CSV.' }],
   ['5674', { vocabLesson: null, note: 'עָבַר "cross over, pass through" (Strong 5674) — verified NOT present in the BBH vocab CSV (distinct from Strong 5647 עָבַד "serve/work", also verified absent, despite the shared עב consonants).' }],
   ['5046', { vocabLesson: null, note: 'נָגַד (Hifil הִגִּיד) "tell, declare, report" (Strong 5046) — verified NOT present in the BBH vocab CSV.' }],
@@ -500,23 +532,65 @@ export function classifyToken(token, segments, compiledGateMap, vocabIndex) {
     }
   }
 
-  const isProperName = contributions.some((c) => c.entry && c.entry.isProperName);
+  // Gentilic handling (task 13a matcher fix): OSHB tags gentilic nouns
+  // (e.g. הַחִוִּי "the Hivite", הָעַרְקִי "the Arkite") with an N*g* morph
+  // code (Ngmsa/Ngfsa/Ngmpa/Ngfpa/Ngmsc/Ngmpc — verified as the complete set
+  // across all 8 BOOK_LIST books), which the shared "N[cg]..." gate-map
+  // rules grammar-gate identically to a common noun (L7/L10/L20 — gentilics
+  // DO follow ordinary noun inflection paradigms, so that part is correct
+  // and unchanged). The bug they don't share with proper names (Np, which
+  // gets its own gate-map entry with isProperName:true) is exclusion from
+  // unknown-content-lexeme counts: a verse-full of untaught nation/clan
+  // names (e.g. Gen 10:17's Hivite/Arkite/Sinite list) was wrongly counted
+  // as 3 unknown content words and mis-tiered. Gentilics are therefore
+  // treated as pn-class for that purpose (excluded from hasContentSegment
+  // below, and isProperName:true on the emitted token) while ALSO carrying
+  // a distinct `gent` flag/return value so the UI can label them
+  // "gentilic name" rather than a personal/place name.
+  const isGentilic = segments.some((seg) => /^Ng/.test(seg.morph));
+
+  const isProperName = isGentilic || contributions.some((c) => c.entry && c.entry.isProperName);
   const unmapped = contributions.some((c) => c.kind === 'unmapped' || c.kind === 'gap');
   const mappedLessons = contributions.filter((c) => c.kind === 'mapped').map((c) => c.lesson);
   const tokenLesson = mappedLessons.length ? Math.max(...mappedLessons) : null;
 
-  // Content-word (N/V/A, non-proper) vocab match, for unknownContentLexemes.
+  // Content-word (N/V/A, non-proper, non-gentilic) vocab match, for
+  // unknownContentLexemes.
   let vocabLesson = null;
   let strongs = null;
   let hasContentSegment = false;
   for (let i = 0; i < segments.length; i++) {
     const pos = segments[i].morph[0];
-    const isProperSeg = /^Np/.test(segments[i].morph);
+    // N[pg] = proper noun (Np) or gentilic noun (Ng) — both excluded from
+    // the content-lexeme count (see isGentilic note above).
+    const isProperSeg = /^N[pg]/.test(segments[i].morph);
     if ((pos === 'N' && !isProperSeg) || pos === 'V' || pos === 'A') {
       hasContentSegment = true;
       const match = vocabLookup(segments[i].display, segments[i].lemma, vocabIndex);
       if (match && (vocabLesson == null || match.lesson < vocabLesson)) vocabLesson = match.lesson;
       if (!strongs) strongs = strongsOf(segments[i].lemma);
+    }
+  }
+  // Compound-token vocab matching (task 13a matcher fix): a token with no
+  // N/V/A content segment (a pure function-word token — a prefixed
+  // conjunction/preposition/article bundled with a particle segment, e.g.
+  // "ו/את" = C + To) never sets vocabLesson above, even when its CORE
+  // segment (the particle, not the prefix) is itself taught vocabulary
+  // (e.g. את "direct-object marker" is CSV L15). splitToken() already
+  // isolates each morpheme's own display/lemma (the "/" split happens
+  // before this function runs), so re-testing every non-proper/gentilic
+  // segment of such a token against the vocab index — restricted to
+  // hasContentSegment===false tokens so a real content word's own
+  // scoring is never contaminated by an unrelated prefix segment's
+  // (extremely unlikely, but not risked) accidental match — surfaces the
+  // CORE segment's own match for display purposes (the `v` field read by
+  // the Reader UI's guided-tier dotted-underline logic) without affecting
+  // unknownContentLexemes (hasContentSegment stays false either way).
+  if (!hasContentSegment) {
+    for (const seg of segments) {
+      if (/^N[pg]/.test(seg.morph)) continue;
+      const match = vocabLookup(seg.display, seg.lemma, vocabIndex);
+      if (match && (vocabLesson == null || match.lesson < vocabLesson)) vocabLesson = match.lesson;
     }
   }
   if (!strongs) {
@@ -531,6 +605,7 @@ export function classifyToken(token, segments, compiledGateMap, vocabIndex) {
   return {
     contributions,
     isProperName,
+    isGentilic,
     unmapped,
     tokenLesson,
     hasContentSegment,
@@ -540,6 +615,61 @@ export function classifyToken(token, segments, compiledGateMap, vocabIndex) {
 }
 
 // ─── 6. Verse scoring + tiering ────────────────────────────────────────────
+// PRIMARY TIER — unchanged in shape from Phase 2 PR D: a verse is judged AT
+// ITS OWN maxGrammarLesson (gateLesson always equals maxGrammarLesson for
+// strict/guided). This is deliberately independent of the challenge
+// diagnostic below — see that block's own header comment for why the two
+// must never be conflated into one either/or branch.
+//
+// CHALLENGE (reworked in task 13a — see docs/bbh-conversion-plan.md's
+// "challenge tier rework" and "underline noise" addenda, both 2026-08-09).
+// The relaxed definition (docs addendum, verbatim): a verse qualifies as
+// CHALLENGE at gate G when all its morphology is in scope at G EXCEPT
+// tokens sharing exactly ONE future feature TYPE (same gate-map lesson
+// bucket, e.g. "past narrative L35"), 1-3 such tokens, and <=2 unknown
+// non-proper content lexemes.
+//
+// IMPORTANT — challenge-eligibility is an INDEPENDENT, OPT-IN diagnostic,
+// never an override of the primary strict/guided tier above. An earlier
+// draft of this function tried "check challenge first, fall back to
+// strict/guided" (structurally the only way challenge's own <=2 threshold
+// — a strict subset of guided's <=3 — could ever be reached at all, since
+// checking it AFTER strict/guided is a dead branch: guided's <=3 always
+// claims the verse first). But EVERY ordinary short clause has "one token
+// at the single highest lesson (typically its main verb) plus a lower
+// baseline" — that is not a rare or noteworthy shape, it is completely
+// normal sentence structure — so checking it first turned ~80% of the
+// curated corpus's existing strict/guided selections into "challenge"
+// (verified against source/bbh/reader/selections.json's pre-13a 78
+// entries: 60+ flipped tier on a first draft of this function, almost all
+// of them ordinary one-verb clauses, not genuine "future feature preview"
+// material). Making challenge-eligibility a SEPARATE field entirely
+// sidesteps this: a verse keeps its ordinary strict/guided tier from its
+// own maxGrammarLesson regardless of whether it ALSO happens to match the
+// challenge shape; a curator opts a specific verse INTO the challenge tier
+// by recording tier:"challenge" (+ a lower gateLesson + challengeNote) in
+// selections.json, and the validator checks that choice against THIS
+// `challenge` sub-object (see validate_bbh_reader_data.mjs) rather than
+// against the primary `tier` field.
+//
+// Additional curation-quality floors beyond the doc's own three numeric
+// conditions (not required for correctness, but kept as they cut a
+// ~1600-candidate raw match count down to a set actually worth hand-
+// curating from — see tools/import_oshb_reader.mjs --report's per-bucket
+// challenge counts):
+//   - G (the lower "in scope" gate) must itself be >= lesson 9, matching
+//     the floor bucketOf()'s own 10 curation buckets already use — below
+//     that is bare pronoun/article/preposition material every passage at
+//     any level inevitably contains as connective tissue, so a verse whose
+//     only "baseline" is <9 material has no real lower foundation to
+//     preview against.
+//   - the gap (maxGrammarLesson - G) must be >= 10 — i.e. the future
+//     feature must belong to a meaningfully distant unit of the course,
+//     not just the next lesson or two over. This is what actually
+//     separates "look, here's a preview of Past Narrative" (a genuine,
+//     nameable future paradigm) from "this clause's verb happens to be one
+//     lesson more advanced than its nouns" (true of nearly every clause,
+//     and not a distinguishable "feature").
 export function scoreVerse(classifiedTokens) {
   const tokenCount = classifiedTokens.length;
   const unmappedCount = classifiedTokens.filter((t) => t.unmapped).length;
@@ -548,20 +678,33 @@ export function scoreVerse(classifiedTokens) {
   ).length;
   const lessons = classifiedTokens.map((t) => t.tokenLesson).filter((l) => l != null);
   const maxGrammarLesson = lessons.length ? Math.max(...lessons) : 0;
+  const allMapped = unmappedCount === 0;
 
   let tier = null;
-  let effectiveGateLesson = maxGrammarLesson;
-  const allMapped = unmappedCount === 0;
   if (allMapped && unknownContentLexemes <= 1) {
     tier = 'strict';
   } else if (allMapped && unknownContentLexemes <= 3) {
     tier = 'guided';
-  } else if (allMapped) {
+  }
+
+  const CHALLENGE_MIN_GATE = 9;
+  const CHALLENGE_MIN_GAP = 10;
+  let challenge = { eligible: false, gateLesson: null, futureFeatureLesson: null, futureTokenCount: 0 };
+  if (allMapped && unknownContentLexemes <= 2) {
+    const distinctLessonsDesc = [...new Set(lessons)].sort((a, b) => b - a);
+    const g = distinctLessonsDesc.length > 1 ? distinctLessonsDesc[1] : null;
     const atMax = classifiedTokens.filter((t) => t.tokenLesson === maxGrammarLesson);
-    const below = lessons.filter((l) => l < maxGrammarLesson);
-    if (atMax.length === 1 && lessons.length > atMax.length && unknownContentLexemes <= 3) {
-      tier = 'challenge';
-      effectiveGateLesson = below.length ? Math.max(...below) : maxGrammarLesson;
+    if (
+      g != null && g >= CHALLENGE_MIN_GATE &&
+      (maxGrammarLesson - g) >= CHALLENGE_MIN_GAP &&
+      atMax.length >= 1 && atMax.length <= 3
+    ) {
+      challenge = {
+        eligible: true,
+        gateLesson: g,
+        futureFeatureLesson: maxGrammarLesson,
+        futureTokenCount: atMax.length
+      };
     }
   }
 
@@ -571,9 +714,24 @@ export function scoreVerse(classifiedTokens) {
     unknownContentLexemes,
     maxGrammarLesson,
     gateLesson: maxGrammarLesson,
-    effectiveGateLesson,
-    tier
+    tier,
+    challenge
   };
+}
+
+// Human-readable label for a gate-map bbhLesson, derived from that lesson's
+// OWN mapped gate-map entries' `note` text (data-driven, not a hand-authored
+// duplicate table) — used to build a challenge selection's `challengeNote`
+// ("Contains 2 Past Narrative forms — introduced in Lesson 35"). Strips the
+// trailing "(base L.. -> L..)"/"(base L.., stem floor L.. -> L..)" STEM-FLOOR
+// provenance parenthetical (see gate-map.json's notes) to leave just the
+// feature name.
+export function describeGateLesson(gateMapDoc, lesson) {
+  const entry = gateMapDoc.mappings.find(
+    (e) => e.bbhLesson === lesson && !e.unmapped && !e.neutral
+  );
+  if (!entry) return `Lesson ${lesson} feature`;
+  return entry.note.replace(/\s*\(base L\d+(?:,\s*stem floor L\d+)?\s*->\s*L\d+\)\s*$/, '').trim();
 }
 
 // ─── 7. Top-level import ───────────────────────────────────────────────────
@@ -645,16 +803,18 @@ function printReport(result) {
   console.log(`Vocab index: ${vocabIndexSize} distinct headword keys from the BBH vocab CSV.`);
   console.log(`Total: ${verses.length} verses, ${verses.reduce((n, v) => n + v.tokens.length, 0)} tokens.\n`);
 
-  const tierCounts = { strict: 0, guided: 0, challenge: 0, none: 0 };
-  const byBucket = new Map();
-  const byBook = new Map(); // book -> { verses, tokens, tierCounts, coverageGaps, unmatchedLemmaFreq }
+  const tierCounts = { strict: 0, guided: 0, none: 0 };
+  let challengeCount = 0;
+  const byBucket = new Map(); // strict/guided, bucketed by their OWN gateLesson (maxGrammarLesson)
+  const challengeByBucket = new Map(); // challenge candidates, bucketed by their OWN (lower) challenge.gateLesson — independent of tier
+  const byBook = new Map(); // book -> { verses, tokens, tierCounts, challengeCount, coverageGaps, unmatchedLemmaFreq }
   let coverageGaps = 0;
   const gapExamples = [];
   const unmatchedLemmaFreq = new Map();
 
   for (const v of verses) {
     if (!byBook.has(v.book)) {
-      byBook.set(v.book, { verses: 0, tokens: 0, tierCounts: { strict: 0, guided: 0, challenge: 0, none: 0 }, coverageGaps: 0, unmatchedLemmaFreq: new Map() });
+      byBook.set(v.book, { verses: 0, tokens: 0, tierCounts: { strict: 0, guided: 0, none: 0 }, challengeCount: 0, coverageGaps: 0, unmatchedLemmaFreq: new Map() });
     }
     const bookAgg = byBook.get(v.book);
     bookAgg.verses++;
@@ -664,9 +824,20 @@ function printReport(result) {
     tierCounts[t]++;
     bookAgg.tierCounts[t]++;
     if (t !== 'none') {
-      const bucket = bucketOf(v.scores.effectiveGateLesson);
-      if (!byBucket.has(bucket)) byBucket.set(bucket, { strict: [], guided: [], challenge: [] });
+      const bucket = bucketOf(v.scores.gateLesson);
+      if (!byBucket.has(bucket)) byBucket.set(bucket, { strict: [], guided: [] });
       byBucket.get(bucket)[t].push(v);
+    }
+    // Challenge is an INDEPENDENT diagnostic (see scoreVerse's header
+    // comment) — a verse can be challenge-eligible regardless of its own
+    // primary tier, so this is counted/bucketed separately, never folded
+    // into tierCounts/byBucket above.
+    if (v.scores.challenge.eligible) {
+      challengeCount++;
+      bookAgg.challengeCount++;
+      const bucket = bucketOf(v.scores.challenge.gateLesson);
+      if (!challengeByBucket.has(bucket)) challengeByBucket.set(bucket, []);
+      challengeByBucket.get(bucket).push(v);
     }
     for (const tok of v.tokens) {
       for (const c of tok.contributions) {
@@ -683,7 +854,8 @@ function printReport(result) {
     }
   }
 
-  console.log('Tier totals (all books combined):', tierCounts);
+  console.log('Tier totals (all books combined, strict/guided/none — primary tier, own maxGrammarLesson):', tierCounts);
+  console.log(`Challenge-eligible candidates (all books combined; INDEPENDENT diagnostic, overlaps tierCounts above — see scoreVerse): ${challengeCount}`);
   console.log(`Coverage gaps (window-1 segment matched by NO gate-map entry, incl. safety-net catch-alls): ${coverageGaps}`);
   if (gapExamples.length) console.log('  examples:', gapExamples.join(' | '));
 
@@ -691,22 +863,31 @@ function printReport(result) {
   for (const b of books) {
     const agg = byBook.get(b);
     if (!agg) continue;
-    console.log(`  ${b}: ${agg.verses} verses, ${agg.tokens} tokens, tiers=${JSON.stringify(agg.tierCounts)}, coverageGaps=${agg.coverageGaps}`);
+    console.log(`  ${b}: ${agg.verses} verses, ${agg.tokens} tokens, tiers=${JSON.stringify(agg.tierCounts)}, challengeEligible=${agg.challengeCount}, coverageGaps=${agg.coverageGaps}`);
   }
 
-  console.log('\nPer-bucket candidate counts (bucketed by effective gate lesson, all books combined):');
+  console.log('\nPer-bucket candidate counts (strict/guided bucketed by their OWN gateLesson, all books combined):');
   const bucketOrder = ['<9', '9-14', '15-19', '20-22', '23-27', '28-31', '32-34', '35-38', '39-41', '42-44', '45-50', '50+'];
   for (const bkt of bucketOrder) {
     const entry = byBucket.get(bkt);
     if (!entry) continue;
     const byBookCounts = {};
-    for (const tier of ['strict', 'guided', 'challenge']) {
+    for (const tier of ['strict', 'guided']) {
       for (const v of entry[tier]) {
-        byBookCounts[v.book] = byBookCounts[v.book] || { strict: 0, guided: 0, challenge: 0 };
+        byBookCounts[v.book] = byBookCounts[v.book] || { strict: 0, guided: 0 };
         byBookCounts[v.book][tier]++;
       }
     }
-    console.log(`  ${bkt}: strict=${entry.strict.length} guided=${entry.guided.length} challenge=${entry.challenge.length} ${JSON.stringify(byBookCounts)}`);
+    console.log(`  ${bkt}: strict=${entry.strict.length} guided=${entry.guided.length} ${JSON.stringify(byBookCounts)}`);
+  }
+
+  console.log('\nChallenge-eligible candidates, bucketed by their OWN (lower) challenge.gateLesson (all books combined):');
+  for (const bkt of bucketOrder) {
+    const list = challengeByBucket.get(bkt);
+    if (!list) continue;
+    const byBookCounts = {};
+    for (const v of list) byBookCounts[v.book] = (byBookCounts[v.book] || 0) + 1;
+    console.log(`  ${bkt}: ${list.length} ${JSON.stringify(byBookCounts)}`);
   }
 
   console.log('\nTop unmatched content-lexeme Strong\'s numbers, ALL BOOKS (frequency, not yet in LEMMA_OVERRIDES with a resolving lesson):');
@@ -761,6 +942,7 @@ function main() {
         gate: t.tokenLesson,
         unmapped: t.unmapped,
         isProperName: t.isProperName,
+        isGentilic: t.isGentilic,
         vocabLesson: t.vocabLesson,
         strongs: t.strongs
       }))

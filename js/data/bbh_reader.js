@@ -11,11 +11,14 @@
 // into index.html's <script> tags and sw.js's precache list.
 //
 // Shape: { schemaVersion, attribution, corpusPin: {tag, commit},
-// passages: [{ id, book, ref, gateLesson, tier, challengeNote?,
-// tokens: [{t,l,s,m,g,pn,v}] }] }. `book` is the OSIS book code (Gen,
-// Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam) — added by the multi-book
-// Reader expansion; `challengeNote` is present only on tier:"challenge"
-// passages.
+// passages: [{ id, book, ref, gateLesson, tier, challengeNote?, wooden,
+// woodenStatus, tokens: [{t,l,s,m,g,pn,gent?,v,gl,lx}] }] }. `book` is the
+// OSIS book code (Gen, Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam) — added
+// by the multi-book Reader expansion; `challengeNote` is present only on
+// tier:"challenge" passages. `wooden`/`woodenStatus`, `gent`, and the
+// token-level `gl`/`lx` fields were added in task 13a (Strong's glosses +
+// wooden translations + gentilic/compound-token matcher fixes) — see
+// buildToken()/buildPassage() below and tools/gen_strongs_glosses.mjs.
 // Token field meanings are documented above buildToken() in
 // tools/gen_bbh_reader_data.mjs. `t` (display) is preserved byte-for-byte
 // from the Westminster Leningrad Codex text as distributed by OSHB — never
@@ -38,6 +41,8 @@
         "ref": "Gen 22:22",
         "gateLesson": 13,
         "tier": "strict",
+        "wooden": "and Kesed, and Chazo, and Pildash, and Jidlaph, and Bethuel.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אֶת",
@@ -46,7 +51,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "כֶּ֣שֶׂד",
@@ -55,7 +62,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Kesed",
+            "lx": "כֶּשֶׂד"
           },
           {
             "t": "וְ/אֶת",
@@ -64,7 +73,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "חֲז֔וֹ",
@@ -73,7 +84,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Chazo",
+            "lx": "חֲזוֹ"
           },
           {
             "t": "וְ/אֶת",
@@ -82,7 +95,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "פִּלְדָּ֖שׁ",
@@ -91,7 +106,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Pildash",
+            "lx": "פִּלְדָּשׁ"
           },
           {
             "t": "וְ/אֶת",
@@ -100,7 +117,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "יִדְלָ֑ף",
@@ -109,7 +128,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jidlaph",
+            "lx": "יִדְלָף"
           },
           {
             "t": "וְ/אֵ֖ת",
@@ -118,7 +139,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "בְּתוּאֵֽל",
@@ -127,7 +150,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Bethuel",
+            "lx": "בְּתוּאֵל"
           }
         ]
       },
@@ -137,6 +162,8 @@
         "ref": "Gen 25:14",
         "gateLesson": 13,
         "tier": "strict",
+        "wooden": "and Mishma, and Dumah, and Massa,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וּ/מִשְׁמָ֥ע",
@@ -145,7 +172,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Mishma",
+            "lx": "מִשְׁמָע"
           },
           {
             "t": "וְ/דוּמָ֖ה",
@@ -154,7 +183,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Dumah",
+            "lx": "דּוּמָה"
           },
           {
             "t": "וּ/מַשָּֽׂא",
@@ -163,7 +194,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Massa",
+            "lx": "מַשָּׂא"
           }
         ]
       },
@@ -173,6 +206,8 @@
         "ref": "Gen 25:15",
         "gateLesson": 13,
         "tier": "strict",
+        "wooden": "Chadad, and Tema, Jetur, Naphish, and Kedemah.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "חֲדַ֣ד",
@@ -181,7 +216,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Chadad",
+            "lx": "חֲדַד"
           },
           {
             "t": "וְ/תֵימָ֔א",
@@ -190,7 +227,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Tema",
+            "lx": "תֵּימָא"
           },
           {
             "t": "יְט֥וּר",
@@ -199,7 +238,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jetur",
+            "lx": "יְטוּר"
           },
           {
             "t": "נָפִ֖ישׁ",
@@ -208,7 +249,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Naphish",
+            "lx": "נָפִישׁ"
           },
           {
             "t": "וָ/קֵֽדְמָה",
@@ -217,7 +260,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Kedemah",
+            "lx": "קֵדְמָה"
           }
         ]
       },
@@ -227,6 +272,8 @@
         "ref": "Gen 10:27",
         "gateLesson": 13,
         "tier": "strict",
+        "wooden": "and Hadoram, and Uzal, and Diklah,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אֶת",
@@ -235,7 +282,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הֲדוֹרָ֥ם",
@@ -244,7 +293,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Hadoram",
+            "lx": "הֲדוֹרָם"
           },
           {
             "t": "וְ/אֶת",
@@ -253,7 +304,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "אוּזָ֖ל",
@@ -262,7 +315,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Uzal",
+            "lx": "אוּזָל"
           },
           {
             "t": "וְ/אֶת",
@@ -271,7 +326,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "דִּקְלָֽה",
@@ -280,7 +337,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Diklah",
+            "lx": "דִּקְלָה"
           }
         ]
       },
@@ -289,7 +348,9 @@
         "book": "Gen",
         "ref": "Gen 10:16",
         "gateLesson": 13,
-        "tier": "guided",
+        "tier": "strict",
+        "wooden": "and the Jebusite, and the Amorite, and the Girgashite,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אֶת",
@@ -298,7 +359,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הַ/יְבוּסִי֙",
@@ -306,8 +369,11 @@
             "s": "2983",
             "m": "HTd/Ngmsa",
             "g": 8,
-            "pn": false,
-            "v": null
+            "pn": true,
+            "v": 8,
+            "gl": "a Jebusite or inhabitant of Jebus",
+            "lx": "יְבוּסִי",
+            "gent": true
           },
           {
             "t": "וְ/אֶת",
@@ -316,7 +382,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הָ֣/אֱמֹרִ֔י",
@@ -324,8 +392,11 @@
             "s": "567",
             "m": "HTd/Ngmsa",
             "g": 8,
-            "pn": false,
-            "v": null
+            "pn": true,
+            "v": 8,
+            "gl": "an Emorite",
+            "lx": "אֱמֹרִי",
+            "gent": true
           },
           {
             "t": "וְ/אֵ֖ת",
@@ -334,7 +405,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הַ/גִּרְגָּשִֽׁי",
@@ -342,8 +415,11 @@
             "s": "1622",
             "m": "HTd/Ngmsa",
             "g": 8,
-            "pn": false,
-            "v": null
+            "pn": true,
+            "v": 8,
+            "gl": "a Girgashite",
+            "lx": "גִּרְגָּשִׁי",
+            "gent": true
           }
         ]
       },
@@ -352,7 +428,9 @@
         "book": "Gen",
         "ref": "Gen 10:17",
         "gateLesson": 13,
-        "tier": "guided",
+        "tier": "strict",
+        "wooden": "and the Hivite, and the Arkite, and the Sinite,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אֶת",
@@ -361,7 +439,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הַֽ/חִוִּ֥י",
@@ -369,8 +449,11 @@
             "s": "2340",
             "m": "HTd/Ngmsa",
             "g": 8,
-            "pn": false,
-            "v": null
+            "pn": true,
+            "v": null,
+            "gl": "a Chivvite",
+            "lx": "חִוִּי",
+            "gent": true
           },
           {
             "t": "וְ/אֶת",
@@ -379,7 +462,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הַֽ/עַרְקִ֖י",
@@ -387,8 +472,11 @@
             "s": "6208",
             "m": "HTd/Ngmsa",
             "g": 8,
-            "pn": false,
-            "v": null
+            "pn": true,
+            "v": null,
+            "gl": "an Arkite or inhabitant of Erek",
+            "lx": "עַרְקִי",
+            "gent": true
           },
           {
             "t": "וְ/אֶת",
@@ -397,7 +485,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הַ/סִּינִֽי",
@@ -405,8 +495,11 @@
             "s": "5513",
             "m": "HTd/Ngmsa",
             "g": 8,
-            "pn": false,
-            "v": null
+            "pn": true,
+            "v": 8,
+            "gl": "a Sinite",
+            "lx": "סִינִי",
+            "gent": true
           }
         ]
       },
@@ -416,6 +509,8 @@
         "ref": "Gen 10:26",
         "gateLesson": 16,
         "tier": "strict",
+        "wooden": "And Joktan fathered Almodad, and Sheleph, and Chatsarmaveth, and Jerach,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/יָקְטָ֣ן",
@@ -424,7 +519,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Joktan",
+            "lx": "יׇקְטָן"
           },
           {
             "t": "יָלַ֔ד",
@@ -433,7 +530,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to bear young",
+            "lx": "יָלַד"
           },
           {
             "t": "אֶת",
@@ -442,7 +541,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "אַלְמוֹדָ֖ד",
@@ -451,7 +552,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Almodad",
+            "lx": "אַלְמוֹדָד"
           },
           {
             "t": "וְ/אֶת",
@@ -460,7 +563,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "שָׁ֑לֶף",
@@ -469,7 +574,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Sheleph",
+            "lx": "שֶׁלֶף"
           },
           {
             "t": "וְ/אֶת",
@@ -478,7 +585,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "חֲצַרְמָ֖וֶת",
@@ -487,7 +596,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Chatsarmaveth",
+            "lx": "חֲצַרְמָוֶת"
           },
           {
             "t": "וְ/אֶת",
@@ -496,7 +607,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "יָֽרַח",
@@ -505,7 +618,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jerach",
+            "lx": "יֶרַח"
           }
         ]
       },
@@ -515,6 +630,8 @@
         "ref": "Gen 16:14",
         "gateLesson": 16,
         "tier": "strict",
+        "wooden": "Therefore he called the well Beer-Lachai-Roi; behold, between Kadesh and between Bered.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "עַל",
@@ -523,7 +640,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "above",
+            "lx": "עַל"
           },
           {
             "t": "כֵּן֙",
@@ -532,7 +651,9 @@
             "m": "HTm",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "set upright",
+            "lx": "כֵּן"
           },
           {
             "t": "קָרָ֣א",
@@ -541,7 +662,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to call out to",
+            "lx": "קָרָא"
           },
           {
             "t": "לַ/בְּאֵ֔ר",
@@ -550,7 +673,9 @@
             "m": "HRd/Ncfsa",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a pit",
+            "lx": "בְּאֵר"
           },
           {
             "t": "בְּאֵ֥ר",
@@ -559,7 +684,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Beer-Lachai-Roi",
+            "lx": "בְּאֵר לַחַי רֹאִי"
           },
           {
             "t": "לַחַ֖י",
@@ -568,7 +695,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Beer-Lachai-Roi",
+            "lx": "בְּאֵר לַחַי רֹאִי"
           },
           {
             "t": "רֹאִ֑י",
@@ -577,7 +706,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Beer-Lachai-Roi",
+            "lx": "בְּאֵר לַחַי רֹאִי"
           },
           {
             "t": "הִנֵּ֥ה",
@@ -586,7 +717,9 @@
             "m": "HTm",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 22,
+            "gl": "lo!",
+            "lx": "הִנֵּה"
           },
           {
             "t": "בֵין",
@@ -595,7 +728,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 26,
+            "gl": "between",
+            "lx": "בֵּין"
           },
           {
             "t": "קָדֵ֖שׁ",
@@ -604,7 +739,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Kadesh",
+            "lx": "קָדֵשׁ"
           },
           {
             "t": "וּ/בֵ֥ין",
@@ -613,7 +750,9 @@
             "m": "HC/R",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 26,
+            "gl": "between",
+            "lx": "בֵּין"
           },
           {
             "t": "בָּֽרֶד",
@@ -622,7 +761,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Bered",
+            "lx": "בֶּרֶד"
           }
         ]
       },
@@ -631,7 +772,9 @@
         "book": "Gen",
         "ref": "Gen 1:1",
         "gateLesson": 16,
-        "tier": "guided",
+        "tier": "strict",
+        "wooden": "In beginning, God created the heavens and the earth.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "בְּ/רֵאשִׁ֖ית",
@@ -640,7 +783,9 @@
             "m": "HR/Ncfsa",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "the first",
+            "lx": "רֵאשִׁית"
           },
           {
             "t": "בָּרָ֣א",
@@ -649,7 +794,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": 24
+            "v": 24,
+            "gl": "(absolutely) to create",
+            "lx": "בָּרָא"
           },
           {
             "t": "אֱלֹהִ֑ים",
@@ -658,7 +805,9 @@
             "m": "HNcmpa",
             "g": 10,
             "pn": false,
-            "v": 3
+            "v": 3,
+            "gl": "gods in the ordinary sense",
+            "lx": "אֱלֹהִים"
           },
           {
             "t": "אֵ֥ת",
@@ -667,7 +816,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הַ/שָּׁמַ֖יִם",
@@ -676,7 +827,9 @@
             "m": "HTd/Ncmpa",
             "g": 10,
             "pn": false,
-            "v": 13
+            "v": 13,
+            "gl": "the sky",
+            "lx": "שָׁמַיִם"
           },
           {
             "t": "וְ/אֵ֥ת",
@@ -685,7 +838,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הָ/אָֽרֶץ",
@@ -694,7 +849,9 @@
             "m": "HTd/Ncbsa",
             "g": 8,
             "pn": false,
-            "v": null
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
           }
         ]
       },
@@ -704,6 +861,8 @@
         "ref": "Gen 10:24",
         "gateLesson": 16,
         "tier": "guided",
+        "wooden": "And Arpakshad fathered Shelach, and Shelach fathered Eber.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אַרְפַּכְשַׁ֖ד",
@@ -712,7 +871,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Arpakshad",
+            "lx": "אַרְפַּכְשַׁד"
           },
           {
             "t": "יָלַ֣ד",
@@ -721,7 +882,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to bear young",
+            "lx": "יָלַד"
           },
           {
             "t": "אֶת",
@@ -730,7 +893,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "שָׁ֑לַח",
@@ -739,7 +904,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Shelach",
+            "lx": "שֶׁלַח"
           },
           {
             "t": "וְ/שֶׁ֖לַח",
@@ -748,7 +915,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Shelach",
+            "lx": "שֶׁלַח"
           },
           {
             "t": "יָלַ֥ד",
@@ -757,7 +926,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to bear young",
+            "lx": "יָלַד"
           },
           {
             "t": "אֶת",
@@ -766,7 +937,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "עֵֽבֶר",
@@ -775,7 +948,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Eber",
+            "lx": "עֵבֵר"
           }
         ]
       },
@@ -785,6 +960,8 @@
         "ref": "Gen 22:21",
         "gateLesson": 22,
         "tier": "strict",
+        "wooden": "Uz his firstborn, and Buz his brother, and Kemuel father of Aram.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "אֶת",
@@ -793,7 +970,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "ע֥וּץ",
@@ -802,7 +981,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Uts",
+            "lx": "עוּץ"
           },
           {
             "t": "בְּכֹר֖/וֹ",
@@ -811,7 +992,9 @@
             "m": "HNcmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "firstborn",
+            "lx": "בְּכוֹר"
           },
           {
             "t": "וְ/אֶת",
@@ -820,7 +1003,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "בּ֣וּז",
@@ -829,7 +1014,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Buz",
+            "lx": "בּוּז"
           },
           {
             "t": "אָחִ֑י/ו",
@@ -838,7 +1025,9 @@
             "m": "HNcmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": 10
+            "v": 10,
+            "gl": "a brother",
+            "lx": "אָח"
           },
           {
             "t": "וְ/אֶת",
@@ -847,7 +1036,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "קְמוּאֵ֖ל",
@@ -856,7 +1047,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Kemuel",
+            "lx": "קְמוּאֵל"
           },
           {
             "t": "אֲבִ֥י",
@@ -865,7 +1058,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "father",
+            "lx": "אָב"
           },
           {
             "t": "אֲרָֽם",
@@ -874,7 +1069,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Aram or Syria",
+            "lx": "אֲרָם"
           }
         ]
       },
@@ -884,6 +1081,8 @@
         "ref": "Gen 46:23",
         "gateLesson": 20,
         "tier": "strict",
+        "wooden": "And the sons of Dan: Chushim.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וּ/בְנֵי",
@@ -892,7 +1091,9 @@
             "m": "HC/Ncmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "דָ֖ן",
@@ -901,7 +1102,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Dan",
+            "lx": "דָּן"
           },
           {
             "t": "חֻשִֽׁים",
@@ -910,7 +1113,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Chushim",
+            "lx": "חוּשִׁים"
           }
         ]
       },
@@ -920,6 +1125,8 @@
         "ref": "Gen 35:24",
         "gateLesson": 20,
         "tier": "strict",
+        "wooden": "The sons of Rachel: Joseph and Binyamin.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "בְּנֵ֣י",
@@ -928,7 +1135,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "רָחֵ֔ל",
@@ -937,7 +1146,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Rachel",
+            "lx": "רָחֵל"
           },
           {
             "t": "יוֹסֵ֖ף",
@@ -946,7 +1157,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Joseph",
+            "lx": "יוֹסֵף"
           },
           {
             "t": "וּ/בִנְיָמִֽן",
@@ -955,7 +1168,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Binjamin",
+            "lx": "בִּנְיָמִין"
           }
         ]
       },
@@ -965,6 +1180,8 @@
         "ref": "Gen 10:3",
         "gateLesson": 20,
         "tier": "strict",
+        "wooden": "And the sons of Gomer: Ashkenaz, and Riphath, and Togarmah.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וּ/בְנֵ֖י",
@@ -973,7 +1190,9 @@
             "m": "HC/Ncmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "גֹּ֑מֶר",
@@ -982,7 +1201,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Gomer",
+            "lx": "גֹּמֶר"
           },
           {
             "t": "אַשְׁכֲּנַ֥ז",
@@ -991,7 +1212,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Ashkenaz",
+            "lx": "אַשְׁכְּנַז"
           },
           {
             "t": "וְ/רִיפַ֖ת",
@@ -1000,7 +1223,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Riphath",
+            "lx": "רִיפַת"
           },
           {
             "t": "וְ/תֹגַרְמָֽה",
@@ -1009,7 +1234,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Togarmah",
+            "lx": "תּוֹגַרְמָה"
           }
         ]
       },
@@ -1019,6 +1246,8 @@
         "ref": "Gen 10:15",
         "gateLesson": 22,
         "tier": "guided",
+        "wooden": "And Kenaan fathered Tsidon his firstborn, and Cheth,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וּ/כְנַ֗עַן",
@@ -1027,7 +1256,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Kenaan",
+            "lx": "כְּנַעַן"
           },
           {
             "t": "יָלַ֛ד",
@@ -1036,7 +1267,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to bear young",
+            "lx": "יָלַד"
           },
           {
             "t": "אֶת",
@@ -1045,7 +1278,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "צִידֹ֥ן",
@@ -1054,7 +1289,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Tsidon",
+            "lx": "צִידוֹן"
           },
           {
             "t": "בְּכֹר֖/וֹ",
@@ -1063,7 +1300,9 @@
             "m": "HNcmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "firstborn",
+            "lx": "בְּכוֹר"
           },
           {
             "t": "וְ/אֶת",
@@ -1072,7 +1311,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "חֵֽת",
@@ -1081,7 +1322,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Cheth",
+            "lx": "חֵת"
           }
         ]
       },
@@ -1091,6 +1334,8 @@
         "ref": "Gen 17:4",
         "gateLesson": 22,
         "tier": "guided",
+        "wooden": "As for me, behold, my covenant is with you, and you shall become father of a multitude of nations.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "אֲנִ֕י",
@@ -1099,7 +1344,9 @@
             "m": "HPp1cs",
             "g": 5,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "I",
+            "lx": "אֲנִי"
           },
           {
             "t": "הִנֵּ֥ה",
@@ -1108,7 +1355,9 @@
             "m": "HTm",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 22,
+            "gl": "lo!",
+            "lx": "הִנֵּה"
           },
           {
             "t": "בְרִיתִ֖/י",
@@ -1117,7 +1366,9 @@
             "m": "HNcfsc/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a compact",
+            "lx": "בְּרִית"
           },
           {
             "t": "אִתָּ֑/ךְ",
@@ -1126,7 +1377,9 @@
             "m": "HR/Sp2fs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "nearness",
+            "lx": "אֵת"
           },
           {
             "t": "וְ/הָיִ֕יתָ",
@@ -1135,7 +1388,9 @@
             "m": "HC/Vqq2ms",
             "g": 16,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "לְ/אַ֖ב",
@@ -1144,7 +1399,9 @@
             "m": "HR/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "father",
+            "lx": "אָב"
           },
           {
             "t": "הֲמ֥וֹן",
@@ -1153,7 +1410,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a noise",
+            "lx": "הָמוֹן"
           },
           {
             "t": "גּוֹיִֽם",
@@ -1162,7 +1421,9 @@
             "m": "HNcmpa",
             "g": 10,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a foreign nation",
+            "lx": "גּוֹי"
           }
         ]
       },
@@ -1172,6 +1433,8 @@
         "ref": "Gen 24:38",
         "gateLesson": 23,
         "tier": "strict",
+        "wooden": "If not, to the house of my father you shall go, and to my clan, and you shall take a woman for my son.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "אִם",
@@ -1180,7 +1443,9 @@
             "m": "HC",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 7,
+            "gl": "used very widely as demonstrative",
+            "lx": "אִם"
           },
           {
             "t": "לֹ֧א",
@@ -1189,7 +1454,9 @@
             "m": "HTn",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "not",
+            "lx": "לֹא"
           },
           {
             "t": "אֶל",
@@ -1198,7 +1465,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "בֵּית",
@@ -1207,7 +1476,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 8
+            "v": 8,
+            "gl": "a house",
+            "lx": "בַּיִת"
           },
           {
             "t": "אָבִ֛/י",
@@ -1216,7 +1487,9 @@
             "m": "HNcmsc/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "father",
+            "lx": "אָב"
           },
           {
             "t": "תֵּלֵ֖ךְ",
@@ -1225,7 +1498,9 @@
             "m": "HVqi2ms",
             "g": 23,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to walk",
+            "lx": "יָלַךְ"
           },
           {
             "t": "וְ/אֶל",
@@ -1234,7 +1509,9 @@
             "m": "HC/R",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "מִשְׁפַּחְתִּ֑/י",
@@ -1243,7 +1520,9 @@
             "m": "HNcfsc/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a family",
+            "lx": "מִשְׁפָּחָה"
           },
           {
             "t": "וְ/לָקַחְתָּ֥",
@@ -1252,7 +1531,9 @@
             "m": "HC/Vqq2ms",
             "g": 16,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to take",
+            "lx": "לָקַח"
           },
           {
             "t": "אִשָּׁ֖ה",
@@ -1261,7 +1542,9 @@
             "m": "HNcfsa",
             "g": 7,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "a woman",
+            "lx": "אִשָּׁה"
           },
           {
             "t": "לִ/בְנִֽ/י",
@@ -1270,7 +1553,9 @@
             "m": "HR/Ncmsc/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           }
         ]
       },
@@ -1279,7 +1564,9 @@
         "book": "Gen",
         "ref": "Gen 24:4",
         "gateLesson": 23,
-        "tier": "guided",
+        "tier": "strict",
+        "wooden": "For to my land and to my birthplace you shall go, and you shall take a woman for my son, for Yitschak.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "כִּ֧י",
@@ -1288,7 +1575,9 @@
             "m": "HC",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 30,
+            "gl": "for, that, because, when",
+            "lx": "כִּי"
           },
           {
             "t": "אֶל",
@@ -1297,7 +1586,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "אַרְצִ֛/י",
@@ -1306,7 +1597,9 @@
             "m": "HNcbsc/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
           },
           {
             "t": "וְ/אֶל",
@@ -1315,7 +1608,9 @@
             "m": "HC/R",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "מוֹלַדְתִּ֖/י",
@@ -1324,7 +1619,9 @@
             "m": "HNcfsc/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "nativity",
+            "lx": "מוֹלֶדֶת"
           },
           {
             "t": "תֵּלֵ֑ךְ",
@@ -1333,7 +1630,9 @@
             "m": "HVqi2ms",
             "g": 23,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to walk",
+            "lx": "יָלַךְ"
           },
           {
             "t": "וְ/לָקַחְתָּ֥",
@@ -1342,7 +1641,9 @@
             "m": "HC/Vqp2ms",
             "g": 16,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to take",
+            "lx": "לָקַח"
           },
           {
             "t": "אִשָּׁ֖ה",
@@ -1351,7 +1652,9 @@
             "m": "HNcfsa",
             "g": 7,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "a woman",
+            "lx": "אִשָּׁה"
           },
           {
             "t": "לִ/בְנִ֥/י",
@@ -1360,7 +1663,9 @@
             "m": "HR/Ncmsc/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "לְ/יִצְחָֽק",
@@ -1369,7 +1674,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Jitschak",
+            "lx": "יִצְחָק"
           }
         ]
       },
@@ -1379,6 +1686,8 @@
         "ref": "Gen 20:18",
         "gateLesson": 25,
         "tier": "guided",
+        "wooden": "For closing, YHWH had closed every womb belonging to the house of Abimelek, on account of the word of Sarah, wife of Abraham.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "כִּֽי",
@@ -1387,7 +1696,9 @@
             "m": "HC",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "for, that, because, when",
+            "lx": "כִּי"
           },
           {
             "t": "עָצֹ֤ר",
@@ -1396,7 +1707,9 @@
             "m": "HVqa",
             "g": 25,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to inclose",
+            "lx": "עָצָר"
           },
           {
             "t": "עָצַר֙",
@@ -1405,7 +1718,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to inclose",
+            "lx": "עָצָר"
           },
           {
             "t": "יְהוָ֔ה",
@@ -1414,7 +1729,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "בְּעַ֥ד",
@@ -1423,7 +1740,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "in up to or over against",
+            "lx": "בְּעַד"
           },
           {
             "t": "כָּל",
@@ -1432,7 +1751,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 11
+            "v": 11,
+            "gl": "the whole",
+            "lx": "כֹּל"
           },
           {
             "t": "רֶ֖חֶם",
@@ -1441,7 +1762,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "the womb",
+            "lx": "רֶחֶם"
           },
           {
             "t": "לְ/בֵ֣ית",
@@ -1450,7 +1773,9 @@
             "m": "HR/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": 8
+            "v": 8,
+            "gl": "a house",
+            "lx": "בַּיִת"
           },
           {
             "t": "אֲבִימֶ֑לֶךְ",
@@ -1459,7 +1784,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Abimelek",
+            "lx": "אֲבִימֶלֶךְ"
           },
           {
             "t": "עַל",
@@ -1468,7 +1795,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "above",
+            "lx": "עַל"
           },
           {
             "t": "דְּבַ֥ר",
@@ -1477,7 +1806,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 5
+            "v": 5,
+            "gl": "a word",
+            "lx": "דָּבָר"
           },
           {
             "t": "שָׂרָ֖ה",
@@ -1486,7 +1817,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Sarah",
+            "lx": "שָׂרָה"
           },
           {
             "t": "אֵ֥שֶׁת",
@@ -1495,7 +1828,9 @@
             "m": "HNcfsc",
             "g": 20,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "a woman",
+            "lx": "אִשָּׁה"
           },
           {
             "t": "אַבְרָהָֽם",
@@ -1504,7 +1839,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Abraham",
+            "lx": "אַבְרָהָם"
           }
         ]
       },
@@ -1514,6 +1851,8 @@
         "ref": "Gen 24:1",
         "gateLesson": 29,
         "tier": "strict",
+        "wooden": "And Abraham was old, come into days, and YHWH had blessed Abraham in everything.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אַבְרָהָ֣ם",
@@ -1522,7 +1861,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Abraham",
+            "lx": "אַבְרָהָם"
           },
           {
             "t": "זָקֵ֔ן",
@@ -1531,7 +1872,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": 38
+            "v": 38,
+            "gl": "to be old",
+            "lx": "זָקֵן"
           },
           {
             "t": "בָּ֖א",
@@ -1540,7 +1883,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           },
           {
             "t": "בַּ/יָּמִ֑ים",
@@ -1549,7 +1894,9 @@
             "m": "HRd/Ncmpa",
             "g": 13,
             "pn": false,
-            "v": 13
+            "v": 13,
+            "gl": "a day",
+            "lx": "יוֹם"
           },
           {
             "t": "וַֽ/יהוָ֛ה",
@@ -1558,7 +1905,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "בֵּרַ֥ךְ",
@@ -1567,7 +1916,9 @@
             "m": "HVpp3ms",
             "g": 29,
             "pn": false,
-            "v": 49
+            "v": 49,
+            "gl": "to kneel",
+            "lx": "בָרַךְ"
           },
           {
             "t": "אֶת",
@@ -1576,7 +1927,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "אַבְרָהָ֖ם",
@@ -1585,7 +1938,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Abraham",
+            "lx": "אַבְרָהָם"
           },
           {
             "t": "בַּ/כֹּֽל",
@@ -1594,7 +1949,9 @@
             "m": "HRd/Ncmsa",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "the whole",
+            "lx": "כֹּל"
           }
         ]
       },
@@ -1604,6 +1961,8 @@
         "ref": "Gen 49:18",
         "gateLesson": 29,
         "tier": "guided",
+        "wooden": "For your salvation I have waited, YHWH.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "לִֽ/ישׁוּעָתְ/ךָ֖",
@@ -1612,7 +1971,9 @@
             "m": "HR/Ncfsc/Sp2ms",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "something saved",
+            "lx": "יְשׁוּעָה"
           },
           {
             "t": "קִוִּ֥יתִי",
@@ -1621,7 +1982,9 @@
             "m": "HVpp1cs",
             "g": 29,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to bind together",
+            "lx": "קָוָה"
           },
           {
             "t": "יְהוָֽה",
@@ -1630,7 +1993,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           }
         ]
       },
@@ -1640,6 +2005,8 @@
         "ref": "Gen 49:5",
         "gateLesson": 31,
         "tier": "guided",
+        "wooden": "Shimon and Levi are brothers; weapons of violence are their swords.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "שִׁמְע֥וֹן",
@@ -1648,7 +2015,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Shimon",
+            "lx": "שִׁמְעוֹן"
           },
           {
             "t": "וְ/לֵוִ֖י",
@@ -1657,7 +2026,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Levi",
+            "lx": "לֵוִי"
           },
           {
             "t": "אַחִ֑ים",
@@ -1666,7 +2037,9 @@
             "m": "HNcmpa",
             "g": 10,
             "pn": false,
-            "v": 10
+            "v": 10,
+            "gl": "a brother",
+            "lx": "אָח"
           },
           {
             "t": "כְּלֵ֥י",
@@ -1675,7 +2048,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "something prepared",
+            "lx": "כְּלִי"
           },
           {
             "t": "חָמָ֖ס",
@@ -1684,7 +2059,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "violence",
+            "lx": "חָמָס"
           },
           {
             "t": "מְכֵרֹתֵי/הֶֽם",
@@ -1693,7 +2070,9 @@
             "m": "HNcfpc/Sp3mp",
             "g": 31,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a sword",
+            "lx": "מְכֵרָה"
           }
         ]
       },
@@ -1703,6 +2082,8 @@
         "ref": "Gen 36:25",
         "gateLesson": 33,
         "tier": "strict",
+        "wooden": "And these are the sons of Anah: Dishon; and Oholibamah daughter of Anah.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אֵ֥לֶּה",
@@ -1711,7 +2092,9 @@
             "m": "HC/Pdxcp",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": 33,
+            "gl": "these or those",
+            "lx": "אֵלֶּה"
           },
           {
             "t": "בְנֵֽי",
@@ -1720,7 +2103,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "עֲנָ֖ה",
@@ -1729,7 +2114,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Anah",
+            "lx": "עֲנָה"
           },
           {
             "t": "דִּשֹׁ֑ן",
@@ -1738,7 +2125,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Dishon",
+            "lx": "דִּישׁוֹן"
           },
           {
             "t": "וְ/אָהֳלִיבָמָ֖ה",
@@ -1747,7 +2136,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Oholibamah",
+            "lx": "אׇהֳלִיבָמָה"
           },
           {
             "t": "בַּת",
@@ -1756,7 +2147,9 @@
             "m": "HNcfsc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a daughter",
+            "lx": "בַּת"
           },
           {
             "t": "עֲנָֽה",
@@ -1765,7 +2158,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Anah",
+            "lx": "עֲנָה"
           }
         ]
       },
@@ -1775,6 +2170,8 @@
         "ref": "Gen 36:26",
         "gateLesson": 33,
         "tier": "strict",
+        "wooden": "And these are the sons of Dishan: Chemdan, and Eshban, and Jithran, and Keran.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אֵ֖לֶּה",
@@ -1783,7 +2180,9 @@
             "m": "HC/Pdxcp",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": 33,
+            "gl": "these or those",
+            "lx": "אֵלֶּה"
           },
           {
             "t": "בְּנֵ֣י",
@@ -1792,7 +2191,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "דִישָׁ֑ן",
@@ -1801,7 +2202,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Dishan",
+            "lx": "דִּישָׁן"
           },
           {
             "t": "חֶמְדָּ֥ן",
@@ -1810,7 +2213,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Chemdan",
+            "lx": "חֶמְדָּן"
           },
           {
             "t": "וְ/אֶשְׁבָּ֖ן",
@@ -1819,7 +2224,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Eshban",
+            "lx": "אֶשְׁבָּן"
           },
           {
             "t": "וְ/יִתְרָ֥ן",
@@ -1828,7 +2235,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jithran",
+            "lx": "יִתְרָן"
           },
           {
             "t": "וּ/כְרָֽן",
@@ -1837,7 +2246,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Keran",
+            "lx": "כְּרָן"
           }
         ]
       },
@@ -1847,6 +2258,8 @@
         "ref": "Gen 36:27",
         "gateLesson": 33,
         "tier": "strict",
+        "wooden": "These are the sons of Etser: Bilhan, and Zaavan, and Akan.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "אֵ֖לֶּה",
@@ -1855,7 +2268,9 @@
             "m": "HPdxcp",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": 33,
+            "gl": "these or those",
+            "lx": "אֵלֶּה"
           },
           {
             "t": "בְּנֵי",
@@ -1864,7 +2279,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "אֵ֑צֶר",
@@ -1873,7 +2290,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Etser",
+            "lx": "אֶצֶר"
           },
           {
             "t": "בִּלְהָ֥ן",
@@ -1882,7 +2301,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Bilhan",
+            "lx": "בִּלְהָן"
           },
           {
             "t": "וְ/זַעֲוָ֖ן",
@@ -1891,7 +2312,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Zaavan",
+            "lx": "זַעֲוָן"
           },
           {
             "t": "וַ/עֲקָֽן",
@@ -1900,7 +2323,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Akan",
+            "lx": "עָקָן"
           }
         ]
       },
@@ -1910,6 +2335,8 @@
         "ref": "Gen 36:28",
         "gateLesson": 33,
         "tier": "strict",
+        "wooden": "These are the sons of Dishan: Uz and Aran.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "אֵ֥לֶּה",
@@ -1918,7 +2345,9 @@
             "m": "HPdxcp",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": 33,
+            "gl": "these or those",
+            "lx": "אֵלֶּה"
           },
           {
             "t": "בְנֵֽי",
@@ -1927,7 +2356,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "דִישָׁ֖ן",
@@ -1936,7 +2367,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Dishan",
+            "lx": "דִּישָׁן"
           },
           {
             "t": "ע֥וּץ",
@@ -1945,7 +2378,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Uts",
+            "lx": "עוּץ"
           },
           {
             "t": "וַ/אֲרָֽן",
@@ -1954,7 +2389,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Aran",
+            "lx": "אֲרָן"
           }
         ]
       },
@@ -1964,6 +2401,8 @@
         "ref": "Gen 10:20",
         "gateLesson": 33,
         "tier": "guided",
+        "wooden": "These are the sons of Cham, according to their clans, according to their tongues, in their lands, in their nations.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "אֵ֣לֶּה",
@@ -1972,7 +2411,9 @@
             "m": "HPdxcp",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": 33,
+            "gl": "these or those",
+            "lx": "אֵלֶּה"
           },
           {
             "t": "בְנֵי",
@@ -1981,7 +2422,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "חָ֔ם",
@@ -1990,7 +2433,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Cham",
+            "lx": "חָם"
           },
           {
             "t": "לְ/מִשְׁפְּחֹתָ֖/ם",
@@ -1999,7 +2444,9 @@
             "m": "HR/Ncfpc/Sp3mp",
             "g": 31,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a family",
+            "lx": "מִשְׁפָּחָה"
           },
           {
             "t": "לִ/לְשֹֽׁנֹתָ֑/ם",
@@ -2008,7 +2455,9 @@
             "m": "HR/Ncbpc/Sp3mp",
             "g": 31,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "the tongue",
+            "lx": "לָשׁוֹן"
           },
           {
             "t": "בְּ/אַרְצֹתָ֖/ם",
@@ -2017,7 +2466,9 @@
             "m": "HR/Ncbpc/Sp3mp",
             "g": 31,
             "pn": false,
-            "v": null
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
           },
           {
             "t": "בְּ/גוֹיֵ/הֶֽם",
@@ -2026,7 +2477,9 @@
             "m": "HR/Ncmpc/Sp3mp",
             "g": 31,
             "pn": false,
-            "v": 32
+            "v": 32,
+            "gl": "a foreign nation",
+            "lx": "גּוֹי"
           }
         ]
       },
@@ -2036,6 +2489,8 @@
         "ref": "Gen 36:9",
         "gateLesson": 33,
         "tier": "guided",
+        "wooden": "And these are the generations of Esav, father of Edom, in the hill country of Seir.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אֵ֛לֶּה",
@@ -2044,7 +2499,9 @@
             "m": "HC/Pdxcp",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": 33,
+            "gl": "these or those",
+            "lx": "אֵלֶּה"
           },
           {
             "t": "תֹּלְד֥וֹת",
@@ -2053,7 +2510,9 @@
             "m": "HNcfpc",
             "g": 20,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "(plural only) descent",
+            "lx": "תּוֹלְדָה"
           },
           {
             "t": "עֵשָׂ֖ו",
@@ -2062,7 +2521,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Esav",
+            "lx": "עֵשָׂו"
           },
           {
             "t": "אֲבִ֣י",
@@ -2071,7 +2532,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "father",
+            "lx": "אָב"
           },
           {
             "t": "אֱד֑וֹם",
@@ -2080,7 +2543,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Edom",
+            "lx": "אֱדֹם"
           },
           {
             "t": "בְּ/הַ֖ר",
@@ -2089,7 +2554,9 @@
             "m": "HR/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a mountain or range of hills",
+            "lx": "הַר"
           },
           {
             "t": "שֵׂעִֽיר",
@@ -2098,7 +2565,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Seir",
+            "lx": "שֵׂעִיר"
           }
         ]
       },
@@ -2108,6 +2577,8 @@
         "ref": "Gen 37:1",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And Jaakob dwelt in the land of his father's sojournings, in the land of Kenaan.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֵּ֣שֶׁב",
@@ -2116,7 +2587,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to sit down",
+            "lx": "יָשַׁב"
           },
           {
             "t": "יַעֲקֹ֔ב",
@@ -2125,7 +2598,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jaakob",
+            "lx": "יַעֲקֹב"
           },
           {
             "t": "בְּ/אֶ֖רֶץ",
@@ -2134,7 +2609,9 @@
             "m": "HR/Ncbsc",
             "g": 20,
             "pn": false,
-            "v": 9
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
           },
           {
             "t": "מְגוּרֵ֣י",
@@ -2143,7 +2620,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a temporary abode",
+            "lx": "מָגוּר"
           },
           {
             "t": "אָבִ֑י/ו",
@@ -2152,7 +2631,9 @@
             "m": "HNcmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "father",
+            "lx": "אָב"
           },
           {
             "t": "בְּ/אֶ֖רֶץ",
@@ -2161,7 +2642,9 @@
             "m": "HR/Ncbsc",
             "g": 20,
             "pn": false,
-            "v": 9
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
           },
           {
             "t": "כְּנָֽעַן",
@@ -2170,7 +2653,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Kenaan",
+            "lx": "כְּנַעַן"
           }
         ]
       },
@@ -2180,6 +2665,8 @@
         "ref": "Gen 38:6",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And Jehudah took a woman for Er his firstborn, and her name was Tamar.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יִּקַּ֧ח",
@@ -2188,7 +2675,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to take",
+            "lx": "לָקַח"
           },
           {
             "t": "יְהוּדָ֛ה",
@@ -2197,7 +2686,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehudah",
+            "lx": "יְהוּדָה"
           },
           {
             "t": "אִשָּׁ֖ה",
@@ -2206,7 +2697,9 @@
             "m": "HNcfsa",
             "g": 7,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "a woman",
+            "lx": "אִשָּׁה"
           },
           {
             "t": "לְ/עֵ֣ר",
@@ -2215,7 +2708,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Er",
+            "lx": "עֵר"
           },
           {
             "t": "בְּכוֹר֑/וֹ",
@@ -2224,7 +2719,9 @@
             "m": "HNcmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "firstborn",
+            "lx": "בְּכוֹר"
           },
           {
             "t": "וּ/שְׁמָ֖/הּ",
@@ -2233,7 +2730,9 @@
             "m": "HC/Ncmsc/Sp3fs",
             "g": 22,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "an appellation",
+            "lx": "שֵׁם"
           },
           {
             "t": "תָּמָֽר",
@@ -2242,7 +2741,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Tamar",
+            "lx": "תָּמָר"
           }
         ]
       },
@@ -2252,6 +2753,8 @@
         "ref": "Gen 47:10",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And Jaakob blessed Paroh, and he went out from before the face of Paroh.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יְבָ֥רֶךְ",
@@ -2260,7 +2763,9 @@
             "m": "HC/Vpw3ms",
             "g": 35,
             "pn": false,
-            "v": 29
+            "v": 29,
+            "gl": "to kneel",
+            "lx": "בָרַךְ"
           },
           {
             "t": "יַעֲקֹ֖ב",
@@ -2269,7 +2774,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jaakob",
+            "lx": "יַעֲקֹב"
           },
           {
             "t": "אֶת",
@@ -2278,7 +2785,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "פַּרְעֹ֑ה",
@@ -2287,7 +2796,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Paroh",
+            "lx": "פַּרְעֹה"
           },
           {
             "t": "וַ/יֵּצֵ֖א",
@@ -2296,7 +2807,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 22
+            "v": 22,
+            "gl": "to go",
+            "lx": "יָצָא"
           },
           {
             "t": "מִ/לִּ/פְנֵ֥י",
@@ -2305,7 +2818,9 @@
             "m": "HR/R/Ncbpc",
             "g": 20,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "the face",
+            "lx": "פָּנִים"
           },
           {
             "t": "פַרְעֹֽה",
@@ -2314,7 +2829,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Paroh",
+            "lx": "פַּרְעֹה"
           }
         ]
       },
@@ -2324,6 +2841,8 @@
         "ref": "Gen 26:6",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And Yitschak dwelt in Gerar.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֵּ֥שֶׁב",
@@ -2332,7 +2851,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to sit down",
+            "lx": "יָשַׁב"
           },
           {
             "t": "יִצְחָ֖ק",
@@ -2341,7 +2862,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jitschak",
+            "lx": "יִצְחָק"
           },
           {
             "t": "בִּ/גְרָֽר",
@@ -2350,7 +2873,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Gerar",
+            "lx": "גְּרָר"
           }
         ]
       },
@@ -2360,6 +2885,8 @@
         "ref": "Gen 1:13",
         "gateLesson": 35,
         "tier": "guided",
+        "wooden": "And there was evening, and there was morning, a third day.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַֽ/יְהִי",
@@ -2368,7 +2895,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "עֶ֥רֶב",
@@ -2377,7 +2906,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "dusk",
+            "lx": "עֶרֶב"
           },
           {
             "t": "וַֽ/יְהִי",
@@ -2386,7 +2917,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "בֹ֖קֶר",
@@ -2395,7 +2928,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "dawn",
+            "lx": "בֹּקֶר"
           },
           {
             "t": "י֥וֹם",
@@ -2404,7 +2939,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": 21
+            "v": 21,
+            "gl": "a day",
+            "lx": "יוֹם"
           },
           {
             "t": "שְׁלִישִֽׁי",
@@ -2413,7 +2950,9 @@
             "m": "HAomsa",
             "g": 32,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "third",
+            "lx": "שְׁלִישִׁי"
           }
         ]
       },
@@ -2423,6 +2962,8 @@
         "ref": "Gen 1:19",
         "gateLesson": 35,
         "tier": "guided",
+        "wooden": "And there was evening, and there was morning, a fourth day.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַֽ/יְהִי",
@@ -2431,7 +2972,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "עֶ֥רֶב",
@@ -2440,7 +2983,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "dusk",
+            "lx": "עֶרֶב"
           },
           {
             "t": "וַֽ/יְהִי",
@@ -2449,7 +2994,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "בֹ֖קֶר",
@@ -2458,7 +3005,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "dawn",
+            "lx": "בֹּקֶר"
           },
           {
             "t": "י֥וֹם",
@@ -2467,7 +3016,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": 21
+            "v": 21,
+            "gl": "a day",
+            "lx": "יוֹם"
           },
           {
             "t": "רְבִיעִֽי",
@@ -2476,7 +3027,9 @@
             "m": "HAomsa",
             "g": 32,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "fourth",
+            "lx": "רְבִיעִי"
           }
         ]
       },
@@ -2486,6 +3039,8 @@
         "ref": "Gen 50:12",
         "gateLesson": 40,
         "tier": "strict",
+        "wooden": "And his sons did for him thus, just as he had commanded them.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יַּעֲשׂ֥וּ",
@@ -2494,7 +3049,9 @@
             "m": "HC/Vqw3mp",
             "g": 35,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to do or make",
+            "lx": "עָשָׂה"
           },
           {
             "t": "בָנָ֖י/ו",
@@ -2503,7 +3060,9 @@
             "m": "HNcmpc/Sp3ms",
             "g": 31,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "ל֑/וֹ",
@@ -2512,7 +3071,9 @@
             "m": "HR/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": null,
+            "lx": null
           },
           {
             "t": "כֵּ֖ן",
@@ -2521,7 +3082,9 @@
             "m": "HTm",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "set upright",
+            "lx": "כֵּן"
           },
           {
             "t": "כַּ/אֲשֶׁ֥ר",
@@ -2530,7 +3093,9 @@
             "m": "HR/Tr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "צִוָּֽ/ם",
@@ -2539,7 +3104,9 @@
             "m": "HVpp3ms/Sp3mp",
             "g": 40,
             "pn": false,
-            "v": null
+            "v": 35,
+            "gl": "(intensively) to constitute",
+            "lx": "צָוָה"
           }
         ]
       },
@@ -2549,6 +3116,8 @@
         "ref": "Gen 38:2",
         "gateLesson": 40,
         "tier": "strict",
+        "wooden": "And Jehudah saw there a daughter of a Kenaanite man, and his name was Shua, and he took her, and he came to her.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יַּרְא",
@@ -2557,7 +3126,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 30
+            "v": 30,
+            "gl": "to see",
+            "lx": "רָאָה"
           },
           {
             "t": "שָׁ֧ם",
@@ -2566,7 +3137,9 @@
             "m": "HD",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 6,
+            "gl": "there",
+            "lx": "שָׁם"
           },
           {
             "t": "יְהוּדָ֛ה",
@@ -2575,7 +3148,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehudah",
+            "lx": "יְהוּדָה"
           },
           {
             "t": "בַּת",
@@ -2584,7 +3159,9 @@
             "m": "HNcfsc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a daughter",
+            "lx": "בַּת"
           },
           {
             "t": "אִ֥ישׁ",
@@ -2593,7 +3170,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "a man as an individual or a male person",
+            "lx": "אִישׁ"
           },
           {
             "t": "כְּנַעֲנִ֖י",
@@ -2601,8 +3180,11 @@
             "s": "3669",
             "m": "HNgmsa",
             "g": 7,
-            "pn": false,
-            "v": null
+            "pn": true,
+            "v": null,
+            "gl": "a Kenaanite or inhabitant of Kenaan",
+            "lx": "כְּנַעַנִי",
+            "gent": true
           },
           {
             "t": "וּ/שְׁמ֣/וֹ",
@@ -2611,7 +3193,9 @@
             "m": "HC/Ncmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "an appellation",
+            "lx": "שֵׁם"
           },
           {
             "t": "שׁ֑וּעַ",
@@ -2620,7 +3204,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Shua",
+            "lx": "שׁוּעַ"
           },
           {
             "t": "וַ/יִּקָּחֶ֖/הָ",
@@ -2629,7 +3215,9 @@
             "m": "HC/Vqw3ms/Sp3fs",
             "g": 40,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to take",
+            "lx": "לָקַח"
           },
           {
             "t": "וַ/יָּבֹ֥א",
@@ -2638,7 +3226,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           },
           {
             "t": "אֵלֶֽי/הָ",
@@ -2647,7 +3237,9 @@
             "m": "HR/Sp3fs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 8,
+            "gl": "near",
+            "lx": "אֵל"
           }
         ]
       },
@@ -2657,6 +3249,8 @@
         "ref": "Gen 44:6",
         "gateLesson": 40,
         "tier": "strict",
+        "wooden": "And he overtook them, and he spoke to them these words.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַֽ/יַּשִּׂגֵ֑/ם",
@@ -2665,7 +3259,9 @@
             "m": "HC/Vhw3ms/Sp3mp",
             "g": 40,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to reach",
+            "lx": "נָשַׂג"
           },
           {
             "t": "וַ/יְדַבֵּ֣ר",
@@ -2674,7 +3270,9 @@
             "m": "HC/Vpw3ms",
             "g": 35,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to arrange",
+            "lx": "דָבַר"
           },
           {
             "t": "אֲלֵ/הֶ֔ם",
@@ -2683,7 +3281,9 @@
             "m": "HR/Sp3mp",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 11,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "אֶת",
@@ -2692,7 +3292,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הַ/דְּבָרִ֖ים",
@@ -2701,7 +3303,9 @@
             "m": "HTd/Ncmpa",
             "g": 10,
             "pn": false,
-            "v": 5
+            "v": 5,
+            "gl": "a word",
+            "lx": "דָּבָר"
           },
           {
             "t": "הָ/אֵֽלֶּה",
@@ -2710,7 +3314,9 @@
             "m": "HTd/Pdxcp",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": 8,
+            "gl": "these or those",
+            "lx": "אֵלֶּה"
           }
         ]
       },
@@ -2720,6 +3326,8 @@
         "ref": "Gen 7:5",
         "gateLesson": 40,
         "tier": "strict",
+        "wooden": "And Noach did according to all that YHWH had commanded him.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יַּ֖עַשׂ",
@@ -2728,7 +3336,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to do or make",
+            "lx": "עָשָׂה"
           },
           {
             "t": "נֹ֑חַ",
@@ -2737,7 +3347,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Noach",
+            "lx": "נֹחַ"
           },
           {
             "t": "כְּ/כֹ֥ל",
@@ -2746,7 +3358,9 @@
             "m": "HR/Ncmsa",
             "g": 13,
             "pn": false,
-            "v": 11
+            "v": 11,
+            "gl": "the whole",
+            "lx": "כֹּל"
           },
           {
             "t": "אֲשֶׁר",
@@ -2755,7 +3369,9 @@
             "m": "HTr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "צִוָּ֖/הוּ",
@@ -2764,7 +3380,9 @@
             "m": "HVpp3ms/Sp3ms",
             "g": 40,
             "pn": false,
-            "v": null
+            "v": 35,
+            "gl": "(intensively) to constitute",
+            "lx": "צָוָה"
           },
           {
             "t": "יְהוָֽה",
@@ -2773,7 +3391,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           }
         ]
       },
@@ -2783,6 +3403,8 @@
         "ref": "Gen 1:3",
         "gateLesson": 39,
         "tier": "guided",
+        "wooden": "And God said, 'Let light be,' and light was.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֹּ֥אמֶר",
@@ -2791,7 +3413,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           },
           {
             "t": "אֱלֹהִ֖ים",
@@ -2800,7 +3424,9 @@
             "m": "HNcmpa",
             "g": 10,
             "pn": false,
-            "v": 3
+            "v": 3,
+            "gl": "gods in the ordinary sense",
+            "lx": "אֱלֹהִים"
           },
           {
             "t": "יְהִ֣י",
@@ -2809,7 +3435,9 @@
             "m": "HVqj3ms",
             "g": 39,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "א֑וֹר",
@@ -2818,7 +3446,9 @@
             "m": "HNcbsa",
             "g": 7,
             "pn": false,
-            "v": 24
+            "v": 24,
+            "gl": "illumination",
+            "lx": "אוֹר"
           },
           {
             "t": "וַֽ/יְהִי",
@@ -2827,7 +3457,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "אֽוֹר",
@@ -2836,7 +3468,9 @@
             "m": "HNcbsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "illumination",
+            "lx": "אוֹר"
           }
         ]
       },
@@ -2846,6 +3480,8 @@
         "ref": "Gen 50:6",
         "gateLesson": 40,
         "tier": "guided",
+        "wooden": "And Paroh said, 'Go up and bury your father, just as he made you swear.'",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֹּ֖אמֶר",
@@ -2854,7 +3490,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           },
           {
             "t": "פַּרְעֹ֑ה",
@@ -2863,7 +3501,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Paroh",
+            "lx": "פַּרְעֹה"
           },
           {
             "t": "עֲלֵ֛ה",
@@ -2872,7 +3512,9 @@
             "m": "HVqv2ms",
             "g": 39,
             "pn": false,
-            "v": 14
+            "v": 14,
+            "gl": "to ascend",
+            "lx": "עָלָה"
           },
           {
             "t": "וּ/קְבֹ֥ר",
@@ -2881,7 +3523,9 @@
             "m": "HC/Vqv2ms",
             "g": 39,
             "pn": false,
-            "v": 49
+            "v": 49,
+            "gl": "to inter",
+            "lx": "קָבַר"
           },
           {
             "t": "אֶת",
@@ -2890,7 +3534,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "אָבִ֖י/ךָ",
@@ -2899,7 +3545,9 @@
             "m": "HNcmsc/Sp2ms",
             "g": 22,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "father",
+            "lx": "אָב"
           },
           {
             "t": "כַּ/אֲשֶׁ֥ר",
@@ -2908,7 +3556,9 @@
             "m": "HR/Tr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "הִשְׁבִּיעֶֽ/ךָ",
@@ -2917,7 +3567,9 @@
             "m": "HVhp3ms/Sp2ms",
             "g": 40,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to seven oneself",
+            "lx": "שָׁבַע"
           }
         ]
       },
@@ -2927,6 +3579,8 @@
         "ref": "Gen 32:14",
         "gateLesson": 42,
         "tier": "strict",
+        "wooden": "And he lodged there that night, and he took from what had come into his hand a gift for Esav his brother.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יָּ֥לֶן",
@@ -2935,7 +3589,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to stop",
+            "lx": "לוּן"
           },
           {
             "t": "שָׁ֖ם",
@@ -2944,7 +3600,9 @@
             "m": "HD",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 6,
+            "gl": "there",
+            "lx": "שָׁם"
           },
           {
             "t": "בַּ/לַּ֣יְלָה",
@@ -2953,7 +3611,9 @@
             "m": "HRd/Ncmsa",
             "g": 13,
             "pn": false,
-            "v": 24
+            "v": 24,
+            "gl": "a twist",
+            "lx": "לַיִל"
           },
           {
             "t": "הַ/ה֑וּא",
@@ -2962,7 +3622,9 @@
             "m": "HTd/Pp3ms",
             "g": 8,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "he",
+            "lx": "הוּא"
           },
           {
             "t": "וַ/יִּקַּ֞ח",
@@ -2971,7 +3633,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to take",
+            "lx": "לָקַח"
           },
           {
             "t": "מִן",
@@ -2980,7 +3644,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "a part of",
+            "lx": "מִן"
           },
           {
             "t": "הַ/בָּ֧א",
@@ -2989,7 +3655,9 @@
             "m": "HTd/Vqrmsa",
             "g": 42,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           },
           {
             "t": "בְ/יָד֛/וֹ",
@@ -2998,7 +3666,9 @@
             "m": "HR/Ncbsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": 10
+            "v": 10,
+            "gl": "a hand",
+            "lx": "יָד"
           },
           {
             "t": "מִנְחָ֖ה",
@@ -3007,7 +3677,9 @@
             "m": "HNcfsa",
             "g": 7,
             "pn": false,
-            "v": 36
+            "v": 36,
+            "gl": "a donation",
+            "lx": "מִנְחָה"
           },
           {
             "t": "לְ/עֵשָׂ֥ו",
@@ -3016,7 +3688,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Esav",
+            "lx": "עֵשָׂו"
           },
           {
             "t": "אָחִֽי/ו",
@@ -3025,7 +3699,9 @@
             "m": "HNcmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": 10
+            "v": 10,
+            "gl": "a brother",
+            "lx": "אָח"
           }
         ]
       },
@@ -3035,6 +3711,8 @@
         "ref": "Gen 14:12",
         "gateLesson": 42,
         "tier": "strict",
+        "wooden": "And they took Lot and his property, son of the brother of Abram, and they went, and he was dwelling in Sedom.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יִּקְח֨וּ",
@@ -3043,7 +3721,9 @@
             "m": "HC/Vqw3mp",
             "g": 35,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to take",
+            "lx": "לָקַח"
           },
           {
             "t": "אֶת",
@@ -3052,7 +3732,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "ל֧וֹט",
@@ -3061,7 +3743,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Lot",
+            "lx": "לוֹט"
           },
           {
             "t": "וְ/אֶת",
@@ -3070,7 +3754,9 @@
             "m": "HC/To",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "רְכֻשׁ֛/וֹ",
@@ -3079,7 +3765,9 @@
             "m": "HNcmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "property",
+            "lx": "רְכוּשׁ"
           },
           {
             "t": "בֶּן",
@@ -3088,7 +3776,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "אֲחִ֥י",
@@ -3097,7 +3787,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 10
+            "v": 10,
+            "gl": "a brother",
+            "lx": "אָח"
           },
           {
             "t": "אַבְרָ֖ם",
@@ -3106,7 +3798,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Abram",
+            "lx": "אַבְרָם"
           },
           {
             "t": "וַ/יֵּלֵ֑כוּ",
@@ -3115,7 +3809,9 @@
             "m": "HC/Vqw3mp",
             "g": 35,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to walk",
+            "lx": "יָלַךְ"
           },
           {
             "t": "וְ/ה֥וּא",
@@ -3124,7 +3820,9 @@
             "m": "HC/Pp3ms",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "he",
+            "lx": "הוּא"
           },
           {
             "t": "יֹשֵׁ֖ב",
@@ -3133,7 +3831,9 @@
             "m": "HVqrmsa",
             "g": 42,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to sit down",
+            "lx": "יָשַׁב"
           },
           {
             "t": "בִּ/סְדֹֽם",
@@ -3142,7 +3842,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Sedom",
+            "lx": "סְדֹם"
           }
         ]
       },
@@ -3152,6 +3854,8 @@
         "ref": "Gen 32:19",
         "gateLesson": 42,
         "tier": "strict",
+        "wooden": "And you shall say, 'To your servant, to Jaakob'; it is a gift sent to my lord, to Esav; and behold, also he is behind us.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/אָֽמַרְתָּ֙",
@@ -3160,7 +3864,9 @@
             "m": "HC/Vqq2ms",
             "g": 16,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           },
           {
             "t": "לְ/עַבְדְּ/ךָ֣",
@@ -3169,7 +3875,9 @@
             "m": "HR/Ncmsc/Sp2ms",
             "g": 22,
             "pn": false,
-            "v": 11
+            "v": 11,
+            "gl": "a servant",
+            "lx": "עֶבֶד"
           },
           {
             "t": "לְ/יַעֲקֹ֔ב",
@@ -3178,7 +3886,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Jaakob",
+            "lx": "יַעֲקֹב"
           },
           {
             "t": "מִנְחָ֥ה",
@@ -3187,7 +3897,9 @@
             "m": "HNcfsa",
             "g": 7,
             "pn": false,
-            "v": 36
+            "v": 36,
+            "gl": "a donation",
+            "lx": "מִנְחָה"
           },
           {
             "t": "הִוא֙",
@@ -3196,7 +3908,9 @@
             "m": "HPp3fs",
             "g": 5,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "he",
+            "lx": "הוּא"
           },
           {
             "t": "שְׁלוּחָ֔ה",
@@ -3205,7 +3919,9 @@
             "m": "HVqsfsa",
             "g": 42,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to send away",
+            "lx": "שָׁלַח"
           },
           {
             "t": "לַֽ/אדֹנִ֖/י",
@@ -3214,7 +3930,9 @@
             "m": "HR/Ncmsc/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": 3
+            "v": 3,
+            "gl": "sovereign",
+            "lx": "אָדוֹן"
           },
           {
             "t": "לְ/עֵשָׂ֑ו",
@@ -3223,7 +3941,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Esav",
+            "lx": "עֵשָׂו"
           },
           {
             "t": "וְ/הִנֵּ֥ה",
@@ -3232,7 +3952,9 @@
             "m": "HC/Tm",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 22,
+            "gl": "lo!",
+            "lx": "הִנֵּה"
           },
           {
             "t": "גַם",
@@ -3241,7 +3963,9 @@
             "m": "HD",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 28,
+            "gl": "assemblage",
+            "lx": "גַּם"
           },
           {
             "t": "ה֖וּא",
@@ -3250,7 +3974,9 @@
             "m": "HPp3ms",
             "g": 5,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "he",
+            "lx": "הוּא"
           },
           {
             "t": "אַחֲרֵֽי/נוּ",
@@ -3259,7 +3985,9 @@
             "m": "HR/Sp1cp",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "the hind part",
+            "lx": "אַחַר"
           }
         ]
       },
@@ -3269,6 +3997,8 @@
         "ref": "Gen 41:28",
         "gateLesson": 42,
         "tier": "strict",
+        "wooden": "It is the word that I spoke to Paroh: what God is doing he has shown to Paroh.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "ה֣וּא",
@@ -3277,7 +4007,9 @@
             "m": "HPp3ms",
             "g": 5,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "he",
+            "lx": "הוּא"
           },
           {
             "t": "הַ/דָּבָ֔ר",
@@ -3286,7 +4018,9 @@
             "m": "HTd/Ncmsa",
             "g": 8,
             "pn": false,
-            "v": 5
+            "v": 5,
+            "gl": "a word",
+            "lx": "דָּבָר"
           },
           {
             "t": "אֲשֶׁ֥ר",
@@ -3295,7 +4029,9 @@
             "m": "HTr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "דִּבַּ֖רְתִּי",
@@ -3304,7 +4040,9 @@
             "m": "HVpp1cs",
             "g": 29,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to arrange",
+            "lx": "דָבַר"
           },
           {
             "t": "אֶל",
@@ -3313,7 +4051,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "פַּרְעֹ֑ה",
@@ -3322,7 +4062,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Paroh",
+            "lx": "פַּרְעֹה"
           },
           {
             "t": "אֲשֶׁ֧ר",
@@ -3331,7 +4073,9 @@
             "m": "HTr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "הָ/אֱלֹהִ֛ים",
@@ -3340,7 +4084,9 @@
             "m": "HTd/Ncmpa",
             "g": 10,
             "pn": false,
-            "v": 3
+            "v": 3,
+            "gl": "gods in the ordinary sense",
+            "lx": "אֱלֹהִים"
           },
           {
             "t": "עֹשֶׂ֖ה",
@@ -3349,7 +4095,9 @@
             "m": "HVqrmsa",
             "g": 42,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to do or make",
+            "lx": "עָשָׂה"
           },
           {
             "t": "הֶרְאָ֥ה",
@@ -3358,7 +4106,9 @@
             "m": "HVhp3ms",
             "g": 29,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to see",
+            "lx": "רָאָה"
           },
           {
             "t": "אֶת",
@@ -3367,7 +4117,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "פַּרְעֹֽה",
@@ -3376,7 +4128,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Paroh",
+            "lx": "פַּרְעֹה"
           }
         ]
       },
@@ -3386,6 +4140,8 @@
         "ref": "Gen 37:19",
         "gateLesson": 42,
         "tier": "guided",
+        "wooden": "And they said, each man to his brother, 'Behold, this master of dreams is coming.'",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֹּאמְר֖וּ",
@@ -3394,7 +4150,9 @@
             "m": "HC/Vqw3mp",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           },
           {
             "t": "אִ֣ישׁ",
@@ -3403,7 +4161,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "a man as an individual or a male person",
+            "lx": "אִישׁ"
           },
           {
             "t": "אֶל",
@@ -3412,7 +4172,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "אָחִ֑י/ו",
@@ -3421,7 +4183,9 @@
             "m": "HNcmsc/Sp3ms",
             "g": 22,
             "pn": false,
-            "v": 10
+            "v": 10,
+            "gl": "a brother",
+            "lx": "אָח"
           },
           {
             "t": "הִנֵּ֗ה",
@@ -3430,7 +4194,9 @@
             "m": "HTm",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 22,
+            "gl": "lo!",
+            "lx": "הִנֵּה"
           },
           {
             "t": "בַּ֛עַל",
@@ -3439,7 +4205,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a master",
+            "lx": "בַּעַל"
           },
           {
             "t": "הַ/חֲלֹמ֥וֹת",
@@ -3448,7 +4216,9 @@
             "m": "HTd/Ncmpa",
             "g": 10,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a dream",
+            "lx": "חֲלוֹם"
           },
           {
             "t": "הַלָּזֶ֖ה",
@@ -3457,7 +4227,9 @@
             "m": "HPdxms",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "this very",
+            "lx": "הַלָּזֶה"
           },
           {
             "t": "בָּֽא",
@@ -3466,7 +4238,9 @@
             "m": "HVqrmsa",
             "g": 42,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           }
         ]
       },
@@ -3476,6 +4250,8 @@
         "ref": "Gen 34:31",
         "gateLesson": 42,
         "tier": "guided",
+        "wooden": "And they said, 'Like a prostitute should he treat our sister?'",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֹּאמְר֑וּ",
@@ -3484,7 +4260,9 @@
             "m": "HC/Vqw3mp",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           },
           {
             "t": "הַ/כְ/זוֹנָ֕ה",
@@ -3493,7 +4271,9 @@
             "m": "HTi/R/Vqrfsa",
             "g": 42,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to commit adultery",
+            "lx": "זָנָה"
           },
           {
             "t": "יַעֲשֶׂ֖ה",
@@ -3502,7 +4282,9 @@
             "m": "HVqi3ms",
             "g": 23,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to do or make",
+            "lx": "עָשָׂה"
           },
           {
             "t": "אֶת",
@@ -3511,7 +4293,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "אֲחוֹתֵֽ/נוּ",
@@ -3520,7 +4304,9 @@
             "m": "HNcfsc/Sp1cp",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a sister",
+            "lx": "אָחוֹת"
           }
         ]
       },
@@ -3530,6 +4316,8 @@
         "ref": "Gen 19:36",
         "gateLesson": 45,
         "tier": "strict",
+        "wooden": "And the two daughters of Lot conceived by their father.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַֽ/תַּהֲרֶ֛יןָ",
@@ -3538,7 +4326,9 @@
             "m": "HC/Vqw3fp",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to be",
+            "lx": "הָרָה"
           },
           {
             "t": "שְׁתֵּ֥י",
@@ -3547,7 +4337,9 @@
             "m": "HAcfdc",
             "g": 45,
             "pn": false,
-            "v": 31
+            "v": 31,
+            "gl": "two",
+            "lx": "שְׁנַיִם"
           },
           {
             "t": "בְנֽוֹת",
@@ -3556,7 +4348,9 @@
             "m": "HNcfpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a daughter",
+            "lx": "בַּת"
           },
           {
             "t": "ל֖וֹט",
@@ -3565,7 +4359,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Lot",
+            "lx": "לוֹט"
           },
           {
             "t": "מֵ/אֲבִי/הֶֽן",
@@ -3574,7 +4370,9 @@
             "m": "HR/Ncmsc/Sp3fp",
             "g": 22,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "father",
+            "lx": "אָב"
           }
         ]
       },
@@ -3584,6 +4382,8 @@
         "ref": "Gen 21:31",
         "gateLesson": 45,
         "tier": "strict",
+        "wooden": "Therefore he called that place Beer-Sheba, for there the two of them swore.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "עַל",
@@ -3592,7 +4392,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "above",
+            "lx": "עַל"
           },
           {
             "t": "כֵּ֗ן",
@@ -3601,7 +4403,9 @@
             "m": "HTm",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "set upright",
+            "lx": "כֵּן"
           },
           {
             "t": "קָרָ֛א",
@@ -3610,7 +4414,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to call out to",
+            "lx": "קָרָא"
           },
           {
             "t": "לַ/מָּק֥וֹם",
@@ -3619,7 +4425,9 @@
             "m": "HRd/Ncmsa",
             "g": 13,
             "pn": false,
-            "v": 12
+            "v": 12,
+            "gl": "a standing",
+            "lx": "מָקוֹם"
           },
           {
             "t": "הַ/ה֖וּא",
@@ -3628,7 +4436,9 @@
             "m": "HTd/Pp3ms",
             "g": 8,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "he",
+            "lx": "הוּא"
           },
           {
             "t": "בְּאֵ֣ר",
@@ -3637,7 +4447,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Beer-Sheba",
+            "lx": "בְּאֵר שֶׁבַע"
           },
           {
             "t": "שָׁ֑בַע",
@@ -3646,7 +4458,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Beer-Sheba",
+            "lx": "בְּאֵר שֶׁבַע"
           },
           {
             "t": "כִּ֛י",
@@ -3655,7 +4469,9 @@
             "m": "HC",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 30,
+            "gl": "for, that, because, when",
+            "lx": "כִּי"
           },
           {
             "t": "שָׁ֥ם",
@@ -3664,7 +4480,9 @@
             "m": "HD",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 6,
+            "gl": "there",
+            "lx": "שָׁם"
           },
           {
             "t": "נִשְׁבְּע֖וּ",
@@ -3673,7 +4491,9 @@
             "m": "HVNp3cp",
             "g": 37,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to seven oneself",
+            "lx": "שָׁבַע"
           },
           {
             "t": "שְׁנֵי/הֶֽם",
@@ -3682,7 +4502,9 @@
             "m": "HAcmdc/Sp3mp",
             "g": 45,
             "pn": false,
-            "v": 31
+            "v": 31,
+            "gl": "two",
+            "lx": "שְׁנַיִם"
           }
         ]
       },
@@ -3692,6 +4514,8 @@
         "ref": "Gen 7:9",
         "gateLesson": 45,
         "tier": "strict",
+        "wooden": "Two by two they came to Noach, into the ark, male and female, just as God had commanded Noach.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "שְׁנַ֨יִם",
@@ -3700,7 +4524,9 @@
             "m": "HAcmda",
             "g": 45,
             "pn": false,
-            "v": 31
+            "v": 31,
+            "gl": "two",
+            "lx": "שְׁנַיִם"
           },
           {
             "t": "שְׁנַ֜יִם",
@@ -3709,7 +4535,9 @@
             "m": "HAcmda",
             "g": 45,
             "pn": false,
-            "v": 31
+            "v": 31,
+            "gl": "two",
+            "lx": "שְׁנַיִם"
           },
           {
             "t": "בָּ֧אוּ",
@@ -3718,7 +4546,9 @@
             "m": "HVqp3cp",
             "g": 19,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           },
           {
             "t": "אֶל",
@@ -3727,7 +4557,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "נֹ֛חַ",
@@ -3736,7 +4568,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Noach",
+            "lx": "נֹחַ"
           },
           {
             "t": "אֶל",
@@ -3745,7 +4579,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "הַ/תֵּבָ֖ה",
@@ -3754,7 +4590,9 @@
             "m": "HTd/Ncfsa",
             "g": 8,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a box",
+            "lx": "תֵּבָה"
           },
           {
             "t": "זָכָ֣ר",
@@ -3763,7 +4601,9 @@
             "m": "HAamsa",
             "g": 32,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "remembered",
+            "lx": "זָכָר"
           },
           {
             "t": "וּ/נְקֵבָ֑ה",
@@ -3772,7 +4612,9 @@
             "m": "HC/Ncfsa",
             "g": 13,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "female",
+            "lx": "נְקֵבָה"
           },
           {
             "t": "כַּֽ/אֲשֶׁ֛ר",
@@ -3781,7 +4623,9 @@
             "m": "HR/Tr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "צִוָּ֥ה",
@@ -3790,7 +4634,9 @@
             "m": "HVpp3ms",
             "g": 29,
             "pn": false,
-            "v": 35
+            "v": 35,
+            "gl": "(intensively) to constitute",
+            "lx": "צָוָה"
           },
           {
             "t": "אֱלֹהִ֖ים",
@@ -3799,7 +4645,9 @@
             "m": "HNcmpa",
             "g": 10,
             "pn": false,
-            "v": 3
+            "v": 3,
+            "gl": "gods in the ordinary sense",
+            "lx": "אֱלֹהִים"
           },
           {
             "t": "אֶת",
@@ -3808,7 +4656,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "נֹֽחַ",
@@ -3817,7 +4667,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Noach",
+            "lx": "נֹחַ"
           }
         ]
       },
@@ -3827,6 +4679,8 @@
         "ref": "Gen 31:33",
         "gateLesson": 45,
         "tier": "strict",
+        "wooden": "And Laban went into the tent of Jaakob, and into the tent of Leah, and into the tent of the two maidservants, and he did not find; and he went out from the tent of Leah, and he went into the tent of Rachel.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יָּבֹ֨א",
@@ -3835,7 +4689,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           },
           {
             "t": "לָבָ֜ן",
@@ -3844,7 +4700,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Laban",
+            "lx": "לָבָן"
           },
           {
             "t": "בְּ/אֹ֥הֶל",
@@ -3853,7 +4711,9 @@
             "m": "HR/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": 20
+            "v": 20,
+            "gl": "a tent",
+            "lx": "אֹהֶל"
           },
           {
             "t": "יַעֲקֹ֣ב",
@@ -3862,7 +4722,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jaakob",
+            "lx": "יַעֲקֹב"
           },
           {
             "t": "וּ/בְ/אֹ֣הֶל",
@@ -3871,7 +4733,9 @@
             "m": "HC/R/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": 20
+            "v": 20,
+            "gl": "a tent",
+            "lx": "אֹהֶל"
           },
           {
             "t": "לֵאָ֗ה",
@@ -3880,7 +4744,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Leah",
+            "lx": "לֵאָה"
           },
           {
             "t": "וּ/בְ/אֹ֛הֶל",
@@ -3889,7 +4755,9 @@
             "m": "HC/R/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": 20
+            "v": 20,
+            "gl": "a tent",
+            "lx": "אֹהֶל"
           },
           {
             "t": "שְׁתֵּ֥י",
@@ -3898,7 +4766,9 @@
             "m": "HAcfdc",
             "g": 45,
             "pn": false,
-            "v": 31
+            "v": 31,
+            "gl": "two",
+            "lx": "שְׁנַיִם"
           },
           {
             "t": "הָ/אֲמָהֹ֖ת",
@@ -3907,7 +4777,9 @@
             "m": "HTd/Ncfpa",
             "g": 10,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a maidservant or female slave",
+            "lx": "אָמָה"
           },
           {
             "t": "וְ/לֹ֣א",
@@ -3916,7 +4788,9 @@
             "m": "HC/Tn",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "not",
+            "lx": "לֹא"
           },
           {
             "t": "מָצָ֑א",
@@ -3925,7 +4799,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": 22
+            "v": 22,
+            "gl": "to come forth to",
+            "lx": "מָצָא"
           },
           {
             "t": "וַ/יֵּצֵא֙",
@@ -3934,7 +4810,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 22
+            "v": 22,
+            "gl": "to go",
+            "lx": "יָצָא"
           },
           {
             "t": "מֵ/אֹ֣הֶל",
@@ -3943,7 +4821,9 @@
             "m": "HR/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": 20
+            "v": 20,
+            "gl": "a tent",
+            "lx": "אֹהֶל"
           },
           {
             "t": "לֵאָ֔ה",
@@ -3952,7 +4832,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Leah",
+            "lx": "לֵאָה"
           },
           {
             "t": "וַ/יָּבֹ֖א",
@@ -3961,7 +4843,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           },
           {
             "t": "בְּ/אֹ֥הֶל",
@@ -3970,7 +4854,9 @@
             "m": "HR/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": 20
+            "v": 20,
+            "gl": "a tent",
+            "lx": "אֹהֶל"
           },
           {
             "t": "רָחֵֽל",
@@ -3979,7 +4865,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Rachel",
+            "lx": "רָחֵל"
           }
         ]
       },
@@ -3989,6 +4877,8 @@
         "ref": "Gen 22:23",
         "gateLesson": 45,
         "tier": "guided",
+        "wooden": "And Bethuel fathered Rivkah; these eight Milkah bore to Nachor, brother of Abraham.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וּ/בְתוּאֵ֖ל",
@@ -3997,7 +4887,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Bethuel",
+            "lx": "בְּתוּאֵל"
           },
           {
             "t": "יָלַ֣ד",
@@ -4006,7 +4898,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to bear young",
+            "lx": "יָלַד"
           },
           {
             "t": "אֶת",
@@ -4015,7 +4909,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "רִבְקָ֑ה",
@@ -4024,7 +4920,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Ribkah",
+            "lx": "רִבְקָה"
           },
           {
             "t": "שְׁמֹנָ֥ה",
@@ -4033,7 +4931,9 @@
             "m": "HAcmsa",
             "g": 45,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a cardinal number",
+            "lx": "שְׁמֹנֶה"
           },
           {
             "t": "אֵ֨לֶּה֙",
@@ -4042,7 +4942,9 @@
             "m": "HPdxcp",
             "g": 33,
             "pn": false,
-            "v": null
+            "v": 33,
+            "gl": "these or those",
+            "lx": "אֵלֶּה"
           },
           {
             "t": "יָלְדָ֣ה",
@@ -4051,7 +4953,9 @@
             "m": "HVqp3fs",
             "g": 16,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to bear young",
+            "lx": "יָלַד"
           },
           {
             "t": "מִלְכָּ֔ה",
@@ -4060,7 +4964,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Milcah",
+            "lx": "מִלְכָּה"
           },
           {
             "t": "לְ/נָח֖וֹר",
@@ -4069,7 +4975,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Nochor",
+            "lx": "נָחוֹר"
           },
           {
             "t": "אֲחִ֥י",
@@ -4078,7 +4986,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 10
+            "v": 10,
+            "gl": "a brother",
+            "lx": "אָח"
           },
           {
             "t": "אַבְרָהָֽם",
@@ -4087,7 +4997,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Abraham",
+            "lx": "אַבְרָהָם"
           }
         ]
       },
@@ -4097,6 +5009,8 @@
         "ref": "Gen 42:17",
         "gateLesson": 45,
         "tier": "guided",
+        "wooden": "And he gathered them into custody three days.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֶּאֱסֹ֥ף",
@@ -4105,7 +5019,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to gather for any purpose",
+            "lx": "אָסַף"
           },
           {
             "t": "אֹתָ֛/ם",
@@ -4114,7 +5030,9 @@
             "m": "HTo/Sp3mp",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "אֶל",
@@ -4123,7 +5041,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "מִשְׁמָ֖ר",
@@ -4132,7 +5052,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a guard",
+            "lx": "מִשְׁמָר"
           },
           {
             "t": "שְׁלֹ֥שֶׁת",
@@ -4141,7 +5063,9 @@
             "m": "HAcmsc",
             "g": 45,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "three",
+            "lx": "שָׁלוֹשׁ"
           },
           {
             "t": "יָמִֽים",
@@ -4150,7 +5074,9 @@
             "m": "HNcmpa",
             "g": 10,
             "pn": false,
-            "v": 21
+            "v": 21,
+            "gl": "a day",
+            "lx": "יוֹם"
           }
         ]
       },
@@ -4160,6 +5086,8 @@
         "ref": "Deut 3:15",
         "gateLesson": 16,
         "tier": "strict",
+        "wooden": "And to Makir I gave the Gilad.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וּ/לְ/מָכִ֖יר",
@@ -4168,7 +5096,9 @@
             "m": "HC/R/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Makir",
+            "lx": "מָכִיר"
           },
           {
             "t": "נָתַ֥תִּי",
@@ -4177,7 +5107,9 @@
             "m": "HVqp1cs",
             "g": 16,
             "pn": false,
-            "v": 17
+            "v": 17,
+            "gl": "to give",
+            "lx": "נָתַן"
           },
           {
             "t": "אֶת",
@@ -4186,7 +5118,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הַ/גִּלְעָֽד",
@@ -4195,7 +5129,9 @@
             "m": "HTd/Np",
             "g": 8,
             "pn": true,
-            "v": null
+            "v": 8,
+            "gl": "Gilad",
+            "lx": "גִּלְעָד"
           }
         ]
       },
@@ -4205,6 +5141,8 @@
         "ref": "Deut 5:17",
         "gateLesson": 23,
         "tier": "strict",
+        "wooden": "You shall not murder.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "לֹ֖א",
@@ -4213,7 +5151,9 @@
             "m": "HTn",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "not",
+            "lx": "לֹא"
           },
           {
             "t": "תִּרְצָֽח",
@@ -4222,7 +5162,9 @@
             "m": "HVqi2ms",
             "g": 23,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to dash in pieces",
+            "lx": "רָצַח"
           }
         ]
       },
@@ -4232,6 +5174,8 @@
         "ref": "Deut 5:18",
         "gateLesson": 23,
         "tier": "strict",
+        "wooden": "And you shall not commit adultery.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/לֹ֖א",
@@ -4240,7 +5184,9 @@
             "m": "HC/Tn",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "not",
+            "lx": "לֹא"
           },
           {
             "t": "תִּנְאָֽף",
@@ -4249,7 +5195,9 @@
             "m": "HVqi2ms",
             "g": 23,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to commit adultery",
+            "lx": "נָאַף"
           }
         ]
       },
@@ -4259,6 +5207,8 @@
         "ref": "Deut 5:19",
         "gateLesson": 23,
         "tier": "strict",
+        "wooden": "And you shall not steal.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/לֹ֖א",
@@ -4267,7 +5217,9 @@
             "m": "HC/Tn",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "not",
+            "lx": "לֹא"
           },
           {
             "t": "תִּגְנֹֽב",
@@ -4276,7 +5228,9 @@
             "m": "HVqi2ms",
             "g": 23,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to thieve",
+            "lx": "גָּנַב"
           }
         ]
       },
@@ -4284,9 +5238,22 @@
         "id": "reader-deut-6-4",
         "book": "Deut",
         "ref": "Deut 6:4",
-        "gateLesson": 31,
+        "gateLesson": 45,
         "tier": "strict",
+        "wooden": "Hear, Israel: YHWH our God, YHWH one.",
+        "woodenStatus": "draft",
         "tokens": [
+          {
+            "t": "שְׁמַ֖ע",
+            "l": "8085",
+            "s": "8085",
+            "m": "HVqv2ms",
+            "g": 39,
+            "pn": false,
+            "v": 16,
+            "gl": "to hear intelligently",
+            "lx": "שָׁמַע"
+          },
           {
             "t": "יִשְׂרָאֵ֑ל",
             "l": "3478",
@@ -4294,7 +5261,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jisrael",
+            "lx": "יִשְׂרָאֵל"
           },
           {
             "t": "יְהוָ֥ה",
@@ -4303,7 +5272,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "אֱלֹהֵ֖י/נוּ",
@@ -4312,7 +5283,9 @@
             "m": "HNcmpc/Sp1cp",
             "g": 31,
             "pn": false,
-            "v": null
+            "v": 3,
+            "gl": "gods in the ordinary sense",
+            "lx": "אֱלֹהִים"
           },
           {
             "t": "יְהוָ֥ה",
@@ -4321,7 +5294,20 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
+          },
+          {
+            "t": "אֶחָֽד",
+            "l": "259",
+            "s": "259",
+            "m": "HAcmsa",
+            "g": 45,
+            "pn": false,
+            "v": null,
+            "gl": "united",
+            "lx": "אֶחָד"
           }
         ]
       },
@@ -4331,6 +5317,8 @@
         "ref": "Exod 6:17",
         "gateLesson": 31,
         "tier": "strict",
+        "wooden": "The sons of Gereshon: Libni and Shimi, according to their clans.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "בְּנֵ֥י",
@@ -4339,7 +5327,9 @@
             "m": "HNcmpc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "גֵרְשׁ֛וֹן",
@@ -4348,7 +5338,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Gereshon or Gereshom",
+            "lx": "גֵּרְשׁוֹן"
           },
           {
             "t": "לִבְנִ֥י",
@@ -4357,7 +5349,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Libni",
+            "lx": "לִבְנִי"
           },
           {
             "t": "וְ/שִׁמְעִ֖י",
@@ -4366,7 +5360,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Shimi",
+            "lx": "שִׁמְעִי"
           },
           {
             "t": "לְ/מִשְׁפְּחֹתָֽ/ם",
@@ -4375,7 +5371,9 @@
             "m": "HR/Ncfpc/Sp3mp",
             "g": 31,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a family",
+            "lx": "מִשְׁפָּחָה"
           }
         ]
       },
@@ -4385,6 +5383,8 @@
         "ref": "1Sam 30:28",
         "gateLesson": 30,
         "tier": "strict",
+        "wooden": "and to those who were in Aroer, and to those who were in Siphmoth, and to those who were in Eshtemoa,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וְ/לַ/אֲשֶׁ֧ר",
@@ -4393,7 +5393,9 @@
             "m": "HC/R/Tr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "בַּ/עֲרֹעֵ֛ר",
@@ -4402,7 +5404,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Aroer",
+            "lx": "עֲרוֹעֵר"
           },
           {
             "t": "וְ/לַ/אֲשֶׁ֥ר",
@@ -4411,7 +5415,9 @@
             "m": "HC/R/Tr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "בְּ/שִֽׂפְמ֖וֹת",
@@ -4420,7 +5426,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Siphmoth",
+            "lx": "שִׂפְמוֹת"
           },
           {
             "t": "וְ/לַ/אֲשֶׁ֥ר",
@@ -4429,7 +5437,9 @@
             "m": "HC/R/Tr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "בְּ/אֶשְׁתְּמֹֽעַ",
@@ -4438,7 +5448,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Eshtemoa or Eshtemoh",
+            "lx": "אֶשְׁתְּמֹעַ"
           }
         ]
       },
@@ -4448,6 +5460,8 @@
         "ref": "Ruth 1:3",
         "gateLesson": 45,
         "tier": "strict",
+        "wooden": "And Elimelek, husband of Naomi, died, and she was left, she and her two sons.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יָּ֥מָת",
@@ -4456,7 +5470,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 30
+            "v": 30,
+            "gl": "to die",
+            "lx": "מוּת"
           },
           {
             "t": "אֱלִימֶ֖לֶךְ",
@@ -4465,7 +5481,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Elimelek",
+            "lx": "אֱלִימֶלֶךְ"
           },
           {
             "t": "אִ֣ישׁ",
@@ -4474,7 +5492,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "a man as an individual or a male person",
+            "lx": "אִישׁ"
           },
           {
             "t": "נָעֳמִ֑י",
@@ -4483,7 +5503,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Noomi",
+            "lx": "נׇעֳמִי"
           },
           {
             "t": "וַ/תִּשָּׁאֵ֥ר",
@@ -4492,7 +5514,9 @@
             "m": "HC/VNw3fs",
             "g": 37,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to swell up",
+            "lx": "שָׁאַר"
           },
           {
             "t": "הִ֖יא",
@@ -4501,7 +5525,9 @@
             "m": "HPp3fs",
             "g": 5,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "he",
+            "lx": "הוּא"
           },
           {
             "t": "וּ/שְׁנֵ֥י",
@@ -4510,7 +5536,9 @@
             "m": "HC/Acmdc",
             "g": 45,
             "pn": false,
-            "v": 31
+            "v": 31,
+            "gl": "two",
+            "lx": "שְׁנַיִם"
           },
           {
             "t": "בָנֶֽי/הָ",
@@ -4519,7 +5547,9 @@
             "m": "HNcmpc/Sp3fs",
             "g": 31,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           }
         ]
       },
@@ -4529,6 +5559,8 @@
         "ref": "Ruth 1:10",
         "gateLesson": 35,
         "tier": "guided",
+        "wooden": "And they said to her, 'For with you we will return to your people.'",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/תֹּאמַ֖רְנָה",
@@ -4537,7 +5569,9 @@
             "m": "HC/Vqw3fp",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           },
           {
             "t": "לָּ֑/הּ",
@@ -4546,7 +5580,9 @@
             "m": "HR/Sp3fs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 8,
+            "gl": null,
+            "lx": null
           },
           {
             "t": "כִּי",
@@ -4555,7 +5591,9 @@
             "m": "HC",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 30,
+            "gl": "for, that, because, when",
+            "lx": "כִּי"
           },
           {
             "t": "אִתָּ֥/ךְ",
@@ -4564,7 +5602,9 @@
             "m": "HR/Sp2fs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "nearness",
+            "lx": "אֵת"
           },
           {
             "t": "נָשׁ֖וּב",
@@ -4573,7 +5613,9 @@
             "m": "HVqi1cp",
             "g": 27,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to turn back",
+            "lx": "שׁוּב"
           },
           {
             "t": "לְ/עַמֵּֽ/ךְ",
@@ -4582,7 +5624,9 @@
             "m": "HR/Ncmsc/Sp2fs",
             "g": 22,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "a people",
+            "lx": "עַם"
           }
         ]
       },
@@ -4592,6 +5636,8 @@
         "ref": "Jonah 1:1",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And the word of YHWH was to Jonah son of Amittai, saying,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַֽ/יְהִי֙",
@@ -4600,7 +5646,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "דְּבַר",
@@ -4609,7 +5657,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 5
+            "v": 5,
+            "gl": "a word",
+            "lx": "דָּבָר"
           },
           {
             "t": "יְהוָ֔ה",
@@ -4618,7 +5668,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "אֶל",
@@ -4627,7 +5679,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "יוֹנָ֥ה",
@@ -4636,7 +5690,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jonah",
+            "lx": "יוֹנָה"
           },
           {
             "t": "בֶן",
@@ -4645,7 +5701,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 7
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
           },
           {
             "t": "אֲמִתַּ֖י",
@@ -4654,7 +5712,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Amittai",
+            "lx": "אֲמִתַּי"
           },
           {
             "t": "לֵ/אמֹֽר",
@@ -4663,7 +5723,9 @@
             "m": "HR/Vqc",
             "g": 24,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           }
         ]
       },
@@ -4673,6 +5735,8 @@
         "ref": "Jonah 4:4",
         "gateLesson": 35,
         "tier": "guided",
+        "wooden": "And YHWH said, 'Does it burn well for you?'",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֹּ֣אמֶר",
@@ -4681,7 +5745,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           },
           {
             "t": "יְהוָ֔ה",
@@ -4690,7 +5756,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "הַ/הֵיטֵ֖ב",
@@ -4699,7 +5767,9 @@
             "m": "HTi/Vha",
             "g": 29,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to be",
+            "lx": "יָטַב"
           },
           {
             "t": "חָ֥רָה",
@@ -4708,7 +5778,9 @@
             "m": "HVqp3ms",
             "g": 16,
             "pn": false,
-            "v": 36
+            "v": 36,
+            "gl": "to glow or grow warm",
+            "lx": "חָרָה"
           },
           {
             "t": "לָֽ/ךְ",
@@ -4717,7 +5789,9 @@
             "m": "HR/Sp2fs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": null,
+            "lx": null
           }
         ]
       },
@@ -4727,6 +5801,8 @@
         "ref": "Exod 13:1",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And YHWH spoke to Mosheh, saying,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יְדַבֵּ֥ר",
@@ -4735,7 +5811,9 @@
             "m": "HC/Vpw3ms",
             "g": 35,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to arrange",
+            "lx": "דָבַר"
           },
           {
             "t": "יְהוָ֖ה",
@@ -4744,7 +5822,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "אֶל",
@@ -4753,7 +5833,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "מֹשֶׁ֥ה",
@@ -4762,7 +5844,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Mosheh",
+            "lx": "מֹשֶׁה"
           },
           {
             "t": "לֵּ/אמֹֽר",
@@ -4771,7 +5855,9 @@
             "m": "HR/Vqc",
             "g": 24,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           }
         ]
       },
@@ -4781,6 +5867,8 @@
         "ref": "Exod 14:1",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And YHWH spoke to Mosheh, saying,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יְדַבֵּ֥ר",
@@ -4789,7 +5877,9 @@
             "m": "HC/Vpw3ms",
             "g": 35,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to arrange",
+            "lx": "דָבַר"
           },
           {
             "t": "יְהֹוָ֖ה",
@@ -4798,7 +5888,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "אֶל",
@@ -4807,7 +5899,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "מֹשֶׁ֥ה",
@@ -4816,7 +5910,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Mosheh",
+            "lx": "מֹשֶׁה"
           },
           {
             "t": "לֵּ/אמֹֽר",
@@ -4825,7 +5921,9 @@
             "m": "HR/Vqc",
             "g": 24,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           }
         ]
       },
@@ -4835,6 +5933,8 @@
         "ref": "Exod 16:30",
         "gateLesson": 35,
         "tier": "guided",
+        "wooden": "And the people rested on the seventh day.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יִּשְׁבְּת֥וּ",
@@ -4843,7 +5943,9 @@
             "m": "HC/Vqw3mp",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to repose",
+            "lx": "שָׁבַת"
           },
           {
             "t": "הָ/עָ֖ם",
@@ -4852,7 +5954,9 @@
             "m": "HTd/Ncmsa",
             "g": 8,
             "pn": false,
-            "v": 13
+            "v": 13,
+            "gl": "a people",
+            "lx": "עַם"
           },
           {
             "t": "בַּ/יּ֥וֹם",
@@ -4861,7 +5965,9 @@
             "m": "HRd/Ncmsa",
             "g": 13,
             "pn": false,
-            "v": 21
+            "v": 21,
+            "gl": "a day",
+            "lx": "יוֹם"
           },
           {
             "t": "הַ/שְּׁבִעִֽי",
@@ -4870,7 +5976,9 @@
             "m": "HTd/Aomsa",
             "g": 32,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "seventh",
+            "lx": "שְׁבִיעִי"
           }
         ]
       },
@@ -4880,6 +5988,8 @@
         "ref": "Deut 2:17",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And YHWH spoke to me, saying,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יְדַבֵּ֥ר",
@@ -4888,7 +5998,9 @@
             "m": "HC/Vpw3ms",
             "g": 35,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to arrange",
+            "lx": "דָבַר"
           },
           {
             "t": "יְהוָ֖ה",
@@ -4897,7 +6009,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "אֵלַ֥/י",
@@ -4906,7 +6020,9 @@
             "m": "HR/Sp1cs",
             "g": 22,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "לֵ/אמֹֽר",
@@ -4915,7 +6031,9 @@
             "m": "HR/Vqc",
             "g": 24,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           }
         ]
       },
@@ -4925,6 +6043,8 @@
         "ref": "Deut 3:29",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And we dwelt in the valley opposite Beth-Peor.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/נֵּ֣שֶׁב",
@@ -4933,7 +6053,9 @@
             "m": "HC/Vqw1cp",
             "g": 35,
             "pn": false,
-            "v": 16
+            "v": 16,
+            "gl": "to sit down",
+            "lx": "יָשַׁב"
           },
           {
             "t": "בַּ/גָּ֔יְא",
@@ -4942,7 +6064,9 @@
             "m": "HRd/Ncbsa",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a gorge",
+            "lx": "גַּיְא"
           },
           {
             "t": "מ֖וּל",
@@ -4951,7 +6075,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "abrupt",
+            "lx": "מוּל"
           },
           {
             "t": "בֵּ֥ית",
@@ -4960,7 +6086,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Beth-Peor",
+            "lx": "בֵּית פְּעוֹר"
           },
           {
             "t": "פְּעֽוֹר",
@@ -4969,7 +6097,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Beth-Peor",
+            "lx": "בֵּית פְּעוֹר"
           }
         ]
       },
@@ -4979,6 +6109,8 @@
         "ref": "Deut 25:4",
         "gateLesson": 40,
         "tier": "guided",
+        "wooden": "You shall not muzzle an ox in its threshing.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "לֹא",
@@ -4987,7 +6119,9 @@
             "m": "HTn",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "not",
+            "lx": "לֹא"
           },
           {
             "t": "תַחְסֹ֥ם",
@@ -4996,7 +6130,9 @@
             "m": "HVqi2ms",
             "g": 23,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to muzzle",
+            "lx": "חָסַם"
           },
           {
             "t": "שׁ֖וֹר",
@@ -5005,7 +6141,9 @@
             "m": "HNcmsa",
             "g": 7,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a bullock",
+            "lx": "שׁוֹר"
           },
           {
             "t": "בְּ/דִישֽׁ/וֹ",
@@ -5014,7 +6152,9 @@
             "m": "HR/Vqc/Sp3ms",
             "g": 40,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to trample or thresh",
+            "lx": "דּוּשׁ"
           }
         ]
       },
@@ -5024,6 +6164,8 @@
         "ref": "Judg 10:5",
         "gateLesson": 37,
         "tier": "strict",
+        "wooden": "And Jair died, and he was buried in Kamon.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יָּ֣מָת",
@@ -5032,7 +6174,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 30
+            "v": 30,
+            "gl": "to die",
+            "lx": "מוּת"
           },
           {
             "t": "יָאִ֔יר",
@@ -5041,7 +6185,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jair",
+            "lx": "יָאִיר"
           },
           {
             "t": "וַ/יִּקָּבֵ֖ר",
@@ -5050,7 +6196,9 @@
             "m": "HC/VNw3ms",
             "g": 37,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to inter",
+            "lx": "קָבַר"
           },
           {
             "t": "בְּ/קָמֽוֹן",
@@ -5059,7 +6207,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Kamon",
+            "lx": "קָמוֹן"
           }
         ]
       },
@@ -5069,6 +6219,8 @@
         "ref": "Judg 12:10",
         "gateLesson": 37,
         "tier": "strict",
+        "wooden": "And Ibtsan died, and he was buried in Beth-Lechem.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יָּ֣מָת",
@@ -5077,7 +6229,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 30
+            "v": 30,
+            "gl": "to die",
+            "lx": "מוּת"
           },
           {
             "t": "אִבְצָ֔ן",
@@ -5086,7 +6240,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Ibtsan",
+            "lx": "אִבְצָן"
           },
           {
             "t": "וַ/יִּקָּבֵ֖ר",
@@ -5095,7 +6251,9 @@
             "m": "HC/VNw3ms",
             "g": 37,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to inter",
+            "lx": "קָבַר"
           },
           {
             "t": "בְּ/בֵ֥ית",
@@ -5104,7 +6262,9 @@
             "m": "HR/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": 13,
+            "gl": "Beth-Lechem",
+            "lx": "בֵּית לֶחֶם"
           },
           {
             "t": "לָֽחֶם",
@@ -5113,7 +6273,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Beth-Lechem",
+            "lx": "בֵּית לֶחֶם"
           }
         ]
       },
@@ -5123,6 +6285,8 @@
         "ref": "Judg 14:7",
         "gateLesson": 35,
         "tier": "guided",
+        "wooden": "And he went down, and he spoke to the woman, and she was right in the eyes of Shimshon.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יֵּ֖רֶד",
@@ -5131,7 +6295,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to descend",
+            "lx": "יָרַד"
           },
           {
             "t": "וַ/יְדַבֵּ֣ר",
@@ -5140,7 +6306,9 @@
             "m": "HC/Vpw3ms",
             "g": 35,
             "pn": false,
-            "v": 15
+            "v": 15,
+            "gl": "to arrange",
+            "lx": "דָבַר"
           },
           {
             "t": "לָ/אִשָּׁ֑ה",
@@ -5149,7 +6317,9 @@
             "m": "HRd/Ncfsa",
             "g": 13,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "a woman",
+            "lx": "אִשָּׁה"
           },
           {
             "t": "וַ/תִּישַׁ֖ר",
@@ -5158,7 +6328,9 @@
             "m": "HC/Vqw3fs",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to be straight or even",
+            "lx": "יָשַׁר"
           },
           {
             "t": "בְּ/עֵינֵ֥י",
@@ -5167,7 +6339,9 @@
             "m": "HR/Ncbdc",
             "g": 20,
             "pn": false,
-            "v": 10
+            "v": 10,
+            "gl": "an eye",
+            "lx": "עַיִן"
           },
           {
             "t": "שִׁמְשֽׁוֹן",
@@ -5176,7 +6350,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Shimshon",
+            "lx": "שִׁמְשׁוֹן"
           }
         ]
       },
@@ -5186,6 +6362,8 @@
         "ref": "1Sam 15:10",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And the word of YHWH was to Shemuel, saying,",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַֽ/יְהִי֙",
@@ -5194,7 +6372,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 6
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
           },
           {
             "t": "דְּבַר",
@@ -5203,7 +6383,9 @@
             "m": "HNcmsc",
             "g": 20,
             "pn": false,
-            "v": 5
+            "v": 5,
+            "gl": "a word",
+            "lx": "דָּבָר"
           },
           {
             "t": "יְהוָ֔ה",
@@ -5212,7 +6394,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "אֶל",
@@ -5221,7 +6405,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "שְׁמוּאֵ֖ל",
@@ -5230,7 +6416,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Shemuel",
+            "lx": "שְׁמוּאֵל"
           },
           {
             "t": "לֵ/אמֹֽר",
@@ -5239,7 +6427,9 @@
             "m": "HR/Vqc",
             "g": 24,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
           }
         ]
       },
@@ -5249,6 +6439,8 @@
         "ref": "1Sam 10:17",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And Shemuel summoned the people to YHWH at the Mitspah.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יַּצְעֵ֤ק",
@@ -5257,7 +6449,9 @@
             "m": "HC/Vhw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to shriek",
+            "lx": "צָעַק"
           },
           {
             "t": "שְׁמוּאֵל֙",
@@ -5266,7 +6460,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Shemuel",
+            "lx": "שְׁמוּאֵל"
           },
           {
             "t": "אֶת",
@@ -5275,7 +6471,9 @@
             "m": "HTo",
             "g": 1,
             "pn": false,
-            "v": null
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
           },
           {
             "t": "הָ/עָ֔ם",
@@ -5284,7 +6482,9 @@
             "m": "HTd/Ncmsa",
             "g": 8,
             "pn": false,
-            "v": 13
+            "v": 13,
+            "gl": "a people",
+            "lx": "עַם"
           },
           {
             "t": "אֶל",
@@ -5293,7 +6493,9 @@
             "m": "HR",
             "g": 13,
             "pn": false,
-            "v": null
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
           },
           {
             "t": "יְהוָ֖ה",
@@ -5302,7 +6504,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           },
           {
             "t": "הַ/מִּצְפָּֽה",
@@ -5311,7 +6515,9 @@
             "m": "HTd/Np",
             "g": 8,
             "pn": true,
-            "v": null
+            "v": 8,
+            "gl": "Mitspah",
+            "lx": "מִצְפָּה"
           }
         ]
       },
@@ -5321,6 +6527,8 @@
         "ref": "1Sam 10:13",
         "gateLesson": 37,
         "tier": "guided",
+        "wooden": "And he finished from prophesying, and he came to the high place.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יְכַל֙",
@@ -5329,7 +6537,9 @@
             "m": "HC/Vpw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to end",
+            "lx": "כָּלָה"
           },
           {
             "t": "מֵֽ/הִתְנַבּ֔וֹת",
@@ -5338,7 +6548,9 @@
             "m": "HR/Vtc",
             "g": 37,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to prophesy",
+            "lx": "נָבָא"
           },
           {
             "t": "וַ/יָּבֹ֖א",
@@ -5347,7 +6559,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           },
           {
             "t": "הַ/בָּמָֽה",
@@ -5356,7 +6570,9 @@
             "m": "HTd/Ncfsa",
             "g": 8,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "an elevation",
+            "lx": "בָּמָה"
           }
         ]
       },
@@ -5366,6 +6582,8 @@
         "ref": "2Sam 17:26",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And Israel and Abshalom camped in the land of the Gilad.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יִּ֤חַן",
@@ -5374,7 +6592,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to incline",
+            "lx": "חָנָה"
           },
           {
             "t": "יִשְׂרָאֵל֙",
@@ -5383,7 +6603,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jisrael",
+            "lx": "יִשְׂרָאֵל"
           },
           {
             "t": "וְ/אַבְשָׁלֹ֔ם",
@@ -5392,7 +6614,9 @@
             "m": "HC/Np",
             "g": 13,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Abshalom",
+            "lx": "אֲבִישָׁלוֹם"
           },
           {
             "t": "אֶ֖רֶץ",
@@ -5401,7 +6625,9 @@
             "m": "HNcbsc",
             "g": 20,
             "pn": false,
-            "v": 9
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
           },
           {
             "t": "הַ/גִּלְעָֽד",
@@ -5410,7 +6636,9 @@
             "m": "HTd/Np",
             "g": 8,
             "pn": true,
-            "v": null
+            "v": 8,
+            "gl": "Gilad",
+            "lx": "גִּלְעָד"
           }
         ]
       },
@@ -5420,6 +6648,8 @@
         "ref": "2Sam 24:19",
         "gateLesson": 35,
         "tier": "strict",
+        "wooden": "And David went up according to the word of Gad, just as YHWH had commanded.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וַ/יַּ֤עַל",
@@ -5428,7 +6658,9 @@
             "m": "HC/Vqw3ms",
             "g": 35,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to ascend",
+            "lx": "עָלָה"
           },
           {
             "t": "דָּוִד֙",
@@ -5437,7 +6669,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "David",
+            "lx": "דָּוִד"
           },
           {
             "t": "כִּ/דְבַר",
@@ -5446,7 +6680,9 @@
             "m": "HR/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": 5
+            "v": 5,
+            "gl": "a word",
+            "lx": "דָּבָר"
           },
           {
             "t": "גָּ֔ד",
@@ -5455,7 +6691,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Gad",
+            "lx": "גָּד"
           },
           {
             "t": "כַּ/אֲשֶׁ֖ר",
@@ -5464,7 +6702,9 @@
             "m": "HR/Tr",
             "g": 30,
             "pn": false,
-            "v": null
+            "v": 13,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
           },
           {
             "t": "צִוָּ֥ה",
@@ -5473,7 +6713,9 @@
             "m": "HVpp3ms",
             "g": 29,
             "pn": false,
-            "v": 35
+            "v": 35,
+            "gl": "(intensively) to constitute",
+            "lx": "צָוָה"
           },
           {
             "t": "יְהוָֽה",
@@ -5482,7 +6724,9 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "Jehovah",
+            "lx": "יְהֹוָה"
           }
         ]
       },
@@ -5492,6 +6736,8 @@
         "ref": "2Sam 5:18",
         "gateLesson": 37,
         "tier": "guided",
+        "wooden": "And the Philistines came, and they spread out in the valley of Rephaim.",
+        "woodenStatus": "draft",
         "tokens": [
           {
             "t": "וּ/פְלִשְׁתִּ֖ים",
@@ -5499,8 +6745,11 @@
             "s": "6430",
             "m": "HC/Ngmpa",
             "g": 13,
-            "pn": false,
-            "v": null
+            "pn": true,
+            "v": null,
+            "gl": "a Pelishtite or inhabitant of Pelesheth",
+            "lx": "פְּלִשְׁתִּי",
+            "gent": true
           },
           {
             "t": "בָּ֑אוּ",
@@ -5509,7 +6758,9 @@
             "m": "HVqp3cp",
             "g": 19,
             "pn": false,
-            "v": 26
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
           },
           {
             "t": "וַ/יִּנָּטְשׁ֖וּ",
@@ -5518,7 +6769,9 @@
             "m": "HC/VNw3mp",
             "g": 37,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "to pound",
+            "lx": "נָטַשׁ"
           },
           {
             "t": "בְּ/עֵ֥מֶק",
@@ -5527,7 +6780,9 @@
             "m": "HR/Ncmsc",
             "g": 20,
             "pn": false,
-            "v": null
+            "v": null,
+            "gl": "a vale",
+            "lx": "עֵמֶק"
           },
           {
             "t": "רְפָאִֽים",
@@ -5536,7 +6791,655 @@
             "m": "HNp",
             "g": 5,
             "pn": true,
-            "v": null
+            "v": null,
+            "gl": "a giant",
+            "lx": "רָפָא"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-gen-26-23",
+        "book": "Gen",
+        "ref": "Gen 26:23",
+        "gateLesson": 13,
+        "tier": "challenge",
+        "challengeNote": "Contains 1 Past Narrative (wayyiqtol) form — introduced in Lesson 35.",
+        "wooden": "And he went up from there to Beer-Sheba.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יַּ֥עַל",
+            "l": "c/5927",
+            "s": "5927",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null,
+            "gl": "to ascend",
+            "lx": "עָלָה"
+          },
+          {
+            "t": "מִ/שָּׁ֖ם",
+            "l": "m/8033",
+            "s": "8033",
+            "m": "HR/D",
+            "g": 13,
+            "pn": false,
+            "v": 6,
+            "gl": "there",
+            "lx": "שָׁם"
+          },
+          {
+            "t": "בְּאֵ֥ר",
+            "l": "884+",
+            "s": "884",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Beer-Sheba",
+            "lx": "בְּאֵר שֶׁבַע"
+          },
+          {
+            "t": "שָֽׁבַע",
+            "l": "884",
+            "s": "884",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Beer-Sheba",
+            "lx": "בְּאֵר שֶׁבַע"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-1sam-21-1",
+        "book": "1Sam",
+        "ref": "1Sam 21:1",
+        "gateLesson": 16,
+        "tier": "challenge",
+        "challengeNote": "Contains 2 Past Narrative (wayyiqtol) forms — introduced in Lesson 35.",
+        "wooden": "And he rose and went, and Jehonathan came to the city.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יָּ֖קָם",
+            "l": "c/6965 b",
+            "s": "6965",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null,
+            "gl": "to rise",
+            "lx": "קוּם"
+          },
+          {
+            "t": "וַ/יֵּלַ֑ךְ",
+            "l": "c/3212",
+            "s": "3212",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 16,
+            "gl": "to walk",
+            "lx": "יָלַךְ"
+          },
+          {
+            "t": "וִ/יהוֹנָתָ֖ן",
+            "l": "c/3083",
+            "s": "3083",
+            "m": "HC/Np",
+            "g": 13,
+            "pn": true,
+            "v": null,
+            "gl": "Jehonathan",
+            "lx": "יְהוֹנָתָן"
+          },
+          {
+            "t": "בָּ֥א",
+            "l": "935",
+            "s": "935",
+            "m": "HVqp3ms",
+            "g": 16,
+            "pn": false,
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
+          },
+          {
+            "t": "הָ/עִֽיר",
+            "l": "d/5892 b",
+            "s": "5892",
+            "m": "HTd/Ncfsa",
+            "g": 8,
+            "pn": false,
+            "v": null,
+            "gl": "a city",
+            "lx": "עִיר"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-gen-24-34",
+        "book": "Gen",
+        "ref": "Gen 24:34",
+        "gateLesson": 20,
+        "tier": "challenge",
+        "challengeNote": "Contains 1 Past Narrative (wayyiqtol) form — introduced in Lesson 35.",
+        "wooden": "And he said, 'Servant of Abraham am I.'",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יֹּאמַ֑ר",
+            "l": "c/559",
+            "s": "559",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
+          },
+          {
+            "t": "עֶ֥בֶד",
+            "l": "5650",
+            "s": "5650",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 11,
+            "gl": "a servant",
+            "lx": "עֶבֶד"
+          },
+          {
+            "t": "אַבְרָהָ֖ם",
+            "l": "85",
+            "s": "85",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Abraham",
+            "lx": "אַבְרָהָם"
+          },
+          {
+            "t": "אָנֹֽכִי",
+            "l": "595",
+            "s": "595",
+            "m": "HPp1cs",
+            "g": 5,
+            "pn": false,
+            "v": null,
+            "gl": "I",
+            "lx": "אָנֹכִי"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-gen-23-12",
+        "book": "Gen",
+        "ref": "Gen 23:12",
+        "gateLesson": 20,
+        "tier": "challenge",
+        "challengeNote": "Contains 1 Hitpael wayyiqtol form (וַיִּשְׁתַּחוּ, \"and he bowed down\") — the Nifal/Hitpael stem floor introduced in Lesson 37.",
+        "wooden": "And Abraham bowed down before the people of the land.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יִּשְׁתַּ֨חוּ֙",
+            "l": "c/7812",
+            "s": "7812",
+            "m": "HC/Vtw3ms",
+            "g": 37,
+            "pn": false,
+            "v": null,
+            "gl": "to depress",
+            "lx": "שָׁחָה"
+          },
+          {
+            "t": "אַבְרָהָ֔ם",
+            "l": "85",
+            "s": "85",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Abraham",
+            "lx": "אַבְרָהָם"
+          },
+          {
+            "t": "לִ/פְנֵ֖י",
+            "l": "l/6440",
+            "s": "6440",
+            "m": "HR/Ncbpc",
+            "g": 20,
+            "pn": false,
+            "v": null,
+            "gl": "the face",
+            "lx": "פָּנִים"
+          },
+          {
+            "t": "עַ֥ם",
+            "l": "5971 a",
+            "s": "5971",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 13,
+            "gl": "a people",
+            "lx": "עַם"
+          },
+          {
+            "t": "הָ/אָֽרֶץ",
+            "l": "d/776",
+            "s": "776",
+            "m": "HTd/Ncbsa",
+            "g": 8,
+            "pn": false,
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-gen-8-15",
+        "book": "Gen",
+        "ref": "Gen 8:15",
+        "gateLesson": 24,
+        "tier": "challenge",
+        "challengeNote": "Contains 1 Piel Past-Narrative (wayyiqtol) form — introduced in Lesson 35.",
+        "wooden": "And God spoke to Noach, saying,",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יְדַבֵּ֥ר",
+            "l": "c/1696",
+            "s": "1696",
+            "m": "HC/Vpw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 15,
+            "gl": "to arrange",
+            "lx": "דָבַר"
+          },
+          {
+            "t": "אֱלֹהִ֖ים",
+            "l": "430",
+            "s": "430",
+            "m": "HNcmpa",
+            "g": 10,
+            "pn": false,
+            "v": 3,
+            "gl": "gods in the ordinary sense",
+            "lx": "אֱלֹהִים"
+          },
+          {
+            "t": "אֶל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
+          },
+          {
+            "t": "נֹ֥חַ",
+            "l": "5146",
+            "s": "5146",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Noach",
+            "lx": "נֹחַ"
+          },
+          {
+            "t": "לֵ/אמֹֽר",
+            "l": "l/559",
+            "s": "559",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-exod-6-11",
+        "book": "Exod",
+        "ref": "Exod 6:11",
+        "gateLesson": 29,
+        "tier": "challenge",
+        "challengeNote": "Contains 2 Imperative forms (בֹּא \"go!\", דַבֵּר \"speak!\") — the Imperative introduced in Lesson 39.",
+        "wooden": "Go, speak to Paroh, king of Mitsrayim, that he send away the sons of Israel from his land.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "בֹּ֣א",
+            "l": "935",
+            "s": "935",
+            "m": "HVqv2ms",
+            "g": 39,
+            "pn": false,
+            "v": 26,
+            "gl": "to go or come",
+            "lx": "בּוֹא"
+          },
+          {
+            "t": "דַבֵּ֔ר",
+            "l": "1696",
+            "s": "1696",
+            "m": "HVpv2ms",
+            "g": 39,
+            "pn": false,
+            "v": 5,
+            "gl": "to arrange",
+            "lx": "דָבַר"
+          },
+          {
+            "t": "אֶל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": 42,
+            "gl": "near",
+            "lx": "אֵל"
+          },
+          {
+            "t": "פַּרְעֹ֖ה",
+            "l": "6547",
+            "s": "6547",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Paroh",
+            "lx": "פַּרְעֹה"
+          },
+          {
+            "t": "מֶ֣לֶךְ",
+            "l": "4428",
+            "s": "4428",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 9,
+            "gl": "a king",
+            "lx": "מֶלֶךְ"
+          },
+          {
+            "t": "מִצְרָ֑יִם",
+            "l": "4714",
+            "s": "4714",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Mitsrajim",
+            "lx": "מִצְרַיִם"
+          },
+          {
+            "t": "וִֽ/ישַׁלַּ֥ח",
+            "l": "c/7971",
+            "s": "7971",
+            "m": "HC/Vpi3ms",
+            "g": 29,
+            "pn": false,
+            "v": 15,
+            "gl": "to send away",
+            "lx": "שָׁלַח"
+          },
+          {
+            "t": "אֶת",
+            "l": "853",
+            "s": "853",
+            "m": "HTo",
+            "g": 1,
+            "pn": false,
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
+          },
+          {
+            "t": "בְּנֵֽי",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmpc",
+            "g": 20,
+            "pn": false,
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
+          },
+          {
+            "t": "יִשְׂרָאֵ֖ל",
+            "l": "3478",
+            "s": "3478",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jisrael",
+            "lx": "יִשְׂרָאֵל"
+          },
+          {
+            "t": "מֵ/אַרְצֽ/וֹ",
+            "l": "m/776",
+            "s": "776",
+            "m": "HR/Ncbsc/Sp3ms",
+            "g": 22,
+            "pn": false,
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-1sam-17-14",
+        "book": "1Sam",
+        "ref": "1Sam 17:14",
+        "gateLesson": 32,
+        "tier": "challenge",
+        "challengeNote": "Contains 1 numeral form (שְׁלֹשָׁה \"three\") — Numerals introduced in Lesson 45.",
+        "wooden": "And David, he was the small one, and the three great ones went after Shaul.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וְ/דָוִ֖ד",
+            "l": "c/1732",
+            "s": "1732",
+            "m": "HC/Np",
+            "g": 13,
+            "pn": true,
+            "v": null,
+            "gl": "David",
+            "lx": "דָּוִד"
+          },
+          {
+            "t": "ה֣וּא",
+            "l": "1931",
+            "s": "1931",
+            "m": "HPp3ms",
+            "g": 5,
+            "pn": false,
+            "v": 5,
+            "gl": "he",
+            "lx": "הוּא"
+          },
+          {
+            "t": "הַ/קָּטָ֑ן",
+            "l": "d/6996 a",
+            "s": "6996",
+            "m": "HTd/Aamsa",
+            "g": 32,
+            "pn": false,
+            "v": 32,
+            "gl": "abbreviated",
+            "lx": "קָטָן"
+          },
+          {
+            "t": "וּ/שְׁלֹשָׁה֙",
+            "l": "c/7969",
+            "s": "7969",
+            "m": "HC/Acmsa",
+            "g": 45,
+            "pn": false,
+            "v": null,
+            "gl": "three",
+            "lx": "שָׁלוֹשׁ"
+          },
+          {
+            "t": "הַ/גְּדֹלִ֔ים",
+            "l": "d/1419 a",
+            "s": "1419",
+            "m": "HTd/Aampa",
+            "g": 32,
+            "pn": false,
+            "v": 32,
+            "gl": "great",
+            "lx": "גָּדוֹל"
+          },
+          {
+            "t": "הָלְכ֖וּ",
+            "l": "1980",
+            "s": "1980",
+            "m": "HVqp3cp",
+            "g": 19,
+            "pn": false,
+            "v": 16,
+            "gl": "to walk",
+            "lx": "הָלַךְ"
+          },
+          {
+            "t": "אַחֲרֵ֥י",
+            "l": "310 a",
+            "s": "310",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null,
+            "gl": "the hind part",
+            "lx": "אַחַר"
+          },
+          {
+            "t": "שָׁאֽוּל",
+            "l": "7586",
+            "s": "7586",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Shaul",
+            "lx": "שָׁאוּל"
+          }
+        ]
+      },
+      {
+        "id": "reader-ch-2sam-13-38",
+        "book": "2Sam",
+        "ref": "2Sam 13:38",
+        "gateLesson": 35,
+        "tier": "challenge",
+        "challengeNote": "Contains 1 numeral form (שָׁלֹשׁ \"three\") — Numerals introduced in Lesson 45.",
+        "wooden": "And Abshalom fled, and he went to Geshur, and he was there three years.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וְ/אַבְשָׁל֥וֹם",
+            "l": "c/53",
+            "s": "53",
+            "m": "HC/Np",
+            "g": 13,
+            "pn": true,
+            "v": null,
+            "gl": "Abshalom",
+            "lx": "אֲבִישָׁלוֹם"
+          },
+          {
+            "t": "בָּרַ֖ח",
+            "l": "1272",
+            "s": "1272",
+            "m": "HVqp3ms",
+            "g": 16,
+            "pn": false,
+            "v": 39,
+            "gl": "to bolt",
+            "lx": "בָּרַח"
+          },
+          {
+            "t": "וַ/יֵּ֣לֶךְ",
+            "l": "c/3212",
+            "s": "3212",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 16,
+            "gl": "to walk",
+            "lx": "יָלַךְ"
+          },
+          {
+            "t": "גְּשׁ֑וּר",
+            "l": "1650",
+            "s": "1650",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Geshur",
+            "lx": "גְּשׁוּר"
+          },
+          {
+            "t": "וַ/יְהִי",
+            "l": "c/1961",
+            "s": "1961",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
+          },
+          {
+            "t": "שָׁ֖ם",
+            "l": "8033",
+            "s": "8033",
+            "m": "HD",
+            "g": 1,
+            "pn": false,
+            "v": 6,
+            "gl": "there",
+            "lx": "שָׁם"
+          },
+          {
+            "t": "שָׁלֹ֥שׁ",
+            "l": "7969",
+            "s": "7969",
+            "m": "HAcfsa",
+            "g": 45,
+            "pn": false,
+            "v": null,
+            "gl": "three",
+            "lx": "שָׁלוֹשׁ"
+          },
+          {
+            "t": "שָׁנִֽים",
+            "l": "8141",
+            "s": "8141",
+            "m": "HNcfpa",
+            "g": 10,
+            "pn": false,
+            "v": null,
+            "gl": "a year",
+            "lx": "שָׁנֶה"
           }
         ]
       }

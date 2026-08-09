@@ -39,15 +39,35 @@
   hierarchy + deterministic romanizer (104/108 CSV style-match, 4
   documented principled mismatches in the generator header).
 - **In flight: task #13** — Reader mega-pass, seven items, staged as:
-  13a data pipeline (gentilic Ng + compound-segment matcher fixes with
-  corpus re-score; 3 deferred overrides + drifted-score re-curation;
-  challenge-definition rework with real curated passages; Strong's-PD
-  gloss data — pin openscriptures/strongs, modernized English under the
-  LLM rule; LLM wooden verse translations authored then INDEPENDENTLY
-  reviewed against token morphology) → 13b UI (render-time slash strip;
-  tap gloss + pointed-lemma popover, never raw codes; per-passage
-  show/hide wooden translation labeled unofficial; tier-clarity captions;
-  challenge toggle hidden when none at gate).
+  **13a data pipeline DONE (uncommitted — not yet merged)**: gentilic Ng
+  now pn-class (isProperName + distinct `gent` flag) and compound-token
+  vocab matching (fixes both halves of the Gen 10:17 underline-noise
+  report); 3 deferred overrides (elohim 430/erets 776/tsivvah 6680) added,
+  freeze lifted; corpus re-scored — 10 of the 78 pre-existing selections
+  improved (guided→strict or fewer unknown lexemes), 0 got worse. Found +
+  fixed a 4th bug while at it: OSHB's nested `<seg type="x-large">` markup
+  (Deut 6:4's Shema) silently dropped 2 tokens from the old regex
+  tokenizer — reader-deut-6-4 now correctly has 6 tokens/gate L45.
+  Challenge tier reworked as an INDEPENDENT opt-in diagnostic
+  (`scores.challenge`, never overrides the primary tier — an early draft
+  that checked it first flipped 60+ of the 78 selections into "challenge"
+  from ordinary sentence structure); 293 challenge-eligible verses found
+  across 7 gate buckets, 8 curated (reader-ch-* ids) → 86 selections total.
+  Strong's Hebrew Dictionary pinned (openscriptures/strongs @
+  `0acd2f251c2d35ff8db2dece4e0593979d3ac223`, public domain, see corpus-
+  pin.json's `strongsPin`) and `tools/gen_strongs_glosses.mjs` added:
+  265/265 distinct Strong's numbers across all 86 selections resolved to a
+  short modernized gloss (`gl`) + pointed headword (`lx`) per token. All 86
+  selections carry an author-drafted `wooden` + `woodenStatus:"draft"`
+  literal translation — **NOT YET independently reviewed against token
+  morphology; that review is 13b's/a separate agent's job, do not treat
+  as verified**. `tools/check_release.mjs` check5b passage count updated
+  78→86; validator/generator both green, gen twice byte-identical.
+  → **13b UI (not started)**: render-time slash strip; tap gloss +
+  pointed-lemma popover, never raw codes; per-passage show/hide wooden
+  translation labeled unofficial + still-draft; tier-clarity captions;
+  challenge toggle hidden when none at gate; surface the new `gent` flag
+  ("gentilic name" label, distinct from a personal/place name).
 - **Queue**: task #15 advanced vocab + vocab-by-book decks.
 
 ## Repository and PR state
