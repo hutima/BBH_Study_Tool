@@ -272,3 +272,17 @@ lemmas appearing in the 52 curated passages that lack vocab matches,
 page-verified) → proper-name renderings → honest gap markers. Never
 invented glosses, never a copyrighted Bible translation (standing project
 rule). UI: per-passage reveal control, interlinear line under tokens.
+
+## Addendum (user rule change, 2026-08-09): LLM wooden translations permitted
+
+The user has explicitly relaxed the "no generated translations" rule:
+LLM-GENERATED WOODEN (literal) TRANSLATIONS ARE NOW PERMITTED for Reader
+passages. Conditions retained: (1) generated at development time, stored
+in source/generated data with provenance "llm-wooden-reviewed", never at
+runtime; (2) each translation independently verified by a separate
+reviewer agent against the verse's token morphology + verified glosses
+before shipping; (3) labeled in the UI as an unofficial literal rendering;
+(4) still never copied from or paraphrasing any copyrighted English Bible
+translation. This supersedes the stricter clause in the task-13 addendum
+above — the interlinear gloss line and the wooden verse translation can
+ship together (gloss = per-token, wooden = per-verse).
