@@ -32,17 +32,22 @@ never nest a new overlay inside `.app`.
 
 ---
 
-## `<head>` (1–43)
+## `<head>` (1–54)
 
-- 9–19   PWA / icon / manifest `<meta>` tags, `<title>`, and the stylesheet
-         link. No analytics tag — GA (`gtag.js`, property `G-YH11KQB6QX`) was
-         removed in Phase 2; the app ships telemetry-free and no replacement
-         analytics is permitted (see CLAUDE.md).
-- 20–42 **Pre-paint inline script.** Reads `localStorage` and sets
+- 10–20  **Google Analytics snippet** (task #22, owner policy change
+         2026-08-09): async `gtag.js` loader + inline `dataLayer`/`gtag`
+         config for the owner's own GA4 property `G-J5HGG50J92`. The same
+         snippet also lives in `pages/memorization.html`.
+         `tools/check_release.mjs` check7 requires it in both files,
+         pins the property id, and forbids the retired `G-YH11KQB6QX`
+         (see "Telemetry" in CLAUDE.md).
+- 21–30  PWA / icon / manifest `<meta>` tags, `<title>`, and the stylesheet
+         link.
+- 31–53 **Pre-paint inline script.** Reads `localStorage` and sets
         `data-theme` / `data-font-family` / `data-text-size` on `<html>`
         before first paint to avoid a flash of the wrong theme. Don't move
         this above the stylesheet link.
-- `<link rel="stylesheet" href="styles.css?v=16">` (line 19)
+- `<link rel="stylesheet" href="styles.css?v=16">` (line 30)
 
 > Cache-bust: every asset URL ends in `?v=16`. Bump the number on release
 > (see "Cache-bust" in `CLAUDE.md`). The same number lives in `sw.js`

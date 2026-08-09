@@ -7,6 +7,17 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<!-- Google tag (gtag.js) — owner's own GA4 property, reinstated by owner
+     decision 2026-08-09 (see CLAUDE.md "Telemetry"). check_release.mjs
+     requires exactly this property id and forbids the retired one. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-J5HGG50J92"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-J5HGG50J92');
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0e0f14">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -518,7 +529,7 @@
     <div class="consent-label">User guide</div>
     <h2 id="shortcutsTitle">How to use this app</h2>
     <div class="consent-copy user-guide-copy">
-      <p>An unofficial, student-made study aid for John A. Cook &amp; Robert D. Holmstedt, <em>Beginning Biblical Hebrew: A Grammar and Illustrated Reader</em> (Baker Academic) &mdash; not affiliated with or endorsed by the authors or publisher. Four study modes (Vocabulary, Parsing, Grammar, Reader) all run locally in your browser; nothing you study or mark is sent anywhere unless you explicitly export it as a JSON file yourself.</p>
+      <p>An unofficial, student-made study aid for John A. Cook &amp; Robert D. Holmstedt, <em>Beginning Biblical Hebrew: A Grammar and Illustrated Reader</em> (Baker Academic) &mdash; not affiliated with or endorsed by the authors or publisher. Four study modes (Vocabulary, Parsing, Grammar, Reader) all run locally in your browser; your study progress, marks, and stats stay on this device unless you explicitly export them as a JSON file yourself. The app does use Google Analytics for anonymous page-visit statistics (so the maintainer can see the app is being used) &mdash; but your study data is never part of that.</p>
       <p>The Study Selector&rsquo;s <strong>Advanced vocabulary</strong> section adds 1,700+ optional cards beyond the 50-lesson course: every noun/verb/adjective lemma (excluding proper names and gentilics) attested at least twice across the 8-book Hebrew Bible corpus that ISN&rsquo;T already taught in the 209-card lesson vocabulary, ordered by descending corpus frequency in buckets of 100 (sub-groups of 25). They study exactly like a lesson deck (spaced repetition, marks, export) but don&rsquo;t count toward the 209-card course total &mdash; they do show up in the analytics for whatever you have selected, though. The <strong>Book Vocab</strong> section below it is different: it adds no new cards at all. For each book, every lexeme with vocab coverage (a 209-lesson card or an Advanced-vocabulary card) is grouped into sets of 50 by in-book frequency; picking a set just links in the cards that are already there, so your progress on a word is the same whether you studied it via its lesson, its advanced bucket, or a book&rsquo;s vocabulary set.</p>
       <p class="user-guide-attribution">Reader passages: Hebrew text and morphology from the Open Scriptures Hebrew Bible Project (https://github.com/openscriptures/morphhb), OSHB version 2.2 (v.2.2). Lemma and morphology data licensed under CC BY 4.0. Advanced vocabulary and Book Vocab: headwords and glosses from the Open Scriptures Strong&rsquo;s Hebrew Dictionary project (https://github.com/openscriptures/strongs), public domain.</p>
 
@@ -534,7 +545,7 @@
             <li><strong>Vocabulary grew to 209 cards</strong> across all 50 lessons; session presets are now the textbook&rsquo;s own 13 reading-block &ldquo;Unit&rdquo; groupings plus All Lessons (the decade-range presets were retired).</li>
             <li><strong>Advanced vocabulary</strong> &mdash; 1,700+ optional cards covering every non-proper, non-gentilic Hebrew Bible lemma outside the 209-card course, ordered by descending corpus frequency in buckets of 100 (sub-groups of 25). Study them like any lesson deck; they don&rsquo;t count toward the course total, but they do show up in the analytics for whatever you have selected. <strong>Book Vocab</strong> adds no new cards &mdash; it links each book&rsquo;s covered vocabulary (lesson or advanced) into frequency-ordered sets of 50, sharing progress with the word&rsquo;s home card.</li>
             <li>Gamification titles are now Hebrew puns (Alef, Ger, Shomea, Talmid, Doresh, &hellip;) instead of the inherited Greek ones; mobile layout polish across Parsing and Grammar Quiz.</li>
-            <li>Removed the last of the inherited analytics snippet &mdash; the app has shipped fully telemetry-free since this release, with no replacement analytics of any kind.</li>
+            <li>Replaced the inherited analytics snippet with the maintainer&rsquo;s own Google Analytics property &mdash; anonymous page-visit stats only; study progress stays on-device (see the note at the top of this guide).</li>
           </ul>
         </details>
         <details class="user-guide-changelog-version">
