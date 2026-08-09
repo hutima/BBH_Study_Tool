@@ -466,3 +466,11 @@ they are generated deterministically at build time (rule-based romanizer
 matched to the vocab CSV's translit style; qamets-qatan/shewa/dagesh
 handling documented; ~30-form sample review before shipping; marked as
 derived in the data notes). Runs after task #16.
+
+## Addendum (user feedback, 2026-08-09): tier-label clarity (into task #13)
+
+Strict/Guided means nothing to a user in-app. Task #13 adds a plain-
+language caption under the Passages toggle (Strict: every word's grammar
+is within your current lesson, at most one unfamiliar word. Guided: up to
+three unfamiliar words, marked with dotted underlines), matching badge
+tooltips, and user-guide wording.
