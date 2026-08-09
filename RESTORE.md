@@ -18,20 +18,20 @@
 - **PR G merged** as `d2c8401` (PR #10, `?v=7`): parsing depth review
   (docs/bbh-parsing-depth-review.md, Opus-critiqued — 2 of 3 Opus calls
   used), root-journey drills, By-feature scope, mobile parsing IA.
-- **In flight: PR H** (`?v=8`), seven items: decade presets removed,
-  alphabet rating-row layout, Lesson 0A/0B split (vowel-mark deck with
-  highlighted representative words), grammar mobile overlap fix, vocab
-  rating buttons hidden outside vocab, Hebrew title puns replacing the
-  transliterated-Greek ladder (+ release-scan guard), orchestrator-
-  specified scope/direction restyle (preset-style card grid; Parse|Build|
-  Mixed short labels; inline lesson row).
-- **Queue after PR H** (user-ordered): task #14 Reader review + multi-book
-  expansion (Ruth/Jonah/Exodus/Deut/Judges/Samuel candidates; fill thin
-  gate buckets 15-19/23-27/28-31; hunt challenge verses) THEN task #13
-  Reader literal glosses + LLM WOODEN verse translations — permitted by
-  user rule change 2026-08-09 (see ledger addendum + CLAUDE.md: dev-time
-  generation, independent review, labeled unofficial, never copied from
-  copyrighted translations).
+- **PR H merged** as `d9dce4d` (PR #11, `?v=8`): all seven mobile punch-
+  list items shipped — presets deduped (14), Lesson 0A/0B split, grammar
+  layout root-cause fix, rating-row leak fix, full 30-title Hebrew pun
+  ladder (+ release check 4b regression guard), parsing scope card-grid
+  restyle. check_release now 21 reports.
+- **In flight: task #14** — Reader review + multi-book expansion
+  (Ruth/Jonah/Exodus/Deut/Judges/Samuel candidates from the pinned OSHB
+  checkout; fill thin gate buckets 15-19/23-27/28-31; hunt challenge
+  verses; byte-equality/determinism unchanged).
+- **Queue**: task #13 Reader literal glosses + LLM WOODEN verse
+  translations over the EXPANDED set (user rule change 2026-08-09 in
+  CLAUDE.md/ledger: dev-time, independently reviewed, labeled unofficial,
+  never copied from copyrighted translations) → task #15 advanced vocab +
+  vocab-by-book decks (Strong's-PD glosses default; ledger addendum).
 
 ## Repository and PR state
 
