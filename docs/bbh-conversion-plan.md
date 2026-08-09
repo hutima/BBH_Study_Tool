@@ -568,3 +568,11 @@ after task #20 (styles.css collision).
 pools the forms newly introduced AT the current lesson; relabel the option
 dynamically as 'New in Lesson N' (tracks the lesson selector). Behavior
 unchanged.
+
+## Addendum (user feedback, 2026-08-09): grammar shuffle (into task #21)
+
+Grammar quiz question order repeats identically across sessions (the
+deterministic bucket ordering has no per-session entropy). Fix: fresh
+session seed at init (PARSING_SESSION_SEED convention — Date.now() once,
+never persisted/graded) shuffling WITHIN the unseen/weak/rest priority
+buckets; type-interleaving retained.
