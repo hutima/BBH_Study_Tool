@@ -659,12 +659,12 @@ function isReviewDeckMode() {
   return runtime.studyMode === 'vocab' || runtime.studyMode === 'morph';
 }
 
-// Phase 1 of the Hebrew conversion is Vocabulary + Reference only (see
-// CLAUDE.md / docs/bbh-conversion-plan.md) — Grammar, Parsing, and Reader
-// study modes were removed from the live app; runtime.studyMode is always
-// 'vocab' (see normalizeStudyMode below) and this app is permanently
-// vocab-only. isVocabOnlyProfile / canAccessGrammarUi remain as the documented
-// lock — other modules still call them defensively.
+// HISTORICAL NOTE: Phase 1 shipped vocab-only; Phase 2 restored Parsing,
+// Grammar, Reader, and Alphabet as first-class modes (normalizeStudyMode
+// below accepts vocab/parsing/grammar/reader). isVocabOnlyProfile /
+// canAccessGrammarUi are LEGACY stubs from the Phase 1 lock, retained only
+// because removing an export/symbol an old cached module might reference is
+// forbidden by the CLAUDE.md cache-hazard rules — they gate nothing today.
 function isVocabOnlyProfile() {
   return true;
 }
@@ -685,7 +685,7 @@ function getSessions() {
 }
 
 function getProfileDescription() {
-  return 'Vocabulary flashcards for Cook & Holmstedt, Beginning Biblical Hebrew.';
+  return 'Vocabulary, parsing, grammar, and reading practice for Cook & Holmstedt, Beginning Biblical Hebrew.';
 }
 
 // Phase 2 PR B/C/D: Parsing, Grammar Quiz, and Reader are now real,

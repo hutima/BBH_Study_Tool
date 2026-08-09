@@ -351,14 +351,22 @@ function readDirSafe(dir) {
   }
 }
 
-// ── Also run tools/validate_bbh_parsing_data.mjs ────────────────────────
-{
+// ── Also run every data validator + engine test suite ───────────────────
+// (Final-audit item N1: the tagging gate must cover grammar/reader data and
+// the gate/drill engines, not just vocab+parsing sources.)
+for (const sub of [
+  'tools/validate_bbh_parsing_data.mjs',
+  'tools/validate_bbh_grammar_data.mjs',
+  'tools/validate_bbh_reader_data.mjs',
+  'tools/test_parsing_gates.mjs',
+  'tools/test_parsing_drill.mjs'
+]) {
   try {
-    execFileSync(process.execPath, [path.join(ROOT, 'tools/validate_bbh_parsing_data.mjs')], { cwd: ROOT, stdio: 'pipe' });
-    report('validate_bbh_parsing_data.mjs: pass');
+    execFileSync(process.execPath, [path.join(ROOT, sub)], { cwd: ROOT, stdio: 'pipe' });
+    report(`${sub.replace('tools/', '')}: pass`);
   } catch (err) {
     const out = (err.stdout ? err.stdout.toString() : '') + (err.stderr ? err.stderr.toString() : '');
-    fail(`validate_bbh_parsing_data.mjs failed:\n${out.trim()}`);
+    fail(`${sub} failed:\n${out.trim()}`);
   }
 }
 

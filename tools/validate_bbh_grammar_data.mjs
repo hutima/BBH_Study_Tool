@@ -133,7 +133,10 @@ const GATE_TERMS = [
   { term: 'pual', earliestLesson: Infinity },
   { term: 'hofal', earliestLesson: Infinity },
   { term: 'past narrative', earliestLesson: 35 },
-  { term: 'participle', earliestLesson: 42 },
+  // Participles are introduced as a concept within L38's dynamic/stative
+  // discussion (Revision Guide) before the L42 form lesson — floor 38, and
+  // the audit's N2: match plural forms too (see gateTermRegex).
+  { term: 'participle', earliestLesson: 38 },
   { term: 'jussive', earliestLesson: 39 },
   { term: 'imperative', earliestLesson: 39 },
   { term: 'bound', earliestLesson: 20 },
@@ -147,7 +150,8 @@ function gateTermRegex(term) {
   // current terms have any, but stay safe for future entries with e.g. a
   // hyphen — hyphen is not a regex metachar so no escaping needed there).
   const escaped = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  return new RegExp(`\\b${escaped}\\b`, 'i');
+  // s? catches English plurals ("participles", "jussives") — audit item N2.
+  return new RegExp(`\\b${escaped}s?\\b`, 'i');
 }
 
 function checkGateSanity(q, label) {
