@@ -362,6 +362,36 @@ high-frequency lemmas; re-curate selections to fill the thin gate buckets
 challenge-tier verses (Genesis yielded zero). Byte-equality, determinism,
 and tier rules unchanged.
 
+**Status: shipped.** `tools/import_oshb_reader.mjs`'s `BOOK_LIST` is now
+`['Gen','Ruth','Jonah','Exod','Deut','Judg','1Sam','2Sam']`
+(`importReaderCorpus`, generalized from the Genesis-only `importGenesis`,
+which remains as a back-compat single-book alias); the OSIS tokenizer
+(`parseBookXml`) and every verse ref helper are book-parameterized.
+Coverage-gap count across all 8 books is 0 — `source/bbh/reader/gate-
+map.json` needed no new entries; its existing per-POS-letter safety-net
+catch-alls already covered every OSHB morph code the 7 new books
+introduced. `LEMMA_OVERRIDES` gained 24 new entries (16 resolving to a
+CSV lesson, 8 documented verified-absent) from a combined-top-60 audit
+across all 8 books; 3 further genuine matches (אֱלֹהִים 430, אֶרֶץ 776,
+צִוָּה 6680) were found but deliberately withheld because adding them
+would have drifted 5 of the 52 pre-existing Genesis selections' recorded
+scores — see the comment above those three in `LEMMA_OVERRIDES`.
+`source/bbh/reader/selections.json` grew from 52 to 78 selections (all 52
+Genesis entries byte-identical, unchanged): 26 new entries — thin-bucket
+fill for 15-19/23-27/28-31 (6 verses, non-Genesis only) plus up to 2
+strict + 1 guided showcase per new book (all 7 landed in the L35-38
+wayyiqtol/past-narrative bucket, each book's richest pool). Zero
+challenge-tier verses were found across all 8 books (same null result as
+Genesis-only). `js/ui/reader.js` groups passages by book (`Gen` first,
+then the 7 expansion books) then by gate-lesson bucket within each book;
+adds a `runtime.reader.showChallenge` toggle (default off, all 3 state
+sync points + the pre-PR-D migration seed updated) gating a `challenge`
+tier badge + per-passage `challengeNote` header line, currently inert
+(no challenge passages exist yet, but the code path is exercised in
+`scratchpad/smoke_reader.mjs` via an injected test fixture). Cache bumped
+to `?v=9`; `check_release.mjs` check5b updated to the new 78-passage
+count. See the task's own report for the full self-check transcript.
+
 ## Addendum (user ordering, 2026-08-09): task order + PR H item 7
 
 Task #14 (Reader multi-book expansion) runs BEFORE task #13 (literal
@@ -383,3 +413,14 @@ corpus frequency tiers). Glosses default to public-domain Strong's (mapped
 via OSHB Strong's numbers), optionally LLM-condensed under the 2026-08-09
 wooden-translation rule; the textbook glossary's R# glosses require the
 user to re-supply glossary pages (PDF transport copy deleted).
+
+## Addendum (user feedback, 2026-08-09): 0B vowel-deck fixes (task #16)
+
+From live screenshots: 0B is hard to read and some vowel marks render
+misplaced on the answer face — root-cause hypothesis: cluster highlighting
+splits spans mid-grapheme, detaching combining marks from their base.
+Fix: true grapheme segmentation (Intl.Segmenter 'grapheme', fallback
+regex consonant+combining-marks), larger/brighter representative word,
+highlight by color/weight only. Also: Again/Got-it become STACKED
+full-width vertical buttons on 0A/0B for one-handed use (user
+suggestion). Runs right after task #14 (styles.css overlap).

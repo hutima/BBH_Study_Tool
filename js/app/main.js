@@ -219,7 +219,7 @@ import {
   configureReader,
   renderReaderPanel,
   renderReaderAnalytics,
-  readerSetLesson, readerSetTier,
+  readerSetLesson, readerSetTier, readerSetShowChallenge,
   readerOpenPassage, readerBackToList, readerToggleToken,
   readerToggleMarkForReview, readerToggleReadStatus
 } from '../ui/reader.js';
@@ -2571,7 +2571,8 @@ const GLOBAL_CLICK_HANDLERS = {
   grammarSetLesson, grammarToggleReviewMissed, grammarSetDifficulty,
   grammarSelectChoice, grammarNextQuestion,
   // Phase 2 PR D: Reader mode (js/ui/reader.js) click/change handlers.
-  readerSetLesson, readerSetTier,
+  // readerSetShowChallenge added by the Reader book expansion.
+  readerSetLesson, readerSetTier, readerSetShowChallenge,
   readerOpenPassage, readerBackToList, readerToggleToken,
   readerToggleMarkForReview, readerToggleReadStatus,
   // Phase 2 PR E: Lesson 0 Alphabet practice (js/ui/alphabet.js) click
@@ -2641,8 +2642,9 @@ if (!runtime.grammar || typeof runtime.grammar !== 'object') {
     initializedFromVocab: false
   };
 }
-// Same mixed-version guard for runtime.reader (Phase 2 PR D). Shape mirrors
-// runtime.js's `reader` default — keep the two in sync.
+// Same mixed-version guard for runtime.reader (Phase 2 PR D; showChallenge
+// added by the Reader book expansion). Shape mirrors runtime.js's `reader`
+// default — keep the two in sync.
 if (!runtime.reader || typeof runtime.reader !== 'object') {
   runtime.reader = {
     schemaVersion: 1,
@@ -2652,7 +2654,8 @@ if (!runtime.reader || typeof runtime.reader !== 'object') {
     readOrder: [],
     marks: {},
     lastPassageId: null,
-    initializedFromVocab: false
+    initializedFromVocab: false,
+    showChallenge: false
   };
 }
 // Same mixed-version guard for runtime.alphabet (Phase 2 PR E; nested

@@ -3,3 +3,6 @@
 # It must never be committed again. Exact path only — legitimate project PDFs
 # (none currently tracked) are not blocked by a broad *.pdf rule.
 /Hebrew.pdf
+
+# Session-local test harnesses — never commit
+/scratchpad/

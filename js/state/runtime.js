@@ -147,7 +147,12 @@ export const runtime = {
     readOrder: [],            // passage ids, most recent read first, capped 20
     marks: {},                // { [passageId + ':' + tokenIndex]: true }
     lastPassageId: null,
-    initializedFromVocab: false
+    initializedFromVocab: false,
+    // Reader book expansion: challenge-tier passages (one clearly-flagged
+    // near-future-lesson token) are hidden unless this is explicitly on.
+    // Default OFF — a learner never sees above-their-gate material by
+    // accident. PROGRESS_EXPORT_VERSION stays 6 (additive boolean).
+    showChallenge: false
   },
 
   // ── Lesson 0: Alphabet (0A) + Vowel marks (0B) practice (PR E, PR H item 3)

@@ -7,13 +7,15 @@
 // window.BBH_READER as a CLASSIC (non-module) script — same idiom as
 // js/data/bbh_vocab.js registering window.SETS and js/data/bbh_parsing.js
 // registering window.BBH_PARSING — so it can be dropped into index.html's
-// plain <script> tags without touching the ES-module import graph. NOT YET
-// wired into index.html or sw.js precache as of PR D — that lands with the
-// Reader UI in a later PR; this file existing unused on disk is expected
-// at this stage.
+// plain <script> tags without touching the ES-module import graph. Wired
+// into index.html's <script> tags and sw.js's precache list.
 //
 // Shape: { schemaVersion, attribution, corpusPin: {tag, commit},
-// passages: [{ id, ref, gateLesson, tier, tokens: [{t,l,s,m,g,pn,v}] }] }.
+// passages: [{ id, book, ref, gateLesson, tier, challengeNote?,
+// tokens: [{t,l,s,m,g,pn,v}] }] }. `book` is the OSIS book code (Gen,
+// Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam) — added by the multi-book
+// Reader expansion; `challengeNote` is present only on tier:"challenge"
+// passages.
 // Token field meanings are documented above buildToken() in
 // tools/gen_bbh_reader_data.mjs. `t` (display) is preserved byte-for-byte
 // from the Westminster Leningrad Codex text as distributed by OSHB — never
@@ -32,6 +34,7 @@
     "passages": [
       {
         "id": "reader-gen-22-22",
+        "book": "Gen",
         "ref": "Gen 22:22",
         "gateLesson": 13,
         "tier": "strict",
@@ -130,6 +133,7 @@
       },
       {
         "id": "reader-gen-25-14",
+        "book": "Gen",
         "ref": "Gen 25:14",
         "gateLesson": 13,
         "tier": "strict",
@@ -165,6 +169,7 @@
       },
       {
         "id": "reader-gen-25-15",
+        "book": "Gen",
         "ref": "Gen 25:15",
         "gateLesson": 13,
         "tier": "strict",
@@ -218,6 +223,7 @@
       },
       {
         "id": "reader-gen-10-27",
+        "book": "Gen",
         "ref": "Gen 10:27",
         "gateLesson": 13,
         "tier": "strict",
@@ -280,6 +286,7 @@
       },
       {
         "id": "reader-gen-10-16",
+        "book": "Gen",
         "ref": "Gen 10:16",
         "gateLesson": 13,
         "tier": "guided",
@@ -342,6 +349,7 @@
       },
       {
         "id": "reader-gen-10-17",
+        "book": "Gen",
         "ref": "Gen 10:17",
         "gateLesson": 13,
         "tier": "guided",
@@ -404,6 +412,7 @@
       },
       {
         "id": "reader-gen-10-26",
+        "book": "Gen",
         "ref": "Gen 10:26",
         "gateLesson": 16,
         "tier": "strict",
@@ -502,6 +511,7 @@
       },
       {
         "id": "reader-gen-16-14",
+        "book": "Gen",
         "ref": "Gen 16:14",
         "gateLesson": 16,
         "tier": "strict",
@@ -618,6 +628,7 @@
       },
       {
         "id": "reader-gen-1-1",
+        "book": "Gen",
         "ref": "Gen 1:1",
         "gateLesson": 16,
         "tier": "guided",
@@ -689,6 +700,7 @@
       },
       {
         "id": "reader-gen-10-24",
+        "book": "Gen",
         "ref": "Gen 10:24",
         "gateLesson": 16,
         "tier": "guided",
@@ -769,6 +781,7 @@
       },
       {
         "id": "reader-gen-22-21",
+        "book": "Gen",
         "ref": "Gen 22:21",
         "gateLesson": 22,
         "tier": "strict",
@@ -867,6 +880,7 @@
       },
       {
         "id": "reader-gen-46-23",
+        "book": "Gen",
         "ref": "Gen 46:23",
         "gateLesson": 20,
         "tier": "strict",
@@ -902,6 +916,7 @@
       },
       {
         "id": "reader-gen-35-24",
+        "book": "Gen",
         "ref": "Gen 35:24",
         "gateLesson": 20,
         "tier": "strict",
@@ -946,6 +961,7 @@
       },
       {
         "id": "reader-gen-10-3",
+        "book": "Gen",
         "ref": "Gen 10:3",
         "gateLesson": 20,
         "tier": "strict",
@@ -999,6 +1015,7 @@
       },
       {
         "id": "reader-gen-10-15",
+        "book": "Gen",
         "ref": "Gen 10:15",
         "gateLesson": 22,
         "tier": "guided",
@@ -1070,6 +1087,7 @@
       },
       {
         "id": "reader-gen-17-4",
+        "book": "Gen",
         "ref": "Gen 17:4",
         "gateLesson": 22,
         "tier": "guided",
@@ -1150,6 +1168,7 @@
       },
       {
         "id": "reader-gen-24-38",
+        "book": "Gen",
         "ref": "Gen 24:38",
         "gateLesson": 23,
         "tier": "strict",
@@ -1257,6 +1276,7 @@
       },
       {
         "id": "reader-gen-24-4",
+        "book": "Gen",
         "ref": "Gen 24:4",
         "gateLesson": 23,
         "tier": "guided",
@@ -1355,6 +1375,7 @@
       },
       {
         "id": "reader-gen-20-18",
+        "book": "Gen",
         "ref": "Gen 20:18",
         "gateLesson": 25,
         "tier": "guided",
@@ -1489,6 +1510,7 @@
       },
       {
         "id": "reader-gen-24-1",
+        "book": "Gen",
         "ref": "Gen 24:1",
         "gateLesson": 29,
         "tier": "strict",
@@ -1578,6 +1600,7 @@
       },
       {
         "id": "reader-gen-49-18",
+        "book": "Gen",
         "ref": "Gen 49:18",
         "gateLesson": 29,
         "tier": "guided",
@@ -1613,6 +1636,7 @@
       },
       {
         "id": "reader-gen-49-5",
+        "book": "Gen",
         "ref": "Gen 49:5",
         "gateLesson": 31,
         "tier": "guided",
@@ -1675,6 +1699,7 @@
       },
       {
         "id": "reader-gen-36-25",
+        "book": "Gen",
         "ref": "Gen 36:25",
         "gateLesson": 33,
         "tier": "strict",
@@ -1746,6 +1771,7 @@
       },
       {
         "id": "reader-gen-36-26",
+        "book": "Gen",
         "ref": "Gen 36:26",
         "gateLesson": 33,
         "tier": "strict",
@@ -1817,6 +1843,7 @@
       },
       {
         "id": "reader-gen-36-27",
+        "book": "Gen",
         "ref": "Gen 36:27",
         "gateLesson": 33,
         "tier": "strict",
@@ -1879,6 +1906,7 @@
       },
       {
         "id": "reader-gen-36-28",
+        "book": "Gen",
         "ref": "Gen 36:28",
         "gateLesson": 33,
         "tier": "strict",
@@ -1932,6 +1960,7 @@
       },
       {
         "id": "reader-gen-10-20",
+        "book": "Gen",
         "ref": "Gen 10:20",
         "gateLesson": 33,
         "tier": "guided",
@@ -2003,6 +2032,7 @@
       },
       {
         "id": "reader-gen-36-9",
+        "book": "Gen",
         "ref": "Gen 36:9",
         "gateLesson": 33,
         "tier": "guided",
@@ -2074,6 +2104,7 @@
       },
       {
         "id": "reader-gen-37-1",
+        "book": "Gen",
         "ref": "Gen 37:1",
         "gateLesson": 35,
         "tier": "strict",
@@ -2145,6 +2176,7 @@
       },
       {
         "id": "reader-gen-38-6",
+        "book": "Gen",
         "ref": "Gen 38:6",
         "gateLesson": 35,
         "tier": "strict",
@@ -2216,6 +2248,7 @@
       },
       {
         "id": "reader-gen-47-10",
+        "book": "Gen",
         "ref": "Gen 47:10",
         "gateLesson": 35,
         "tier": "strict",
@@ -2287,6 +2320,7 @@
       },
       {
         "id": "reader-gen-26-6",
+        "book": "Gen",
         "ref": "Gen 26:6",
         "gateLesson": 35,
         "tier": "strict",
@@ -2322,6 +2356,7 @@
       },
       {
         "id": "reader-gen-1-13",
+        "book": "Gen",
         "ref": "Gen 1:13",
         "gateLesson": 35,
         "tier": "guided",
@@ -2384,6 +2419,7 @@
       },
       {
         "id": "reader-gen-1-19",
+        "book": "Gen",
         "ref": "Gen 1:19",
         "gateLesson": 35,
         "tier": "guided",
@@ -2446,6 +2482,7 @@
       },
       {
         "id": "reader-gen-50-12",
+        "book": "Gen",
         "ref": "Gen 50:12",
         "gateLesson": 40,
         "tier": "strict",
@@ -2508,6 +2545,7 @@
       },
       {
         "id": "reader-gen-38-2",
+        "book": "Gen",
         "ref": "Gen 38:2",
         "gateLesson": 40,
         "tier": "strict",
@@ -2615,6 +2653,7 @@
       },
       {
         "id": "reader-gen-44-6",
+        "book": "Gen",
         "ref": "Gen 44:6",
         "gateLesson": 40,
         "tier": "strict",
@@ -2677,6 +2716,7 @@
       },
       {
         "id": "reader-gen-7-5",
+        "book": "Gen",
         "ref": "Gen 7:5",
         "gateLesson": 40,
         "tier": "strict",
@@ -2739,6 +2779,7 @@
       },
       {
         "id": "reader-gen-1-3",
+        "book": "Gen",
         "ref": "Gen 1:3",
         "gateLesson": 39,
         "tier": "guided",
@@ -2801,6 +2842,7 @@
       },
       {
         "id": "reader-gen-50-6",
+        "book": "Gen",
         "ref": "Gen 50:6",
         "gateLesson": 40,
         "tier": "guided",
@@ -2881,6 +2923,7 @@
       },
       {
         "id": "reader-gen-32-14",
+        "book": "Gen",
         "ref": "Gen 32:14",
         "gateLesson": 42,
         "tier": "strict",
@@ -2988,6 +3031,7 @@
       },
       {
         "id": "reader-gen-14-12",
+        "book": "Gen",
         "ref": "Gen 14:12",
         "gateLesson": 42,
         "tier": "strict",
@@ -3104,6 +3148,7 @@
       },
       {
         "id": "reader-gen-32-19",
+        "book": "Gen",
         "ref": "Gen 32:19",
         "gateLesson": 42,
         "tier": "strict",
@@ -3220,6 +3265,7 @@
       },
       {
         "id": "reader-gen-41-28",
+        "book": "Gen",
         "ref": "Gen 41:28",
         "gateLesson": 42,
         "tier": "strict",
@@ -3336,6 +3382,7 @@
       },
       {
         "id": "reader-gen-37-19",
+        "book": "Gen",
         "ref": "Gen 37:19",
         "gateLesson": 42,
         "tier": "guided",
@@ -3425,6 +3472,7 @@
       },
       {
         "id": "reader-gen-34-31",
+        "book": "Gen",
         "ref": "Gen 34:31",
         "gateLesson": 42,
         "tier": "guided",
@@ -3478,6 +3526,7 @@
       },
       {
         "id": "reader-gen-19-36",
+        "book": "Gen",
         "ref": "Gen 19:36",
         "gateLesson": 45,
         "tier": "strict",
@@ -3531,6 +3580,7 @@
       },
       {
         "id": "reader-gen-21-31",
+        "book": "Gen",
         "ref": "Gen 21:31",
         "gateLesson": 45,
         "tier": "strict",
@@ -3638,6 +3688,7 @@
       },
       {
         "id": "reader-gen-7-9",
+        "book": "Gen",
         "ref": "Gen 7:9",
         "gateLesson": 45,
         "tier": "strict",
@@ -3772,6 +3823,7 @@
       },
       {
         "id": "reader-gen-31-33",
+        "book": "Gen",
         "ref": "Gen 31:33",
         "gateLesson": 45,
         "tier": "strict",
@@ -3933,6 +3985,7 @@
       },
       {
         "id": "reader-gen-22-23",
+        "book": "Gen",
         "ref": "Gen 22:23",
         "gateLesson": 45,
         "tier": "guided",
@@ -4040,6 +4093,7 @@
       },
       {
         "id": "reader-gen-42-17",
+        "book": "Gen",
         "ref": "Gen 42:17",
         "gateLesson": 45,
         "tier": "guided",
@@ -4097,6 +4151,1392 @@
             "g": 10,
             "pn": false,
             "v": 21
+          }
+        ]
+      },
+      {
+        "id": "reader-deut-3-15",
+        "book": "Deut",
+        "ref": "Deut 3:15",
+        "gateLesson": 16,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וּ/לְ/מָכִ֖יר",
+            "l": "c/l/4353",
+            "s": "4353",
+            "m": "HC/R/Np",
+            "g": 13,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "נָתַ֥תִּי",
+            "l": "5414",
+            "s": "5414",
+            "m": "HVqp1cs",
+            "g": 16,
+            "pn": false,
+            "v": 17
+          },
+          {
+            "t": "אֶת",
+            "l": "853",
+            "s": "853",
+            "m": "HTo",
+            "g": 1,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "הַ/גִּלְעָֽד",
+            "l": "d/1568",
+            "s": "1568",
+            "m": "HTd/Np",
+            "g": 8,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-deut-5-17",
+        "book": "Deut",
+        "ref": "Deut 5:17",
+        "gateLesson": 23,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "לֹ֖א",
+            "l": "3808",
+            "s": "3808",
+            "m": "HTn",
+            "g": 1,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "תִּרְצָֽח",
+            "l": "7523",
+            "s": "7523",
+            "m": "HVqi2ms",
+            "g": 23,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-deut-5-18",
+        "book": "Deut",
+        "ref": "Deut 5:18",
+        "gateLesson": 23,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וְ/לֹ֖א",
+            "l": "c/3808",
+            "s": "3808",
+            "m": "HC/Tn",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "תִּנְאָֽף",
+            "l": "5003",
+            "s": "5003",
+            "m": "HVqi2ms",
+            "g": 23,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-deut-5-19",
+        "book": "Deut",
+        "ref": "Deut 5:19",
+        "gateLesson": 23,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וְ/לֹ֖א",
+            "l": "c/3808",
+            "s": "3808",
+            "m": "HC/Tn",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "תִּגְנֹֽב",
+            "l": "1589",
+            "s": "1589",
+            "m": "HVqi2ms",
+            "g": 23,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-deut-6-4",
+        "book": "Deut",
+        "ref": "Deut 6:4",
+        "gateLesson": 31,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "יִשְׂרָאֵ֑ל",
+            "l": "3478",
+            "s": "3478",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "יְהוָ֥ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אֱלֹהֵ֖י/נוּ",
+            "l": "430",
+            "s": "430",
+            "m": "HNcmpc/Sp1cp",
+            "g": 31,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "יְהוָ֥ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-exod-6-17",
+        "book": "Exod",
+        "ref": "Exod 6:17",
+        "gateLesson": 31,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "בְּנֵ֥י",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmpc",
+            "g": 20,
+            "pn": false,
+            "v": 7
+          },
+          {
+            "t": "גֵרְשׁ֛וֹן",
+            "l": "1648",
+            "s": "1648",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "לִבְנִ֥י",
+            "l": "3845",
+            "s": "3845",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "וְ/שִׁמְעִ֖י",
+            "l": "c/8096",
+            "s": "8096",
+            "m": "HC/Np",
+            "g": 13,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "לְ/מִשְׁפְּחֹתָֽ/ם",
+            "l": "l/4940",
+            "s": "4940",
+            "m": "HR/Ncfpc/Sp3mp",
+            "g": 31,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-1sam-30-28",
+        "book": "1Sam",
+        "ref": "1Sam 30:28",
+        "gateLesson": 30,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וְ/לַ/אֲשֶׁ֧ר",
+            "l": "c/l/834 a",
+            "s": "834",
+            "m": "HC/R/Tr",
+            "g": 30,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בַּ/עֲרֹעֵ֛ר",
+            "l": "b/6177",
+            "s": "6177",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "וְ/לַ/אֲשֶׁ֥ר",
+            "l": "c/l/834 a",
+            "s": "834",
+            "m": "HC/R/Tr",
+            "g": 30,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בְּ/שִֽׂפְמ֖וֹת",
+            "l": "b/8224",
+            "s": "8224",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "וְ/לַ/אֲשֶׁ֥ר",
+            "l": "c/l/834 a",
+            "s": "834",
+            "m": "HC/R/Tr",
+            "g": 30,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בְּ/אֶשְׁתְּמֹֽעַ",
+            "l": "b/851",
+            "s": "851",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-ruth-1-3",
+        "book": "Ruth",
+        "ref": "Ruth 1:3",
+        "gateLesson": 45,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יָּ֥מָת",
+            "l": "c/4191",
+            "s": "4191",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 30
+          },
+          {
+            "t": "אֱלִימֶ֖לֶךְ",
+            "l": "458",
+            "s": "458",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אִ֣ישׁ",
+            "l": "376",
+            "s": "376",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 6
+          },
+          {
+            "t": "נָעֳמִ֑י",
+            "l": "5281",
+            "s": "5281",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "וַ/תִּשָּׁאֵ֥ר",
+            "l": "c/7604",
+            "s": "7604",
+            "m": "HC/VNw3fs",
+            "g": 37,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "הִ֖יא",
+            "l": "1931",
+            "s": "1931",
+            "m": "HPp3fs",
+            "g": 5,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "וּ/שְׁנֵ֥י",
+            "l": "c/8147",
+            "s": "8147",
+            "m": "HC/Acmdc",
+            "g": 45,
+            "pn": false,
+            "v": 31
+          },
+          {
+            "t": "בָנֶֽי/הָ",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmpc/Sp3fs",
+            "g": 31,
+            "pn": false,
+            "v": 7
+          }
+        ]
+      },
+      {
+        "id": "reader-ruth-1-10",
+        "book": "Ruth",
+        "ref": "Ruth 1:10",
+        "gateLesson": 35,
+        "tier": "guided",
+        "tokens": [
+          {
+            "t": "וַ/תֹּאמַ֖רְנָה",
+            "l": "c/559",
+            "s": "559",
+            "m": "HC/Vqw3fp",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "לָּ֑/הּ",
+            "l": "l",
+            "s": null,
+            "m": "HR/Sp3fs",
+            "g": 22,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "כִּי",
+            "l": "3588 a",
+            "s": "3588",
+            "m": "HC",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "אִתָּ֥/ךְ",
+            "l": "854",
+            "s": "854",
+            "m": "HR/Sp2fs",
+            "g": 22,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "נָשׁ֖וּב",
+            "l": "7725",
+            "s": "7725",
+            "m": "HVqi1cp",
+            "g": 27,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "לְ/עַמֵּֽ/ךְ",
+            "l": "l/5971 a",
+            "s": "5971",
+            "m": "HR/Ncmsc/Sp2fs",
+            "g": 22,
+            "pn": false,
+            "v": 15
+          }
+        ]
+      },
+      {
+        "id": "reader-jonah-1-1",
+        "book": "Jonah",
+        "ref": "Jonah 1:1",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַֽ/יְהִי֙",
+            "l": "c/1961",
+            "s": "1961",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 6
+          },
+          {
+            "t": "דְּבַר",
+            "l": "1697",
+            "s": "1697",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 5
+          },
+          {
+            "t": "יְהוָ֔ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אֶל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "יוֹנָ֥ה",
+            "l": "3124",
+            "s": "3124",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "בֶן",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 7
+          },
+          {
+            "t": "אֲמִתַּ֖י",
+            "l": "573",
+            "s": "573",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "לֵ/אמֹֽר",
+            "l": "l/559",
+            "s": "559",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-jonah-4-4",
+        "book": "Jonah",
+        "ref": "Jonah 4:4",
+        "gateLesson": 35,
+        "tier": "guided",
+        "tokens": [
+          {
+            "t": "וַ/יֹּ֣אמֶר",
+            "l": "c/559",
+            "s": "559",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "יְהוָ֔ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "הַ/הֵיטֵ֖ב",
+            "l": "d/3190",
+            "s": "3190",
+            "m": "HTi/Vha",
+            "g": 29,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "חָ֥רָה",
+            "l": "2734",
+            "s": "2734",
+            "m": "HVqp3ms",
+            "g": 16,
+            "pn": false,
+            "v": 36
+          },
+          {
+            "t": "לָֽ/ךְ",
+            "l": "l",
+            "s": null,
+            "m": "HR/Sp2fs",
+            "g": 22,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-exod-13-1",
+        "book": "Exod",
+        "ref": "Exod 13:1",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יְדַבֵּ֥ר",
+            "l": "c/1696",
+            "s": "1696",
+            "m": "HC/Vpw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 15
+          },
+          {
+            "t": "יְהוָ֖ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אֶל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "מֹשֶׁ֥ה",
+            "l": "4872",
+            "s": "4872",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "לֵּ/אמֹֽר",
+            "l": "l/559",
+            "s": "559",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-exod-14-1",
+        "book": "Exod",
+        "ref": "Exod 14:1",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יְדַבֵּ֥ר",
+            "l": "c/1696",
+            "s": "1696",
+            "m": "HC/Vpw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 15
+          },
+          {
+            "t": "יְהֹוָ֖ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אֶל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "מֹשֶׁ֥ה",
+            "l": "4872",
+            "s": "4872",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "לֵּ/אמֹֽר",
+            "l": "l/559",
+            "s": "559",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-exod-16-30",
+        "book": "Exod",
+        "ref": "Exod 16:30",
+        "gateLesson": 35,
+        "tier": "guided",
+        "tokens": [
+          {
+            "t": "וַ/יִּשְׁבְּת֥וּ",
+            "l": "c/7673 a",
+            "s": "7673",
+            "m": "HC/Vqw3mp",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "הָ/עָ֖ם",
+            "l": "d/5971 a",
+            "s": "5971",
+            "m": "HTd/Ncmsa",
+            "g": 8,
+            "pn": false,
+            "v": 13
+          },
+          {
+            "t": "בַּ/יּ֥וֹם",
+            "l": "b/3117",
+            "s": "3117",
+            "m": "HRd/Ncmsa",
+            "g": 13,
+            "pn": false,
+            "v": 21
+          },
+          {
+            "t": "הַ/שְּׁבִעִֽי",
+            "l": "d/7637",
+            "s": "7637",
+            "m": "HTd/Aomsa",
+            "g": 32,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-deut-2-17",
+        "book": "Deut",
+        "ref": "Deut 2:17",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יְדַבֵּ֥ר",
+            "l": "c/1696",
+            "s": "1696",
+            "m": "HC/Vpw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 15
+          },
+          {
+            "t": "יְהוָ֖ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אֵלַ֥/י",
+            "l": "413",
+            "s": "413",
+            "m": "HR/Sp1cs",
+            "g": 22,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "לֵ/אמֹֽר",
+            "l": "l/559",
+            "s": "559",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-deut-3-29",
+        "book": "Deut",
+        "ref": "Deut 3:29",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/נֵּ֣שֶׁב",
+            "l": "c/3427",
+            "s": "3427",
+            "m": "HC/Vqw1cp",
+            "g": 35,
+            "pn": false,
+            "v": 16
+          },
+          {
+            "t": "בַּ/גָּ֔יְא",
+            "l": "b/1516",
+            "s": "1516",
+            "m": "HRd/Ncbsa",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "מ֖וּל",
+            "l": "4136",
+            "s": "4136",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בֵּ֥ית",
+            "l": "1047+",
+            "s": "1047",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "פְּעֽוֹר",
+            "l": "1047",
+            "s": "1047",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-deut-25-4",
+        "book": "Deut",
+        "ref": "Deut 25:4",
+        "gateLesson": 40,
+        "tier": "guided",
+        "tokens": [
+          {
+            "t": "לֹא",
+            "l": "3808",
+            "s": "3808",
+            "m": "HTn",
+            "g": 1,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "תַחְסֹ֥ם",
+            "l": "2629",
+            "s": "2629",
+            "m": "HVqi2ms",
+            "g": 23,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "שׁ֖וֹר",
+            "l": "7794",
+            "s": "7794",
+            "m": "HNcmsa",
+            "g": 7,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בְּ/דִישֽׁ/וֹ",
+            "l": "b/1758",
+            "s": "1758",
+            "m": "HR/Vqc/Sp3ms",
+            "g": 40,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-judg-10-5",
+        "book": "Judg",
+        "ref": "Judg 10:5",
+        "gateLesson": 37,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יָּ֣מָת",
+            "l": "c/4191",
+            "s": "4191",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 30
+          },
+          {
+            "t": "יָאִ֔יר",
+            "l": "2971",
+            "s": "2971",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "וַ/יִּקָּבֵ֖ר",
+            "l": "c/6912",
+            "s": "6912",
+            "m": "HC/VNw3ms",
+            "g": 37,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בְּ/קָמֽוֹן",
+            "l": "b/7056",
+            "s": "7056",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-judg-12-10",
+        "book": "Judg",
+        "ref": "Judg 12:10",
+        "gateLesson": 37,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יָּ֣מָת",
+            "l": "c/4191",
+            "s": "4191",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 30
+          },
+          {
+            "t": "אִבְצָ֔ן",
+            "l": "78",
+            "s": "78",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "וַ/יִּקָּבֵ֖ר",
+            "l": "c/6912",
+            "s": "6912",
+            "m": "HC/VNw3ms",
+            "g": 37,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בְּ/בֵ֥ית",
+            "l": "b/1035+",
+            "s": "1035",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "לָֽחֶם",
+            "l": "1035",
+            "s": "1035",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-judg-14-7",
+        "book": "Judg",
+        "ref": "Judg 14:7",
+        "gateLesson": 35,
+        "tier": "guided",
+        "tokens": [
+          {
+            "t": "וַ/יֵּ֖רֶד",
+            "l": "c/3381",
+            "s": "3381",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "וַ/יְדַבֵּ֣ר",
+            "l": "c/1696",
+            "s": "1696",
+            "m": "HC/Vpw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 15
+          },
+          {
+            "t": "לָ/אִשָּׁ֑ה",
+            "l": "l/802",
+            "s": "802",
+            "m": "HRd/Ncfsa",
+            "g": 13,
+            "pn": false,
+            "v": 6
+          },
+          {
+            "t": "וַ/תִּישַׁ֖ר",
+            "l": "c/3474",
+            "s": "3474",
+            "m": "HC/Vqw3fs",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בְּ/עֵינֵ֥י",
+            "l": "b/5869 a",
+            "s": "5869",
+            "m": "HR/Ncbdc",
+            "g": 20,
+            "pn": false,
+            "v": 10
+          },
+          {
+            "t": "שִׁמְשֽׁוֹן",
+            "l": "8123",
+            "s": "8123",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-1sam-15-10",
+        "book": "1Sam",
+        "ref": "1Sam 15:10",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַֽ/יְהִי֙",
+            "l": "c/1961",
+            "s": "1961",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 6
+          },
+          {
+            "t": "דְּבַר",
+            "l": "1697",
+            "s": "1697",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 5
+          },
+          {
+            "t": "יְהוָ֔ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אֶל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "שְׁמוּאֵ֖ל",
+            "l": "8050",
+            "s": "8050",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "לֵ/אמֹֽר",
+            "l": "l/559",
+            "s": "559",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-1sam-10-17",
+        "book": "1Sam",
+        "ref": "1Sam 10:17",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יַּצְעֵ֤ק",
+            "l": "c/6817",
+            "s": "6817",
+            "m": "HC/Vhw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "שְׁמוּאֵל֙",
+            "l": "8050",
+            "s": "8050",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אֶת",
+            "l": "853",
+            "s": "853",
+            "m": "HTo",
+            "g": 1,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "הָ/עָ֔ם",
+            "l": "d/5971 a",
+            "s": "5971",
+            "m": "HTd/Ncmsa",
+            "g": 8,
+            "pn": false,
+            "v": 13
+          },
+          {
+            "t": "אֶל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "יְהוָ֖ה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "הַ/מִּצְפָּֽה",
+            "l": "d/4709",
+            "s": "4709",
+            "m": "HTd/Np",
+            "g": 8,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-1sam-10-13",
+        "book": "1Sam",
+        "ref": "1Sam 10:13",
+        "gateLesson": 37,
+        "tier": "guided",
+        "tokens": [
+          {
+            "t": "וַ/יְכַל֙",
+            "l": "c/3615",
+            "s": "3615",
+            "m": "HC/Vpw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "מֵֽ/הִתְנַבּ֔וֹת",
+            "l": "m/5012",
+            "s": "5012",
+            "m": "HR/Vtc",
+            "g": 37,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "וַ/יָּבֹ֖א",
+            "l": "c/935",
+            "s": "935",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 26
+          },
+          {
+            "t": "הַ/בָּמָֽה",
+            "l": "d/1116",
+            "s": "1116",
+            "m": "HTd/Ncfsa",
+            "g": 8,
+            "pn": false,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-2sam-17-26",
+        "book": "2Sam",
+        "ref": "2Sam 17:26",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יִּ֤חַן",
+            "l": "c/2583",
+            "s": "2583",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "יִשְׂרָאֵל֙",
+            "l": "3478",
+            "s": "3478",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "וְ/אַבְשָׁלֹ֔ם",
+            "l": "c/53",
+            "s": "53",
+            "m": "HC/Np",
+            "g": 13,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "אֶ֖רֶץ",
+            "l": "776",
+            "s": "776",
+            "m": "HNcbsc",
+            "g": 20,
+            "pn": false,
+            "v": 9
+          },
+          {
+            "t": "הַ/גִּלְעָֽד",
+            "l": "d/1568",
+            "s": "1568",
+            "m": "HTd/Np",
+            "g": 8,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-2sam-24-19",
+        "book": "2Sam",
+        "ref": "2Sam 24:19",
+        "gateLesson": 35,
+        "tier": "strict",
+        "tokens": [
+          {
+            "t": "וַ/יַּ֤עַל",
+            "l": "c/5927",
+            "s": "5927",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "דָּוִד֙",
+            "l": "1732",
+            "s": "1732",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "כִּ/דְבַר",
+            "l": "k/1697",
+            "s": "1697",
+            "m": "HR/Ncmsc",
+            "g": 20,
+            "pn": false,
+            "v": 5
+          },
+          {
+            "t": "גָּ֔ד",
+            "l": "1410",
+            "s": "1410",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          },
+          {
+            "t": "כַּ/אֲשֶׁ֖ר",
+            "l": "k/834 d",
+            "s": "834",
+            "m": "HR/Tr",
+            "g": 30,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "צִוָּ֥ה",
+            "l": "6680",
+            "s": "6680",
+            "m": "HVpp3ms",
+            "g": 29,
+            "pn": false,
+            "v": 35
+          },
+          {
+            "t": "יְהוָֽה",
+            "l": "3068",
+            "s": "3068",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
+          }
+        ]
+      },
+      {
+        "id": "reader-2sam-5-18",
+        "book": "2Sam",
+        "ref": "2Sam 5:18",
+        "gateLesson": 37,
+        "tier": "guided",
+        "tokens": [
+          {
+            "t": "וּ/פְלִשְׁתִּ֖ים",
+            "l": "c/6430",
+            "s": "6430",
+            "m": "HC/Ngmpa",
+            "g": 13,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בָּ֑אוּ",
+            "l": "935",
+            "s": "935",
+            "m": "HVqp3cp",
+            "g": 19,
+            "pn": false,
+            "v": 26
+          },
+          {
+            "t": "וַ/יִּנָּטְשׁ֖וּ",
+            "l": "c/5203",
+            "s": "5203",
+            "m": "HC/VNw3mp",
+            "g": 37,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "בְּ/עֵ֥מֶק",
+            "l": "b/6010",
+            "s": "6010",
+            "m": "HR/Ncmsc",
+            "g": 20,
+            "pn": false,
+            "v": null
+          },
+          {
+            "t": "רְפָאִֽים",
+            "l": "7497 b",
+            "s": "7497",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null
           }
         ]
       }
