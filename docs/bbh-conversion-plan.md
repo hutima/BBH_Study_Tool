@@ -225,3 +225,17 @@ from presets, vocab stats, and export vocab counts), unaffected by vocab
 toggles. UI: entry in the lesson area launching a lightweight flip/shuffle
 loop with local again/got-it marking. Closes the "full alphabet chart" gap in
 docs/bbh-content-gaps.md. Scope: PR E (content completion), first item.
+
+## Addendum (user request, 2026-08-09): post-Phase-2 follow-up — parsing depth review + root drills + mobile UX
+
+After PR F ships: (1) a Fable/Opus review of the Hebrew Parsing module
+against the original Greek implementation (`ad1547e`) — interaction depth,
+drill variety, analytics parity; (2) root-based cross-lesson drills:
+combine paradigms sharing a root (שמר spans Qal Perfect L16 → Imperfect
+L23 → Past Narrative L35 → Imperative L39 → Participle L42; היה and the
+derived-binyan exemplars similarly) into "conjugation journey" practice —
+Hebrew's smaller axis system makes same-word-across-lessons testing
+natural where Greek needed separate paradigms; (3) simplify the Parsing UI
+into user-sensible modules/groupings, designed mobile-first (current
+controls still clunky per user feedback). Tracked as follow-up task; not
+part of the Phase 2 definition of done.
