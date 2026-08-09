@@ -528,3 +528,62 @@ its existing card (shared progress, no duplicates); (3) both rendered as
 collapsible sections placed AFTER the manual lesson selection with blurbs
 and meta counts; (4) bbh-bk-* marks migrate to bbh-adv-* by Strong's
 number. Runs after task #19.
+
+**Resolved (2026-08-09):** implemented as specified.
+`tools/gen_bbh_advanced_vocab.mjs` (replaces `tools/gen_bbh_book_vocab.mjs`)
+writes `js/data/bbh_advanced_vocab.js` (replaces `bbh_book_vocab.js`),
+registering `window.BBH_ADVANCED_VOCAB` (18 buckets of 100, sub-grouped by
+25 via each card's own `sub` field, 1,726 `bbh-adv-<strongs>` cards — every
+content lemma at corpus frequency ≥2 not already one of the 209 lesson
+cards) and `window.BBH_BOOK_VOCAB` (8 books, each an ordered array of
+EXISTING lesson/advanced card ids by descending in-book frequency — 81–92%
+per-book coverage of that book's distinct content lemmas; the ~8–19%
+uncovered are lemmas below the advanced frequency floor or excluded as
+proper/gentilic/numeral). `js/domain/deck/filters.js`'s
+`resolveBookVocabCards()` resolves `BKV::<book>[::g::<N>]` pseudo-keys to
+those ids at deck-build time (never new SETS entries), mirroring the
+Greek app's own resolveBookVocabCards/NT_BOOK_VOCAB. Two `<details
+class="advanced-section-shell">` sections ("Advanced vocabulary", "Book
+Vocab") sit in `index.html` after `#chaptersGrid` — the
+`.advanced-section-shell`/`.supplemental-set`/`.advanced-sub-list` CSS was
+already present in `styles.css`, dormant since the original Greek→Hebrew
+conversion, so no styling work was needed. `js/state/migrations.js`'s
+`book-vocab-bk-ids-to-advanced` migration remaps any `bbh-bk-<slug>-
+<strongs>`/`bbh-bk-core-<strongs>` marks to `bbh-adv-<strongs>` (dropped if
+that Strong's number no longer carries an advanced card). Shipped at
+`?v=16`. See `RESTORE.md` for the merged-task summary and self-check
+outcomes.
+
+## Addendum (user screenshot, 2026-08-09): task #21 — parsing options desktop layout
+
+Good on phone, sparse on desktop: rows right-pin their controls across the
+full panel width leaving dead space. At >=700px: two-column label/control
+layout with LEFT-aligned natural-width controls, scope cards in one
+auto-fit row, capped select/pill widths. Phone layout untouched. Runs
+after task #20 (styles.css collision).
+
+## Addendum (user feedback, 2026-08-09): focused-paradigm default label (into task #21)
+
+'None (today's new material)' is opaque. The default (no focused paradigm)
+pools the forms newly introduced AT the current lesson; relabel the option
+dynamically as 'New in Lesson N' (tracks the lesson selector). Behavior
+unchanged.
+
+## Addendum (user feedback, 2026-08-09): grammar shuffle (into task #21)
+
+Grammar quiz question order repeats identically across sessions (the
+deterministic bucket ordering has no per-session entropy). Fix: fresh
+session seed at init (PARSING_SESSION_SEED convention — Date.now() once,
+never persisted/graded) shuffling WITHIN the unseen/weak/rest priority
+buckets; type-interleaving retained.
+
+## Addendum (user policy change, 2026-08-09): Google Analytics reintroduced
+
+The repo owner has reversed the no-telemetry rule and supplied their own
+GA4 property (G-J5HGG50J92). Ships with the task-21 release: snippet in
+index.html + pages/memorization.html; check_release telemetry check
+reworked to REQUIRE exactly G-J5HGG50J92 and FORBID the retired Greek-app
+property G-YH11KQB6QX; user-guide privacy copy updated (on-device study
+progress unchanged; anonymous usage measurement disclosed); CLAUDE.md
+telemetry rule rewritten accordingly. Consent-gating offered, owner to
+decide; unconditional load unless requested.
