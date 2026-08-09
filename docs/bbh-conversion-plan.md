@@ -562,12 +562,25 @@ layout with LEFT-aligned natural-width controls, scope cards in one
 auto-fit row, capped select/pill widths. Phone layout untouched. Runs
 after task #20 (styles.css collision).
 
+**Status: shipped** (task #21). One `@media (min-width: 700px)` block in
+`styles.css`: options rows `justify-content: flex-start` (the stretch was
+`space-between` pinning controls to the far edge of the ~860px panel),
+selects capped at 28ch, scope grid switched from fixed `repeat(2, 1fr)`
+to `repeat(auto-fit, minmax(110px, 160px))` left-justified, root/danger
+buttons capped. ≤699px verified pixel-identical (before/after screenshot
+pair at 375px + a 699px/700px boundary pair).
+
 ## Addendum (user feedback, 2026-08-09): focused-paradigm default label (into task #21)
 
 'None (today's new material)' is opaque. The default (no focused paradigm)
 pools the forms newly introduced AT the current lesson; relabel the option
 dynamically as 'New in Lesson N' (tracks the lesson selector). Behavior
 unchanged.
+
+**Status: shipped** (task #21). `renderFocusedPickerRow` in
+`js/ui/parsing.js` now labels the default option
+`None (New in Lesson ${state.lesson})` — same `state.lesson` the gate
+logic reads, recomputed on every render, `focusedParadigmId` still null.
 
 ## Addendum (user feedback, 2026-08-09): grammar shuffle (into task #21)
 
@@ -576,6 +589,21 @@ deterministic bucket ordering has no per-session entropy). Fix: fresh
 session seed at init (PARSING_SESSION_SEED convention — Date.now() once,
 never persisted/graded) shuffling WITHIN the unseen/weak/rest priority
 buckets; type-interleaving retained.
+
+**Status: shipped, with a corrected diagnosis** (task #21). The premise
+was half-wrong: `js/ui/grammar.js`'s `orderQuestionPool` ALREADY
+Fisher-Yates-shuffled each priority bucket with
+`host.getSessionSeed() + N`, wired to `PARSING_SESSION_SEED` since PR C —
+per-page-load shuffling existed all along (verified empirically on the
+live 300-question bank). The gap that actually matched the user's report:
+the seed is captured once per app LOAD, and an installed PWA can keep one
+load resident for days, so re-opening the quiz in the same resident load
+replayed the identical order. Fix (main.js only, no module-boundary
+changes): a `grammarEntropy` value re-rolled on every transition INTO
+grammar mode in `syncLayoutVisibility`, XORed into the seed
+`configureGrammar` provides — fresh order per quiz visit, stable within a
+visit, never persisted, ordering-only. Per-question choice order stays
+deterministic within the visit (it derives from the same seed).
 
 ## Addendum (user policy change, 2026-08-09): Google Analytics reintroduced
 
@@ -587,3 +615,12 @@ property G-YH11KQB6QX; user-guide privacy copy updated (on-device study
 progress unchanged; anonymous usage measurement disclosed); CLAUDE.md
 telemetry rule rewritten accordingly. Consent-gating offered, owner to
 decide; unconditional load unless requested.
+
+**Status: shipped** (task #22, commit `2d91849`). Snippet live in both
+HTML heads; check7 inverted to a pinned-property gate (REQUIRE
+`G-J5HGG50J92` loader+config in both pages, FORBID `G-YH11KQB6QX`, any
+other GA4 id, and gtag refs outside the two HTML files) and
+negative-tested in both directions; user-guide privacy copy + changelog
+updated; CLAUDE.md "Telemetry" section records the policy change.
+Sandbox note: the snippet's blocked network call surfaces as an env-only
+`ERR_TUNNEL_CONNECTION_FAILED` console error in Playwright smokes.

@@ -47,9 +47,9 @@ never nest a new overlay inside `.app`.
         `data-theme` / `data-font-family` / `data-text-size` on `<html>`
         before first paint to avoid a flash of the wrong theme. Don't move
         this above the stylesheet link.
-- `<link rel="stylesheet" href="styles.css?v=16">` (line 30)
+- `<link rel="stylesheet" href="styles.css?v=17">` (line 30)
 
-> Cache-bust: every asset URL ends in `?v=16`. Bump the number on release
+> Cache-bust: every asset URL ends in `?v=17`. Bump the number on release
 > (see "Cache-bust" in `CLAUDE.md`). The same number lives in `sw.js`
 > (`CACHE_NAME` + `APP_SHELL_PATHS`) — both must agree, and
 > `tools/check_release.mjs` enforces it.
@@ -122,16 +122,16 @@ are deliberately NOT shielded or tap-guarded this way.
 ## Script block (~743–752)
 
 ```html
-<script defer src="js/data/bbh_vocab.js?v=16"></script>
-<script defer src="js/data/bbh_advanced_vocab.js?v=16"></script>
-<script defer src="js/data/bbh_reference_data.js?v=16"></script>
-<script defer src="js/data/bbh_parsing.js?v=16"></script>
-<script defer src="js/data/bbh_grammar.js?v=16"></script>
-<script defer src="js/data/bbh_reader.js?v=16"></script>
-<script defer src="js/data/bbh_alphabet.js?v=16"></script>
-<script defer src="js/logic/pos_logic.js?v=16"></script>
-<script defer src="js/pwa/swUpdate.js?v=16"></script>
-<script type="module" src="js/app/main.js?v=16"></script>
+<script defer src="js/data/bbh_vocab.js?v=17"></script>
+<script defer src="js/data/bbh_advanced_vocab.js?v=17"></script>
+<script defer src="js/data/bbh_reference_data.js?v=17"></script>
+<script defer src="js/data/bbh_parsing.js?v=17"></script>
+<script defer src="js/data/bbh_grammar.js?v=17"></script>
+<script defer src="js/data/bbh_reader.js?v=17"></script>
+<script defer src="js/data/bbh_alphabet.js?v=17"></script>
+<script defer src="js/logic/pos_logic.js?v=17"></script>
+<script defer src="js/pwa/swUpdate.js?v=17"></script>
+<script type="module" src="js/app/main.js?v=17"></script>
 ```
 
 - **`js/data/bbh_vocab.js`** — classic deferred script, self-registers

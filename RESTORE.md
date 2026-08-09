@@ -62,7 +62,34 @@
   phones, sections in textbook lesson order, collapsed-by-default
   <details> with Expand/Collapse-all + localStorage persistence
   (bbhStudyToolReferenceStateV1), source-ref ranges.
-- **Task #20 implemented (this commit; PR to Main in flight)** —
+- **Tasks #21+#22 (this commit; ships as one PR, `?v=17`)** —
+  **#22 GA reintroduction** (`2d91849`): owner's verbatim gtag snippet
+  (property `G-J5HGG50J92`) in `index.html` + `pages/memorization.html`
+  heads; `check_release.mjs` check7 inverted from "zero GA anywhere" to a
+  pinned-property gate (snippet REQUIRED in both pages, retired
+  `G-YH11KQB6QX` forbidden, any other GA4 id forbidden, no gtag refs
+  outside the two HTML files — negative-tested both directions);
+  user-guide privacy copy + changelog bullet updated (page visits only,
+  study data on-device); CLAUDE.md telemetry rule rewritten;
+  index-structure head map synced.
+  **#21 parsing desktop layout + relabel** (agent-implemented, orchestrator
+  verified): new `@media (min-width:700px)` block in `styles.css` —
+  options rows `justify-content:flex-start`, selects capped 28ch, scope
+  grid `auto-fit minmax(110px,160px)` left-justified, root/danger buttons
+  capped (≤699px pixel-identical); focused-paradigm default option
+  relabeled `None (New in Lesson ${state.lesson})` in
+  `js/ui/parsing.js` (label-only, pool unchanged). Item 3 (grammar
+  question shuffle): per-load shuffling already existed
+  (`orderQuestionPool` Fisher-Yates per priority bucket, seed =
+  `PARSING_SESSION_SEED`, verified empirically) — the real gap was that
+  one resident PWA load replays one order; fixed with a main.js-local
+  `grammarEntropy` re-rolled on each transition into grammar mode
+  (XORed into the seed `configureGrammar` provides; never persisted,
+  ordering-only, no module-boundary changes).
+  Playwright note: the GA snippet's blocked network call in the sandbox
+  (`ERR_TUNNEL_CONNECTION_FAILED`) now shows up as an env-only console
+  error in smokes — not a product bug; production loads gtag normally.
+- **Task #20 merged** as `eac35e7` (PR #19, `?v=16`) —
   advanced vocab reworked to the GREEK-APP model (ad1547e advancedSection/
   bookVocabSection): `tools/gen_bbh_advanced_vocab.mjs` (replaces
   `tools/gen_bbh_book_vocab.mjs`) writes `js/data/bbh_advanced_vocab.js`
@@ -93,7 +120,7 @@
   foreign work; the shared working tree is one session, orchestrator +
   delegated agent. The **GA4 reintroduction (property `G-J5HGG50J92`) is
   a direct user instruction** (verbatim snippet supplied 2026-08-09) —
-  authorized, not an unverified claim. It ships as task #22: GA snippet
+  authorized, not an unverified claim. Shipped as task #22: GA snippet
   in `index.html` + `pages/memorization.html`, `check_release.mjs`
   telemetry check reworked to REQUIRE exactly `G-J5HGG50J92` and FORBID
   the retired `G-YH11KQB6QX`, user-guide privacy copy updated, CLAUDE.md
