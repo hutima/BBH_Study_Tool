@@ -217,15 +217,20 @@ function getGatedPool(state) {
 }
 
 function getScopedPool(state, { excludeKnown }) {
-  const customIds = (state.customSetOn && Object.keys(state.customSet || {}).some((id) => state.customSet[id]))
+  const mode = getScopeMode(state);
+  const customIds = (mode === 'custom' && Object.keys(state.customSet || {}).some((id) => state.customSet[id]))
     ? Object.keys(state.customSet).filter((id) => state.customSet[id])
     : null;
   return buildDrillPool(getParadigms(), {
     lesson: state.lesson,
     includeAppendix: state.includeAppendix,
-    focusParadigmId: state.focusedParadigmId || null,
+    focusParadigmId: mode === 'focused' ? (state.focusedParadigmId || null) : null,
     customParadigmIds: customIds,
-    shuffleAll: !!state.shuffleAll,
+    // 'byFeature' draws from the full cumulative gated pool (like shuffle),
+    // then dimValueFilter below narrows it — §5 amendment 4.
+    shuffleAll: mode === 'shuffle' || mode === 'byFeature',
+    rootFilter: mode === 'root' ? state.rootFilter : null,
+    dimValueFilter: mode === 'byFeature' ? state.dimValueFilter : null,
     excludeKnown,
     attempts: state.attempts,
     enabledDims: getEnabledDims(state)
@@ -244,6 +249,134 @@ function pruneStaleScope(state) {
     if (gatedIds.has(id)) nextCustom[id] = true;
   });
   state.customSet = nextCustom;
+}
+
+// ─── PR G: scope-mode derivation + Root/By-feature helpers ─────────────────
+// The scope control's active mode is DERIVED from state, never stored as
+// its own field (docs/bbh-parsing-depth-review.md §5 amendment 6):
+// shuffleAll/customSetOn stay the stored booleans they always were, and
+// rootFilter/dimValueFilter are truthy IFF their mode is active — that
+// invariant is maintained by every handler below (parsingSetScopeMode,
+// parsingSetRoot, parsingSetFeatureDim, parsingSetParadigm, lesson/appendix
+// changes) always nulling out the other three scope fields together.
+function getScopeMode(state) {
+  if (state.rootFilter) return 'root';
+  if (state.dimValueFilter) return 'byFeature';
+  if (state.customSetOn) return 'custom';
+  if (state.shuffleAll) return 'shuffle';
+  return 'focused';
+}
+
+// Roots with >=2 in-gate paradigms at the current lesson+appendix gate —
+// the only roots the Root-journey picker offers (§5 amendment 1: "Root
+// scope honesty"). Computed over the GATED pool so the list (and its
+// "n forms · Lm–Ln" captions) always matches what's actually drillable
+// right now, not the book-wide total.
+function computeRootIndex(state) {
+  const gated = getGatedPool(state);
+  const byRoot = {};
+  gated.forEach((f) => {
+    if (!f.root) return;
+    if (!byRoot[f.root]) byRoot[f.root] = { root: f.root, paradigmIds: new Set(), forms: [] };
+    byRoot[f.root].paradigmIds.add(f.paradigmId);
+    byRoot[f.root].forms.push(f);
+  });
+  return Object.values(byRoot).map((entry) => {
+    const lessons = entry.forms.map((f) => f.introducedLesson).filter((n) => Number.isInteger(n));
+    return {
+      root: entry.root,
+      paradigmCount: entry.paradigmIds.size,
+      formCount: entry.forms.length,
+      minLesson: lessons.length ? Math.min(...lessons) : null,
+      maxLesson: lessons.length ? Math.max(...lessons) : null,
+      qualifies: entry.paradigmIds.size >= 2
+    };
+  }).sort((a, b) => a.root.localeCompare(b.root));
+}
+
+// The earliest lesson (1-50) at which ANY root reaches 2 in-gate paradigms
+// under the given appendix setting — used for the scope control's disabled
+// "unlocks at Lesson N" caption when zero roots currently qualify. Cheap
+// (<=50 lessons x ~429 forms, run only when rendering the options panel).
+function firstLessonRootUnlocks(includeAppendix) {
+  const paradigms = getParadigms();
+  for (let lesson = 1; lesson <= 50; lesson += 1) {
+    const gated = availableForms(paradigms, lesson, { includeAppendix });
+    const byRoot = {};
+    for (const f of gated) {
+      if (!f.root) continue;
+      if (!byRoot[f.root]) byRoot[f.root] = new Set();
+      byRoot[f.root].add(f.paradigmId);
+      if (byRoot[f.root].size >= 2) return lesson;
+    }
+  }
+  return null;
+}
+
+// The root's "conjugation stations" for the journey map: one entry per
+// PARADIGM that has at least one form with this root (searched over the
+// FULL, ungated paradigms list, not just what's in-gate — locked/future
+// stations are meant to render dimmed, not disappear). Ordered by each
+// paradigm's earliest introducedLesson among this root's forms.
+function computeRootStations(state, root) {
+  const paradigms = getParadigms();
+  const gatedIds = new Set(getGatedPool(state).filter((f) => f.root === root).map((f) => f.id));
+  const stations = [];
+  paradigms.forEach((p) => {
+    const rootForms = (p.forms || []).filter((f) => f.root === root);
+    if (!rootForms.length) return;
+    const lessons = rootForms.map((f) => f.introducedLesson).filter((n) => Number.isInteger(n));
+    const minLesson = lessons.length ? Math.min(...lessons) : Number.POSITIVE_INFINITY;
+    const inGate = rootForms.some((f) => gatedIds.has(f.id));
+    stations.push({ paradigmId: p.id, label: p.label, minLesson, inGate });
+  });
+  stations.sort((a, b) => a.minLesson - b.minLesson);
+  return stations;
+}
+
+function renderJourneyMap(stations, forCurrentForm) {
+  if (!stations || !stations.length) return '';
+  const items = stations.map((s) => {
+    const isCurrent = !!(forCurrentForm && forCurrentForm.paradigmId === s.paradigmId);
+    const classes = ['parsing-journey-station'];
+    if (isCurrent) classes.push('parsing-journey-station-current');
+    if (!s.inGate) classes.push('parsing-journey-station-locked');
+    return `<span class="${classes.join(' ')}"${isCurrent ? ' aria-current="step"' : ''}>${escapeHtml(s.label)}</span>`;
+  });
+  return `<div class="parsing-journey-map" role="list" aria-label="Root journey stations">${items.join('<span class="parsing-journey-sep" aria-hidden="true">→</span>')}</div>`;
+}
+
+// Journey mode ignores exclude-known for POOL MEMBERSHIP (a known form still
+// belongs to the walk) and instead starts the cursor at the first station
+// that ISN'T known yet — re-derived whenever the root or lesson/appendix
+// gate changes (docs/bbh-parsing-depth-review.md §5 amendment 2). Relies on
+// state.rootFilter already being set (and hence getScopeMode(state)==='root')
+// by the caller before this runs.
+function resetJourneyCursorToFirstNotKnown(state) {
+  const pool = getScopedPool(state, { excludeKnown: false });
+  const ordered = orderDrillPool(pool, state.attempts, host.getSessionSeed(), { mode: 'journey' });
+  const enabledDims = getEnabledDims(state);
+  const idx = ordered.findIndex((f) => {
+    const dims = applicableDimensions(f).filter((d) => enabledDims.includes(d));
+    return dims.length ? !isFormKnown(state.attempts, f.id, dims) : true;
+  });
+  state.journeyIndex = idx >= 0 ? idx : 0;
+}
+
+// Defensive: if the currently-selected root drops below 2 in-gate paradigms
+// (e.g. the lesson was turned back down, or appendix was toggled off), clear
+// rootFilter rather than silently narrowing the pool to <2 paradigms behind
+// a control that still LOOKS like "Root journey" is active.
+function pruneStaleRootFilter(state) {
+  if (!state.rootFilter) return;
+  const entry = computeRootIndex(state).find((r) => r.root === state.rootFilter);
+  if (!entry || !entry.qualifies) {
+    state.rootFilter = null;
+    state.journeyIndex = 0;
+    rootDrillActive = false;
+    currentForm = null;
+    host.saveState();
+  }
 }
 
 function seedForForm(formId) {
@@ -302,6 +435,23 @@ let buildAcceptedIds = null;
 // legitimate matches for the target parse (see augmentBuildChoicesForAllThatApply).
 let buildMultiSelect = false;
 let buildPicks = new Set();
+
+// ─── PR G: Root journey / By-feature scope state (module-local) ───────────
+// "Drill this root" is a transient sub-mode of Root scope (weakest-first
+// ordering instead of journey order) — deliberately NOT persisted (only
+// runtime.parsing.journeyIndex is, per docs/bbh-parsing-depth-review.md §5
+// amendment 2). Resets to false whenever scope mode, root selection, or
+// lesson/appendix gate changes.
+let rootDrillActive = false;
+// ontoggle-tracked <details> open state for the custom-set category groups,
+// keyed by category id. Ephemeral (not persisted, mirrors the session-only
+// mixedCounter pattern above) — fixes the "custom-group collapse discard"
+// bug: previously each group's open/closed state was RECOMPUTED from
+// `selected > 0` on every render(), silently closing a group the user had
+// manually opened just to browse. ontoggle now writes here directly with NO
+// render() call, and renderCustomSetGroups reads from here first (falling
+// back to the old selected>0 default only the first time a group renders).
+let customGroupOpenState = {};
 
 function applyAttempt(state, formId, perDim) {
   state.attempts = recordAttempt(state.attempts, formId, perDim, { at: Date.now() });
@@ -383,8 +533,9 @@ function renderCustomSetGroups(state, gatedParadigms) {
         <input type="checkbox" onchange="parsingToggleCustomSetParadigm('${escapeHtml(p.id)}', this.checked)"${state.customSet[p.id] ? ' checked' : ''}>
         <span>${escapeHtml(p.label)}</span>
       </label>`).join('');
+    const isOpen = cat in customGroupOpenState ? customGroupOpenState[cat] : selected > 0;
     return `
-      <details class="parsing-custom-group"${selected > 0 ? ' open' : ''}>
+      <details class="parsing-custom-group"${isOpen ? ' open' : ''} ontoggle="parsingSetCustomGroupOpen('${escapeHtml(cat)}', this.open)">
         <summary class="parsing-custom-group-summary">
           <span class="parsing-custom-group-label">${escapeHtml(CATEGORY_LABELS[cat] || cat)}</span>
           <span class="parsing-custom-group-count">${selected} of ${total} selected</span>
@@ -398,7 +549,120 @@ function renderCustomSetGroups(state, gatedParadigms) {
   return groups || '<div class="parsing-empty-note">No paradigms available at this lesson yet.</div>';
 }
 
+// ─── Rendering: scope control + per-mode inline pickers (PR G, §2.3/§5.5) ──
+// Segmented control (reuses .theme-switcher/.theme-btn — §5 amendment 5)
+// picking ONE of 5 mutually-exclusive scopes; the picker row directly below
+// it is entirely mode-dependent (only one of these ever renders).
+function renderScopeControl(state, rootIndex) {
+  const mode = getScopeMode(state);
+  const rootQualifies = rootIndex.some((r) => r.qualifies);
+  let rootDisabledAttrs = '';
+  if (!rootQualifies) {
+    const unlockLesson = firstLessonRootUnlocks(state.includeAppendix);
+    const caption = unlockLesson ? `unlocks at Lesson ${unlockLesson}` : 'no qualifying roots yet';
+    rootDisabledAttrs = ` disabled aria-disabled="true" title="${escapeHtml(caption)}"`;
+  }
+  return `
+    <div class="theme-switcher parsing-scope-switcher" id="parsingScopeControl" role="group" aria-label="Practice scope">
+      <button class="theme-btn${mode === 'focused' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('focused')">Focused</button>
+      <button class="theme-btn${mode === 'root' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('root')"${rootDisabledAttrs}>Root journey (verbs)</button>
+      <button class="theme-btn${mode === 'byFeature' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('byFeature')">By feature</button>
+      <button class="theme-btn${mode === 'shuffle' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('shuffle')">Shuffle</button>
+      <button class="theme-btn${mode === 'custom' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('custom')">Custom</button>
+    </div>`;
+}
+
+function renderFocusedPickerRow(state) {
+  const gatedParadigms = availableParadigms(getParadigms(), state.lesson, { includeAppendix: state.includeAppendix });
+  const byCategory = {};
+  gatedParadigms.forEach((p) => {
+    if (!byCategory[p.category]) byCategory[p.category] = [];
+    byCategory[p.category].push(p);
+  });
+  let paradigmOptions = `<option value=""${state.focusedParadigmId ? '' : ' selected'}>None (today's new material)</option>`;
+  CATEGORY_ORDER.forEach((cat) => {
+    const list = byCategory[cat];
+    if (!list || !list.length) return;
+    paradigmOptions += `<optgroup label="${escapeHtml(CATEGORY_LABELS[cat] || cat)}">`;
+    list.forEach((p) => {
+      paradigmOptions += `<option value="${escapeHtml(p.id)}"${state.focusedParadigmId === p.id ? ' selected' : ''}>${escapeHtml(p.label)}</option>`;
+    });
+    paradigmOptions += '</optgroup>';
+  });
+  return `
+    <div class="parsing-options-row parsing-scope-picker-row">
+      <label class="parsing-field-label" for="parsingParadigmSelect">Focused paradigm</label>
+      <select id="parsingParadigmSelect" class="parsing-select" onchange="parsingSetParadigm(this.value)">${paradigmOptions}</select>
+    </div>`;
+}
+
+function renderRootPickerRow(state, rootIndex) {
+  const qualifying = rootIndex.filter((r) => r.qualifies);
+  if (!qualifying.length) return '';
+  let options = '';
+  qualifying.forEach((r) => {
+    const caption = `${r.root} — ${r.formCount} form${r.formCount === 1 ? '' : 's'} · L${r.minLesson}–L${r.maxLesson}`;
+    options += `<option value="${escapeHtml(r.root)}"${state.rootFilter === r.root ? ' selected' : ''}>${escapeHtml(caption)}</option>`;
+  });
+  const drillLabel = rootDrillActive ? 'Back to journey order' : 'Drill this root (weakest-first)';
+  return `
+    <div class="parsing-options-row parsing-scope-picker-row">
+      <label class="parsing-field-label" for="parsingRootSelect">Root</label>
+      <select id="parsingRootSelect" class="parsing-select" onchange="parsingSetRoot(this.value)">${options}</select>
+      <button class="ctrl-btn parsing-drill-root-btn" type="button" onclick="parsingToggleRootDrillMode()" title="Switch this root between the journey order (walks the conjugation system in lesson order) and weakest-first practice.">${escapeHtml(drillLabel)}</button>
+    </div>`;
+}
+
+function renderFeaturePickerRow(state) {
+  const gatedPool = getGatedPool(state);
+  const applicableDimSet = new Set();
+  gatedPool.forEach((f) => applicableDimensions(f).forEach((d) => applicableDimSet.add(d)));
+  const dims = PARSING_DIM_KEYS.filter((d) => applicableDimSet.has(d));
+  const activeDim = state.dimValueFilter ? (Object.keys(state.dimValueFilter)[0] || '') : '';
+  let dimOptions = `<option value=""${activeDim ? '' : ' selected'}>Choose a feature…</option>`;
+  dims.forEach((d) => {
+    dimOptions += `<option value="${d}"${activeDim === d ? ' selected' : ''}>${escapeHtml(DIM_TOGGLE_LABELS[d] || d)}</option>`;
+  });
+  let valuesHtml = '';
+  if (activeDim) {
+    const values = availableDimensionValues(gatedPool, activeDim);
+    const selected = new Set((state.dimValueFilter && state.dimValueFilter[activeDim]) || []);
+    const items = values.map((serialized) => {
+      const value = activeDim === 'suffix' ? parseSuffixSerialized(serialized) : serialized;
+      const label = formatDimValue(activeDim, value);
+      const encoded = encodeURIComponent(serialized);
+      const checked = selected.has(serialized);
+      return `
+        <label class="parsing-feature-value-item">
+          <input type="checkbox" onchange="parsingToggleFeatureValue('${activeDim}','${encoded}', this.checked)"${checked ? ' checked' : ''}>
+          <span>${escapeHtml(label)}</span>
+        </label>`;
+    }).join('');
+    valuesHtml = `<div class="parsing-feature-value-list">${items || '<div class="parsing-empty-note">No values available at this lesson.</div>'}</div>`;
+  }
+  return `
+    <div class="parsing-scope-picker-row parsing-feature-row">
+      <div class="parsing-options-row">
+        <label class="parsing-field-label" for="parsingFeatureDimSelect">Feature</label>
+        <select id="parsingFeatureDimSelect" class="parsing-select" onchange="parsingSetFeatureDim(this.value)">${dimOptions}</select>
+      </div>
+      ${valuesHtml}
+    </div>`;
+}
+
+function renderCustomPickerRow(state) {
+  const gatedParadigms = availableParadigms(getParadigms(), state.lesson, { includeAppendix: state.includeAppendix });
+  return `<div class="parsing-scope-picker-row parsing-custom-set-groups" id="parsingCustomSetList">${renderCustomSetGroups(state, gatedParadigms)}</div>`;
+}
+
 // ─── Rendering: options panel ───────────────────────────────────────────
+// Primary bar (lesson · scope · direction) + a collapsed "More options"
+// <details> (exclude-known, appendix, dimension toggles, reset/clear) —
+// §2.3 mobile IA redesign. The <details> open state is written via ontoggle
+// with NO render() (parsingSetOptionsOpen), so answering cards never
+// touches this function at all (§5.5 render split — see renderParsingArea
+// callers below) and the collapse state survives both a card answer and a
+// reload (persisted at runtime.parsing.optionsOpen).
 function renderParsingOptionsPanel() {
   const panel = document.getElementById('parsingOptionsPanel');
   const state = host.getState();
@@ -409,24 +673,16 @@ function renderParsingOptionsPanel() {
     lessonOptions += `<option value="${l}"${state.lesson === l ? ' selected' : ''}>${l}</option>`;
   }
 
-  const gatedParadigms = availableParadigms(getParadigms(), state.lesson, { includeAppendix: state.includeAppendix });
-  const byCategory = {};
-  gatedParadigms.forEach((p) => {
-    if (!byCategory[p.category]) byCategory[p.category] = [];
-    byCategory[p.category].push(p);
-  });
-  let paradigmOptions = `<option value=""${state.focusedParadigmId ? '' : ' selected'}>None (use scope below)</option>`;
-  CATEGORY_ORDER.forEach((cat) => {
-    const list = byCategory[cat];
-    if (!list || !list.length) return;
-    paradigmOptions += `<optgroup label="${escapeHtml(CATEGORY_LABELS[cat] || cat)}">`;
-    list.forEach((p) => {
-      paradigmOptions += `<option value="${escapeHtml(p.id)}"${state.focusedParadigmId === p.id ? ' selected' : ''}>${escapeHtml(p.label)}</option>`;
-    });
-    paradigmOptions += '</optgroup>';
-  });
+  const mode = getScopeMode(state);
+  const rootIndex = computeRootIndex(state);
 
-  const customGroupsHtml = renderCustomSetGroups(state, gatedParadigms);
+  let pickerHtml = '';
+  if (mode === 'focused') pickerHtml = renderFocusedPickerRow(state);
+  else if (mode === 'root') pickerHtml = renderRootPickerRow(state, rootIndex);
+  else if (mode === 'byFeature') pickerHtml = renderFeaturePickerRow(state);
+  else if (mode === 'custom') pickerHtml = renderCustomPickerRow(state);
+  // mode === 'shuffle': no picker — the segmented control alone is the
+  // whole configuration (full cumulative gated pool).
 
   const gatedForms = getGatedPool(state);
   const applicableDimSet = new Set();
@@ -440,36 +696,37 @@ function renderParsingOptionsPanel() {
   })).join('');
 
   panel.innerHTML = `
-    <div class="parsing-options-row">
-      <label class="parsing-field-label" for="parsingLessonSelect">Current lesson</label>
-      <select id="parsingLessonSelect" class="parsing-select" onchange="parsingSetLesson(this.value)">${lessonOptions}</select>
-    </div>
-    <div class="parsing-options-row">
-      <label class="parsing-field-label" for="parsingParadigmSelect">Focused paradigm</label>
-      <select id="parsingParadigmSelect" class="parsing-select" onchange="parsingSetParadigm(this.value)">${paradigmOptions}</select>
-    </div>
-    <div class="parsing-toggle-grid">
-      ${toggleHtml({ id: 'parsingShuffleAllToggle', label: 'Shuffle all', checked: !!state.shuffleAll, onclick: 'parsingToggleShuffleAll()', title: 'Draw from every form available through this lesson, not just what this lesson newly introduces.' })}
-      ${toggleHtml({ id: 'parsingExcludeKnownToggle', label: 'Exclude known', checked: !!state.excludeKnown, onclick: 'parsingToggleExcludeKnown()', title: 'Hide forms already answered correctly twice in a row under the current dimension toggles.' })}
-      ${toggleHtml({ id: 'parsingAppendixToggle', label: 'Appendix forms', checked: !!state.includeAppendix, onclick: 'parsingToggleAppendix()', title: 'Include forms that only appear in the textbook appendixes (off by default).' })}
-    </div>
-    <details class="parsing-options-section" open>
-      ${toggleHtml({ id: 'parsingCustomSetToggle', label: 'Custom set', checked: !!state.customSetOn, onclick: 'parsingToggleCustomSet()', title: 'Limit practice to the paradigms checked below instead of the full lesson scope.' })}
-      <div class="parsing-custom-set-groups" id="parsingCustomSetList">${customGroupsHtml}</div>
-    </details>
-    <div class="parsing-options-row">
-      <span class="parsing-field-label">Direction</span>
-      <div class="theme-switcher" id="parsingDirectionToggle" role="group" aria-label="Parse, build, or mix the form">
-        <button class="theme-btn${state.direction === 'parse' ? ' active' : ''}" type="button" onclick="parsingSetDirection('parse')">Parse</button>
-        <button class="theme-btn${state.direction === 'build' ? ' active' : ''}" type="button" onclick="parsingSetDirection('build')">Build the Form</button>
-        <button class="theme-btn${state.direction === 'mixed' ? ' active' : ''}" type="button" onclick="parsingSetDirection('mixed')" title="Alternate Parse and Build cards within one session.">Mixed</button>
+    <div class="parsing-primary-bar">
+      <div class="parsing-options-row parsing-primary-lesson">
+        <label class="parsing-field-label" for="parsingLessonSelect">Current lesson</label>
+        <select id="parsingLessonSelect" class="parsing-select" onchange="parsingSetLesson(this.value)">${lessonOptions}</select>
+      </div>
+      <div class="parsing-options-row parsing-primary-scope">
+        <span class="parsing-field-label">Scope</span>
+        ${renderScopeControl(state, rootIndex)}
+      </div>
+      ${pickerHtml}
+      <div class="parsing-options-row parsing-primary-direction">
+        <span class="parsing-field-label">Direction</span>
+        <div class="theme-switcher" id="parsingDirectionToggle" role="group" aria-label="Parse, build, or mix the form">
+          <button class="theme-btn${state.direction === 'parse' ? ' active' : ''}" type="button" onclick="parsingSetDirection('parse')">Parse</button>
+          <button class="theme-btn${state.direction === 'build' ? ' active' : ''}" type="button" onclick="parsingSetDirection('build')">Build the Form</button>
+          <button class="theme-btn${state.direction === 'mixed' ? ' active' : ''}" type="button" onclick="parsingSetDirection('mixed')" title="Alternate Parse and Build cards within one session.">Mixed</button>
+        </div>
       </div>
     </div>
-    ${dimToggles ? `<div class="parsing-toggle-grid parsing-dim-toggles">${dimToggles}</div>` : ''}
-    <div class="parsing-options-row parsing-danger-row">
-      <button class="ctrl-btn" id="parsingResetKnownBtn" type="button" onclick="parsingResetKnownForms()">Reset known forms</button>
-      <button class="ctrl-btn" id="parsingClearStatsBtn" type="button" onclick="parsingClearStats()">Clear parsing statistics</button>
-    </div>
+    <details class="parsing-more-options" id="parsingMoreOptionsDetails"${state.optionsOpen ? ' open' : ''} ontoggle="parsingSetOptionsOpen(this.open)">
+      <summary>More options</summary>
+      <div class="parsing-toggle-grid">
+        ${toggleHtml({ id: 'parsingExcludeKnownToggle', label: 'Exclude known', checked: !!state.excludeKnown, onclick: 'parsingToggleExcludeKnown()', title: 'Hide forms already answered correctly twice in a row under the current dimension toggles.' })}
+        ${toggleHtml({ id: 'parsingAppendixToggle', label: 'Appendix forms', checked: !!state.includeAppendix, onclick: 'parsingToggleAppendix()', title: 'Include forms that only appear in the textbook appendixes (off by default).' })}
+      </div>
+      ${dimToggles ? `<div class="parsing-toggle-grid parsing-dim-toggles">${dimToggles}</div>` : ''}
+      <div class="parsing-options-row parsing-danger-row">
+        <button class="ctrl-btn" id="parsingResetKnownBtn" type="button" onclick="parsingResetKnownForms()">Reset known forms</button>
+        <button class="ctrl-btn" id="parsingClearStatsBtn" type="button" onclick="parsingClearStats()">Clear parsing statistics</button>
+      </div>
+    </details>
   `;
 }
 
@@ -646,6 +903,14 @@ function renderSummary(state) {
 }
 
 // ─── Rendering: card area top-level ─────────────────────────────────────
+// §5.5 render split: this is the ONLY function every answer-path handler
+// calls (parsingPickDimensionValue, parsingSubmitDontKnow,
+// parsingPickBuildChoice, parsingToggleBuildPick, parsingCheckBuildPicks,
+// parsingNextCard) — it touches #parsingArea only, never #parsingOptionsPanel,
+// so answering a card can never discard a manually-opened <details> (More
+// options, a custom-set category group) the way a full options-panel
+// rebuild would. Scope/option handlers call the full render() below
+// instead, which also rebuilds the options panel.
 function renderParsingArea() {
   const area = document.getElementById('parsingArea');
   const state = host.getState();
@@ -658,34 +923,71 @@ function renderParsingArea() {
     return;
   }
 
-  const scopedPool = getScopedPool(state, { excludeKnown: false });
-  if (!scopedPool.length) {
-    area.innerHTML = renderEmptyState(state);
-    currentForm = null;
-    return;
-  }
+  const mode = getScopeMode(state);
+  // Root journey's default sub-mode ignores exclude-known for pool
+  // MEMBERSHIP and walks a deterministic cursor instead of the usual
+  // unseen/seen/known buckets (§5 amendment 2). "Drill this root"
+  // (rootDrillActive) opts back into the ordinary bucket-ordered flow below,
+  // scoped to the same root.
+  const journeyActive = mode === 'root' && !!state.rootFilter && !rootDrillActive;
 
-  const finalPool = state.excludeKnown ? getScopedPool(state, { excludeKnown: true }) : scopedPool;
-  if (!finalPool.length) {
-    area.innerHTML = renderAllKnownState();
-    currentForm = null;
-    return;
-  }
-
-  if (!currentForm || !finalPool.some((f) => f.id === currentForm.id)) {
-    pickAndStart(finalPool, state);
-  }
-
-  if (lastResult) {
-    area.innerHTML = renderSummary(state);
-  } else if (currentCardDirection === 'build') {
-    area.innerHTML = renderBuildQuestion(state);
+  let journeyMapHtml = '';
+  if (journeyActive) {
+    const journeyPool = getScopedPool(state, { excludeKnown: false });
+    const ordered = orderDrillPool(journeyPool, state.attempts, host.getSessionSeed(), { mode: 'journey' });
+    if (!ordered.length) {
+      area.innerHTML = renderEmptyState(state);
+      currentForm = null;
+      return;
+    }
+    let idx = Number.isInteger(state.journeyIndex) ? state.journeyIndex : 0;
+    if (idx >= ordered.length) idx = ordered.length - 1;
+    if (idx < 0) idx = 0;
+    state.journeyIndex = idx;
+    const pick = ordered[idx];
+    if (!currentForm || currentForm.id !== pick.id) {
+      startCardFor(pick, state);
+    }
+    journeyMapHtml = renderJourneyMap(computeRootStations(state, state.rootFilter), currentForm);
   } else {
-    area.innerHTML = renderParseStep(state);
+    const scopedPool = getScopedPool(state, { excludeKnown: false });
+    if (!scopedPool.length) {
+      area.innerHTML = renderEmptyState(state);
+      currentForm = null;
+      return;
+    }
+
+    const finalPool = state.excludeKnown ? getScopedPool(state, { excludeKnown: true }) : scopedPool;
+    if (!finalPool.length) {
+      area.innerHTML = renderAllKnownState();
+      currentForm = null;
+      return;
+    }
+
+    if (!currentForm || !finalPool.some((f) => f.id === currentForm.id)) {
+      pickAndStart(finalPool, state);
+    }
+
+    if (mode === 'root' && state.rootFilter) {
+      journeyMapHtml = renderJourneyMap(computeRootStations(state, state.rootFilter), currentForm);
+    }
   }
+
+  let bodyHtml;
+  if (lastResult) {
+    bodyHtml = renderSummary(state);
+  } else if (currentCardDirection === 'build') {
+    bodyHtml = renderBuildQuestion(state);
+  } else {
+    bodyHtml = renderParseStep(state);
+  }
+
+  area.innerHTML = journeyMapHtml + bodyHtml;
 }
 
 function render() {
+  const state = host.getState();
+  if (state) pruneStaleRootFilter(state);
   renderParsingOptionsPanel();
   renderParsingArea();
 }
@@ -718,6 +1020,8 @@ export function parsingSetLesson(value) {
   const n = parseInt(value, 10);
   state.lesson = (Number.isInteger(n) && n >= 1 && n <= 50) ? n : 1;
   pruneStaleScope(state);
+  rootDrillActive = false;
+  if (state.rootFilter) resetJourneyCursorToFirstNotKnown(state); else state.journeyIndex = 0;
   currentForm = null;
   host.saveState();
   render();
@@ -730,6 +1034,108 @@ export function parsingSetParadigm(value) {
   currentForm = null;
   host.saveState();
   render();
+}
+
+// ─── PR G: scope control + Root journey / By-feature handlers ─────────────
+// Invariant maintained by every handler below: rootFilter is truthy IFF the
+// scope control's active mode is 'root', dimValueFilter truthy IFF 'byFeature',
+// customSetOn true IFF 'custom', shuffleAll true IFF 'shuffle' — each handler
+// nulls/falsens the other three together with whichever one it sets, so
+// getScopeMode(state) (priority: root > byFeature > custom > shuffle >
+// focused) always agrees with what the user last picked.
+export function parsingSetScopeMode(mode) {
+  const state = host.getState();
+  if (!state) return;
+  if (mode === 'root') {
+    const qualifying = computeRootIndex(state).filter((r) => r.qualifies);
+    if (!qualifying.length) return; // control renders disabled in this state
+    state.rootFilter = (state.rootFilter && qualifying.some((r) => r.root === state.rootFilter))
+      ? state.rootFilter
+      : qualifying[0].root;
+  } else {
+    state.rootFilter = null;
+  }
+  state.dimValueFilter = mode === 'byFeature' ? (state.dimValueFilter || {}) : null;
+  state.customSetOn = mode === 'custom';
+  state.shuffleAll = mode === 'shuffle';
+  state.focusedParadigmId = mode === 'focused' ? state.focusedParadigmId : null;
+  rootDrillActive = false;
+  if (state.rootFilter) resetJourneyCursorToFirstNotKnown(state); else state.journeyIndex = 0;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingSetRoot(root) {
+  const state = host.getState();
+  if (!state) return;
+  const qualifying = computeRootIndex(state).filter((r) => r.qualifies);
+  const match = qualifying.find((r) => r.root === root);
+  state.rootFilter = match ? match.root : (qualifying[0] ? qualifying[0].root : null);
+  state.dimValueFilter = null;
+  state.customSetOn = false;
+  state.shuffleAll = false;
+  state.focusedParadigmId = null;
+  rootDrillActive = false;
+  if (state.rootFilter) resetJourneyCursorToFirstNotKnown(state); else state.journeyIndex = 0;
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+// Toggles Root scope between the default journey walk (deterministic,
+// cursor-based) and "Drill this root" (the ordinary weakest-first bucket
+// ordering, scoped to the same root — §2.2/§5 amendment 2). Deliberately
+// NOT persisted (module-local rootDrillActive), so it always starts back at
+// journey order on a fresh load.
+export function parsingToggleRootDrillMode() {
+  const state = host.getState();
+  if (!state || !state.rootFilter) return;
+  rootDrillActive = !rootDrillActive;
+  currentForm = null;
+  render();
+}
+
+export function parsingSetFeatureDim(dim) {
+  const state = host.getState();
+  if (!state) return;
+  state.dimValueFilter = dim ? { [dim]: [] } : {};
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+export function parsingToggleFeatureValue(dim, encodedValue, checked) {
+  const state = host.getState();
+  if (!state || !state.dimValueFilter) return;
+  const value = decodeURIComponent(encodedValue);
+  const current = Array.isArray(state.dimValueFilter[dim]) ? state.dimValueFilter[dim] : [];
+  const next = checked
+    ? (current.includes(value) ? current : [...current, value])
+    : current.filter((v) => v !== value);
+  state.dimValueFilter = { ...state.dimValueFilter, [dim]: next };
+  currentForm = null;
+  host.saveState();
+  render();
+}
+
+// Persisted collapse state for the "More options" <details> — written via
+// ontoggle with NO render() (the element already reflects its own
+// open/closed state; re-rendering here would rebuild the whole options
+// panel mid-interaction, which is the exact "collapse discard" bug §5.5
+// exists to fix).
+export function parsingSetOptionsOpen(isOpen) {
+  const state = host.getState();
+  if (!state) return;
+  state.optionsOpen = !!isOpen;
+  host.saveState();
+}
+
+// Ephemeral (not persisted) open-state tracking for a custom-set category
+// group's <details> — see the customGroupOpenState comment near its
+// declaration. No render() for the same reason as parsingSetOptionsOpen.
+export function parsingSetCustomGroupOpen(category, isOpen) {
+  customGroupOpenState[category] = !!isOpen;
 }
 
 export function parsingToggleShuffleAll() {
@@ -794,6 +1200,8 @@ export function parsingToggleAppendix() {
   if (!state) return;
   state.includeAppendix = !state.includeAppendix;
   pruneStaleScope(state);
+  rootDrillActive = false;
+  if (state.rootFilter) resetJourneyCursorToFirstNotKnown(state); else state.journeyIndex = 0;
   currentForm = null;
   host.saveState();
   render();
@@ -819,6 +1227,10 @@ export function parsingToggleDim(dim) {
   render();
 }
 
+// §5.5 render split: this and every other answer-path handler below call
+// renderParsingArea() directly — NEVER the full render() — so answering a
+// card never rebuilds #parsingOptionsPanel (see renderParsingArea's header
+// comment).
 export function parsingPickDimensionValue(dim, encodedValue) {
   const state = host.getState();
   if (!state || !currentForm) return;
@@ -832,7 +1244,7 @@ export function parsingPickDimensionValue(dim, encodedValue) {
   parsePicks[dim] = value;
   parseStepIndex += 1;
   if (parseStepIndex >= parseSteps.length) finishParse(state);
-  render();
+  renderParsingArea();
 }
 
 export function parsingSubmitDontKnow() {
@@ -840,7 +1252,7 @@ export function parsingSubmitDontKnow() {
   if (!state || !currentForm) return;
   parsePicks = {};
   finishParse(state);
-  render();
+  renderParsingArea();
 }
 
 export function parsingPickBuildChoice(pickedId) {
@@ -856,7 +1268,7 @@ export function parsingPickBuildChoice(pickedId) {
     mode: 'build', form: currentForm, pickedId, correct,
     choiceIds: buildChoiceIds, acceptedIds: buildAcceptedIds, perDim
   };
-  render();
+  renderParsingArea();
 }
 
 // "All that apply" Build variant — toggles a choice's selection without
@@ -868,7 +1280,7 @@ export function parsingToggleBuildPick(id) {
   if (next.has(id)) next.delete(id);
   else next.add(id);
   buildPicks = next;
-  render();
+  renderParsingArea();
 }
 
 // Grades an "all that apply" Build attempt. The gradeable "accepted set" is
@@ -905,14 +1317,26 @@ export function parsingCheckBuildPicks() {
     pickedIds: [...picks], creditLevel,
     choiceIds: buildChoiceIds, acceptedIds: buildAcceptedIds, perDim
   };
-  render();
+  renderParsingArea();
 }
 
 export function parsingNextCard() {
-  avoidFormId = currentForm ? currentForm.id : null;
+  const state = host.getState();
+  const journeyActive = state && getScopeMode(state) === 'root' && !!state.rootFilter && !rootDrillActive;
+  if (journeyActive) {
+    // Journey mode advances a persisted cursor instead of the usual
+    // avoidFormId "don't immediately repeat" mechanism — the cursor IS the
+    // ordering, so there is nothing to avoid-repeat. Clamped to the walk's
+    // length in renderParsingArea (a lesson/appendix change can shrink or
+    // grow the walk between renders).
+    state.journeyIndex = (Number.isInteger(state.journeyIndex) ? state.journeyIndex : 0) + 1;
+    host.saveState();
+  } else {
+    avoidFormId = currentForm ? currentForm.id : null;
+  }
   currentForm = null;
   lastResult = null;
-  render();
+  renderParsingArea();
 }
 
 export function parsingResetKnownForms() {

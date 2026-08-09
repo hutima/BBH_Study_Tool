@@ -189,7 +189,13 @@ import {
   parsingToggleExcludeKnown, parsingToggleAppendix, parsingSetDirection, parsingToggleDim,
   parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice,
   parsingToggleBuildPick, parsingCheckBuildPicks, parsingNextCard,
-  parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt
+  parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt,
+  // PR G: scope control (Focused/Root journey/By feature/Shuffle/Custom),
+  // root journey walk, and the "More options" / custom-group collapse
+  // state handlers (§5.5 render split).
+  parsingSetScopeMode, parsingSetRoot, parsingToggleRootDrillMode,
+  parsingSetFeatureDim, parsingToggleFeatureValue,
+  parsingSetOptionsOpen, parsingSetCustomGroupOpen
 } from '../ui/parsing.js';
 
 // UI — Grammar Quiz (Phase 2 PR C). New file; imports NOTHING from other
@@ -2557,6 +2563,10 @@ const GLOBAL_CLICK_HANDLERS = {
   parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice,
   parsingToggleBuildPick, parsingCheckBuildPicks, parsingNextCard,
   parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt,
+  // PR G: scope control + root journey + more-options/custom-group collapse.
+  parsingSetScopeMode, parsingSetRoot, parsingToggleRootDrillMode,
+  parsingSetFeatureDim, parsingToggleFeatureValue,
+  parsingSetOptionsOpen, parsingSetCustomGroupOpen,
   // Phase 2 PR C: Grammar Quiz mode (js/ui/grammar.js) click/change handlers.
   grammarSetLesson, grammarToggleReviewMissed, grammarSetDifficulty,
   grammarSelectChoice, grammarNextQuestion,
@@ -2609,7 +2619,14 @@ if (!runtime.parsing || typeof runtime.parsing !== 'object') {
       number: true, suffix: true, state: true
     },
     attempts: {},
-    initializedFromVocab: false
+    initializedFromVocab: false,
+    // PR G (root journeys / by-feature scope / mobile options regroup) —
+    // keep in sync with runtime.js's `parsing` default and
+    // persistence.js's sanitizeParsingState.
+    rootFilter: null,
+    dimValueFilter: null,
+    journeyIndex: 0,
+    optionsOpen: false
   };
 }
 // Same mixed-version guard for runtime.grammar (Phase 2 PR C). Shape

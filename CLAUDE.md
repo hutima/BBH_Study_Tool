@@ -96,8 +96,15 @@ What remains genuinely deferred:
   Hitpael/Pual recognition forms and paradigm tables are shown for reference
   (Reference page + Parsing's appendix-forms toggle), but there's no
   dedicated weak-root conjugation drill mode yet.
-- **English translations of Reader passages.** Reader shows Hebrew text,
-  lemma, and morphology only — no English gloss of full verses.
+- **English renderings of Reader passages** — POLICY CHANGED by the user
+  (2026-08-09, see the conversion-plan addendum): LLM-generated WOODEN
+  (literal) verse translations are now permitted, provided they are
+  generated at development time with provenance `llm-wooden-reviewed`,
+  independently verified against each verse's token morphology before
+  shipping, labeled in-app as unofficial literal renderings, and never
+  copied from or paraphrasing a copyrighted English Bible translation.
+  Planned alongside tap-to-reveal per-token literal glosses (task #13);
+  not yet implemented.
 - **Full paradigm tables the source guide never printed and that remain
   unverified against the physical textbook** — see the "still open" section
   of `docs/bbh-content-gaps.md` for the exact list.

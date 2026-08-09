@@ -176,6 +176,25 @@ function sanitizeParsingAttempts(input) {
   return out;
 }
 
+// PR G (root journeys / by-feature scope): { [dim]: string[] } where dim is
+// one of PARSING_DIM_KEYS and every value is a plain string (the serialized
+// dimension values js/domain/parsing/gates.js's availableDimensionValues
+// produces). Whitelists dim keys, drops non-array/non-string entries, caps
+// each dim's value list defensively. Can legitimately sanitize to `{}` (By-
+// feature scope active, no feature dimension chosen yet) — only a
+// non-plain-object input sanitizes to `null` ("not in By-feature scope").
+function sanitizeParsingDimValueFilter(input) {
+  if (!isPlainObject(input)) return null;
+  const out = {};
+  Object.keys(input).forEach((dim) => {
+    if (!PARSING_DIM_KEYS.includes(dim)) return;
+    const raw = input[dim];
+    if (!Array.isArray(raw)) return;
+    out[dim] = raw.filter((v) => typeof v === 'string').slice(0, 200);
+  });
+  return out;
+}
+
 function sanitizeParsingState(candidate) {
   const src = isPlainObject(candidate) ? candidate : {};
   const lesson = Number.isInteger(src.lesson) && src.lesson >= 1 && src.lesson <= 50 ? src.lesson : 1;
@@ -191,7 +210,13 @@ function sanitizeParsingState(candidate) {
     includeAppendix: !!src.includeAppendix,
     dims: sanitizeParsingDims(src.dims),
     attempts: sanitizeParsingAttempts(src.attempts),
-    initializedFromVocab: !!src.initializedFromVocab
+    initializedFromVocab: !!src.initializedFromVocab,
+    // PR G — additive, PROGRESS_EXPORT_VERSION stays 6 (see runtime.js's
+    // `parsing` default for the field-by-field rationale).
+    rootFilter: (typeof src.rootFilter === 'string' && src.rootFilter) ? src.rootFilter : null,
+    dimValueFilter: sanitizeParsingDimValueFilter(src.dimValueFilter),
+    journeyIndex: (Number.isInteger(src.journeyIndex) && src.journeyIndex >= 0) ? src.journeyIndex : 0,
+    optionsOpen: !!src.optionsOpen
   };
 }
 

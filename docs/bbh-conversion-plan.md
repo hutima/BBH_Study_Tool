@@ -239,3 +239,74 @@ natural where Greek needed separate paradigms; (3) simplify the Parsing UI
 into user-sensible modules/groupings, designed mobile-first (current
 controls still clunky per user feedback). Tracked as follow-up task; not
 part of the Phase 2 definition of done.
+
+**Status: shipped (PR G)** — see `docs/bbh-parsing-depth-review.md` for the
+review (§1-§3) and the adopted implementation plan (§4, amended in full by
+§5). Landed: `buildDrillPool`'s `rootFilter` branch + `dimValueFilter`
+("By feature") filter and `orderDrillPool`'s deterministic `journey` mode
+(`js/domain/parsing/drill.js`); the Focused/Root journey (verbs)/By feature/
+Shuffle/Custom scope control, root journey map + "Drill this root", and the
+primary-bar + collapsed "More options" mobile regroup (`js/ui/parsing.js`);
+`runtime.parsing.rootFilter`/`dimValueFilter`/`journeyIndex`/`optionsOpen`
+(additive, `PROGRESS_EXPORT_VERSION` unchanged at 6). Cache bumped to `?v=7`.
+
+## Addendum (user mobile feedback, 2026-08-09): PR H punch list
+
+From live mobile testing screenshots: (1) remove the decade lesson presets
+(keep Units + All); (2) Lesson 0 rating row should match the vocab card
+button layout; (3) split Lesson 0 into 0A Alphabet and 0B Vowel marks —
+0B cards show the sign on its carrier plus a representative vocab word
+with the marked cluster highlighted (chosen deterministically at
+generation from the 209-card deck); (4) fix #grammarSection mobile layout
+(question card overlaps options/score strip; header/mode-bar collision);
+(5) vocab Hard/Uncertain/Easy rating buttons leak into Parsing mode via
+syncLayoutVisibility — hide outside vocab. Ships as PR H after PR G.
+
+## Addendum (user request, 2026-08-09): Reader literal glosses (after PR H)
+
+Tap-to-reveal per-passage LITERAL word-by-word glosses in Reader mode,
+assembled at generation time from verified sources only: matched
+vocab-card glosses → new `source/bbh/reader/reader_glosses.json`
+(transcribed from the textbook glossary's own entries for exactly the
+lemmas appearing in the 52 curated passages that lack vocab matches,
+page-verified) → proper-name renderings → honest gap markers. Never
+invented glosses, never a copyrighted Bible translation (standing project
+rule). UI: per-passage reveal control, interlinear line under tokens.
+
+## Addendum (user rule change, 2026-08-09): LLM wooden translations permitted
+
+The user has explicitly relaxed the "no generated translations" rule:
+LLM-GENERATED WOODEN (literal) TRANSLATIONS ARE NOW PERMITTED for Reader
+passages. Conditions retained: (1) generated at development time, stored
+in source/generated data with provenance "llm-wooden-reviewed", never at
+runtime; (2) each translation independently verified by a separate
+reviewer agent against the verse's token morphology + verified glosses
+before shipping; (3) labeled in the UI as an unofficial literal rendering;
+(4) still never copied from or paraphrasing any copyrighted English Bible
+translation. This supersedes the stricter clause in the task-13 addendum
+above — the interlinear gloss line and the wooden verse translation can
+ship together (gloss = per-token, wooden = per-verse).
+
+## Addendum (user feedback, 2026-08-09): PR H punch-list item 6 — Hebrew title puns
+
+The gamification Titles ladder still carries the Greek app's transliterated
+GREEK puns (Alpha, Paroikos, Akouōn, Spongos, Mathētēs, Berean …) — they
+evaded the release-gate Greek scans because they are Latin-script
+transliterations, not Greek Unicode. Convert every title (and any
+similarly-flavored achievement names — audit js/domain/gamification/*) to
+equivalent HEBREW puns preserving each level's joke (e.g. Alef "already
+know one letter", Ger "stranger in a strange land", Shomea "listening,
+not yet understanding", Talmid "officially a student", Doresh "checks the
+scrolls daily"). Consider extending the release-gate string scan with the
+known Greek transliteration list so regressions get caught.
+
+## Addendum (user request, 2026-08-09): Reader book expansion (after tasks 12/13)
+
+Review Reader mode, then expand passage curation beyond Genesis: extend
+the importer's book list (candidates: Ruth, Jonah, Exodus, Deuteronomy,
+Judges, Samuel narrative) over the same pinned OSHB v2.2 checkout;
+re-review the lemma-override/vocab-match table for the new books'
+high-frequency lemmas; re-curate selections to fill the thin gate buckets
+(15-19, 23-27, 28-31 had only 1-2 Genesis strict candidates) and to find
+challenge-tier verses (Genesis yielded zero). Byte-equality, determinism,
+and tier rules unchanged.
