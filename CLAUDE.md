@@ -124,6 +124,19 @@ local, on-device progress dashboard only.
 
 ## Maintenance rules
 
+- **Keep `RESTORE.md` current (standing project rule, user-mandated
+  2026-08-09).** `RESTORE.md` at the repo root is the durable recovery
+  ledger that lets any fresh session resume without re-auditing. Refresh
+  and commit it: after every completed task or merged PR (update merged-PR
+  list, content counts, tests-last-run, queue/next actions), before every
+  expensive or parallel agent delegation, at every phase gate or scope
+  change the user requests, and before stopping for any blocker or
+  session boundary. Keep it compact (< ~250 lines), factual, free of
+  secrets and copyrighted excerpts, and never let it overstate: a stale
+  ledger that undersells is a bug; one that oversells is a lie. A session
+  that starts on this repo should read `RESTORE.md` first and verify its
+  recorded branch/SHA against git before acting.
+
 - **Keep `docs/index-structure.md` in sync.** If you edit `index.html` and
   any of the following change, update the doc in the same commit:
   - a section in `.app` is added, removed, reordered, or renamed
