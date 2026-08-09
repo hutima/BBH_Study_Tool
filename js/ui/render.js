@@ -37,6 +37,19 @@ export function renderCard() {
   host.saveState();
   host.syncLayoutVisibility();
 
+  // PR H item 5 fix: syncLayoutVisibility() (main.js) already hides
+  // #markRow/#cardArea/#navRow for parsing/grammar/reader modes, but some
+  // call sites invoke renderCard() directly (e.g. selectors.js session
+  // selection) regardless of the active mode — renderCard() would then
+  // barrel on past that call and set #markRow back to 'flex' below,
+  // undoing what syncLayoutVisibility() just did and leaking the vocab
+  // Hard/Uncertain/Easy rating row into Parsing/Grammar/Reader. Bail out
+  // here before touching any vocab-only DOM; syncLayoutVisibility() above
+  // has already rendered the correct panel for those modes.
+  if (runtime.studyMode !== 'vocab' && runtime.studyMode !== 'morph') {
+    return;
+  }
+
   // No lessons selected → show the canonical "choose a session" placeholder.
   // Sits ahead of every deck-dependent branch so a stale deck carried over
   // from a previous selection can't render here.

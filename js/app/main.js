@@ -2655,13 +2655,14 @@ if (!runtime.reader || typeof runtime.reader !== 'object') {
     initializedFromVocab: false
   };
 }
-// Same mixed-version guard for runtime.alphabet (Phase 2 PR E). Shape
-// mirrors runtime.js's `alphabet` default — keep the two in sync.
+// Same mixed-version guard for runtime.alphabet (Phase 2 PR E; nested
+// letters/vowels shape added PR H item 3). Shape mirrors runtime.js's
+// `alphabet` default — keep the two in sync.
 if (!runtime.alphabet || typeof runtime.alphabet !== 'object') {
   runtime.alphabet = {
     schemaVersion: 1,
-    known: {},
-    seen: {}
+    letters: { known: {}, seen: {} },
+    vowels: { known: {}, seen: {} }
   };
 }
 // Rebuild after restore: runtime.appProfile may have changed, affecting grammar summary text

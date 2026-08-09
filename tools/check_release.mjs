@@ -13,13 +13,19 @@
 //   4. Zero case-insensitive 'duff' / 'koine' / 'greekflashcards' in that same
 //      graph. Bare 'greek' is allowed ONLY inside a `//` or `/* */` comment
 //      line; every such occurrence is printed as a non-fatal report.
+//   4b. Zero word-boundary case-insensitive hits of the RETIRED Greek-
+//      transliteration gamification titles (paroikos/akouon/spongos/
+//      mathetes/berean/... — see js/domain/gamification/levels.js's PR H
+//      header comment) in the same graph, so a title can't regress back to
+//      its pre-PR-H Greek pun. "logos" is deliberately excluded (common
+//      English word, e.g. "app logos").
 //   5. js/data/bbh_vocab.js registers exactly 50 lessons and 209 cards
 //      (light regex parse — no execution of the generated file).
 //   5b. Same light-regex-parse treatment for the other generated data
 //      files: js/data/bbh_grammar.js registers exactly 300 questions,
 //      js/data/bbh_reader.js exactly 52 passages, js/data/bbh_alphabet.js
-//      exactly 23 letters, js/data/bbh_reference_extra.js at least 40
-//      sections.
+//      exactly 23 letters + 12 vowels, js/data/bbh_reference_extra.js at
+//      least 40 sections.
 //   6. source/bbh/ is unchanged vs git HEAD (git diff --quiet).
 //   7. Zero case-insensitive 'googletagmanager', 'google-analytics',
 //      'gtag(', or 'G-YH11KQB6QX' in the live load graph — the app ships
@@ -245,6 +251,47 @@ function readDirSafe(dir) {
   }
   if (!bannedHits) report('check4: 0 duff/koine/greekFlashcards hits (pass)');
   if (!gaHits) report(`check7: 0 googletagmanager/google-analytics/gtag(/G-YH11KQB6QX hits across ${filesToScan.length} live-graph files (pass)`);
+
+  // ── Check 4b: the retired transliterated-GREEK gamification titles never
+  // regress (PR H punch-list item 6, 2026-08-09) ──────────────────────────
+  // js/domain/gamification/levels.js used to carry titles like "Paroikos"/
+  // "Akouōn"/"Spongos"/"Mathētēs"/"Berean" — Latin-script Greek
+  // transliterations that evaded checks 3/4 above because they aren't Greek
+  // Unicode and aren't "duff"/"koine"/"greekflashcards". All 30 titles were
+  // converted to Hebrew-pun equivalents (Alef/Ger/Shomea/Sefog/Talmid/
+  // Doresh/...); this scan fails the release if any of the retired Greek
+  // words comes back. Word-boundary + case-insensitive, so "archon" doesn't
+  // false-positive-match inside an unrelated longer word. "logos" is
+  // deliberately EXCLUDED — it's a common English word in this codebase
+  // (e.g. "app logos", "brand logos") and would produce constant false
+  // positives; see the task's "NOT common words" carve-out.
+  const REMOVED_GREEK_TITLES = [
+    'paroikos', 'akouon', 'spongos', 'mathetes', 'berean', 'anagnostes',
+    'bibliophagos', 'logophilos', 'hermeneutes', 'grammatikos', 'exegetes',
+    'rhetor', 'didaskalos', 'sophos', 'chrysostomos', 'theologos',
+    'polymathes', 'archon', 'logothetes', 'pantokrator', 'metanoia',
+    'kerygma', 'theopneustos', 'parrhesia', 'hypostasis', 'mysterion',
+    'pleroma', 'apokalypsis'
+  ];
+  const REMOVED_GREEK_TITLES_RE = new RegExp(`\\b(${REMOVED_GREEK_TITLES.join('|')})\\b`, 'i');
+  let removedTitleHits = 0;
+  const removedTitleLocations = [];
+  for (const rel of filesToScan) {
+    const abs = path.join(ROOT, rel);
+    if (!existsSync(abs)) continue;
+    const lines = readFileSync(abs, 'utf8').split('\n');
+    lines.forEach((line, idx) => {
+      if (REMOVED_GREEK_TITLES_RE.test(line)) {
+        removedTitleHits++;
+        removedTitleLocations.push(`${rel}:${idx + 1}`);
+      }
+    });
+  }
+  if (removedTitleHits) {
+    fail(`check4b: ${removedTitleHits} retired Greek-transliteration title hit(s) — a level title regressed to its pre-PR-H Greek pun: ${removedTitleLocations.slice(0, 10).join(', ')}${removedTitleLocations.length > 10 ? ', ...' : ''}`);
+  } else {
+    report(`check4b: 0 retired Greek-transliteration title hits across ${filesToScan.length} live-graph files (pass)`);
+  }
 }
 
 // ── Check 5: bbh_vocab.js registers 50 lessons / 209 cards ──────────────
@@ -294,9 +341,16 @@ function readDirSafe(dir) {
     fail(`check5b: ${alphabetPath} not found`);
   } else {
     const src = readText(alphabetPath);
-    const letterCount = [...src.matchAll(/"order":\s*\d+/g)].length;
+    // Letters and vowels (PR H item 3, 0A/0B split) share the "order" field,
+    // so count each array by a field unique to its own entry shape instead:
+    // letters carry "letter" (the glyph itself), vowels carry "sign".
+    const letterCount = [...src.matchAll(/"letter":\s*"/g)].length;
     if (letterCount !== 23) fail(`check5b: expected 23 letters registered in ${alphabetPath}, found ${letterCount}`);
     else report(`check5b: 23 letters registered in bbh_alphabet.js (pass)`);
+
+    const vowelCount = [...src.matchAll(/"sign":\s*"/g)].length;
+    if (vowelCount !== 12) fail(`check5b: expected 12 vowels registered in ${alphabetPath}, found ${vowelCount}`);
+    else report(`check5b: 12 vowels registered in bbh_alphabet.js (pass)`);
   }
 
   const refExtraPath = 'js/data/bbh_reference_extra.js';

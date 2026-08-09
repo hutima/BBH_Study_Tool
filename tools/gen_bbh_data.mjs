@@ -353,33 +353,36 @@ function writeSetMetaFile(lessons) {
     chapterTitles[lesson.lessonNumber] = lesson.title;
   }
 
+  // PR H punch-list item 1 (user mobile feedback, 2026-08-09): the five
+  // rng1..rng5 decade-range presets (Lessons 1-10 ... 41-50) are REMOVED
+  // from the selector-facing SESSION_WEEK_META — the 13 Unit (reading-block)
+  // presets plus "All Lessons" cover session selection now. The underlying
+  // decade grouping (1..5) is still computed below as chapterToWeek/
+  // WEEK_FIRST_CHAPTER — it's internal plumbing consumed by
+  // js/domain/deck/ordering.js's getWeekForKey (card grouping/sort, not a
+  // selector preset) and stays intact; only the sessionWeekMeta preset
+  // entries themselves are gone.
   const RANGE_SIZE = 10;
-  const rangeKeys = ['rng1', 'rng2', 'rng3', 'rng4', 'rng5'];
+  const NUM_RANGES = 5;
   const sessionWeekMeta = {};
   const chapterToWeek = {};
-  rangeKeys.forEach((key, idx) => {
+  for (let idx = 0; idx < NUM_RANGES; idx += 1) {
     const start = idx * RANGE_SIZE + 1;
     const end = start + RANGE_SIZE - 1;
-    const lessonsInRange = [];
     for (let n = start; n <= end; n += 1) {
-      lessonsInRange.push(n);
       chapterToWeek[n] = idx + 1;
     }
-    sessionWeekMeta[key] = {
-      label: `Lessons ${start}–${end}`,
-      lessons: lessonsInRange
-    };
-  });
+  }
   const allLessons = [];
   for (let n = 1; n <= TOTAL_LESSONS; n += 1) allLessons.push(n);
   sessionWeekMeta.all = { label: 'All Lessons', lessons: allLessons };
 
   // Second preset group ("Units (Reading blocks)"): the textbook's own 13
   // illustrated-Reading breakpoints from the TOC (Phase 2 ledger addendum,
-  // 2026-08-08). Keys are additive — the five rng1..rng5 decade presets and
-  // "all" above are untouched; getSessions() in js/app/main.js iterates
-  // Object.keys(SESSION_WEEK_META) generically, so these surface as extra
-  // session-preset entries with no UI-file changes required.
+  // 2026-08-08). Keys are additive to "all" above; getSessions() in
+  // js/app/main.js iterates Object.keys(SESSION_WEEK_META) generically, so
+  // these surface as extra session-preset entries with no UI-file changes
+  // required.
   const READING_BLOCKS = [
     [1, 9], [10, 14], [15, 18], [19, 22], [23, 26], [27, 30], [31, 34],
     [35, 38], [39, 41], [42, 44], [45, 46], [47, 48], [49, 50]
@@ -410,12 +413,17 @@ function writeSetMetaFile(lessons) {
   parts.push('// is the same data under its natural BBH name.\n');
   parts.push('export const LESSON_TITLES = CHAPTER_TITLES;\n\n');
 
-  parts.push('// Range presets for the lesson selector: five 10-lesson decade blocks, "all",\n');
-  parts.push('// plus 13 "Unit" reading-block presets (the textbook\'s own illustrated-\n');
-  parts.push('// Reading breakpoints) as a second preset group — 19 keys total.\n');
+  parts.push('// Range presets for the lesson selector: "All Lessons" plus 13 "Unit"\n');
+  parts.push('// reading-block presets (the textbook\'s own illustrated-Reading\n');
+  parts.push('// breakpoints) — 14 keys total. PR H punch-list item 1 (2026-08-09)\n');
+  parts.push('// removed the five prior rng1..rng5 decade-range presets (Lessons\n');
+  parts.push('// 1-10 ... 41-50) from this selector-facing list; the underlying decade\n');
+  parts.push('// grouping lives on internally as CHAPTER_TO_WEEK/WEEK_FIRST_CHAPTER below.\n');
   parts.push(`export const SESSION_WEEK_META = ${JSON.stringify(sessionWeekMeta, null, 2)};\n\n`);
 
-  parts.push('// Lesson number -> range index (1..5), derived from SESSION_WEEK_META rng1..rng5.\n');
+  parts.push('// Lesson number -> decade-range index (1..5) — internal grouping only\n');
+  parts.push('// (js/domain/deck/ordering.js getWeekForKey), no longer surfaced as\n');
+  parts.push('// selector presets (see SESSION_WEEK_META comment above).\n');
   parts.push(`export const CHAPTER_TO_WEEK = ${JSON.stringify(chapterToWeek, null, 2)};\n\n`);
 
   parts.push('// First (lowest) lesson number of each range — the inverse of CHAPTER_TO_WEEK.\n');
@@ -444,4 +452,15 @@ function main() {
   console.log(`Lessons: ${lessons.length}, total cards: ${totalCards}`);
 }
 
-main();
+// Reusable by tools/gen_bbh_alphabet_data.mjs (PR H item 3, 0B Vowel marks
+// deck): it needs the exact same lesson/row-ordered card list this module
+// builds from the vocab CSV, without re-parsing the CSV itself. Guarded so
+// `main()` (file writes) only fires when this file is run directly — a
+// plain `import { buildLessons, headwordOf } from './gen_bbh_data.mjs'`
+// must be side-effect-free.
+export { buildLessons, headwordOf };
+
+const isMainModule = process.argv[1] && import.meta.url === `file://${process.argv[1]}`;
+if (isMainModule) {
+  main();
+}

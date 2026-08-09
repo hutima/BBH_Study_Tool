@@ -279,8 +279,14 @@ async function checkSetMeta() {
     return;
   }
   const presetKeys = Object.keys(SESSION_WEEK_META);
-  if (presetKeys.length !== 19) {
-    fail('setmeta-shape', `expected 19 presets in SESSION_WEEK_META (5 decade + all + 13 reading-block units), found ${presetKeys.length} (${presetKeys.join(', ')})`);
+  if (presetKeys.length !== 14) {
+    fail('setmeta-shape', `expected 14 presets in SESSION_WEEK_META (all + 13 reading-block units), found ${presetKeys.length} (${presetKeys.join(', ')})`);
+  }
+  const removedDecadeKeys = ['rng1', 'rng2', 'rng3', 'rng4', 'rng5'];
+  for (const key of removedDecadeKeys) {
+    if (Object.prototype.hasOwnProperty.call(SESSION_WEEK_META, key)) {
+      fail('setmeta-shape', `decade preset "${key}" should have been removed (PR H item 1)`);
+    }
   }
   const expectedUnitRanges = [
     [1, 9], [10, 14], [15, 18], [19, 22], [23, 26], [27, 30], [31, 34],
@@ -325,7 +331,7 @@ async function main() {
     for (const f of failures) console.error(`  ${f}`);
     process.exitCode = 1;
   } else {
-    console.log('OK — all BBH data checks passed (209 cards, 50 lessons, unique ids, point-strip safety, 19 in-range presets).');
+    console.log('OK — all BBH data checks passed (209 cards, 50 lessons, unique ids, point-strip safety, 14 in-range presets).');
   }
 }
 

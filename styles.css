@@ -10,7 +10,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=7') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=8') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -18,7 +18,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=7') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=8') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -26,7 +26,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=7') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=8') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -34,7 +34,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=7') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=8') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -42,7 +42,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=7') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=8') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -50,7 +50,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=7') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=8') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -58,7 +58,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=7') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=8') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -66,7 +66,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=7') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=8') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -91,7 +91,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-normal.woff2?v=7') format('woff2');
+    src: url('fonts/noto-sans-latin-normal.woff2?v=8') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -102,7 +102,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=7') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=8') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -113,7 +113,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-italic.woff2?v=7') format('woff2');
+    src: url('fonts/noto-sans-latin-italic.woff2?v=8') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -124,7 +124,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=7') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=8') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -140,7 +140,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-serif-hebrew.woff2?v=7') format('woff2');
+    src: url('fonts/noto-serif-hebrew.woff2?v=8') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
   @font-face {
@@ -148,7 +148,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-sans-hebrew.woff2?v=7') format('woff2');
+    src: url('fonts/noto-sans-hebrew.woff2?v=8') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
 
@@ -4065,7 +4065,8 @@
     }
   }
   html[data-theme="light"] .session-btn.active,
-  html[data-theme="light"] .chapter-btn.active {
+  html[data-theme="light"] .chapter-btn.active,
+  html[data-theme="light"] .parsing-scope-card.active {
     background: #f2e6c7;
   }
 
@@ -6102,9 +6103,39 @@
    (js/ui/parsing.js parsingSetOptionsOpen) — see that module's render-split
    header comment. */
 .parsing-primary-bar { display: flex; flex-direction: column; gap: 10px; margin-bottom: 4px; }
-.parsing-scope-switcher { flex-wrap: wrap; row-gap: 4px; }
-.parsing-scope-switcher .theme-btn[disabled] { opacity: 0.4; cursor: not-allowed; }
-.parsing-scope-switcher .theme-btn[disabled]:hover { color: var(--muted); background: transparent; }
+
+/* PR H item 7a: SCOPE control restyled from a 5-way .theme-switcher pill to
+   a 2-column grid of selectable cards — the SAME visual pattern as the
+   study-selector's session/preset cards (.chapter-btn/.session-btn: plain
+   label, gold border+background when active), each card independently
+   bordered/radiused (no shared-pill geometry). */
+.parsing-scope-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+.parsing-scope-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--cream);
+  font-family: var(--font-body);
+  font-size: calc((14px) * var(--text-scale));
+  padding: 10px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.08s;
+  line-height: 1.25;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+@media (hover: hover) { .parsing-scope-card:hover { border-color: var(--gold-dim); background: #1e2030; } }
+.parsing-scope-card.active { border-color: var(--gold); background: #1e1e2a; color: var(--gold-light); }
+.parsing-scope-card[disabled] { opacity: 0.4; cursor: not-allowed; }
+.parsing-scope-card[disabled]:hover { border-color: var(--border); background: var(--surface); }
+
 .parsing-scope-picker-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: -2px 0 10px; }
 .parsing-drill-root-btn { white-space: normal; text-align: center; }
 .parsing-feature-row { flex-direction: column; align-items: stretch; }
@@ -6122,6 +6153,15 @@
 .parsing-journey-station-locked { opacity: 0.45; }
 .parsing-journey-sep { color: var(--muted); opacity: 0.6; }
 
+/* PR H item 7b: DIRECTION stays the .theme-switcher pill (right size for 3
+   short labels: Parse/Build/Mixed), but capped to a modest max-width and
+   left-aligned under its own "Direction" label instead of being pushed to
+   the row's far edge by .parsing-options-row's space-between — closer to
+   how a 3-segment control should read, not a full-bleed bar. */
+.parsing-primary-direction { flex-direction: column; align-items: flex-start; gap: 8px; }
+.parsing-direction-pill { max-width: 22rem; width: 100%; align-self: flex-start; }
+.parsing-direction-pill .theme-btn { flex: 1 1 0; text-align: center; }
+
 .parsing-more-options { border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; background: var(--surface); margin-top: 4px; }
 .parsing-more-options > summary { cursor: pointer; list-style: none; font-family: var(--font-display); font-size: calc((12px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--gold); }
 .parsing-more-options > summary::-webkit-details-marker { display: none; }
@@ -6133,8 +6173,6 @@
      the visual anchor directly under the Hebrew form on a phone. */
   .parsing-options-row { flex-direction: column; align-items: stretch; gap: 6px; }
   .parsing-select { width: 100%; min-height: 44px; }
-  .parsing-scope-switcher { width: 100%; }
-  .parsing-scope-switcher .theme-btn { flex: 1 1 auto; min-height: 44px; padding: 10px 8px; }
   .parsing-scope-picker-row { flex-direction: column; align-items: stretch; }
   .parsing-drill-root-btn { width: 100%; min-height: 44px; }
   .parsing-feature-value-item { min-height: 44px; box-sizing: border-box; }
@@ -6142,6 +6180,28 @@
   .parsing-dontknow-btn { min-height: 44px; box-sizing: border-box; }
   .parsing-danger-row .ctrl-btn { min-height: 44px; box-sizing: border-box; }
   .parsing-next-btn, .parsing-build-check-btn { min-height: 44px; box-sizing: border-box; }
+
+  /* PR H item 7c: CURRENT LESSON stays a single row (label left, compact
+     select right) at every width — mirrors the Grammar options row — so it
+     opts OUT of the general .parsing-options-row column-stack above.
+     Two-class selector outranks the single-class rule regardless of
+     source order. */
+  .parsing-primary-lesson.parsing-options-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .parsing-primary-lesson .parsing-select { width: auto; min-width: 4.5rem; }
+
+  /* PR H item 7d: tighten the options panel's own padding/margins here —
+     the card grid / picker rows / choice buttons above already carry their
+     own >=44px touch targets, so this is purely about vertical whitespace
+     between them. */
+  #parsingOptionsDetails.utility-section { padding: 8px 10px; margin-bottom: 8px; }
+  #parsingOptionsDetails .parsing-primary-bar { gap: 6px; margin-bottom: 0; }
+  #parsingOptionsDetails .parsing-more-options { padding: 8px 10px; margin-top: 2px; }
+  #parsingOptionsDetails .parsing-more-options[open] > summary { margin-bottom: 6px; }
 }
 
 .parsing-area { display: flex; justify-content: center; }
@@ -6232,7 +6292,17 @@
 .grammar-toggle-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .grammar-toggle-grid .toggle-label { flex: 1 1 200px; }
 
-.grammar-area { display: flex; justify-content: center; }
+/* PR H item 4 fix: renderGrammarArea() (js/ui/grammar.js) sets
+   #grammarArea.innerHTML = scoreHtml + cardHtml — the score strip and the
+   question/summary card are SIBLING top-level children, not one nested
+   inside the other. Without an explicit column direction, flex's default
+   row axis packed them side-by-side at narrow widths, squeezing the card
+   and wrapping the score strip's two <span>s into a tall, narrow column
+   that visually overlapped the card (the reported "question card overlaps
+   options/score strip" bug). Stacking them in normal flow (a column, same
+   normal-flow approach .parsing-primary-bar uses to stack its own rows)
+   fixes it — mirrors the parsing section's stacking. */
+.grammar-area { display: flex; flex-direction: column; align-items: center; gap: 10px; }
 .grammar-card { width: 100%; max-width: 560px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 28px 26px; display: flex; flex-direction: column; align-items: center; text-align: center; }
 .grammar-score-strip { display: flex; justify-content: center; gap: 18px; font-family: var(--font-display); font-size: calc((11px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
 .grammar-prompt { font-size: calc((16px) * var(--text-scale)); color: var(--cream); line-height: 1.5; margin-bottom: 16px; }
@@ -6353,7 +6423,7 @@
 
 /* Study Selector entry — a distinct row above "Deselect all"/Sessions,
    visually separated so it never reads as one more lesson button. */
-.alphabet-lesson0-section { margin-bottom: 20px; }
+.alphabet-lesson0-section { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
 .alphabet-lesson0-btn {
   width: 100%;
   display: flex;
@@ -6428,10 +6498,12 @@
 .alphabet-notes { font-size: calc((12px) * var(--text-scale)); color: var(--muted); font-style: italic; max-width: 340px; }
 .alphabet-empty-state { color: var(--muted); font-style: italic; padding: 24px; }
 
-.alphabet-controls-row { display: flex; gap: 12px; margin-bottom: 12px; }
-.alphabet-controls-row .ctrl-btn { flex: 1 1 0; text-align: center; }
-.alphabet-goti-btn { border-color: var(--green); color: var(--green); }
-.alphabet-again-btn { border-color: var(--accent-red); color: var(--accent-red); }
+/* PR H item 2: the Again/Got-it row reuses the vocab card's own .mark-row/
+   .mark-btn/.mark-again/.mark-easy classes verbatim (see index.html
+   #markRow) for identical layout/placement/styling — .alphabet-mark-row
+   only exists as a scoping hook, it carries no layout of its own beyond
+   what .mark-row already provides. */
+.alphabet-mark-row { margin-bottom: 12px; }
 
 .alphabet-meta-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
 .alphabet-progress-line { font-size: calc((12.5px) * var(--text-scale)); color: var(--muted); }
@@ -6439,4 +6511,68 @@
 .alphabet-footer-row { text-align: center; }
 .alphabet-reset-link { font-size: calc((12px) * var(--text-scale)); color: var(--muted); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
 .alphabet-reset-link:hover { color: var(--accent-red); }
+
+/* ── Lesson 0B — Vowel marks (PR H punch-list item 3) ─────────────────────
+   Shares every .alphabet-* class above (card/back/name/sound/notes) —
+   these are the additions specific to the vowel-card front (sign + a
+   highlighted representative vocab word) and the sheva-rules footer. */
+.alphabet-vowel-glyph { font-size: calc(clamp(48px, 14vw, 84px) * var(--text-scale)); }
+.alphabet-vowel-example {
+  font-size: calc(clamp(22px, 6vw, 34px) * var(--text-scale));
+  color: var(--cream);
+  line-height: 1.3;
+}
+.alphabet-vowel-example span { opacity: 0.55; }
+.alphabet-vowel-cluster-hit {
+  opacity: 1 !important;
+  color: var(--gold-light);
+  border-radius: 4px;
+  box-shadow: inset 0 -3px 0 var(--gold);
+  padding: 0 1px;
+}
+.alphabet-vowel-example-none {
+  font-size: calc((12.5px) * var(--text-scale));
+  color: var(--muted);
+  font-style: italic;
+  max-width: 300px;
+}
+.alphabet-vowel-meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  font-size: calc((13px) * var(--text-scale));
+}
+.alphabet-vowel-meta-label {
+  font-family: var(--font-display);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-size: calc((10.5px) * var(--text-scale));
+  color: var(--muted);
+}
+.alphabet-vowel-meta-value { color: var(--cream); }
+
+.alphabet-sheva-footer {
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+.alphabet-sheva-footer-title {
+  font-family: var(--font-display);
+  font-size: calc((11px) * var(--text-scale));
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 8px;
+}
+.alphabet-sheva-footer-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: calc((12px) * var(--text-scale));
+  color: var(--muted);
+  line-height: 1.4;
+}
 

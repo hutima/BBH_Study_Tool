@@ -12,11 +12,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=7">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=7">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=7">
+<link rel="manifest" href="manifest.json?v=8">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=8">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=8">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=7">
+<link rel="stylesheet" href="styles.css?v=8">
 <script>
 (function(){
   try {
@@ -423,9 +423,13 @@
       <button class="ctrl-btn" type="button" onclick="closeStudySelector()">Close</button>
     </div>
     <div class="selector-section alphabet-lesson0-section">
-      <button class="alphabet-lesson0-btn" type="button" onclick="openAlphabetOverlay()">
-        <span class="alphabet-lesson0-title">Lesson 0 &middot; Alphabet</span>
+      <button class="alphabet-lesson0-btn" type="button" onclick="openAlphabetOverlay('letters')">
+        <span class="alphabet-lesson0-title">Lesson 0A &middot; Alphabet</span>
         <span class="alphabet-lesson0-subtitle">Practice the 23 Hebrew letters &mdash; separate from vocabulary, no effect on your deck or stats</span>
+      </button>
+      <button class="alphabet-lesson0-btn" type="button" onclick="openAlphabetOverlay('vowels')">
+        <span class="alphabet-lesson0-title">Lesson 0B &middot; Vowel marks</span>
+        <span class="alphabet-lesson0-subtitle">Practice the 12 Hebrew vowel points on real vocab words &mdash; separate from vocabulary, no effect on your deck or stats</span>
       </button>
     </div>
     <div class="selector-section deselect-section">
@@ -449,24 +453,30 @@
   <div class="consent-modal alphabet-modal" role="dialog" aria-modal="true" aria-labelledby="alphabetOverlayTitle">
     <div class="analytics-header-row">
       <div>
-        <div class="consent-label">Lesson 0</div>
+        <div class="consent-label" id="alphabetOverlayLabel">Lesson 0A</div>
         <h2 id="alphabetOverlayTitle">Alphabet practice</h2>
       </div>
       <button class="ctrl-btn" type="button" onclick="closeAlphabetOverlay()">Close</button>
     </div>
-    <p class="alphabet-intro">Flip each card to see the letter&rsquo;s name, sound, and traits. This deck is separate from the vocabulary flashcards &mdash; it has no SRS, no XP, and is not counted in your vocab stats or export.</p>
+    <p class="alphabet-intro">Flip each card to see the name, sound, and traits. This deck is separate from the vocabulary flashcards &mdash; it has no SRS, no XP, and is not counted in your vocab stats or export.</p>
     <div id="alphabetCardArea" class="alphabet-card-area"></div>
-    <div class="alphabet-controls-row">
-      <button class="ctrl-btn alphabet-again-btn" type="button" onclick="alphabetMarkAgain()">Again</button>
-      <button class="ctrl-btn alphabet-goti-btn" type="button" onclick="alphabetMarkGotIt()">Got it</button>
+    <!-- PR H item 2: rating row restyled to match the vocab card's own
+         mark-row (see #markRow above) — same container/button classes
+         (.mark-row / .mark-btn / .mark-again / .mark-easy) and the same
+         "row directly under the card" placement, just two buttons instead
+         of three. -->
+    <div class="mark-row alphabet-mark-row" id="alphabetMarkRow">
+      <button class="mark-btn mark-again" type="button" onclick="alphabetMarkAgain()">&#x2717; Again</button>
+      <button class="mark-btn mark-easy" type="button" onclick="alphabetMarkGotIt()">&#x2713; Got it</button>
     </div>
     <div class="alphabet-meta-row">
       <span id="alphabetProgressLine" class="alphabet-progress-line">0 of 23 marked known</span>
       <button class="ctrl-btn alphabet-shuffle-btn" type="button" onclick="alphabetShuffle()">Shuffle</button>
     </div>
     <div class="alphabet-footer-row">
-      <a href="#" class="alphabet-reset-link" onclick="event.preventDefault();alphabetResetProgress()">Reset alphabet progress</a>
+      <a href="#" class="alphabet-reset-link" onclick="event.preventDefault();alphabetResetProgress()">Reset progress</a>
     </div>
+    <div id="alphabetShevaFooter" class="alphabet-sheva-footer" style="display:none"></div>
   </div>
 </div>
 
@@ -487,8 +497,9 @@
             <li><strong>Parsing mode</strong> &mdash; drill verb/noun/pronoun forms gated to your current lesson, in Parse (identify), Build (construct), or Mixed direction, with focused-paradigm, shuffle-all, custom-set, exclude-known, and appendix-forms scoping.</li>
             <li><strong>Grammar Quiz mode</strong> &mdash; multiple-choice questions gated to your current lesson, with a review-missed filter and an All/Core-only difficulty switch.</li>
             <li><strong>Reader mode</strong> &mdash; curated Hebrew Bible passages (Strict/Guided tiers) with tap-to-inspect word details and personal review marks; no grading, nothing scheduled.</li>
-            <li><strong>Lesson 0 &middot; Alphabet</strong> &mdash; a standalone flip-card deck for the 23 Hebrew letters, separate from every other mode and stat.</li>
-            <li><strong>Vocabulary grew to 209 cards</strong> across all 50 lessons; added the textbook&rsquo;s own 13 reading-block &ldquo;Unit&rdquo; presets alongside the decade ranges.</li>
+            <li><strong>Lesson 0A &middot; Alphabet</strong> and <strong>Lesson 0B &middot; Vowel marks</strong> &mdash; two standalone flip-card decks (23 letters, 12 vowel points shown on real vocab words), separate from every other mode and stat.</li>
+            <li><strong>Vocabulary grew to 209 cards</strong> across all 50 lessons; session presets are now the textbook&rsquo;s own 13 reading-block &ldquo;Unit&rdquo; groupings plus All Lessons (the decade-range presets were retired).</li>
+            <li>Gamification titles are now Hebrew puns (Alef, Ger, Shomea, Talmid, Doresh, &hellip;) instead of the inherited Greek ones; mobile layout polish across Parsing and Grammar Quiz.</li>
             <li>Removed the last of the inherited analytics snippet &mdash; the app has shipped fully telemetry-free since this release, with no replacement analytics of any kind.</li>
           </ul>
         </details>
@@ -503,10 +514,10 @@
       </details>
 
       <h3 class="user-guide-heading">Home screen</h3>
-      <p><strong>Choose session</strong> sets what to study &mdash; a lesson range, or individual lessons; it also has the <strong>Lesson 0 &middot; Alphabet</strong> entry, set apart above the lesson list. <strong>Start studying</strong> opens or resumes the current selection. The <strong>Vocab / Parsing / Grammar / Reader</strong> buttons switch modes. <strong>Progress</strong> opens analytics. <strong>Reference</strong> opens the paradigm/vocabulary reference page. <strong>User guide</strong> is this screen.</p>
+      <p><strong>Choose session</strong> sets what to study &mdash; a lesson range, or individual lessons; it also has the <strong>Lesson 0A &middot; Alphabet</strong> and <strong>Lesson 0B &middot; Vowel marks</strong> entries, set apart above the lesson list. <strong>Start studying</strong> opens or resumes the current selection. The <strong>Vocab / Parsing / Grammar / Reader</strong> buttons switch modes. <strong>Progress</strong> opens analytics. <strong>Reference</strong> opens the paradigm/vocabulary reference page. <strong>User guide</strong> is this screen.</p>
 
       <h3 class="user-guide-heading">Vocabulary mode</h3>
-      <p>Flip a card, mark how confident you felt, and the app schedules what comes back next. Study a single lesson or a range via <strong>Choose session</strong> &mdash; the decade ranges (1&ndash;10 &hellip; 41&ndash;50) or the textbook&rsquo;s own 13 &ldquo;Unit&rdquo; reading-block presets. <strong>Lesson 0 &middot; Alphabet</strong>, above the lesson list, is a separate flip-card deck for the 23 Hebrew letters &mdash; it has its own Again/Got it marking and progress line, and never touches your vocabulary deck, SRS, XP, streaks, or export vocab counts.</p>
+      <p>Flip a card, mark how confident you felt, and the app schedules what comes back next. Study a single lesson or a range via <strong>Choose session</strong> &mdash; the textbook&rsquo;s own 13 &ldquo;Unit&rdquo; reading-block presets, or all 50 lessons. <strong>Lesson 0A &middot; Alphabet</strong> and <strong>Lesson 0B &middot; Vowel marks</strong>, above the lesson list, are two separate flip-card decks (23 Hebrew letters; 12 vowel points shown on real vocab words) &mdash; each has its own Again/Got it marking and progress line, and neither ever touches your vocabulary deck, SRS, XP, streaks, or export vocab counts.</p>
       <p>Every card carries its own schedule; how you mark it sets when it returns:</p>
       <ul class="user-guide-list">
         <li><strong>&#x2717; Hard</strong> &mdash; back within minutes.</li>
@@ -516,7 +527,7 @@
       <p>Cards flow through three lanes &mdash; <em>active</em> (due now), <em>middle</em> (just missed), and <em>deferred</em> (a future day); the bottom panel&rsquo;s <em>Cards left</em> mirrors this. <strong>&#x21B6; Undo</strong> reverses your last mark, and a lapse on a known card runs a short relearn ladder rather than resetting it. With <strong>Spaced review off</strong> it&rsquo;s a plain flip deck: <em>Easy</em> archives a card, <em>Hard</em>/<em>Uncertain</em> send it to the back, and <strong>&#x21BB; Reset</strong> restores the archived cards.</p>
 
       <h3 class="user-guide-heading">Parsing mode</h3>
-      <p>Drills morphological analysis &mdash; binyan/stem, conjugation, person/gender/number, state, and pronominal suffixes &mdash; gated so nothing beyond your current lesson appears. Pick <strong>Parse</strong> (given a form, identify it), <strong>Build</strong> (given a target analysis, choose the matching form), or <strong>Mixed</strong>. Scope the pool with <strong>Focused paradigm</strong>, <strong>Shuffle all</strong>, a <strong>Custom set</strong> of chosen paradigms, <strong>Exclude known</strong>, and an <strong>Appendix forms</strong> toggle (off by default) for material the textbook only prints in an appendix. A form counts as <strong>known</strong> once you&rsquo;ve gotten it right two attempts in a row under whichever dimensions are currently graded.</p>
+      <p>Drills morphological analysis &mdash; binyan/stem, conjugation, person/gender/number, state, and pronominal suffixes &mdash; gated so nothing beyond your current lesson appears. Pick <strong>Parse</strong> (given a form, identify it), <strong>Build</strong> &mdash; short for &ldquo;Build the Form&rdquo; (given a target analysis, choose the matching form) &mdash; or <strong>Mixed</strong>. Scope the pool with <strong>Focused paradigm</strong>, <strong>Shuffle all</strong>, a <strong>Custom set</strong> of chosen paradigms, <strong>Exclude known</strong>, and an <strong>Appendix forms</strong> toggle (off by default) for material the textbook only prints in an appendix. A form counts as <strong>known</strong> once you&rsquo;ve gotten it right two attempts in a row under whichever dimensions are currently graded.</p>
 
       <h3 class="user-guide-heading">Grammar mode</h3>
       <p>Short multiple-choice questions on grammar concepts, gated to your current lesson so nothing ahead of where you are shows up. Turn on <strong>Review missed</strong> to focus on questions you&rsquo;ve gotten wrong before, and switch <strong>Difficulty</strong> between All questions and Core-only.</p>
@@ -530,7 +541,7 @@
         <li><strong>Shuffle</strong>, <strong>English &rarr; Hebrew</strong> (flip direction), and <strong>Spaced review</strong> (SRS on/off, default on).</li>
         <li><strong>Hard review</strong> &mdash; only the stubborn vocab you keep missing at low confidence.</li>
         <li><strong>Pace</strong> &mdash; relaxed 8-month (default) or 2-month intensive, chosen on first launch and switchable here.</li>
-        <li><strong>Display</strong> &mdash; Serif/Sans, three text sizes, and Vowel points (pointed/unpointed) and Transliteration (show/hide) for Hebrew card faces. These display toggles never affect Lesson 0 Alphabet or Reader, which always show pointed text.</li>
+        <li><strong>Display</strong> &mdash; Serif/Sans, three text sizes, and Vowel points (pointed/unpointed) and Transliteration (show/hide) for Hebrew card faces. These display toggles never affect Lesson 0A/0B or Reader, which always show pointed text.</li>
         <li><strong>Reset actions</strong> (own section) reshuffle, reset a deck, or wipe all stats; <strong>Progress tools</strong> export/import progress as JSON &mdash; everything stays on this device unless you choose to export it.</li>
       </ul>
       <p><strong>Study aid notice</strong> re-opens the disclaimer; <strong>Contact author</strong> (the footer link, or below) opens a card for feedback, corrections, or support.</p>
@@ -710,14 +721,14 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=7"></script>
-<script defer src="js/data/bbh_reference_data.js?v=7"></script>
-<script defer src="js/data/bbh_parsing.js?v=7"></script>
-<script defer src="js/data/bbh_grammar.js?v=7"></script>
-<script defer src="js/data/bbh_reader.js?v=7"></script>
-<script defer src="js/data/bbh_alphabet.js?v=7"></script>
-<script defer src="js/logic/pos_logic.js?v=7"></script>
-<script defer src="js/pwa/swUpdate.js?v=7"></script>
-<script type="module" src="js/app/main.js?v=7"></script>
+<script defer src="js/data/bbh_vocab.js?v=8"></script>
+<script defer src="js/data/bbh_reference_data.js?v=8"></script>
+<script defer src="js/data/bbh_parsing.js?v=8"></script>
+<script defer src="js/data/bbh_grammar.js?v=8"></script>
+<script defer src="js/data/bbh_reader.js?v=8"></script>
+<script defer src="js/data/bbh_alphabet.js?v=8"></script>
+<script defer src="js/logic/pos_logic.js?v=8"></script>
+<script defer src="js/pwa/swUpdate.js?v=8"></script>
+<script type="module" src="js/app/main.js?v=8"></script>
 </body>
 </html>

@@ -348,12 +348,36 @@ function sanitizeAlphabetSeen(input) {
   return out;
 }
 
-function sanitizeAlphabetState(candidate) {
-  const src = isPlainObject(candidate) ? candidate : {};
+function sanitizeAlphabetSubtree(input) {
+  const src = isPlainObject(input) ? input : {};
   return {
-    schemaVersion: 1,
     known: sanitizeAlphabetKnown(src.known),
     seen: sanitizeAlphabetSeen(src.seen)
+  };
+}
+
+// PR H item 3: runtime.alphabet's shape grew a second deck (0B Vowel
+// marks) alongside the original 0A Alphabet deck — {known,seen} became
+// {letters:{known,seen}, vowels:{known,seen}}. schemaVersion stays 1 (this
+// is an additive reshape, not a version bump), so old vs. new shape is
+// detected structurally: a candidate with a `letters` or `vowels` object is
+// already the new shape; anything else (including a pre-PR-H flat
+// {known,seen}, or nothing at all) is migrated by mapping its known/seen
+// straight into letters.* and defaulting vowels.* to empty — nobody has any
+// 0B progress yet, so there's nothing to migrate there.
+function sanitizeAlphabetState(candidate) {
+  const src = isPlainObject(candidate) ? candidate : {};
+  if (isPlainObject(src.letters) || isPlainObject(src.vowels)) {
+    return {
+      schemaVersion: 1,
+      letters: sanitizeAlphabetSubtree(src.letters),
+      vowels: sanitizeAlphabetSubtree(src.vowels)
+    };
+  }
+  return {
+    schemaVersion: 1,
+    letters: sanitizeAlphabetSubtree({ known: src.known, seen: src.seen }),
+    vowels: sanitizeAlphabetSubtree(null)
   };
 }
 
