@@ -38,7 +38,23 @@
 - **Task #17 merged** as `6facb1b` (PR #14, `?v=11`): parsing card
   hierarchy + deterministic romanizer (104/108 CSV style-match, 4
   documented principled mismatches in the generator header).
-- **In flight: task #13** — Reader mega-pass, seven items, staged as:
+- **Task #13 merged** as `425a6aa` (PR #15, `?v=12`): full Reader
+  overhaul — matcher fixes + re-score (Gen 10:17 strict, Shema tokenizer
+  bug fixed), 86 selections incl. 8 curated challenge passages
+  (independent diagnostic tier), Strong's glosses 265/265 (+pinned
+  openscriptures/strongs @ 0acd2f2), all 86 wooden translations authored
+  AND independently reviewed (76 clean/10 fixed), popover pointed-lemma +
+  gloss, slash-free rendering, tier captions, self-hiding challenge
+  toggle, per-passage reveal labeled unofficial.
+- **In flight: task #15 (FINAL queue item)** — advanced vocab +
+  vocab-by-book decks: per-book frequency decks (top ~25 NEW content
+  lemmas per book, excluding the 209 lesson cards to avoid SRS
+  double-scheduling) + a corpus-wide "Tanakh core" advanced deck; cards
+  from OSHB lemma frequencies + Strong's glosses/headwords + the
+  parsing romanizer for translit; own id namespace (bbh-bk-*); "By book
+  (advanced)" group in the study selector, SRS-participating like lesson
+  decks.
+- Historical note (13a/13b staging preserved below for archaeology):
   **13a data pipeline DONE (uncommitted — not yet merged)**: gentilic Ng
   now pn-class (isProperName + distinct `gent` flag) and compound-token
   vocab matching (fixes both halves of the Gen 10:17 underline-noise
