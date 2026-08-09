@@ -46,14 +46,14 @@
   AND independently reviewed (76 clean/10 fixed), popover pointed-lemma +
   gloss, slash-free rendering, tier captions, self-hiding challenge
   toggle, per-passage reveal labeled unofficial.
-- **In flight: task #15 (FINAL queue item)** — advanced vocab +
-  vocab-by-book decks: per-book frequency decks (top ~25 NEW content
-  lemmas per book, excluding the 209 lesson cards to avoid SRS
-  double-scheduling) + a corpus-wide "Tanakh core" advanced deck; cards
-  from OSHB lemma frequencies + Strong's glosses/headwords + the
-  parsing romanizer for translit; own id namespace (bbh-bk-*); "By book
-  (advanced)" group in the study selector, SRS-participating like lesson
-  decks.
+- **Task #15 merged** as `9f38396` (PR #16, `?v=13`): 9 advanced decks /
+  246 cards ("By book · advanced" + Tanakh core), 209-lesson lemmas
+  globally excluded, SRS/export roundtrip verified; fixed an analytics
+  course-total leak found en route; check_release now 23 reports.
+- **In flight: task #18 (last queued item)** — alphabet/vowel practice
+  converts from modal overlays to clean selector-entered sections, keeps
+  the standalone note, adds a combined letters+vowels deck entry, and
+  adds clickShield tap guards to ALL modal close buttons.
 - Historical note (13a/13b staging preserved below for archaeology):
   **13a data pipeline DONE (uncommitted — not yet merged)**: gentilic Ng
   now pn-class (isProperName + distinct `gent` flag) and compound-token
