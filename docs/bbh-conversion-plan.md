@@ -921,5 +921,96 @@ selections are untouched, the importer only gained capability.
 `check_release.mjs` → 24/0 unchanged, `?v=20` untouched. Only file
 touched: `tools/import_oshb_reader.mjs`. Reports:
 `scratchpad/task24a_gatemap_gaps.md`, `scratchpad/task24a_lemma_audit.md`
-(session scratchpad, not committed). See RESTORE.md's task-24 stage-A
+(session scratchpad, not committed).
+
+**Status: Stage B IMPLEMENTED, UNCOMMITTED (2026-08-09).** 12 new PROSE
+selections curated into `source/bbh/reader/selections.json` from Joshua/
+1 Kings/2 Kings/Esther (2 strict + 1 guided per book), ADDITIONS ONLY —
+all 86 pre-existing entries verified byte-identical (zero frozen-score
+drift) by diffing a fresh `js/data/bbh_reader.js` regeneration against the
+pre-stage-B file. No new `LEMMA_OVERRIDES` entries (every pick already
+reached its tier without one). Picks, by bucket-thinness + pedagogical fit
+(famous verses like Josh 1:9/24:15/Esth 4:14 don't themselves score
+strict/guided — their scoring NEIGHBOR verses were used instead):
+- `reader-josh-9-3` (strict, gate 42, bucket 42-44 — thin) — Gibeonites
+  hear what Joshua did to Jericho/Ai.
+- `reader-josh-24-28` (strict, gate 35) — Joshua sends the people to their
+  inheritance, closing Josh 24's covenant-renewal scene.
+- `reader-josh-1-16` (guided, gate 40) — the people's pledge of obedience,
+  answering Joshua's commissioning speech.
+- `reader-1kgs-2-2` (strict, gate 42, bucket 42-44 — thin) — David's
+  charge to Solomon, "be strong, and be a man."
+- `reader-1kgs-3-19` (strict, gate 35) — Solomon's judgment narrative (the
+  child who died in the night).
+- `reader-1kgs-19-16` (guided, gate 23, bucket 23-27 — thin, previously
+  only 2 guided candidates corpus-wide) — the LORD tells Elijah to anoint
+  Elisha as prophet, bridging the Elijah/Elisha material.
+- `reader-2kgs-2-22` (strict, gate 37) — Elisha heals the waters at
+  Jericho.
+- `reader-2kgs-13-22` (strict, gate 20, bucket 20-22 — thin) — Hazael's
+  oppression of Israel (historical-summary clause).
+- `reader-2kgs-5-19` (guided, gate 39) — Elisha dismisses Naaman, "go in
+  peace."
+- `reader-esth-2-5` (strict, gate 22, bucket 20-22 — thin) — introduces
+  Mordecai the Jew in Susa.
+- `reader-esth-4-10` (strict, gate 40) — Esther/Hathach/Mordecai message
+  relay, immediately surrounding "for such a time as this" (4:14).
+- `reader-esth-4-15` (guided, gate 35) — Esther's reply to Mordecai, same
+  relay.
+
+Bucket coverage before→after (strict+guided count; buckets 15-19/28-31/
+32-34 untouched — no strong short/pedagogical candidate found there in
+these 4 books, per "do not force it"): 20-22 6→8, 23-27 6→7, 35-38 23→27,
+39-41 7→10, 42-44 6→8. All 12 `wooden` translations author-drafted fresh
+from the Hebrew (never copied from/paraphrasing a copyrighted English
+Bible), `woodenStatus:"draft"` — matching task 13a's original pre-review
+convention (this schema has no separate provenance field; stage D flips
+these to `"reviewed"` after independent morphology verification, same as
+it did for the original 86). Strong's glosses: **300/300 resolved, 0
+missing** (up from 265/265 pre-stage-B — the new selections' distinct
+Strong's numbers all already exist in the pinned dictionary).
+
+Also fixed a real product gap surfaced while spot-checking a new
+selection in-browser: `js/ui/reader.js`'s `BOOK_NAMES`/`BOOK_ORDER` tables
+(Reader book-heading display + grouping order) still only knew the
+original 8 books, so Josh/1Kgs/2Kgs/Esth rendered as raw OSIS codes
+("Josh", "1Kgs", ...) grouped after every named book instead of "Joshua"/
+"1 Kings"/"2 Kings"/"Esther" in canonical order. Added all 5 stage-A books
+(including `Ps`, ahead of stage C, so that stage never needs to touch this
+file) to both tables — display-only, no schema/data change.
+
+`tools/check_release.mjs` check5b passage count updated 86→98.
+Verification: `node tools/validate_bbh_reader_data.mjs` → 6/6 pass
+(reproducibility: all 98 selections' scores reproduce exactly from a fresh
+import); `node tools/gen_bbh_reader_data.mjs` run twice → byte-identical
+(`js/data/bbh_reader.js` sha1 `1d913da6...` both times); `node
+tools/check_release.mjs` → 23 reports / 1 failure (`check6: source/bbh/
+has uncommitted changes vs git HEAD` — expected while uncommitted, same as
+tasks 13/14's own uncommitted-stage runs; resolves to 24/0 once the
+orchestrator commits). Playwright: `scratchpad/smoke_reader.mjs` (12
+sections, 40 checks) reruns fully green — fixed two pre-existing
+env-only flakes found along the way (not product bugs): (1) added a
+`page.route` stub for the GA `gtag.js` load, and (2) discovered that
+stub alone wasn't sufficient once the app's own service worker takes
+control after the smoke's later `page.reload()`s (the SW's own
+cache-miss `fetch()` call for gtag.js issues from its own execution
+context, which `page.route` doesn't intercept) — fixed by creating the
+Playwright context with `serviceWorkers: 'block'` (this smoke tests
+Reader UI behavior, not PWA/SW mechanics, so disabling the SW here is
+inert to what the file actually covers). A new dedicated spot-check
+(`scratchpad/task24b_spotcheck.mjs`) confirms `reader-esth-4-15` renders
+correctly end-to-end: Hebrew tokens, a populated gloss popover, and the
+wooden-translation reveal with the correct "not yet reviewed" (draft)
+caption. Files touched:
+`source/bbh/reader/selections.json` (12 new entries + 1 new note,
+appended — 86 pre-existing entries untouched), `js/data/bbh_reader.js`
+(regenerated), `tools/check_release.mjs` (check5b count), `js/ui/reader.js`
+(BOOK_NAMES/BOOK_ORDER fix). NOT committed per orchestrator instruction —
+working tree left for the orchestrator. Scratchpad reports
+(`task24b_query.mjs`, `task24b_query_out.txt`, `task24b_inspect.mjs`,
+`task24b_finalize.mjs`, `task24b_spotcheck.mjs`) live in this session's
+scratchpad dir, not the repo. Next: stage C (Psalms challenge-tier
+selections, poetry-labeled) and stage D (independent wooden-translation
+review flipping all 12 new entries' `woodenStatus` to `"reviewed"`,
+release counts, smokes, `?v=21` bump, PR). See RESTORE.md's task-24 stage-B
 entry for the full numbers. Next: stage B.

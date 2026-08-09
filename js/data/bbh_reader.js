@@ -7442,6 +7442,1383 @@
             "lx": "שָׁנֶה"
           }
         ]
+      },
+      {
+        "id": "reader-josh-9-3",
+        "book": "Josh",
+        "ref": "Josh 9:3",
+        "gateLesson": 42,
+        "tier": "strict",
+        "wooden": "And the inhabitants of Gibeon heard what Joshua had done to Jericho and to Ai.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וְ/יֹשְׁבֵ֨י",
+            "l": "c/3427",
+            "s": "3427",
+            "m": "HC/Vqrmpc",
+            "g": 42,
+            "pn": false,
+            "v": 16,
+            "gl": "to sit down",
+            "lx": "יָשַׁב"
+          },
+          {
+            "t": "גִבְע֜וֹן",
+            "l": "1391",
+            "s": "1391",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Gibon",
+            "lx": "גִּבְעוֹן"
+          },
+          {
+            "t": "שָׁמְע֗וּ",
+            "l": "8085",
+            "s": "8085",
+            "m": "HVqp3cp",
+            "g": 19,
+            "pn": false,
+            "v": 16,
+            "gl": "to hear intelligently",
+            "lx": "שָׁמַע"
+          },
+          {
+            "t": "אֵת֩",
+            "l": "853",
+            "s": "853",
+            "m": "HTo",
+            "g": 1,
+            "pn": false,
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
+          },
+          {
+            "t": "אֲשֶׁ֨ר",
+            "l": "834 a",
+            "s": "834",
+            "m": "HTr",
+            "g": 30,
+            "pn": false,
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
+          },
+          {
+            "t": "עָשָׂ֧ה",
+            "l": "6213 a",
+            "s": "6213",
+            "m": "HVqp3ms",
+            "g": 16,
+            "pn": false,
+            "v": 15,
+            "gl": "to do or make",
+            "lx": "עָשָׂה"
+          },
+          {
+            "t": "יְהוֹשֻׁ֛עַ",
+            "l": "3091",
+            "s": "3091",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehoshua",
+            "lx": "יְהוֹשׁוּעַ"
+          },
+          {
+            "t": "לִֽ/ירִיח֖וֹ",
+            "l": "l/3405",
+            "s": "3405",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": null,
+            "gl": "Jericho or Jerecho",
+            "lx": "יְרִיחוֹ"
+          },
+          {
+            "t": "וְ/לָ/עָֽי",
+            "l": "c/l/5857",
+            "s": "5857",
+            "m": "HC/R/Np",
+            "g": 13,
+            "pn": true,
+            "v": 13,
+            "gl": "Ai",
+            "lx": "עַי"
+          }
+        ]
+      },
+      {
+        "id": "reader-josh-24-28",
+        "book": "Josh",
+        "ref": "Josh 24:28",
+        "gateLesson": 35,
+        "tier": "strict",
+        "wooden": "And Joshua sent the people away, each to his inheritance.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יְשַׁלַּ֤ח",
+            "l": "c/7971",
+            "s": "7971",
+            "m": "HC/Vpw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 15,
+            "gl": "to send away",
+            "lx": "שָׁלַח"
+          },
+          {
+            "t": "יְהוֹשֻׁ֨עַ֙",
+            "l": "3091",
+            "s": "3091",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehoshua",
+            "lx": "יְהוֹשׁוּעַ"
+          },
+          {
+            "t": "אֶת",
+            "l": "853",
+            "s": "853",
+            "m": "HTo",
+            "g": 1,
+            "pn": false,
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
+          },
+          {
+            "t": "הָ/עָ֔ם",
+            "l": "d/5971 a",
+            "s": "5971",
+            "m": "HTd/Ncmsa",
+            "g": 8,
+            "pn": false,
+            "v": 13,
+            "gl": "a people",
+            "lx": "עַם"
+          },
+          {
+            "t": "אִ֖ישׁ",
+            "l": "376",
+            "s": "376",
+            "m": "HNcmsa",
+            "g": 7,
+            "pn": false,
+            "v": 6,
+            "gl": "a man as an individual or a male person",
+            "lx": "אִישׁ"
+          },
+          {
+            "t": "לְ/נַחֲלָתֽ/וֹ",
+            "l": "l/5159",
+            "s": "5159",
+            "m": "HR/Ncfsc/Sp3ms",
+            "g": 22,
+            "pn": false,
+            "v": null,
+            "gl": "something inherited",
+            "lx": "נַחֲלָה"
+          }
+        ]
+      },
+      {
+        "id": "reader-josh-1-16",
+        "book": "Josh",
+        "ref": "Josh 1:16",
+        "gateLesson": 40,
+        "tier": "guided",
+        "wooden": "And they answered Joshua, saying, 'All that you have commanded us we will do, and wherever you send us we will go.'",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַֽ/יַּעֲנ֔וּ",
+            "l": "c/6030 b",
+            "s": "6030",
+            "m": "HC/Vqw3mp",
+            "g": 35,
+            "pn": false,
+            "v": null,
+            "gl": "to eye",
+            "lx": "עָנָה"
+          },
+          {
+            "t": "אֶת",
+            "l": "853",
+            "s": "853",
+            "m": "HTo",
+            "g": 1,
+            "pn": false,
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
+          },
+          {
+            "t": "יְהוֹשֻׁ֖עַ",
+            "l": "3091",
+            "s": "3091",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehoshua",
+            "lx": "יְהוֹשׁוּעַ"
+          },
+          {
+            "t": "לֵ/אמֹ֑ר",
+            "l": "l/559",
+            "s": "559",
+            "m": "HR/Vqc",
+            "g": 24,
+            "pn": false,
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
+          },
+          {
+            "t": "כֹּ֤ל",
+            "l": "3605",
+            "s": "3605",
+            "m": "HNcmsa",
+            "g": 7,
+            "pn": false,
+            "v": 11,
+            "gl": "the whole",
+            "lx": "כֹּל"
+          },
+          {
+            "t": "אֲשֶׁר",
+            "l": "834 a",
+            "s": "834",
+            "m": "HTr",
+            "g": 30,
+            "pn": false,
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
+          },
+          {
+            "t": "צִוִּיתָ֨/נוּ֙",
+            "l": "6680",
+            "s": "6680",
+            "m": "HVpp2ms/Sp1cp",
+            "g": 40,
+            "pn": false,
+            "v": 35,
+            "gl": "(intensively) to constitute",
+            "lx": "צָוָה"
+          },
+          {
+            "t": "נַֽעֲשֶׂ֔ה",
+            "l": "6213 a",
+            "s": "6213",
+            "m": "HVqi1cp",
+            "g": 27,
+            "pn": false,
+            "v": 15,
+            "gl": "to do or make",
+            "lx": "עָשָׂה"
+          },
+          {
+            "t": "וְ/אֶֽל",
+            "l": "c/413",
+            "s": "413",
+            "m": "HC/R",
+            "g": 13,
+            "pn": false,
+            "v": null,
+            "gl": "near",
+            "lx": "אֵל"
+          },
+          {
+            "t": "כָּל",
+            "l": "3605",
+            "s": "3605",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 11,
+            "gl": "the whole",
+            "lx": "כֹּל"
+          },
+          {
+            "t": "אֲשֶׁ֥ר",
+            "l": "834 a",
+            "s": "834",
+            "m": "HTr",
+            "g": 30,
+            "pn": false,
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
+          },
+          {
+            "t": "תִּשְׁלָחֵ֖/נוּ",
+            "l": "7971",
+            "s": "7971",
+            "m": "HVqi2ms/Sp1cp",
+            "g": 40,
+            "pn": false,
+            "v": 15,
+            "gl": "to send away",
+            "lx": "שָׁלַח"
+          },
+          {
+            "t": "נֵלֵֽךְ",
+            "l": "3212",
+            "s": "3212",
+            "m": "HVqi1cp",
+            "g": 27,
+            "pn": false,
+            "v": 16,
+            "gl": "to walk",
+            "lx": "יָלַךְ"
+          }
+        ]
+      },
+      {
+        "id": "reader-1kgs-2-2",
+        "book": "1Kgs",
+        "ref": "1Kgs 2:2",
+        "gateLesson": 42,
+        "tier": "strict",
+        "wooden": "I am going the way of all the earth; be strong, and be a man.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "אָנֹכִ֣י",
+            "l": "595",
+            "s": "595",
+            "m": "HPp1cs",
+            "g": 5,
+            "pn": false,
+            "v": null,
+            "gl": "I",
+            "lx": "אָנֹכִי"
+          },
+          {
+            "t": "הֹלֵ֔ךְ",
+            "l": "1980",
+            "s": "1980",
+            "m": "HVqrmsa",
+            "g": 42,
+            "pn": false,
+            "v": 16,
+            "gl": "to walk",
+            "lx": "הָלַךְ"
+          },
+          {
+            "t": "בְּ/דֶ֖רֶךְ",
+            "l": "b/1870",
+            "s": "1870",
+            "m": "HR/Ncbsc",
+            "g": 20,
+            "pn": false,
+            "v": 16,
+            "gl": "a road",
+            "lx": "דֶּרֶךְ"
+          },
+          {
+            "t": "כָּל",
+            "l": "3605",
+            "s": "3605",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 11,
+            "gl": "the whole",
+            "lx": "כֹּל"
+          },
+          {
+            "t": "הָ/אָ֑רֶץ",
+            "l": "d/776",
+            "s": "776",
+            "m": "HTd/Ncbsa",
+            "g": 8,
+            "pn": false,
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
+          },
+          {
+            "t": "וְ/חָזַקְתָּ֖",
+            "l": "c/2388",
+            "s": "2388",
+            "m": "HC/Vqq2ms",
+            "g": 16,
+            "pn": false,
+            "v": null,
+            "gl": "to fasten upon",
+            "lx": "חָזַק"
+          },
+          {
+            "t": "וְ/הָיִ֥יתָֽ",
+            "l": "c/1961",
+            "s": "1961",
+            "m": "HC/Vqq2ms",
+            "g": 16,
+            "pn": false,
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
+          },
+          {
+            "t": "לְ/אִֽישׁ",
+            "l": "l/376",
+            "s": "376",
+            "m": "HR/Ncmsa",
+            "g": 13,
+            "pn": false,
+            "v": 6,
+            "gl": "a man as an individual or a male person",
+            "lx": "אִישׁ"
+          }
+        ]
+      },
+      {
+        "id": "reader-1kgs-3-19",
+        "book": "1Kgs",
+        "ref": "1Kgs 3:19",
+        "gateLesson": 35,
+        "tier": "strict",
+        "wooden": "And the son of this woman died at night, because she lay on him.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יָּ֛מָת",
+            "l": "c/4191",
+            "s": "4191",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 30,
+            "gl": "to die",
+            "lx": "מוּת"
+          },
+          {
+            "t": "בֶּן",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
+          },
+          {
+            "t": "הָ/אִשָּׁ֥ה",
+            "l": "d/802",
+            "s": "802",
+            "m": "HTd/Ncfsa",
+            "g": 8,
+            "pn": false,
+            "v": 6,
+            "gl": "a woman",
+            "lx": "אִשָּׁה"
+          },
+          {
+            "t": "הַ/זֹּ֖את",
+            "l": "d/2063",
+            "s": "2063",
+            "m": "HTd/Pdxfs",
+            "g": 33,
+            "pn": false,
+            "v": 8,
+            "gl": "this",
+            "lx": "זֹאת"
+          },
+          {
+            "t": "לָ֑יְלָה",
+            "l": "3915",
+            "s": "3915",
+            "m": "HNcmsa",
+            "g": 7,
+            "pn": false,
+            "v": 24,
+            "gl": "a twist",
+            "lx": "לַיִל"
+          },
+          {
+            "t": "אֲשֶׁ֥ר",
+            "l": "834 a",
+            "s": "834",
+            "m": "HTr",
+            "g": 30,
+            "pn": false,
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
+          },
+          {
+            "t": "שָׁכְבָ֖ה",
+            "l": "7901",
+            "s": "7901",
+            "m": "HVqp3fs",
+            "g": 16,
+            "pn": false,
+            "v": null,
+            "gl": "to lie down",
+            "lx": "שָׁכַב"
+          },
+          {
+            "t": "עָלָֽי/ו",
+            "l": "5921 a",
+            "s": "5921",
+            "m": "HR/Sp3ms",
+            "g": 22,
+            "pn": false,
+            "v": null,
+            "gl": "above",
+            "lx": "עַל"
+          }
+        ]
+      },
+      {
+        "id": "reader-1kgs-19-16",
+        "book": "1Kgs",
+        "ref": "1Kgs 19:16",
+        "gateLesson": 23,
+        "tier": "guided",
+        "wooden": "And Jehu son of Nimshi you shall anoint as king over Israel, and Elisha son of Shaphat from Abel-meholah you shall anoint as prophet in your place.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וְ/אֵת֙",
+            "l": "c/853",
+            "s": "853",
+            "m": "HC/To",
+            "g": 13,
+            "pn": false,
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
+          },
+          {
+            "t": "יֵה֣וּא",
+            "l": "3058",
+            "s": "3058",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehu",
+            "lx": "יֵהוּא"
+          },
+          {
+            "t": "בֶן",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
+          },
+          {
+            "t": "נִמְשִׁ֔י",
+            "l": "5250",
+            "s": "5250",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Nimshi",
+            "lx": "נִמְשִׁי"
+          },
+          {
+            "t": "תִּמְשַׁ֥ח",
+            "l": "4886",
+            "s": "4886",
+            "m": "HVqi2ms",
+            "g": 23,
+            "pn": false,
+            "v": null,
+            "gl": "to rub with oil",
+            "lx": "מָשַׁח"
+          },
+          {
+            "t": "לְ/מֶ֖לֶךְ",
+            "l": "l/4428",
+            "s": "4428",
+            "m": "HR/Ncmsa",
+            "g": 13,
+            "pn": false,
+            "v": 9,
+            "gl": "a king",
+            "lx": "מֶלֶךְ"
+          },
+          {
+            "t": "עַל",
+            "l": "5921 a",
+            "s": "5921",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": 13,
+            "gl": "above",
+            "lx": "עַל"
+          },
+          {
+            "t": "יִשְׂרָאֵ֑ל",
+            "l": "3478",
+            "s": "3478",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jisrael",
+            "lx": "יִשְׂרָאֵל"
+          },
+          {
+            "t": "וְ/אֶת",
+            "l": "c/853",
+            "s": "853",
+            "m": "HC/To",
+            "g": 13,
+            "pn": false,
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
+          },
+          {
+            "t": "אֱלִישָׁ֤ע",
+            "l": "477",
+            "s": "477",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Elisha",
+            "lx": "אֱלִישָׁע"
+          },
+          {
+            "t": "בֶּן",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
+          },
+          {
+            "t": "שָׁפָט֙",
+            "l": "8202",
+            "s": "8202",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Shaphat",
+            "lx": "שָׁפָט"
+          },
+          {
+            "t": "מֵ/אָבֵ֣ל",
+            "l": "m/65+",
+            "s": "65",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": null,
+            "gl": "Abel-Mecholah",
+            "lx": "אָבֵל מְחוֹלָה"
+          },
+          {
+            "t": "מְחוֹלָ֔ה",
+            "l": "65",
+            "s": "65",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Abel-Mecholah",
+            "lx": "אָבֵל מְחוֹלָה"
+          },
+          {
+            "t": "תִּמְשַׁ֥ח",
+            "l": "4886",
+            "s": "4886",
+            "m": "HVqi2ms",
+            "g": 23,
+            "pn": false,
+            "v": null,
+            "gl": "to rub with oil",
+            "lx": "מָשַׁח"
+          },
+          {
+            "t": "לְ/נָבִ֖יא",
+            "l": "l/5030",
+            "s": "5030",
+            "m": "HR/Ncmsa",
+            "g": 13,
+            "pn": false,
+            "v": null,
+            "gl": "a prophet",
+            "lx": "נָבִיא"
+          },
+          {
+            "t": "תַּחְתֶּֽי/ךָ",
+            "l": "8478",
+            "s": "8478",
+            "m": "HR/Sp2ms",
+            "g": 22,
+            "pn": false,
+            "v": null,
+            "gl": "the bottom",
+            "lx": "תַּחַת"
+          }
+        ]
+      },
+      {
+        "id": "reader-2kgs-2-22",
+        "book": "2Kgs",
+        "ref": "2Kgs 2:22",
+        "gateLesson": 37,
+        "tier": "strict",
+        "wooden": "So the waters were healed to this day, according to the word of Elisha which he spoke.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יֵּרָפ֣וּ",
+            "l": "c/7495",
+            "s": "7495",
+            "m": "HC/VNw3mp",
+            "g": 37,
+            "pn": false,
+            "v": null,
+            "gl": "to mend",
+            "lx": "רָפָא"
+          },
+          {
+            "t": "הַ/מַּ֔יִם",
+            "l": "d/4325",
+            "s": "4325",
+            "m": "HTd/Ncmpa",
+            "g": 10,
+            "pn": false,
+            "v": 13,
+            "gl": "water",
+            "lx": "מַיִם"
+          },
+          {
+            "t": "עַ֖ד",
+            "l": "5704",
+            "s": "5704",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null,
+            "gl": "as far",
+            "lx": "עַד"
+          },
+          {
+            "t": "הַ/יּ֣וֹם",
+            "l": "d/3117",
+            "s": "3117",
+            "m": "HTd/Ncmsa",
+            "g": 8,
+            "pn": false,
+            "v": 21,
+            "gl": "a day",
+            "lx": "יוֹם"
+          },
+          {
+            "t": "הַ/זֶּ֑ה",
+            "l": "d/2088",
+            "s": "2088",
+            "m": "HTd/Pdxms",
+            "g": 33,
+            "pn": false,
+            "v": 8,
+            "gl": "the masculine demonstrative pronoun",
+            "lx": "זֶה"
+          },
+          {
+            "t": "כִּ/דְבַ֥ר",
+            "l": "k/1697",
+            "s": "1697",
+            "m": "HR/Ncmsc",
+            "g": 20,
+            "pn": false,
+            "v": 5,
+            "gl": "a word",
+            "lx": "דָּבָר"
+          },
+          {
+            "t": "אֱלִישָׁ֖ע",
+            "l": "477",
+            "s": "477",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Elisha",
+            "lx": "אֱלִישָׁע"
+          },
+          {
+            "t": "אֲשֶׁ֥ר",
+            "l": "834 a",
+            "s": "834",
+            "m": "HTr",
+            "g": 30,
+            "pn": false,
+            "v": 30,
+            "gl": "who",
+            "lx": "אֲשֶׁר"
+          },
+          {
+            "t": "דִּבֵּֽר",
+            "l": "1696",
+            "s": "1696",
+            "m": "HVpp3ms",
+            "g": 29,
+            "pn": false,
+            "v": 15,
+            "gl": "to arrange",
+            "lx": "דָבַר"
+          }
+        ]
+      },
+      {
+        "id": "reader-2kgs-13-22",
+        "book": "2Kgs",
+        "ref": "2Kgs 13:22",
+        "gateLesson": 20,
+        "tier": "strict",
+        "wooden": "And Hazael king of Aram oppressed Israel all the days of Jehoahaz.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַֽ/חֲזָאֵל֙",
+            "l": "c/2371",
+            "s": "2371",
+            "m": "HC/Np",
+            "g": 13,
+            "pn": true,
+            "v": null,
+            "gl": "Chazael",
+            "lx": "חֲזָאֵל"
+          },
+          {
+            "t": "מֶ֣לֶךְ",
+            "l": "4428",
+            "s": "4428",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 9,
+            "gl": "a king",
+            "lx": "מֶלֶךְ"
+          },
+          {
+            "t": "אֲרָ֔ם",
+            "l": "758",
+            "s": "758",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Aram or Syria",
+            "lx": "אֲרָם"
+          },
+          {
+            "t": "לָחַ֖ץ",
+            "l": "3905",
+            "s": "3905",
+            "m": "HVqp3ms",
+            "g": 16,
+            "pn": false,
+            "v": null,
+            "gl": "to press",
+            "lx": "לָחַץ"
+          },
+          {
+            "t": "אֶת",
+            "l": "853",
+            "s": "853",
+            "m": "HTo",
+            "g": 1,
+            "pn": false,
+            "v": 5,
+            "gl": "self",
+            "lx": "אֵת"
+          },
+          {
+            "t": "יִשְׂרָאֵ֑ל",
+            "l": "3478",
+            "s": "3478",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jisrael",
+            "lx": "יִשְׂרָאֵל"
+          },
+          {
+            "t": "כֹּ֖ל",
+            "l": "3605",
+            "s": "3605",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 11,
+            "gl": "the whole",
+            "lx": "כֹּל"
+          },
+          {
+            "t": "יְמֵ֥י",
+            "l": "3117",
+            "s": "3117",
+            "m": "HNcmpc",
+            "g": 20,
+            "pn": false,
+            "v": 21,
+            "gl": "a day",
+            "lx": "יוֹם"
+          },
+          {
+            "t": "יְהוֹאָחָֽז",
+            "l": "3059",
+            "s": "3059",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jehoachaz",
+            "lx": "יְהוֹאָחָז"
+          }
+        ]
+      },
+      {
+        "id": "reader-2kgs-5-19",
+        "book": "2Kgs",
+        "ref": "2Kgs 5:19",
+        "gateLesson": 39,
+        "tier": "guided",
+        "wooden": "And he said to him, 'Go in peace.' And he went from him a stretch of land.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/יֹּ֥אמֶר",
+            "l": "c/559",
+            "s": "559",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
+          },
+          {
+            "t": "ל֖/וֹ",
+            "l": "l",
+            "s": null,
+            "m": "HR/Sp3ms",
+            "g": 22,
+            "pn": false,
+            "v": 13,
+            "gl": null,
+            "lx": null
+          },
+          {
+            "t": "לֵ֣ךְ",
+            "l": "3212",
+            "s": "3212",
+            "m": "HVqv2ms",
+            "g": 39,
+            "pn": false,
+            "v": 9,
+            "gl": "to walk",
+            "lx": "יָלַךְ"
+          },
+          {
+            "t": "לְ/שָׁל֑וֹם",
+            "l": "l/7965",
+            "s": "7965",
+            "m": "HR/Ncmsa",
+            "g": 13,
+            "pn": false,
+            "v": 5,
+            "gl": "safe",
+            "lx": "שָׁלוֹם"
+          },
+          {
+            "t": "וַ/יֵּ֥לֶךְ",
+            "l": "c/3212",
+            "s": "3212",
+            "m": "HC/Vqw3ms",
+            "g": 35,
+            "pn": false,
+            "v": 16,
+            "gl": "to walk",
+            "lx": "יָלַךְ"
+          },
+          {
+            "t": "מֵ/אִתּ֖/וֹ",
+            "l": "m/854",
+            "s": "854",
+            "m": "HR/R/Sp3ms",
+            "g": 22,
+            "pn": false,
+            "v": 5,
+            "gl": "nearness",
+            "lx": "אֵת"
+          },
+          {
+            "t": "כִּבְרַת",
+            "l": "3530",
+            "s": "3530",
+            "m": "HNcfsc",
+            "g": 20,
+            "pn": false,
+            "v": null,
+            "gl": "length",
+            "lx": "כִּבְרָה"
+          },
+          {
+            "t": "אָֽרֶץ",
+            "l": "776",
+            "s": "776",
+            "m": "HNcbsa",
+            "g": 7,
+            "pn": false,
+            "v": 9,
+            "gl": "the earth",
+            "lx": "אֶרֶץ"
+          }
+        ]
+      },
+      {
+        "id": "reader-esth-2-5",
+        "book": "Esth",
+        "ref": "Esth 2:5",
+        "gateLesson": 22,
+        "tier": "strict",
+        "wooden": "There was a Jewish man in Susa the citadel, and his name was Mordecai son of Jair son of Shimei son of Kish, a Benjaminite.",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "אִ֣ישׁ",
+            "l": "376",
+            "s": "376",
+            "m": "HNcmsa",
+            "g": 7,
+            "pn": false,
+            "v": 6,
+            "gl": "a man as an individual or a male person",
+            "lx": "אִישׁ"
+          },
+          {
+            "t": "יְהוּדִ֔י",
+            "l": "3064",
+            "s": "3064",
+            "m": "HNgmsa",
+            "g": 7,
+            "pn": true,
+            "v": null,
+            "gl": "a Jehudite",
+            "lx": "יְהוּדִי",
+            "gent": true
+          },
+          {
+            "t": "הָיָ֖ה",
+            "l": "1961",
+            "s": "1961",
+            "m": "HVqp3ms",
+            "g": 16,
+            "pn": false,
+            "v": 6,
+            "gl": "to exist",
+            "lx": "הָיָה"
+          },
+          {
+            "t": "בְּ/שׁוּשַׁ֣ן",
+            "l": "b/7800",
+            "s": "7800",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": 13,
+            "gl": "Shushan",
+            "lx": "שׁוּשַׁן"
+          },
+          {
+            "t": "הַ/בִּירָ֑ה",
+            "l": "d/1002",
+            "s": "1002",
+            "m": "HTd/Ncfsa",
+            "g": 8,
+            "pn": false,
+            "v": null,
+            "gl": "a castle or palace",
+            "lx": "בִּירָה"
+          },
+          {
+            "t": "וּ/שְׁמ֣/וֹ",
+            "l": "c/8034",
+            "s": "8034",
+            "m": "HC/Ncmsc/Sp3ms",
+            "g": 22,
+            "pn": false,
+            "v": 6,
+            "gl": "an appellation",
+            "lx": "שֵׁם"
+          },
+          {
+            "t": "מָרְדֳּכַ֗י",
+            "l": "4782",
+            "s": "4782",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Mordecai",
+            "lx": "מׇרְדְּכַי"
+          },
+          {
+            "t": "בֶּ֣ן",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
+          },
+          {
+            "t": "יָאִ֧יר",
+            "l": "2971",
+            "s": "2971",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Jair",
+            "lx": "יָאִיר"
+          },
+          {
+            "t": "בֶּן",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
+          },
+          {
+            "t": "שִׁמְעִ֛י",
+            "l": "8096",
+            "s": "8096",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Shimi",
+            "lx": "שִׁמְעִי"
+          },
+          {
+            "t": "בֶּן",
+            "l": "1121 a",
+            "s": "1121",
+            "m": "HNcmsc",
+            "g": 20,
+            "pn": false,
+            "v": 7,
+            "gl": "a son",
+            "lx": "בֵּן"
+          },
+          {
+            "t": "קִ֖ישׁ",
+            "l": "7027",
+            "s": "7027",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Kish",
+            "lx": "קִישׁ"
+          },
+          {
+            "t": "אִ֥ישׁ",
+            "l": "1145+",
+            "s": "1145",
+            "m": "HNcmsa",
+            "g": 7,
+            "pn": false,
+            "v": 6,
+            "gl": "a Benjaminite",
+            "lx": "בֶּן־יְמִינִי"
+          },
+          {
+            "t": "יְמִינִֽי",
+            "l": "1145",
+            "s": "1145",
+            "m": "HNgmsa",
+            "g": 7,
+            "pn": true,
+            "v": null,
+            "gl": "a Benjaminite",
+            "lx": "בֶּן־יְמִינִי",
+            "gent": true
+          }
+        ]
+      },
+      {
+        "id": "reader-esth-4-10",
+        "book": "Esth",
+        "ref": "Esth 4:10",
+        "gateLesson": 40,
+        "tier": "strict",
+        "wooden": "And Esther said to Hathach, and commanded him for Mordecai:",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/תֹּ֤אמֶר",
+            "l": "c/559",
+            "s": "559",
+            "m": "HC/Vqw3fs",
+            "g": 35,
+            "pn": false,
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
+          },
+          {
+            "t": "אֶסְתֵּר֙",
+            "l": "635",
+            "s": "635",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Ester",
+            "lx": "אֶסְתֵּר"
+          },
+          {
+            "t": "לַ/הֲתָ֔ךְ",
+            "l": "l/2047",
+            "s": "2047",
+            "m": "HR/Np",
+            "g": 13,
+            "pn": true,
+            "v": 13,
+            "gl": "Hathak",
+            "lx": "הֲתָךְ"
+          },
+          {
+            "t": "וַ/תְּצַוֵּ֖/הוּ",
+            "l": "c/6680",
+            "s": "6680",
+            "m": "HC/Vpw3fs/Sp3ms",
+            "g": 40,
+            "pn": false,
+            "v": 35,
+            "gl": "(intensively) to constitute",
+            "lx": "צָוָה"
+          },
+          {
+            "t": "אֶֽל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null,
+            "gl": "near",
+            "lx": "אֵל"
+          },
+          {
+            "t": "מָרְדֳּכָֽי",
+            "l": "4782",
+            "s": "4782",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Mordecai",
+            "lx": "מׇרְדְּכַי"
+          }
+        ]
+      },
+      {
+        "id": "reader-esth-4-15",
+        "book": "Esth",
+        "ref": "Esth 4:15",
+        "gateLesson": 35,
+        "tier": "guided",
+        "wooden": "And Esther said to reply to Mordecai:",
+        "woodenStatus": "draft",
+        "tokens": [
+          {
+            "t": "וַ/תֹּ֥אמֶר",
+            "l": "c/559",
+            "s": "559",
+            "m": "HC/Vqw3fs",
+            "g": 35,
+            "pn": false,
+            "v": null,
+            "gl": "to say",
+            "lx": "אָמַר"
+          },
+          {
+            "t": "אֶסְתֵּ֖ר",
+            "l": "635",
+            "s": "635",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Ester",
+            "lx": "אֶסְתֵּר"
+          },
+          {
+            "t": "לְ/הָשִׁ֥יב",
+            "l": "l/7725",
+            "s": "7725",
+            "m": "HR/Vhc",
+            "g": 29,
+            "pn": false,
+            "v": null,
+            "gl": "to turn back",
+            "lx": "שׁוּב"
+          },
+          {
+            "t": "אֶֽל",
+            "l": "413",
+            "s": "413",
+            "m": "HR",
+            "g": 13,
+            "pn": false,
+            "v": null,
+            "gl": "near",
+            "lx": "אֵל"
+          },
+          {
+            "t": "מָרְדֳּכָֽי",
+            "l": "4782",
+            "s": "4782",
+            "m": "HNp",
+            "g": 5,
+            "pn": true,
+            "v": null,
+            "gl": "Mordecai",
+            "lx": "מׇרְדְּכַי"
+          }
+        ]
       }
     ]
   };

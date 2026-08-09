@@ -111,7 +111,12 @@ function challengeScoped(list, showChallenge) {
 // value" principle as decodeMorphSegment below.
 const BOOK_NAMES = {
   Gen: 'Genesis', Ruth: 'Ruth', Jonah: 'Jonah', Exod: 'Exodus',
-  Deut: 'Deuteronomy', Judg: 'Judges', '1Sam': '1 Samuel', '2Sam': '2 Samuel'
+  Deut: 'Deuteronomy', Judg: 'Judges', '1Sam': '1 Samuel', '2Sam': '2 Samuel',
+  // task #24 stage B additions (Josh/1Kgs/2Kgs/Esth now have curated
+  // selections; Ps kept in sync too — see BOOK_ORDER below — even though
+  // stage C hasn't curated any Psalms selections yet, so this table never
+  // needs touching again when it does):
+  Josh: 'Joshua', '1Kgs': '1 Kings', '2Kgs': '2 Kings', Esth: 'Esther', Ps: 'Psalms'
 };
 function bookDisplayName(code) {
   return BOOK_NAMES[code] || String(code ?? '');
@@ -136,11 +141,15 @@ function firstLessonWithMaterial(fromLesson, tier) {
 // Canonical book display order (Reader book expansion) — mirrors
 // tools/import_oshb_reader.mjs's BOOK_LIST exactly (Gen first, since the
 // original 52 curated selections are all Genesis, then the 7 expansion
-// books in the order the importer processes them). Kept as a local
-// constant per CLAUDE.md's ES-module cache-hazard rule (a mirrored sentinel
-// rather than a new cross-module import) — if BOOK_LIST in the importer
-// ever changes, update this array too.
-const BOOK_ORDER = ['Gen', 'Ruth', 'Jonah', 'Exod', 'Deut', 'Judg', '1Sam', '2Sam'];
+// books in the order the importer processes them, then task #24 stage A's
+// Josh/1Kgs/2Kgs/Esth/Ps). Kept as a local constant per CLAUDE.md's
+// ES-module cache-hazard rule (a mirrored sentinel rather than a new
+// cross-module import) — if BOOK_LIST in the importer ever changes, update
+// this array too.
+const BOOK_ORDER = [
+  'Gen', 'Ruth', 'Jonah', 'Exod', 'Deut', 'Judg', '1Sam', '2Sam',
+  'Josh', '1Kgs', '2Kgs', 'Esth', 'Ps'
+];
 function bookOrderIndex(code) {
   const i = BOOK_ORDER.indexOf(code);
   return i === -1 ? BOOK_ORDER.length : i;

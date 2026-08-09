@@ -10,7 +10,8 @@
     "READER BOOK EXPANSION (task: multi-book expansion, after PR H): the importer (tools/import_oshb_reader.mjs) now scores 8 books — Gen, Ruth, Jonah, Exod, Deut, Judg, 1Sam, 2Sam — over the same pinned OSHB checkout. The 52 pre-existing Genesis selections above are UNCHANGED (same ids/scores; re-verified byte-for-byte against a fresh import after the gate-map/override-table updates below). 26 new selections were added from the 7 new books: (a) thin-bucket fill for gate buckets 15-19/23-27/28-31, which previously had only 1-2 Genesis strict candidates, drawing exclusively from non-Genesis books, shortest tokenCount first; (b) up to 2 strict + 1 guided per new book, chosen from that book's single richest gate bucket (all 7 landed in bucket 35-38, the Qal wayyiqtol/past-narrative gate — the natural backbone of Biblical Hebrew narrative prose, so unsurprisingly every narrative book's deepest candidate pool). No challenge-tier verses were found in ANY of the 8 books (tier definition: exactly one clearly-identified near-future-lesson token, all others in scope) — same null result as the original Genesis-only pass; the challenge tier remains fully implemented and ready to populate if a future gate-map/override refinement produces a match. Selection picking was scripted (scratchpad/curate_reader.mjs, not part of the shipped tool chain) directly against a fresh importReaderCorpus() run, so every new entry's scores are trivially exact-reproducible by construction. LEMMA_OVERRIDES was extended with entries audited from the combined top-60 unresolved Strong's numbers across all 8 books (tools/import_oshb_reader.mjs's own header comment there documents 3 entries — אֱלֹהִים 430, אֶרֶץ 776, צִוָּה 6680 — that were found to genuinely match a CSV row but were deliberately withheld because adding them drifts 5 of the 52 fixed Genesis selections' scores). Coverage-gap count across all 8 books is 0 (unchanged) — gate-map.json needed no new entries beyond what Phase 2 PR D had already authored (its existing per-POS-letter safety-net catch-alls already cover every OSHB morph code observed in the 7 new books).",
     "CHALLENGE TIER REWORK (task 13a, 2026-08-09 addenda \"matcher fixes\"/\"challenge tier rework\"/\"underline noise\"): two matcher bugs were fixed in tools/import_oshb_reader.mjs's classifyToken() — (1) OSHB gentilic nouns (Ng: the Hivite/Arkite/Sinite/Philistine/etc. nation-name family) are now pn-class (excluded from unknownContentLexemes, isProperName:true, plus a distinct isGentilic/gent:true flag), matching how proper names (Np) were already handled — previously a verse full of untaught gentilic names (e.g. Gen 10:16-17) was wrongly counted as several unknown content words; (2) compound-token vocab matching now also checks a pure-function-word token's own core segment (e.g. the object-marker segment of ו/את) against the vocab index even when that token has no N/V/A content segment, so taught particle vocabulary (את, CSV L15) surfaces its vocabLesson for display/underline purposes instead of silently reading null. The freeze on 3 previously-withheld LEMMA_OVERRIDES entries (אֱלֹהִים 430 CSV L3, אֶרֶץ 776 CSV L9, צִוָּה 6680 CSV L35) was also lifted. Re-scoring the whole 8-book corpus with these fixes changed 10 of the 78 pre-existing selections above: reader-gen-10-16 and reader-gen-10-17 improved guided->strict (unknownContentLexemes 3->0, the exact Gen 10:17 screenshot case); reader-gen-1-1 and reader-gen-24-4 improved guided->strict (430/776 override additions); reader-gen-10-20 and reader-2sam-5-18 stayed guided but dropped one unknownContentLexemes; reader-gen-50-12/reader-gen-38-2/reader-gen-7-5 stayed strict but dropped to 0 unknownContentLexemes. No selection's tier got worse. All other 69 selections' scores/tier/gateLesson are byte-identical to their pre-13a values (reader-deut-6-4 also changed, but from a SEPARATE, unrelated fix — see the large-letter tokenizer note below).",
     "The challenge tier itself was separately reworked (docs' \"challenge tier rework\" addendum): the ORIGINAL definition (\"exactly one near-future-lesson token, <=3 unknown content lexemes\") could structurally never fire (its own threshold was a strict subset of guided's, so guided always claimed the verse first — zero challenge candidates were ever found in any of the 8 books). scoreVerse() in tools/import_oshb_reader.mjs now computes challenge-eligibility as an INDEPENDENT diagnostic (`scores.challenge`), never overriding the primary strict/guided `tier` — an early draft that checked challenge before strict/guided (the only way to make the tighter threshold reachable) flipped 60+ of the 78 pre-existing selections into \"challenge\" purely because every ordinary short clause has \"one token at the single highest lesson (its main verb) plus a lower baseline\", which is completely normal sentence structure, not a rare/noteworthy shape. Keeping the two independent means a verse's primary tier is unaffected by whether it ALSO happens to be challenge-eligible; a curator opts a specific verse INTO the challenge tier explicitly (as done below). Two curation-quality floors beyond the doc's three numeric conditions: the lower gate G must be >= lesson 9 (bucketOf()'s own curation floor — below that is bare pronoun/article/preposition connective tissue with no real \"baseline\" to preview against), and the gap (maxGrammarLesson - G) must be >= 10 (so \"future feature\" means a meaningfully distant course unit, e.g. Past Narrative or Numerals, not just the next lesson or two over). Scanning all 8 books found 293 challenge-eligible verses across gate buckets 9-14 through 35-38 (none in 39-41/42-44/45-50 — see tools/import_oshb_reader.mjs --report's \"Challenge-eligible candidates\" section); 8 were curated below (reader-ch-* ids), one or two per bucket, spread across Gen/1Sam/Exod/2Sam and across feature types (Qal/Piel wayyiqtol, Hitpael wayyiqtol, Imperative, numerals), chosen for clean short clauses with a verified challengeNote.",
-    "LARGE-LETTER TOKENIZER FIX (task 13a, found while authoring wooden translations): OSHB marks the two traditionally-enlarged Masoretic letters in the Shema (Deut 6:4 — שְׁמַע's ע and אֶחָד's ד) with a <seg type=\"x-large\"> tag NESTED inside the <w> element itself, which tools/import_oshb_reader.mjs's original regex-based tokenizer (requiring a <w> body with no \"<\" at all) silently failed to match — both tokens vanished from the stream rather than erroring. This is the ONLY nested-tag-inside-<w> case anywhere in the 8-book corpus (grep-verified: exactly 2 <seg type=\"x-large\"> occurrences total, both in this one verse). Fixed in W_RE/NESTED_SEG_RE (flattens the nested <seg> back to plain text, byte-identical to the unmarked word) with the identical fix mirrored in validate_bbh_reader_data.mjs's independent extractRawTokenDisplays(). reader-deut-6-4 (already a curated selection) went from 4 tokens/gate L31 (missing \"Hear\" and \"one\" entirely) to the correct 6 tokens/gate L45 (אֶחָד \"one\" is a numeral, gate-mapped to L45) — still tier:\"strict\" (1 unknown content lexeme, was 0). No other selection or verse in the corpus is affected (the only other <seg type=\"x-large\"> instance is the matching אֶחָד in the same verse)."
+    "LARGE-LETTER TOKENIZER FIX (task 13a, found while authoring wooden translations): OSHB marks the two traditionally-enlarged Masoretic letters in the Shema (Deut 6:4 — שְׁמַע's ע and אֶחָד's ד) with a <seg type=\"x-large\"> tag NESTED inside the <w> element itself, which tools/import_oshb_reader.mjs's original regex-based tokenizer (requiring a <w> body with no \"<\" at all) silently failed to match — both tokens vanished from the stream rather than erroring. This is the ONLY nested-tag-inside-<w> case anywhere in the 8-book corpus (grep-verified: exactly 2 <seg type=\"x-large\"> occurrences total, both in this one verse). Fixed in W_RE/NESTED_SEG_RE (flattens the nested <seg> back to plain text, byte-identical to the unmarked word) with the identical fix mirrored in validate_bbh_reader_data.mjs's independent extractRawTokenDisplays(). reader-deut-6-4 (already a curated selection) went from 4 tokens/gate L31 (missing \"Hear\" and \"one\" entirely) to the correct 6 tokens/gate L45 (אֶחָד \"one\" is a numeral, gate-mapped to L45) — still tier:\"strict\" (1 unknown content lexeme, was 0). No other selection or verse in the corpus is affected (the only other <seg type=\"x-large\"> instance is the matching אֶחָד in the same verse).",
+    "TASK #24 STAGE B (Reader prose expansion, 2026-08-09): the importer (tools/import_oshb_reader.mjs) now scores 13 books (task #24 stage A added Josh/1Kgs/2Kgs/Esth/Ps to the prior 8). The 86 pre-existing selections above are UNCHANGED (same ids/scores; re-verified byte-for-byte against a fresh import). 12 new selections were added from the 4 new PROSE books (Josh/1Kgs/2Kgs/Esth — Psalms is stage C's job, challenge-tier poetry only, not curated here): 2 strict + 1 guided per book, chosen for (a) short (5-17 token) verses that score well at an honest gate, (b) thin-bucket fill where a good candidate existed (20-22, 23-27, 39-41, 42-44 all gained entries; 15-19/28-31/32-34 were left untouched — no strong short/pedagogical candidate was found there in these 4 books, per the \"do not force it\" instruction), and (c) pedagogically attractive narrative regions where the scores actually supported it: Josh 1 (commissioning)/Josh 24 (covenant renewal) flank the famous but non-scoring 1:9/24:15; 1Kgs 2 (David's charge to Solomon, \"be strong\")/1Kgs 3 (Solomon's judgment)/1Kgs 19 (Elijah told to anoint Elisha, bridging into the Elisha material); 2Kgs 2/5 (Elisha's Jericho-waters and Naaman narratives); Esth 2 (Mordecai introduced)/Esth 4 (the Esther-Mordecai-Hathach relay immediately surrounding \"for such a time as this\", 4:14, which does not itself score strict/guided — its neighbors 4:9/4:10/4:12/4:15/4:17 do). No new LEMMA_OVERRIDES entries were added (every selected verse already reached its tier without one; task 13a's own experience — 3 known-safe overrides drifting 5 Genesis scores — argued for leaving the override table untouched when not strictly needed). All 12 new `wooden` translations are author-drafted, `woodenStatus:\"draft\"` — NOT YET independently reviewed against token morphology; that is stage D's job, same convention as task 13a's original draft pass. `tools/check_release.mjs` check5b passage count updated 86->98; validator/generator both green, gen twice byte-identical, and the 86 pre-existing selections' scores/tier/gateLesson are untouched."
   ],
   "selections": [
     {
@@ -1396,6 +1397,198 @@
       "challengeNote": "Contains 1 numeral form (שָׁלֹשׁ \"three\") — Numerals introduced in Lesson 45.",
       "wooden": "And Abshalom fled, and he went to Geshur, and he was there three years.",
       "woodenStatus": "reviewed"
+    },
+    {
+      "id": "reader-josh-9-3",
+      "ref": "Josh 9:3",
+      "osisRef": "Josh.9.3",
+      "gateLesson": 42,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 9,
+        "unknownContentLexemes": 0,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 42
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, Joshua): thin-bucket fill (L42 gate, bucket 42-44); the Gibeonites' plan is set in motion by news of Jericho and Ai, all-mapped/0 unknown content lexemes.",
+      "wooden": "And the inhabitants of Gibeon heard what Joshua had done to Jericho and to Ai.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-josh-24-28",
+      "ref": "Josh 24:28",
+      "osisRef": "Josh.24.28",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 6,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, Joshua): pedagogically attractive pick — the closing verse of Joshua 24's covenant-renewal scene (\"as for me and my house\", 24:15, does not itself score strict/guided); short 6-token wayyiqtol clause.",
+      "wooden": "And Joshua sent the people away, each to his inheritance.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-josh-1-16",
+      "ref": "Josh 1:16",
+      "osisRef": "Josh.1.16",
+      "gateLesson": 40,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 13,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 40
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, Joshua): pedagogically attractive pick — the people's pledge of obedience answering Joshua's commissioning speech (Josh 1:9 \"be strong and courageous\" does not itself score strict/guided).",
+      "wooden": "And they answered Joshua, saying, 'All that you have commanded us we will do, and wherever you send us we will go.'",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-1kgs-2-2",
+      "ref": "1Kgs 2:2",
+      "osisRef": "1Kgs.2.2",
+      "gateLesson": 42,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 8,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 42
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, 1 Kings): thin-bucket fill (L42 gate, bucket 42-44); David's charge to Solomon on his deathbed — pedagogically attractive \"be strong\" theme.",
+      "wooden": "I am going the way of all the earth; be strong, and be a man.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-1kgs-3-19",
+      "ref": "1Kgs 3:19",
+      "osisRef": "1Kgs.3.19",
+      "gateLesson": 35,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 8,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, 1 Kings): Solomon's judgment narrative (the two women and the living child) — pedagogically attractive Solomon-wisdom material; short 8-token clause.",
+      "wooden": "And the son of this woman died at night, because she lay on him.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-1kgs-19-16",
+      "ref": "1Kgs 19:16",
+      "osisRef": "1Kgs.19.16",
+      "gateLesson": 23,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 17,
+        "unknownContentLexemes": 3,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 23
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, 1 Kings): thin-bucket fill (L23 gate, bucket 23-27, previously only 2 guided candidates in the whole corpus); the LORD's charge to Elijah to anoint Elisha as prophet — bridges the Elijah (1Kgs 18) and Elisha (2Kgs 2/5) material.",
+      "wooden": "And Jehu son of Nimshi you shall anoint as king over Israel, and Elisha son of Shaphat from Abel-meholah you shall anoint as prophet in your place.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-2kgs-2-22",
+      "ref": "2Kgs 2:22",
+      "osisRef": "2Kgs.2.22",
+      "gateLesson": 37,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 9,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 37
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, 2 Kings): pedagogically attractive pick — Elisha's healing of the waters at Jericho (2Kgs 2), the closing formula of the miracle narrative.",
+      "wooden": "So the waters were healed to this day, according to the word of Elisha which he spoke.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-2kgs-13-22",
+      "ref": "2Kgs 13:22",
+      "osisRef": "2Kgs.13.22",
+      "gateLesson": 20,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 9,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 20
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, 2 Kings): thin-bucket fill (L20 gate, bucket 20-22); a short historical-summary clause on Hazael's oppression of Israel.",
+      "wooden": "And Hazael king of Aram oppressed Israel all the days of Jehoahaz.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-2kgs-5-19",
+      "ref": "2Kgs 5:19",
+      "osisRef": "2Kgs.5.19",
+      "gateLesson": 39,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 8,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 39
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, 2 Kings): pedagogically attractive pick — Elisha's dismissal of Naaman (2Kgs 5) after the healing, \"go in peace.\"",
+      "wooden": "And he said to him, 'Go in peace.' And he went from him a stretch of land.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-esth-2-5",
+      "ref": "Esth 2:5",
+      "osisRef": "Esth.2.5",
+      "gateLesson": 22,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 15,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 22
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, Esther): thin-bucket fill (L22 gate, bucket 20-22); introduces Mordecai the Jew in Susa the citadel, opening the book's central family.",
+      "wooden": "There was a Jewish man in Susa the citadel, and his name was Mordecai son of Jair son of Shimei son of Kish, a Benjaminite.",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-esth-4-10",
+      "ref": "Esth 4:10",
+      "osisRef": "Esth.4.10",
+      "gateLesson": 40,
+      "tier": "strict",
+      "scores": {
+        "tokenCount": 6,
+        "unknownContentLexemes": 1,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 40
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, Esther): pedagogically attractive pick — part of the Esther/Mordecai/Hathach message relay leading to \"for such a time as this\" (Esth 4:14, which does not itself score strict/guided).",
+      "wooden": "And Esther said to Hathach, and commanded him for Mordecai:",
+      "woodenStatus": "draft"
+    },
+    {
+      "id": "reader-esth-4-15",
+      "ref": "Esth 4:15",
+      "osisRef": "Esth.4.15",
+      "gateLesson": 35,
+      "tier": "guided",
+      "scores": {
+        "tokenCount": 5,
+        "unknownContentLexemes": 2,
+        "unmappedCount": 0,
+        "maxGrammarLesson": 35
+      },
+      "rationale": "Task #24 stage B (Reader prose expansion, Esther): pedagogically attractive pick — Esther's reply to Mordecai, immediately following \"for such a time as this\" (Esth 4:14), leading into her decision to approach the king.",
+      "wooden": "And Esther said to reply to Mordecai:",
+      "woodenStatus": "draft"
     }
   ]
 }

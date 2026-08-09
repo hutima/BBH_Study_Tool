@@ -329,13 +329,41 @@
   existing selections are unaffected; the importer only gained CAPABILITY.
   `node tools/check_release.mjs` → 24 reports / 0 failures, unchanged from
   before this stage (`?v=20` untouched, check6 confirms `source/bbh/`
-  untouched). Only file touched: `tools/import_oshb_reader.mjs`. NOT
+  untouched). Only file touched: `tools/import_oshb_reader.mjs`.
+- **Task #24 stage B IMPLEMENTED, UNCOMMITTED (2026-08-09)** — 12 new
+  PROSE selections curated into `source/bbh/reader/selections.json` from
+  Joshua/1 Kings/2 Kings/Esther (2 strict + 1 guided per book; Psalms is
+  stage C's job, not touched here), additions-only (86 pre-existing
+  entries verified byte-identical, zero frozen-score drift). Full list +
+  scores + bucket-coverage before/after in `docs/bbh-conversion-plan.md`'s
+  task-24 addendum. No new `LEMMA_OVERRIDES`. All 12 `wooden` translations
+  author-drafted, `woodenStatus:"draft"` (stage D reviews + flips to
+  `"reviewed"`). Strong's glosses 300/300 resolved (0 missing). Also fixed
+  a real gap found while spot-checking: `js/ui/reader.js`'s
+  `BOOK_NAMES`/`BOOK_ORDER` tables didn't know the 5 stage-A books, so
+  Josh/1Kgs/2Kgs/Esth rendered as raw OSIS codes — added all 5 (incl. `Ps`,
+  ahead of stage C). `tools/check_release.mjs` check5b passage count
+  86→98. Verified: `validate_bbh_reader_data.mjs` 6/6 pass; `gen_bbh_reader
+  _data.mjs` byte-identical across 2 reruns; `check_release.mjs` → 23
+  reports / 1 failure (`check6: source/bbh/ has uncommitted changes` —
+  expected while uncommitted, resolves to 24/0 once committed, same as
+  tasks 13/14's own precedent); `scratchpad/smoke_reader.mjs` (12
+  sections/40 checks) fully green (fixed two env-only Playwright flakes:
+  GA `gtag.js` route stub + `serviceWorkers: 'block'` context, since a
+  page-route stub alone doesn't survive the app's own SW taking control
+  after this smoke's later reloads); a new
+  `scratchpad/task24b_spotcheck.mjs` confirms `reader-esth-4-15` renders
+  Hebrew text + gloss popover + wooden-translation reveal correctly.
+  Files touched: `source/bbh/reader/selections.json`, `js/data/bbh_reader.js`
+  (regenerated), `tools/check_release.mjs`, `js/ui/reader.js`. NOT
   committed per orchestrator instruction — working tree left for the
-  orchestrator. Next: stage B (prose selections curated + scored + glosses
-  + wooden translations for the 5 new books, from the lemma audit above).
-- **Queue**: task #24 stages B (prose curation for the 5 new books), C
-  (Psalms challenge-tier passages), D (independent wooden-translation
-  review, release counts, smokes, `?v=21` bump, PR) — staging plan in
+  orchestrator. Next: stage C (Psalms challenge-tier passages, poetry-
+  labeled) and stage D (independent wooden-translation review flipping the
+  12 new `woodenStatus` fields to `"reviewed"`, release counts, smokes,
+  `?v=21` bump, PR).
+- **Queue**: task #24 stage C (Psalms challenge-tier passages), stage D
+  (independent wooden-translation review of the 12 stage-B entries,
+  release counts, smokes, `?v=21` bump, PR) — staging plan in
   docs/bbh-conversion-plan.md's task-24 addenda.
 
 ## Repository and PR state
@@ -442,15 +470,18 @@
   task #26 (`60675d6`, PR #23, merge `3d79adf`) are both merged — `Main`
   is live at `?v=20`. Working tree on `claude/new-session-988x25` (branched
   from `Main` tip `3d79adf`, ledger commit `044de02` on top) carries task
-  #24 STAGE A (Reader importer/coverage groundwork — see the Resume status
-  bullet above and docs/bbh-conversion-plan.md's task-24 staging addendum)
-  IMPLEMENTED, UNCOMMITTED. Only `tools/import_oshb_reader.mjs` is
-  modified; `js/data/bbh_reader.js` and every shipped asset are untouched,
-  `?v=` stays `20` (unchanged by this stage, per instruction — bumps at
+  #24 STAGE A + STAGE B (see the Resume status bullets above and
+  docs/bbh-conversion-plan.md's task-24 staging addendum) IMPLEMENTED,
+  UNCOMMITTED. Modified: `tools/import_oshb_reader.mjs` (stage A),
+  `source/bbh/reader/selections.json` + `js/data/bbh_reader.js`
+  (regenerated) + `tools/check_release.mjs` + `js/ui/reader.js` (stage B).
+  `?v=` stays `20` (unchanged through stage B, per instruction — bumps at
   stage D). Scratchpad reports (`task24a_gatemap_gaps.md`,
   `task24a_lemma_audit.md`, `task24a_audit.mjs`,
-  `task24a_audit_raw.txt`, `task24a_full_report.txt`) live in this
-  session's scratchpad dir, not the repo.
+  `task24a_audit_raw.txt`, `task24a_full_report.txt`, `task24b_query.mjs`,
+  `task24b_query_out.txt`, `task24b_inspect.mjs`, `task24b_finalize.mjs`,
+  `task24b_spotcheck.mjs`) live in this session's scratchpad dir, not the
+  repo.
 
 ## Content counts
 
@@ -464,8 +495,9 @@
   form exists anywhere in the book — recorded, nothing fabricated).
 - Grammar: 300 questions, all reviewStatus=reviewed (300/300 + 125/125
   blind answer agreement across two rounds; anti-giveaway lint zero).
-- Reader: 52 passages / 406 tokens (32 strict / 20 guided; 0 natural
-  challenge verses in Genesis under policy — documented).
+- Reader: 98 passages / 699 tokens (63 strict / 27 guided / 8 challenge;
+  spans Gen/Ruth/Jonah/Exod/Deut/Judg/1Sam/2Sam/Josh/1Kgs/2Kgs/Esth as of
+  task #24 stage B, uncommitted — see RESTORE.md's task-24 stage-B note).
 - Reference: 42 generated sections / 398 rows.
 
 ## Tests last run (PR F head)
