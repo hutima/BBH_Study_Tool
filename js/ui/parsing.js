@@ -185,11 +185,24 @@ function formatSourceRef(form) {
   return '';
 }
 
+// Task #25 item 3: rebuilt as TOGGLE first, then LABEL, then a separate (i)
+// info button — a plain wrapper <div> (not main.js's whole-row <button>), so
+// the row itself carries no onclick and only the switch (its own <button>)
+// can flip the option; the (i) is a sibling, not a descendant of the switch,
+// so a tap on/near it can never bubble into the switch's click handler —
+// no extra tap-guard JS needed, the DOM shape alone enforces it.
+// showToggleInfo/closeToggleInfoModal (js/app/main.js, wired onto
+// GLOBAL_CLICK_HANDLERS) are the SAME #toggleInfoOverlay modal the vocab
+// controlsBar's (i) buttons already use — it only ever reads a `.toggle-text`
+// descendant + a `title` attribute off whatever element it's handed, so this
+// div-based row works with it unmodified (see main.js's installToggleInfo*
+// header comment for the shared pattern this reuses).
 function toggleHtml({ id, label, checked, onclick, title }) {
-  return `<button class="toggle-label" id="${id}" type="button" role="switch" aria-checked="${checked ? 'true' : 'false'}" onclick="${onclick}"${title ? ` title="${escapeHtml(title)}"` : ''}>
+  return `<div class="toggle-label parsing-toggle-row"${title ? ` title="${escapeHtml(title)}"` : ''}>
+    <button class="toggle-switch${checked ? ' on' : ''}" id="${id}" type="button" role="switch" aria-checked="${checked ? 'true' : 'false'}" aria-label="${escapeHtml(label)}" onclick="${onclick}"></button>
     <span class="toggle-text">${escapeHtml(label)}</span>
-    <span class="toggle-switch${checked ? ' on' : ''}" aria-hidden="true"></span>
-  </button>`;
+    <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.parsing-toggle-row'))">i</button>
+  </div>`;
 }
 
 // ─── Inventory access ───────────────────────────────────────────────────
@@ -568,11 +581,17 @@ function renderScopeControl(state, rootIndex) {
     const caption = unlockLesson ? `unlocks at Lesson ${unlockLesson}` : 'no qualifying roots yet';
     rootDisabledAttrs = ` disabled aria-disabled="true" title="${escapeHtml(caption)}"`;
   }
+  // Task #25 items 1-2: display-only renames — the internal mode keys
+  // ('focused'/'shuffle') and every state field they drive are unchanged
+  // (see getScopeMode below). "Shuffle" -> "All to date" also became the
+  // DEFAULT scope for fresh state (js/state/runtime.js's `parsing.shuffleAll`
+  // default, js/state/persistence.js's sanitizeParsingState, and main.js's
+  // mixed-version guard all flipped together — see their own comments).
   const cards = [
-    { key: 'focused', label: 'Focused' },
+    { key: 'focused', label: 'Lesson focus', attrs: ' title="Drill only the paradigms introduced by the current lesson (or one paradigm you pick below)."' },
     { key: 'root', label: 'Root journey', attrs: rootDisabledAttrs },
     { key: 'byFeature', label: 'By feature' },
-    { key: 'shuffle', label: 'Shuffle' },
+    { key: 'shuffle', label: 'All to date', attrs: ' title="Drill the full cumulative pool: everything introduced up to the current lesson."' },
     { key: 'custom', label: 'Custom' }
   ];
   const cardsHtml = cards.map((c) => `
@@ -608,7 +627,7 @@ function renderFocusedPickerRow(state) {
   });
   return `
     <div class="parsing-options-row parsing-scope-picker-row">
-      <label class="parsing-field-label" for="parsingParadigmSelect">Focused paradigm</label>
+      <label class="parsing-field-label" for="parsingParadigmSelect">Lesson focus paradigm</label>
       <select id="parsingParadigmSelect" class="parsing-select" onchange="parsingSetParadigm(this.value)">${paradigmOptions}</select>
     </div>`;
 }
@@ -709,7 +728,7 @@ function renderParsingOptionsPanel() {
     label: DIM_TOGGLE_LABELS[d] || d,
     checked: state.dims[d] !== false,
     onclick: `parsingToggleDim('${d}')`,
-    title: `Grade the ${(DIM_TOGGLE_LABELS[d] || d).toLowerCase()} dimension when it applies to a form.`
+    title: `Ask about ${(DIM_TOGGLE_LABELS[d] || d).toLowerCase()} when parsing or building a form.`
   })).join('');
 
   panel.innerHTML = `
@@ -735,8 +754,8 @@ function renderParsingOptionsPanel() {
     <details class="parsing-more-options" id="parsingMoreOptionsDetails"${state.optionsOpen ? ' open' : ''} ontoggle="parsingSetOptionsOpen(this.open)">
       <summary>More options</summary>
       <div class="parsing-toggle-grid">
-        ${toggleHtml({ id: 'parsingExcludeKnownToggle', label: 'Exclude known', checked: !!state.excludeKnown, onclick: 'parsingToggleExcludeKnown()', title: 'Hide forms already answered correctly twice in a row under the current dimension toggles.' })}
-        ${toggleHtml({ id: 'parsingAppendixToggle', label: 'Appendix forms', checked: !!state.includeAppendix, onclick: 'parsingToggleAppendix()', title: 'Include forms that only appear in the textbook appendixes (off by default).' })}
+        ${toggleHtml({ id: 'parsingExcludeKnownToggle', label: 'Exclude known', checked: !!state.excludeKnown, onclick: 'parsingToggleExcludeKnown()', title: 'Skip forms you\'ve already marked known (answered correctly twice in a row under the current dimension toggles).' })}
+        ${toggleHtml({ id: 'parsingAppendixToggle', label: 'Appendix forms', checked: !!state.includeAppendix, onclick: 'parsingToggleAppendix()', title: 'Include appendix-only paradigms and forms — material the textbook introduces in an appendix rather than a numbered lesson (off by default).' })}
       </div>
       ${dimToggles ? `<div class="parsing-toggle-grid parsing-dim-toggles">${dimToggles}</div>` : ''}
       <div class="parsing-options-row parsing-danger-row">
@@ -760,8 +779,8 @@ function renderEmptyState(state) {
   } else {
     const nextLesson = firstLessonWithMaterial(paradigms, state.lesson + 1);
     guidance = nextLesson
-      ? `Lesson ${state.lesson} doesn't introduce new parsing material of its own — the next new paradigm arrives in Lesson ${nextLesson}. Meanwhile, turn on Shuffle all or pick a Focused paradigm above to review what's already been covered.`
-      : `Lesson ${state.lesson} doesn't introduce new parsing material of its own. Turn on Shuffle all or pick a Focused paradigm above to review what's already been covered.`;
+      ? `Lesson ${state.lesson} doesn't introduce new parsing material of its own — the next new paradigm arrives in Lesson ${nextLesson}. Meanwhile, pick All to date or Lesson focus above to review what's already been covered.`
+      : `Lesson ${state.lesson} doesn't introduce new parsing material of its own. Pick All to date or Lesson focus above to review what's already been covered.`;
   }
   return `<div class="empty-state parsing-empty-state"><div class="big hebrew-text" dir="rtl" lang="he">אבג</div>${escapeHtml(guidance)}</div>`;
 }

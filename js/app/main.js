@@ -2639,7 +2639,13 @@ const GLOBAL_CLICK_HANDLERS = {
   setShowPoints, setShowTranslit,
   showDisclaimerModal, startStudying, toggleDirection,
   toggleRequiredOnly, toggleHardVocabReview, toggleShuffle, toggleSpacedRepetition, toggleSpacingCadence, toggleUnspacedDailyReset, triggerImportProgress,
-  closeToggleInfoModal, onDueHistogramToggle,
+  // showToggleInfo itself only needs exposing here because task #25's
+  // parsing More-options rows call it from an onclick="..." STRING (js/ui/
+  // parsing.js's toggleHtml) rather than main.js's own addEventListener-based
+  // installToggleInfoForContainer wiring — same #toggleInfoOverlay modal,
+  // just reached the GLOBAL_CLICK_HANDLERS way other cross-module UI hooks
+  // are (CLAUDE.md ES-module cache hazard: no new cross-module imports).
+  closeToggleInfoModal, showToggleInfo, onDueHistogramToggle,
   openContactAuthorModal, closeContactAuthorModal, openExternalLink,
   triggerInstall, closeInstallInstructions, dontShowInstallAgain,
   // Phase 2 PR B: Parsing mode (js/ui/parsing.js) click/change handlers.
@@ -2749,7 +2755,10 @@ if (!runtime.parsing || typeof runtime.parsing !== 'object') {
     lesson: 1,
     focusedParadigmId: null,
     direction: 'parse',
-    shuffleAll: false,
+    // Task #25 item 2: "All to date" (shuffleAll) is now the default scope
+    // for fresh state — keep in sync with runtime.js's `parsing` default and
+    // persistence.js's sanitizeParsingState (the THREE sync points).
+    shuffleAll: true,
     customSetOn: false,
     customSet: {},
     excludeKnown: false,

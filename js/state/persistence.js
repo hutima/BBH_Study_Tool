@@ -203,7 +203,13 @@ function sanitizeParsingState(candidate) {
     lesson,
     focusedParadigmId: (typeof src.focusedParadigmId === 'string' && src.focusedParadigmId) ? src.focusedParadigmId : null,
     direction: src.direction === 'build' ? 'build' : src.direction === 'mixed' ? 'mixed' : 'parse',
-    shuffleAll: !!src.shuffleAll,
+    // Task #25 item 2: default flipped to true ("All to date"). Only fill in
+    // the default when the field is missing/invalid — an explicit stored
+    // `false` (a user who picked Lesson focus, which sets shuffleAll: false)
+    // must survive untouched. Third of the three sync points; see
+    // js/state/runtime.js's `parsing` default and main.js's mixed-version
+    // guard, which must agree with this.
+    shuffleAll: typeof src.shuffleAll === 'boolean' ? src.shuffleAll : true,
     customSetOn: !!src.customSetOn,
     customSet: sanitizeParsingCustomSet(src.customSet),
     excludeKnown: !!src.excludeKnown,

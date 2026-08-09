@@ -204,10 +204,48 @@
   (regenerated), `tools/check_release.mjs`, `index.html`, `sw.js`,
   `styles.css`, `pages/memorization.html`, `docs/index-structure.md`,
   `docs/bbh-conversion-plan.md` (task-23 addendum status note),
-  `scratchpad/smoke_book_vocab.mjs`. NOT committed per orchestrator
-  instruction — working tree left for the orchestrator to review/commit.
+  `scratchpad/smoke_book_vocab.mjs`. **Now merged** as `f07475b` via PR #21
+  (merge commit `3b6e3d4`) — the "NOT committed" note above is superseded.
   Task #24 (Reader prose/poetry expansion) remains queued, untouched by
   this pass.
+- **Task #25 IMPLEMENTED, UNCOMMITTED (2026-08-09)** — four user-requested
+  parsing UX fixes from live mobile testing, addendum in
+  `docs/bbh-conversion-plan.md` (full detail there): (1) scope card
+  "Focused" → "Lesson focus" (display-only, internal key unchanged); (2)
+  scope card "Shuffle" → "All to date" (display-only) AND made the DEFAULT
+  scope for fresh state, mirrored across the three sync points
+  (`js/state/runtime.js` default, `js/state/persistence.js`
+  `sanitizeParsingState`, `js/app/main.js` mixed-version guard — an
+  explicit stored `shuffleAll:false` from a user who picked Lesson focus
+  is preserved, only a missing/invalid field defaults to `true` now) plus
+  the pre-PR-B migration seed for consistency; (3) More-options rows
+  rebuilt as TOGGLE-then-LABEL-then-(i) in DOM order
+  (`js/ui/parsing.js`'s `toggleHtml`, reusing the vocab controlsBar's
+  `#toggleInfoOverlay`/`showToggleInfo` — added to `GLOBAL_CLICK_HANDLERS`
+  — with one-sentence explanations for all 9 rows; the (i) is a DOM
+  sibling of the switch so it structurally cannot flip it, no extra
+  tap-guard JS needed); (4) root-caused and fixed the mobile Build/root-
+  journey crush (`.parsing-area`'s unset `flex-direction` defaulted to
+  `row`; `@media (max-width:699px)` now stacks it column, `>=700px`
+  unchanged — verified against a `git worktree` of pre-change `HEAD`, task
+  #21's desktop work not regressed). `?v=18` → `?v=19` (final step, all
+  five files + `CACHE_NAME` synced). `check_release.mjs` → 24/0 unchanged.
+  `scratchpad/smoke_parsing.mjs` updated (renamed scope-click targets, one
+  new early `clickScopeMode(page, 'Lesson focus')` step since the rest of
+  that file assumes the old default) — reruns with the SAME 4-failure
+  baseline as the unmodified pre-task-25 tree (documented GA + `.mark-easy`
+  selector-collision flakes, confirmed identical via `git worktree`, not a
+  regression). New `scratchpad/smoke_task25.mjs` (12 steps) all green.
+  Screenshots in `scratchpad/`: `task25_more_options_{375,1280}_*.png`,
+  `task25_build_journey_{375,1280}_*.png` (375 before-shot reproduces the
+  reported crush exactly). Files touched: `js/ui/parsing.js`,
+  `js/state/runtime.js`, `js/state/persistence.js`,
+  `js/state/migrations.js`, `js/app/main.js`, `styles.css`, `index.html`,
+  `sw.js`, `pages/memorization.html`, `docs/index-structure.md`,
+  `docs/bbh-conversion-plan.md`, `scratchpad/smoke_parsing.mjs`,
+  `scratchpad/smoke_task21.mjs` (2-line label fix), new
+  `scratchpad/smoke_task25.mjs`. NOT committed per orchestrator
+  instruction — working tree left for the orchestrator to review/commit.
 - **Queue**: task #24 (Reader: more prose books + simple-poetry challenge
   tier), addendum already drafted in docs/bbh-conversion-plan.md.
 
@@ -311,7 +349,12 @@
 
 ## Current work and file ownership
 
-- No agents in flight. Working tree = PR F release candidate.
+- No agents in flight. Working tree on `claude/new-session-988x25` (tip
+  `f912846`) carries task #25 (parsing UX round) IMPLEMENTED, UNCOMMITTED
+  — see the Resume status bullet above and the addendum in
+  `docs/bbh-conversion-plan.md` for full detail. Live release remains
+  `?v=18` until this is committed/merged; the working tree itself is
+  already bumped to `?v=19`.
 
 ## Content counts
 

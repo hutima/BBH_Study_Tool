@@ -833,7 +833,12 @@ export const STATE_MIGRATIONS = [
         lesson: 1,
         focusedParadigmId: null,
         direction: 'parse',
-        shuffleAll: false,
+        // Task #25 item 2: a pre-PR-B save has NEVER touched Parsing at all
+        // (that's what this migration match() detects), so it's exactly the
+        // "fresh state" case the new default applies to — keep this seed
+        // consistent with runtime.js's `parsing` default / persistence.js's
+        // sanitizeParsingState / main.js's mixed-version guard.
+        shuffleAll: true,
         customSetOn: false,
         customSet: {},
         excludeKnown: false,

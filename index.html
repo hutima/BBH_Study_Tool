@@ -23,11 +23,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=18">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=18">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=18">
+<link rel="manifest" href="manifest.json?v=19">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=19">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=19">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=18">
+<link rel="stylesheet" href="styles.css?v=19">
 <script>
 (function(){
   try {
@@ -538,7 +538,7 @@
         <details class="user-guide-changelog-version" open>
           <summary>Parsing, Grammar Quiz, Reader &amp; Alphabet/Vowel decks &middot; 2026-08</summary>
           <ul class="user-guide-list">
-            <li><strong>Parsing mode</strong> &mdash; drill verb/noun/pronoun forms gated to your current lesson, in Parse (identify), Build (construct), or Mixed direction, with focused-paradigm, shuffle-all, custom-set, exclude-known, and appendix-forms scoping. Parsing forms now show a transliteration line (respects the Transliteration show/hide toggle) and a clearer card layout &mdash; big Hebrew form, small italic transliteration, then the step label.</li>
+            <li><strong>Parsing mode</strong> &mdash; drill verb/noun/pronoun forms gated to your current lesson, in Parse (identify), Build (construct), or Mixed direction, with Lesson focus, All to date (the default), Root journey, By feature, and Custom-set scoping, plus exclude-known and appendix-forms toggles. Parsing forms now show a transliteration line (respects the Transliteration show/hide toggle) and a clearer card layout &mdash; big Hebrew form, small italic transliteration, then the step label. More-options rows now lead with the toggle switch and carry a tappable (i) for a one-line explanation of each setting.</li>
             <li><strong>Grammar Quiz mode</strong> &mdash; multiple-choice questions gated to your current lesson, with a review-missed filter and an All/Core-only difficulty switch.</li>
             <li><strong>Reader mode</strong> &mdash; curated Hebrew Bible passages across Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, and 1&ndash;2 Samuel (Strict/Guided tiers, plus an opt-in Challenge tier for one passage above your current lesson, only shown once one exists at your lesson) with tap-to-inspect word details (pointed lemma, gloss, gentilic labels), personal review marks, and a per-passage literal-translation reveal; no grading, nothing scheduled.</li>
             <li><strong>Lesson 1 &middot; Alphabet</strong>, <strong>Lesson 2 &middot; Vowel marks</strong>, and a <strong>Lessons 1-2 combined</strong> deck &mdash; standalone flip-card decks covering the textbook&rsquo;s own Lesson 1 (The Consonants) and Lesson 2 (The Vowels) content (23 letters, 12 vowel points shown on real vocab words, or all 35 shuffled together), separate from every other mode and stat; lessons 1&ndash;2 no longer appear in the vocab lesson list since this is now their content. Opening one now shows an in-flow practice section in place of the vocab card area (no more popup), with a Back button to return to your vocab deck.</li>
@@ -572,7 +572,7 @@
       <p>Cards flow through three lanes &mdash; <em>active</em> (due now), <em>middle</em> (just missed), and <em>deferred</em> (a future day); the bottom panel&rsquo;s <em>Cards left</em> mirrors this. <strong>&#x21B6; Undo</strong> reverses your last mark, and a lapse on a known card runs a short relearn ladder rather than resetting it. With <strong>Spaced review off</strong> it&rsquo;s a plain flip deck: <em>Easy</em> archives a card, <em>Hard</em>/<em>Uncertain</em> send it to the back, and <strong>&#x21BB; Reset</strong> restores the archived cards.</p>
 
       <h3 class="user-guide-heading">Parsing mode</h3>
-      <p>Drills morphological analysis &mdash; binyan/stem, conjugation, person/gender/number, state, and pronominal suffixes &mdash; gated so nothing beyond your current lesson appears. Pick <strong>Parse</strong> (given a form, identify it), <strong>Build</strong> &mdash; short for &ldquo;Build the Form&rdquo; (given a target analysis, choose the matching form) &mdash; or <strong>Mixed</strong>. Scope the pool with <strong>Focused paradigm</strong>, <strong>Shuffle all</strong>, a <strong>Custom set</strong> of chosen paradigms, <strong>Exclude known</strong>, and an <strong>Appendix forms</strong> toggle (off by default) for material the textbook only prints in an appendix. A form counts as <strong>known</strong> once you&rsquo;ve gotten it right two attempts in a row under whichever dimensions are currently graded.</p>
+      <p>Drills morphological analysis &mdash; binyan/stem, conjugation, person/gender/number, state, and pronominal suffixes &mdash; gated so nothing beyond your current lesson appears. Pick <strong>Parse</strong> (given a form, identify it), <strong>Build</strong> &mdash; short for &ldquo;Build the Form&rdquo; (given a target analysis, choose the matching form) &mdash; or <strong>Mixed</strong>. Scope the pool with <strong>Lesson focus</strong> (optionally narrowed to one paradigm), <strong>All to date</strong> (the default &mdash; everything introduced up to your current lesson), a <strong>Custom set</strong> of chosen paradigms, <strong>Exclude known</strong>, and an <strong>Appendix forms</strong> toggle (off by default) for material the textbook only prints in an appendix. A form counts as <strong>known</strong> once you&rsquo;ve gotten it right two attempts in a row under whichever dimensions are currently graded.</p>
 
       <h3 class="user-guide-heading">Grammar mode</h3>
       <p>Short multiple-choice questions on grammar concepts, gated to your current lesson so nothing ahead of where you are shows up. Turn on <strong>Review missed</strong> to focus on questions you&rsquo;ve gotten wrong before, and switch <strong>Difficulty</strong> between All questions and Core-only.</p>
@@ -766,15 +766,15 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=18"></script>
-<script defer src="js/data/bbh_advanced_vocab.js?v=18"></script>
-<script defer src="js/data/bbh_reference_data.js?v=18"></script>
-<script defer src="js/data/bbh_parsing.js?v=18"></script>
-<script defer src="js/data/bbh_grammar.js?v=18"></script>
-<script defer src="js/data/bbh_reader.js?v=18"></script>
-<script defer src="js/data/bbh_alphabet.js?v=18"></script>
-<script defer src="js/logic/pos_logic.js?v=18"></script>
-<script defer src="js/pwa/swUpdate.js?v=18"></script>
-<script type="module" src="js/app/main.js?v=18"></script>
+<script defer src="js/data/bbh_vocab.js?v=19"></script>
+<script defer src="js/data/bbh_advanced_vocab.js?v=19"></script>
+<script defer src="js/data/bbh_reference_data.js?v=19"></script>
+<script defer src="js/data/bbh_parsing.js?v=19"></script>
+<script defer src="js/data/bbh_grammar.js?v=19"></script>
+<script defer src="js/data/bbh_reader.js?v=19"></script>
+<script defer src="js/data/bbh_alphabet.js?v=19"></script>
+<script defer src="js/logic/pos_logic.js?v=19"></script>
+<script defer src="js/pwa/swUpdate.js?v=19"></script>
+<script type="module" src="js/app/main.js?v=19"></script>
 </body>
 </html>
