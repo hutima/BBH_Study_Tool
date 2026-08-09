@@ -23,15 +23,21 @@
   layout root-cause fix, rating-row leak fix, full 30-title Hebrew pun
   ladder (+ release check 4b regression guard), parsing scope card-grid
   restyle. check_release now 21 reports.
-- **In flight: task #14** — Reader review + multi-book expansion
-  (Ruth/Jonah/Exodus/Deut/Judges/Samuel candidates from the pinned OSHB
-  checkout; fill thin gate buckets 15-19/23-27/28-31; hunt challenge
-  verses; byte-equality/determinism unchanged).
+- **Task #14 merged** as `ca8838a` (PR #12, `?v=9`): Reader now spans 8
+  books (Gen/Ruth/Jonah/Exod/Deut/Judg/1-2Sam), 78 selections (52 Genesis
+  byte-identical + 26 new; thin buckets filled), 0 morph coverage gaps,
+  +24 lemma overrides, challenge-tier machinery shipped (0 natural
+  candidates in all 8 books — documented). Deferred into task #13's pass:
+  3 vocab overrides (elohim/erets/tsivvah) that drift 5 frozen Genesis
+  scores, re-curate then.
+- **In flight: task #16** — 0B vowel-deck fixes (grapheme-safe cluster
+  highlighting via Intl.Segmenter — root cause of the misplaced-marks
+  artifact; larger representative word; Again/Got-it stacked full-width
+  for one-handed use on 0A+0B).
 - **Queue**: task #13 Reader literal glosses + LLM WOODEN verse
-  translations over the EXPANDED set (user rule change 2026-08-09 in
-  CLAUDE.md/ledger: dev-time, independently reviewed, labeled unofficial,
-  never copied from copyrighted translations) → task #15 advanced vocab +
-  vocab-by-book decks (Strong's-PD glosses default; ledger addendum).
+  translations over the 78-passage set (user rule 2026-08-09 in
+  CLAUDE.md/ledger; includes the 3-override re-curation) → task #15
+  advanced vocab + vocab-by-book decks (Strong's-PD glosses default).
 
 ## Repository and PR state
 
