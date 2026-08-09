@@ -299,3 +299,14 @@ know one letter", Ger "stranger in a strange land", Shomea "listening,
 not yet understanding", Talmid "officially a student", Doresh "checks the
 scrolls daily"). Consider extending the release-gate string scan with the
 known Greek transliteration list so regressions get caught.
+
+## Addendum (user request, 2026-08-09): Reader book expansion (after tasks 12/13)
+
+Review Reader mode, then expand passage curation beyond Genesis: extend
+the importer's book list (candidates: Ruth, Jonah, Exodus, Deuteronomy,
+Judges, Samuel narrative) over the same pinned OSHB v2.2 checkout;
+re-review the lemma-override/vocab-match table for the new books'
+high-frequency lemmas; re-curate selections to fill the thin gate buckets
+(15-19, 23-27, 28-31 had only 1-2 Genesis strict candidates) and to find
+challenge-tier verses (Genesis yielded zero). Byte-equality, determinism,
+and tier rules unchanged.
