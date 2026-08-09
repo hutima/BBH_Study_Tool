@@ -62,7 +62,12 @@
   phones, sections in textbook lesson order, collapsed-by-default
   <details> with Expand/Collapse-all + localStorage persistence
   (bbhStudyToolReferenceStateV1), source-ref ranges.
-- **Tasks #21+#22 (this commit; ships as one PR, `?v=17`)** —
+- **Tasks #21+#22 merged** as `c6f7f9d` (PR #20, `?v=17` — LIVE release).
+  All 22 tracked tasks complete and merged; no agents in flight, no
+  pending triggers. Queue empty; possible user-suggested follow-up:
+  extending the 8-book corpus (more prose narrative, e.g. 1-2 Kings /
+  Joshua / Esther) for Reader + Book Vocab + advanced buckets — offered
+  2026-08-09, awaiting user decision. Round detail:
   **#22 GA reintroduction** (`2d91849`): owner's verbatim gtag snippet
   (property `G-J5HGG50J92`) in `index.html` + `pages/memorization.html`
   heads; `check_release.mjs` check7 inverted from "zero GA anywhere" to a
