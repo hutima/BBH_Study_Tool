@@ -92,6 +92,19 @@ export function renderProgress() {
 // one column per calendar day — not rolling 24h periods from now. Returns null
 // in unspaced mode or when the deck is empty. dueNow is the "now"-column count
 // (= active+middle).
+//
+// Task #18 item 5 audit: unlike the course-wide analytics panels (js/ui/
+// analytics.js's Total Vocabulary histogram/chapter-mastery grid/stubborn-
+// slipping-improved lists, all scoped through getAllChapterKeys()/
+// getAllVocabCards() in js/domain/deck/filters.js, which are
+// isChapterKey-filtered and so deliberately EXCLUDE the task #15 book-*
+// advanced-vocab decks), this histogram is intentionally NOT chapter-key
+// filtered — it walks runtime.originalDeck/runtime.deck, i.e. whatever the
+// user actually selected and is studying right now. If that selection
+// includes a book-* deck, its cards' due times are counted here exactly
+// like any lesson card's, matching the Greek-app ancestor's identical,
+// equally unfiltered implementation (git show ad1547e:js/ui/progress.js) —
+// scheduled reviews are real work regardless of which deck they came from.
 function buildDueHistogramBars() {
   if (!runtime.spacedRepetition) return null;
   const now = Date.now();

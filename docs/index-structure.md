@@ -1,11 +1,15 @@
 # `index.html` structure notes
 
-Navigation map for the root `index.html` (~733 lines, PR H build — Vocabulary
-+ Parsing + Grammar Quiz + Reader + Lesson 1 Alphabet + Lesson 2 Vowel marks
-practice decks — displayed as "Lesson 1"/"Lesson 2" since task #16's display
-rename; internally still the `js/ui/alphabet.js` module, `deckKind`
-'letters'/'vowels', `runtime.alphabet.letters/vowels`). Keep this in sync
-when you change the file — see "Maintenance rules" in `CLAUDE.md`.
+Navigation map for the root `index.html` (~750 lines, task #18 build —
+Vocabulary + Parsing + Grammar Quiz + Reader + Lesson 1 Alphabet / Lesson 2
+Vowel marks / Lessons 1-2 combined practice decks — displayed as "Lesson
+1"/"Lesson 2"/"Lessons 1-2" since task #16's display rename + task #18's
+combined-deck addition; internally still the `js/ui/alphabet.js` module,
+`deckKind` 'letters'/'vowels'/'combined', `runtime.alphabet.letters/vowels`).
+As of task #18 the alphabet/vowel decks render into an in-flow
+`#alphabetSection` (like Parsing/Grammar/Reader), not a modal overlay — see
+that section's row in the `.app` table below. Keep this in sync when you
+change the file — see "Maintenance rules" in `CLAUDE.md`.
 
 Line numbers are approximate (drift a few lines between edits). When in
 doubt, grep for the `id` rather than trusting a line number.
@@ -18,9 +22,9 @@ doubt, grep for the `id` rather than trusting a line number.
 1    <!DOCTYPE html> / <head>          ← pre-paint theme bootstrap, manifest/icons, stylesheet
 44   <body>
 45     <div class="app">               ← main shell (in-flow UI, everything that scrolls)
-227    overlays (modals)               ← siblings of .app, position:fixed, shown/hidden by JS
-713    <script> block                  ← classic data scripts + pos_logic.js shim + main.js module
-722  </body>
+264    overlays (modals)               ← siblings of .app, position:fixed, shown/hidden by JS
+743    <script> block                  ← classic data scripts + pos_logic.js shim + main.js module
+754  </body>
 ```
 
 Every `<div class="consent-overlay" …>` is a top-level sibling of `.app` —
@@ -38,7 +42,7 @@ never nest a new overlay inside `.app`.
         `data-theme` / `data-font-family` / `data-text-size` on `<html>`
         before first paint to avoid a flash of the wrong theme. Don't move
         this above the stylesheet link.
-- `<link rel="stylesheet" href="styles.css?v=13">` (line 19)
+- `<link rel="stylesheet" href="styles.css?v=14">` (line 19)
 
 > Cache-bust: every asset URL ends in `?v=6`. Bump the number on release
 > (see "Cache-bust" in `CLAUDE.md`). The same number lives in `sw.js`
@@ -47,7 +51,7 @@ never nest a new overlay inside `.app`.
 
 ---
 
-## `<div class="app">` (45–225)
+## `<div class="app">` (45–263)
 
 In-document order:
 
@@ -63,29 +67,42 @@ In-document order:
 | 159–165  | `<section id="parsingSection">`           | **Phase 2 PR B; scope/mobile redesign in PR G; SCOPE/DIRECTION/lesson-row restyle in PR H item 7.** Hidden (`style="display:none"`) unless `studyMode==='parsing'`; toggled by the same `syncLayoutVisibility()` branch that hides the vocab sections above/below it (and `#grammarSection`, below). `<details id="parsingOptionsDetails">` wraps `#parsingOptionsPanel` — a primary bar (`parsingLessonSelect`, single row at every width — PR H item 7c; `#parsingScopeControl`, a `.parsing-scope-grid` 2-column grid of `.parsing-scope-card` buttons — PR H item 7a, same visual pattern as the study-selector's session/preset cards, replacing the old `.theme-switcher` pill — for Focused/`Root journey`/`By feature`/Shuffle/Custom scope, the Root card disabled with an "unlocks at Lesson N" title until 2+ in-gate paradigms share a root; the active mode's own inline `<select>` picker — `parsingParadigmSelect` (Focused), `parsingRootSelect` (labeled "Root (verbs)") + a "Drill this root" button (Root — also renders a `.parsing-journey-map` line inside `#parsingArea`, not here), `parsingFeatureDimSelect` + checkbox value list (By feature), `#parsingCustomSetList` (Custom, unwrapped — no separate enable toggle now that Custom is a scope-control mode); `parsingDirectionToggle`, a `.theme-switcher.parsing-direction-pill` capped to `max-width:22rem` and left-aligned under its own label — PR H item 7b, segments relabeled Parse/Build/Mixed, "Build the Form" full name moved to the user guide) plus a collapsed-by-default `<details id="parsingMoreOptionsDetails">` ("More options": `parsingExcludeKnownToggle`, `parsingAppendixToggle`, `parsingDim<Name>Toggle` ×7, `parsingResetKnownBtn`, `parsingClearStatsBtn`) whose open state persists at `runtime.parsing.optionsOpen` via `ontoggle` (no re-render — see `js/ui/parsing.js`'s render-split header comment); `#parsingArea` (empty-state / journey-map + step-walk / Build-choices / summary). Both `#parsingOptionsPanel` and `#parsingArea` are populated by `js/ui/parsing.js`'s `renderParsingPanel()`, called from `syncLayoutVisibility()` — but answering a card only ever re-renders `#parsingArea` (never the options panel), so the More-options/custom-group collapse state survives every card answer. See that module's header for the full id list and the `runtime.parsing.rootFilter`/`dimValueFilter`/`journeyIndex` scope-state fields (additive, `PROGRESS_EXPORT_VERSION` unchanged). |
 | 167–173  | `<section id="grammarSection">`           | **Phase 2 PR C.** Hidden (`style="display:none"`) unless `studyMode==='grammar'`; toggled by the same `syncLayoutVisibility()` branch. `<details id="grammarOptionsDetails">` wraps `#grammarOptionsPanel` (lesson select, Review-missed toggle, Difficulty All/Core-only switcher); `#grammarArea` (empty-state / question card / answer summary, with an in-session score strip at the top — `.grammar-area` is a COLUMN flex container, PR H item 4 fix: it used to default to a row, squeezing the score strip and card side-by-side and overlapping at phone widths). Both are populated by `js/ui/grammar.js`'s `renderGrammarPanel()`, called from `syncLayoutVisibility()` — see that module's header for the full id list (`grammarLessonSelect`, `grammarReviewMissedToggle`, `grammarDifficultyToggle`). |
 | 175–182  | `<section id="readerSection">`            | **Phase 2 PR D.** Hidden (`style="display:none"`) unless `studyMode==='reader'`; toggled by the same `syncLayoutVisibility()` branch. `<details id="readerOptionsDetails">` wraps `#readerOptionsPanel` (lesson select 1–50, Strict-only/Strict+Guided tier toggle); `#readerArea` (passage list grouped by gate-lesson bucket, or the single-passage reading view with tappable tokens + inline word-detail popover); `#readerAttribution` (required CC BY 4.0 line, always visible under the area). All three are populated by `js/ui/reader.js`'s `renderReaderPanel()`, called from `syncLayoutVisibility()` — see that module's header for the full id list and the morphology-code decoder. Reads `window.BBH_READER` (52 curated OSHB passages). |
-| 184–190  | `#cardArea`                               | **Main flashcard mount (vocab only; hidden when `studyMode` is `'parsing'`, `'grammar'`, or `'reader'`).** Ships a placeholder `.empty-state` (Hebrew "אבג" + "Tap to choose a session…"); `renderCard()` in `js/ui/render.js` replaces it. |
+| —        | `<section id="alphabetSection">`          | **Task #18 — converted from a modal overlay (`#alphabetOverlay`, PR E/PR H item 3) to an in-flow section.** Hidden (`style="display:none"`) unless `js/ui/alphabet.js`'s `isAlphabetSectionActive()` is true; toggled from INSIDE `syncLayoutVisibility()`'s vocab branch (not a new early-return mode branch like Parsing/Grammar/Reader above) — `runtime.studyMode` stays `'vocab'` the whole time a deck is open, see that module's header comment for why. `.alphabet-standalone-note` (compact "no SRS/no XP/not counted" line, `title` attr carries the long form — task #18 item 2); `.alphabet-header-row` (`#alphabetSectionLabel`/`#alphabetSectionTitle` text + `.alphabet-back-btn` → `alphabetBackToVocab()`, `main.js`, restores the vocab card area with the deck untouched — not a modal close, no `shieldClicksBriefly()`); `#alphabetCardArea`; `#alphabetMarkRow` (Again/Got it, reusing `#markRow`'s own button classes — PR H item 2); `#alphabetProgressLine` + Shuffle (`alphabetShuffle()`); Reset progress link (`alphabetResetProgress()`); `#alphabetShevaFooter` (shown for the vowels AND combined decks). All populated by `js/ui/alphabet.js`'s `renderAlphabetSection()`, called from `syncLayoutVisibility()` same as the other three modules' render calls. Selecting a deck from `#studySelectorOverlay` calls `main.js`'s `pickAlphabetDeck(kind)` wrapper (`openAlphabetSection(kind)` + `closeStudySelector()` + `syncLayoutVisibility()`) — see `js/ui/alphabet.js`'s `deckKind` module state (`'letters'`/`'vowels'`/`'combined'`, task #18 item 3: the combined deck merges all 23 letters + 12 vowels, known-marking resolved per-card by its own kind into the SAME `runtime.alphabet.letters`/`.vowels` maps — no third map). |
+| 184–190  | `#cardArea`                               | **Main flashcard mount (vocab only; hidden when `studyMode` is `'parsing'`, `'grammar'`, or `'reader'`, OR when `#alphabetSection` is active).** Ships a placeholder `.empty-state` (Hebrew "אבג" + "Tap to choose a session…"); `renderCard()` in `js/ui/render.js` replaces it. |
 | 191–197  | `#navRow`                                 | Prev (`navigate(-1)`) / `#spacedUndoBtn` (`restoreSpacedUndo`) / `#navResetBtn` (`resetCurrentDeck`) / `#navNextBtn` (`handleNavNext` → `navigate(1)`). Vocab only; hidden in Parsing/Grammar/Reader mode (each owns its own in-section navigation instead). |
 | 198–203  | `#markRow`                                | Hard (`again`) / Uncertain (`pass`) / Easy (`easy`) via `markCard(outcome)`. Vocab only; hidden in Parsing/Grammar/Reader mode by `syncLayoutVisibility()` — `js/ui/render.js`'s `renderCard()` also bails out early for any non-vocab `runtime.studyMode` before it would otherwise reset this row's `display` itself (PR H item 5 fix: a mode-agnostic `renderCard()` call site, e.g. picking a session from the selector, used to undo `syncLayoutVisibility()`'s hide and leak the row into Parsing/Grammar/Reader). |
 | 204–208  | `#ffRow`                                  | Fast-forward 1 day / 1 week (`fastForwardOneDay` / `fastForwardOneWeek`) — advances the SRS clock for testing/catch-up. Vocab only; hidden in Parsing/Grammar/Reader mode. |
 | 209–219  | `<section class="review-shell">`          | `#reviewPanel` → `#reviewDeckTag`, `#reviewStats` (confidence/due breakdown + collapsible due-by-day histogram, `buildDueHistogramHtml` in `js/ui/progress.js`), `#reviewSortRow`, `#reviewList`. Vocab only; hidden in Parsing/Grammar/Reader mode (each has its own analytics section instead — see `#analyticsParsingCollapse` / `#analyticsGrammarCollapse` / `#analyticsReaderCollapse` below). |
 | 221–223  | `<footer class="app-footer">`             | "Contact author" link (`openContactAuthorModal()`). |
-| —        | (Lesson 1/2 practice decks)               | Has NO row in `.app` — its two entry points (`.alphabet-lesson0-section`, one button per deck: `openAlphabetOverlay('letters')` for "Lesson 1 · Alphabet", `openAlphabetOverlay('vowels')` for "Lesson 2 · Vowel marks" — display-renamed from "Lesson 0A/0B" by task #16's addendum) live inside `#studySelectorOverlay` below, and the one shared overlay (`#alphabetOverlay`) is a sibling of `.app`, not a section within it — see `js/ui/alphabet.js`'s `deckKind` module state (PR H item 3). |
 
 ---
 
-## Overlays (199–590) — siblings of `.app`
+## Overlays (264–626) — siblings of `.app`
 
 All use `class="consent-overlay"` + an `aria-hidden` toggle; most nest a
 `.consent-modal`/`.analytics-overlay` panel inside. Open/close handlers live
 in `js/ui/modals.js` and `js/ui/navigation.js`, wired via `main.js`.
 
+**Tap guards (task #18 item 4 audit):** every close/dismiss button across
+these overlays (Close, Cancel, Got it, Got it!, Agree and continue, Refresh
+now, and the small "✕" corner buttons) carries `shieldClicksBriefly()`
+(`js/utils/clickShield.js`) in its close handler, so the iOS ghost click
+~300ms after the tap that closed the modal can't fall through onto whatever
+is now under the finger — `js/ui/pwaInstall.js`'s `closeInstallInstructions()`
+was missing this and was fixed in the same audit. Every one of those buttons
+also carries a shared `.modal-close-btn` marker class in `index.html` (in
+addition to its own `.ctrl-btn`/`.modal-close-x`/etc styling classes) so
+`main.js`'s startup code can apply `preventDoubleTapZoom()` to all of them
+in one `document.querySelectorAll('.modal-close-btn')` pass. Non-modal
+buttons (mode shortcuts, the alphabet section's own "← Back to lessons")
+are deliberately NOT shielded or tap-guarded this way.
+
 | Lines    | id                            | Purpose |
 |---------:|-------------------------------|---------|
 | 227–244  | `#transferOverlay`            | Import/export progress (textarea + file picker) — `js/state/persistence.js`. |
-| 245–415  | `#analyticsOverlay`           | Progress/analytics dashboard — hero XP/streak, chapter mastery grid, records, stubborn/slipping/most-improved lists, achievements, (Phase 2 PR B) `#analyticsParsingCollapse` (`data-collapse-key="parsingSection"`, `#analyticsParsingBody` — Parsing accuracy/known-status/trend/recent-forms; hidden via inline `style="display:none"` until at least one parsing attempt exists), (Phase 2 PR C) `#analyticsGrammarCollapse` (`data-collapse-key="grammarSection"`, `#analyticsGrammarBody` — overall accuracy, per-lesson-block accuracy, top-5 weakest concept tags, missed-question count; same hide-until-first-attempt behavior), and (Phase 2 PR D) `#analyticsReaderCollapse` (`data-collapse-key="readerSection"`, `#analyticsReaderBody` — passages read in the current lesson/tier scope vs. total, passages read overall, review-marks count; hidden until at least one passage is read or one token is marked). Rendered by `renderAnalyticsOverlay()` in `js/ui/analytics.js`, which calls each section through its own host hook (`host.renderParsingSection()` / `host.renderGrammarSection()` / `host.renderReaderSection()`) wired to `js/ui/parsing.js`'s `renderParsingAnalytics()` / `js/ui/grammar.js`'s `renderGrammarAnalytics()` / `js/ui/reader.js`'s `renderReaderAnalytics()` in `main.js`'s `configureAnalytics(...)` — analytics.js itself never imports parsing.js, grammar.js, or reader.js. Note: the Lesson 1/2 Alphabet/Vowel decks have NO analytics section anywhere in this overlay — see `js/ui/alphabet.js`'s header. Labels read "Lesson N" (not "Chapter N"). |
-| 416–454  | `#studySelectorOverlay`       | "Choose session" — a `.alphabet-lesson0-section` block with TWO rows (**"Lesson 1 · Alphabet"** button, `onclick="openAlphabetOverlay('letters')"`, and **"Lesson 2 · Vowel marks"** button, `onclick="openAlphabetOverlay('vowels')"` — PR H item 3; display-renamed from "Lesson 0A/0B" by task #16's addendum) sits ABOVE "Deselect all", visually separated and NOT part of `selectedKeys`/presets/vocab counts (see `js/ui/alphabet.js`), then "All Lessons" + 13 "Unit" reading-block presets — 14 keys total, the five decade-range presets were removed by PR H item 1 (`js/data/setMeta.js` `SESSION_WEEK_META`, all in one `#sessionsGrid`) — then (task #15) a **"By book · advanced"** section (`#bookDecksGrid`, same `.chapter-btn`/`toggleSet(key)` pattern as the lesson grid below, built by `js/ui/selectors.js`'s `buildBookDeckSelector()` from `window.BBH_BOOK_VOCAB.decks` after `js/app/main.js`'s `mergeBookVocabDecks()` has folded them into `window.SETS` under their own `book-*` keys; own "Deselect all book decks" button, `deselectAllBookDecks()`, since these keys aren't `isChapterKey` so the lesson/session deselect buttons skip them) — plus the individual-lesson chapter selector (`#chaptersGrid`), built by `js/ui/selectors.js` (task #16 addendum: `buildChapterSelector()` now excludes lessons 1–2 from this grid only — their 0-vocab lessons are now the two decks above; lesson 3 is the first entry; Parsing/Grammar/Reader's own lesson selects still start at 1). |
-| 448–474  | `#alphabetOverlay`            | **Phase 2 PR E; split into two decks + rating-row restyle by PR H items 2–3; readability/highlighting/one-handed-button fixes + "Lesson 1/2" display rename by task #16.** Lesson 1 Alphabet / Lesson 2 Vowel marks practice — one shared standalone overlay (flip card, `#alphabetMarkRow` reusing the vocab card's own `.mark-row`/`.mark-btn`/`.mark-again`/`.mark-easy` BUTTON classes for Again/Got it but with its own STACKED full-width one-handed row layout (`.alphabet-mark-row` overrides `.mark-row`'s flex-direction; `#markRow`'s 3-button vocab row is untouched), Shuffle, progress line, reset link, plus `#alphabetShevaFooter` — a small always-visible shəva-rules reference card shown only in the vowels deck), entirely owned by `js/ui/alphabet.js` (its own open/close functions, not `modals.js`). `#alphabetOverlayLabel`/`#alphabetOverlayTitle` swap text between "Lesson 1"/"Alphabet practice" and "Lesson 2"/"Vowel marks practice" based on which deck is open. See that module's header for the isolation rules. |
-| 473–528  | `#shortcutsOverlay`           | User guide / keyboard shortcuts, with a subsection per mode (Vocabulary incl. Lesson 0 + Units, Parsing, Grammar, Reader) + the inline **changelog** (see "Changelog" in `CLAUDE.md` for the editing rules). |
+| 245–415  | `#analyticsOverlay`           | Progress/analytics dashboard — hero XP/streak, chapter mastery grid, records, stubborn/slipping/most-improved lists, achievements, (Phase 2 PR B) `#analyticsParsingCollapse` (`data-collapse-key="parsingSection"`, `#analyticsParsingBody` — Parsing accuracy/known-status/trend/recent-forms; hidden via inline `style="display:none"` until at least one parsing attempt exists), (Phase 2 PR C) `#analyticsGrammarCollapse` (`data-collapse-key="grammarSection"`, `#analyticsGrammarBody` — overall accuracy, per-lesson-block accuracy, top-5 weakest concept tags, missed-question count; same hide-until-first-attempt behavior), and (Phase 2 PR D) `#analyticsReaderCollapse` (`data-collapse-key="readerSection"`, `#analyticsReaderBody` — passages read in the current lesson/tier scope vs. total, passages read overall, review-marks count; hidden until at least one passage is read or one token is marked). Rendered by `renderAnalyticsOverlay()` in `js/ui/analytics.js`, which calls each section through its own host hook (`host.renderParsingSection()` / `host.renderGrammarSection()` / `host.renderReaderSection()`) wired to `js/ui/parsing.js`'s `renderParsingAnalytics()` / `js/ui/grammar.js`'s `renderGrammarAnalytics()` / `js/ui/reader.js`'s `renderReaderAnalytics()` in `main.js`'s `configureAnalytics(...)` — analytics.js itself never imports parsing.js, grammar.js, or reader.js. Note: the Lesson 1/2 Alphabet/Vowel decks have NO analytics section anywhere in this overlay — see `js/ui/alphabet.js`'s header. Course-wide vocab totals/chapter-mastery grid/stubborn-slipping-improved lists are all scoped through `getAllChapterKeys()`/`getAllVocabCards()` (`js/domain/deck/filters.js`, `isChapterKey`-filtered), which also excludes the task #15 `book-*` advanced-vocab decks from every course-wide panel — task #18 item 5 audit confirmed this end-to-end (analytics.js/progress.js), see `docs/bbh-conversion-plan.md`. Labels read "Lesson N" (not "Chapter N"). |
+| 416–454  | `#studySelectorOverlay`       | "Choose session" — a `.alphabet-lesson0-section` block with THREE rows (**"Lesson 1 · Alphabet"**, **"Lesson 2 · Vowel marks"**, and **"Lessons 1-2 · Letters + vowels (combined)"** buttons, all `onclick="pickAlphabetDeck('letters'\|'vowels'\|'combined')"` — task #18 item 3 added the combined entry and switched the click target from `openAlphabetOverlay(kind)` to `main.js`'s `pickAlphabetDeck(kind)` wrapper, which opens the in-flow `#alphabetSection` instead of a modal) sits ABOVE "Deselect all", visually separated and NOT part of `selectedKeys`/presets/vocab counts (see `js/ui/alphabet.js`), then "All Lessons" + 13 "Unit" reading-block presets — 14 keys total, the five decade-range presets were removed by PR H item 1 (`js/data/setMeta.js` `SESSION_WEEK_META`, all in one `#sessionsGrid`) — then (task #15) a **"By book · advanced"** section (`#bookDecksGrid`, same `.chapter-btn`/`toggleSet(key)` pattern as the lesson grid below, built by `js/ui/selectors.js`'s `buildBookDeckSelector()` from `window.BBH_BOOK_VOCAB.decks` after `js/app/main.js`'s `mergeBookVocabDecks()` has folded them into `window.SETS` under their own `book-*` keys; own "Deselect all book decks" button, `deselectAllBookDecks()`, since these keys aren't `isChapterKey` so the lesson/session deselect buttons skip them) — plus the individual-lesson chapter selector (`#chaptersGrid`), built by `js/ui/selectors.js` (task #16 addendum: `buildChapterSelector()` now excludes lessons 1–2 from this grid only — their 0-vocab lessons are now the decks above; lesson 3 is the first entry; Parsing/Grammar/Reader's own lesson selects still start at 1). |
+| 473–528  | `#shortcutsOverlay`           | User guide / keyboard shortcuts, with a subsection per mode (Vocabulary incl. Lesson 1/2/combined + Units, Parsing, Grammar, Reader) + the inline **changelog** (see "Changelog" in `CLAUDE.md` for the editing rules). |
 | 551–583  | `#consentOverlay`             | First-run disclaimer / consent gate (`initializeConsentGate`, `handleConsentAction`) — includes the on-device-storage privacy line. |
 | 586–611  | `#resetSpacedOverlay`         | Scoped reset for spaced-repetition progress (timing-only / full progress / smooth). |
 | 612–627  | `#resetStatsOverlay`          | "Reset stats" modal — keep settings vs. reset to first-launch start. |
@@ -97,19 +114,19 @@ in `js/ui/modals.js` and `js/ui/navigation.js`, wired via `main.js`.
 
 ---
 
-## Script block (~731–740)
+## Script block (~743–752)
 
 ```html
-<script defer src="js/data/bbh_vocab.js?v=13"></script>
-<script defer src="js/data/bbh_book_vocab.js?v=13"></script>
-<script defer src="js/data/bbh_reference_data.js?v=13"></script>
-<script defer src="js/data/bbh_parsing.js?v=13"></script>
-<script defer src="js/data/bbh_grammar.js?v=13"></script>
-<script defer src="js/data/bbh_reader.js?v=13"></script>
-<script defer src="js/data/bbh_alphabet.js?v=13"></script>
-<script defer src="js/logic/pos_logic.js?v=13"></script>
-<script defer src="js/pwa/swUpdate.js?v=13"></script>
-<script type="module" src="js/app/main.js?v=13"></script>
+<script defer src="js/data/bbh_vocab.js?v=14"></script>
+<script defer src="js/data/bbh_book_vocab.js?v=14"></script>
+<script defer src="js/data/bbh_reference_data.js?v=14"></script>
+<script defer src="js/data/bbh_parsing.js?v=14"></script>
+<script defer src="js/data/bbh_grammar.js?v=14"></script>
+<script defer src="js/data/bbh_reader.js?v=14"></script>
+<script defer src="js/data/bbh_alphabet.js?v=14"></script>
+<script defer src="js/logic/pos_logic.js?v=14"></script>
+<script defer src="js/pwa/swUpdate.js?v=14"></script>
+<script type="module" src="js/app/main.js?v=14"></script>
 ```
 
 - **`js/data/bbh_vocab.js`** — classic deferred script, self-registers
@@ -214,23 +231,41 @@ cross-version cache-hazard risk the paragraph above warns about; that risk
 applies to *existing* shipped modules' export lists, not new files.
 
 `js/ui/alphabet.js` (Phase 2 PR E, Lesson 0 addendum; split into 0A
-Alphabet + 0B Vowel marks by PR H item 3) is likewise not a classic script
-tag — it's a brand-new ES module reached only through `main.js`'s
+Alphabet + 0B Vowel marks by PR H item 3; overlay → in-flow section +
+combined deck by task #18) is likewise not a classic script tag — it's an
+ES module reached only through `main.js`'s
 `import { configureAlphabet, ... } from '../ui/alphabet.js'`.
 Strictest isolation of any UI module so far: it imports NOTHING at all, not
-even a gates helper — there's no lesson gating in Lesson 0, all 23 letters
-(and all 12 vowels) are always available. Module-local `deckKind` ('letters'
-or 'vowels') picks which of `window.BBH_ALPHABET`'s two arrays and which of
-`runtime.alphabet`'s two subtrees (`letters`/`vowels`) the shared render/
-mark/shuffle functions read — see `openAlphabetOverlay(kind)`. It owns its
-OWN overlay open/close
-(`openAlphabetOverlay`/`closeAlphabetOverlay`/`isAlphabetOverlayOpen`),
-unlike every other overlay in the table above, which go through
-`js/ui/modals.js`. `js/ui/keyboard.js` wires its Escape-to-close and its
-`isAlphabetOverlayOpen`/`closeAlphabetOverlay` params are `typeof`-guarded
-the same way `isInstallInstructionsOpen` is, for the same SW cross-version
-reason. Being a brand-new file, it carries none of the cross-version
-cache-hazard risk either.
+even a gates helper — there's no lesson gating in Lesson 1/2, all 23 letters
+and all 12 vowels are always available. Module-local `deckKind` ('letters',
+'vowels', or 'combined' — task #18) picks which of `window.BBH_ALPHABET`'s
+arrays and which of `runtime.alphabet`'s two subtrees (`letters`/`vowels`)
+the shared render/mark/shuffle functions read; a second module-local flag,
+`sectionActive` (exposed as `isAlphabetSectionActive()`), tracks whether
+`#alphabetSection` is currently showing — see `openAlphabetSection(kind)` /
+`closeAlphabetSection()`. Unlike every other mode section, this one is
+toggled from INSIDE `syncLayoutVisibility()`'s vocab branch rather than a
+sibling early-return branch, because `runtime.studyMode` deliberately never
+becomes `'alphabet'` — see that module's header comment for the full
+rationale. `main.js`'s `pickAlphabetDeck(kind)` / `alphabetBackToVocab()`
+wrappers are what actually orchestrate across modules (open the deck, close
+the study selector, flip the section's visibility) since alphabet.js itself
+imports nothing and can't reach `closeStudySelector()`/`syncLayoutVisibility()`
+directly. The pre-task-#18 overlay API
+(`openAlphabetOverlay`/`closeAlphabetOverlay`/`isAlphabetOverlayOpen`) is
+kept exported as inert no-ops (`#alphabetOverlay` no longer exists in
+`index.html`) per the cross-version "never remove an export an older
+shipped main.js still imports" rule below — as of task #18, alphabet.js is
+no longer risk-free the way a brand-new file is (it shipped in PR E through
+task #16), so this module's export-list changes are held to the same
+discipline as parsing.js/grammar.js/reader.js's later additions. `js/ui/
+keyboard.js` wires Escape for both the legacy overlay (`isAlphabetOverlayOpen`
+/`closeAlphabetOverlay`, now inert) and the new section
+(`isAlphabetSectionActive`/`alphabetBackToVocab`, task #18) — all four are
+`typeof`-guarded the same way `isInstallInstructionsOpen` is, for the same
+SW cross-version reason; the section guard also suppresses the vocab-deck
+keyboard shortcuts (space/arrows/1-2-3) while it's open, since
+`isReviewDeckMode()` would otherwise still read true (`studyMode==='vocab'`).
 
 ---
 

@@ -1,17 +1,46 @@
-// Lesson 0 — Alphabet + Vowel marks practice (Phase 2 PR E, user-requested
-// addendum; split into two decks by PR H punch-list item 3). Displayed to
-// users as "Lesson 1 · Alphabet" / "Lesson 2 · Vowel marks" (matching the
-// textbook's own Lesson 1 "The Consonants" / Lesson 2 "The Vowels") since
-// task #16's display rename — internal naming (module/file name, deckKind
-// 'letters'/'vowels', runtime.alphabet.letters/vowels, ids) is unchanged.
-// A lightweight, standalone flip/shuffle practice pair, COMPLETELY separate
-// from the vocabulary flashcard machinery: own overlay, own module-local
-// view state, own runtime.alphabet subtree (schemaVersion 1,
-// { letters: {known,seen}, vowels: {known,seen} }). No SRS, no XP/streaks/
-// achievements, never touches runtime.selectedKeys/presets, and is never
-// folded into vocab stats or export vocab counts — see
-// docs/bbh-conversion-plan.md "Lesson 0 — Alphabet practice" and "PR H
-// punch-list item 3" addenda.
+// Lesson 1 (alphabet) / Lesson 2 (vowel marks) practice, PLUS a combined
+// Lessons 1-2 deck (task #18). Displayed to users as "Lesson 1 · Alphabet" /
+// "Lesson 2 · Vowel marks" / "Lessons 1-2 · Letters + vowels (combined)"
+// (matching the textbook's own Lesson 1 "The Consonants" / Lesson 2 "The
+// Vowels") — internal naming (module/file name, deckKind
+// 'letters'/'vowels'/'combined', runtime.alphabet.letters/vowels, ids) is
+// unchanged.
+//
+// A lightweight, standalone flip/shuffle practice trio, COMPLETELY separate
+// from the vocabulary flashcard machinery: own in-flow section (task #18 —
+// see below), own module-local view state, own runtime.alphabet subtree
+// (schemaVersion 1, { letters: {known,seen}, vowels: {known,seen} } — the
+// combined deck reuses these SAME two maps, keyed by each card's own kind,
+// rather than adding a third map). No SRS, no XP/streaks/achievements,
+// never touches runtime.selectedKeys/presets, and is never folded into
+// vocab stats or export vocab counts — see docs/bbh-conversion-plan.md
+// "Lesson 0 — Alphabet practice", "PR H punch-list item 3", and task #18's
+// addendum.
+//
+// ─── Task #18: overlay → in-flow section, NOT a new studyMode ─────────────
+// Through task #16 this module owned a standalone modal overlay
+// (#alphabetOverlay). Task #18 converts it to an in-flow section
+// (#alphabetSection) shown/hidden by the SAME syncLayoutVisibility()
+// mechanism js/app/main.js already uses for #parsingSection/#grammarSection/
+// #readerSection — but WITHOUT adding a fourth studyMode value. Deliberate
+// choice: this module keeps its own module-local `sectionActive` flag
+// (exposed via isAlphabetSectionActive()) instead of runtime.studyMode
+// ever becoming 'alphabet'. runtime.studyMode stays 'vocab' the entire
+// time a practice deck is open — main.js's syncLayoutVisibility() checks
+// isAlphabetSectionActive() as an override INSIDE its vocab branch (not a
+// new top-level mode branch), so none of the vocab mode/state machinery
+// (setStudyMode, splitSelection, spacedByMode, deck rebuild, …) needs to
+// know this section exists. Opening a deck (openAlphabetSection) and
+// closing it (closeAlphabetSection) only flip that local flag + this
+// module's own view state; main.js's pickAlphabetDeck()/
+// alphabetBackToVocab() wrappers call syncLayoutVisibility() afterward to
+// actually swap what's on screen. The old overlay open/close exports
+// (isAlphabetOverlayOpen/openAlphabetOverlay/closeAlphabetOverlay) are kept
+// below, UNCHANGED, as inert no-ops now that #alphabetOverlay no longer
+// exists in index.html (they already null-check `if (!el) return`) — see
+// the CLAUDE.md "ES-module imports are NOT cache-busted" rule: an existing
+// shipped module's export list must never drop a name an older cached
+// main.js might still import during a service-worker update window.
 //
 // Hard boundary: this module imports NOTHING from other app modules or
 // utils — same isolation rule as js/ui/grammar.js and js/ui/reader.js (see
@@ -100,11 +129,18 @@ function renderClusterSpans(word, highlightIdx) {
 }
 
 // ─── Deck selection ─────────────────────────────────────────────────────
-// 'letters' = Lesson 0A Alphabet (existing 23-letter deck); 'vowels' =
-// Lesson 0B Vowel marks (12-entry deck, PR H item 3). Both share this one
-// overlay/module — only the data source, state subtree key, and a few
-// render/label details differ.
+// 'letters' = Lesson 1 Alphabet (23-letter deck); 'vowels' = Lesson 2 Vowel
+// marks (12-entry deck); 'combined' = Lessons 1-2, all 35 cards shuffled
+// together (task #18 item 3). All three share this one section/module —
+// only the data source(s), state subtree key(s), and a few render/label
+// details differ.
 let deckKind = 'letters';
+
+// Whether the in-flow #alphabetSection is currently the thing showing in
+// place of the vocab card area (task #18 item 1). Owned entirely by this
+// module; main.js reads it via isAlphabetSectionActive() from inside
+// syncLayoutVisibility()'s vocab branch — see the header comment above.
+let sectionActive = false;
 
 function getLetters() {
   return (window.BBH_ALPHABET && Array.isArray(window.BBH_ALPHABET.letters)) ? window.BBH_ALPHABET.letters : [];
@@ -115,18 +151,36 @@ function getVowels() {
 function getShevaRules() {
   return (window.BBH_ALPHABET && Array.isArray(window.BBH_ALPHABET.shevaRules)) ? window.BBH_ALPHABET.shevaRules : [];
 }
-function getItems() {
-  return deckKind === 'vowels' ? getVowels() : getLetters();
+
+// Every entry in the CURRENT deck's walk order, tagged with its own kind
+// ('letters' or 'vowels') so a combined-deck card always knows which
+// runtime.alphabet map (and which card-face renderer) it belongs to,
+// independent of the deck-level `deckKind`.
+function letterEntries() {
+  return getLetters().map((item) => ({ kind: 'letters', item }));
+}
+function vowelEntries() {
+  return getVowels().map((item) => ({ kind: 'vowels', item }));
+}
+function getEntries() {
+  if (deckKind === 'vowels') return vowelEntries();
+  if (deckKind === 'combined') return letterEntries().concat(vowelEntries());
+  return letterEntries();
 }
 function itemId(item) {
   return String(item.order);
 }
-// The live state subtree for the active deck — { known, seen } — a
-// reference into runtime.alphabet.letters or runtime.alphabet.vowels.
-function getDeckState() {
+
+// The live state subtree for a given KIND ('letters'/'vowels') — { known,
+// seen } — a reference into runtime.alphabet.letters or runtime.alphabet.
+// vowels. Takes the kind explicitly (not the deck-level `deckKind`) so the
+// combined deck can resolve each card to the correct map regardless of
+// which deck is currently open (task #18 item 3: "known-marking writes to
+// the SAME letters/vowels maps by item kind — no third map").
+function getDeckStateForKind(kind) {
   const state = host.getState();
   if (!state) return null;
-  if (deckKind === 'vowels') {
+  if (kind === 'vowels') {
     if (!state.vowels || typeof state.vowels !== 'object') state.vowels = { known: {}, seen: {} };
     return state.vowels;
   }
@@ -135,9 +189,9 @@ function getDeckState() {
 }
 
 // ─── Module-local (non-persisted) view state ───────────────────────────────
-// The current shuffled walk order (array of indices into getItems()), the
+// The current shuffled walk order (array of indices into getEntries()), the
 // position within it, and whether the current card is flipped. None of this
-// is persisted — reopening the overlay always starts a fresh shuffle, same
+// is persisted — (re)opening a deck always starts a fresh shuffle, same
 // idiom as js/ui/reader.js's openPassageId/activeTokenIdx being session-local.
 let order = [];
 let posIdx = 0;
@@ -149,7 +203,7 @@ let flipped = false;
 // with Math.random is fine here, same as the base deck shuffle elsewhere in
 // the app uses for its own non-persisted-seed shuffles.
 function shuffleOrder() {
-  const idxs = getItems().map((_, i) => i);
+  const idxs = getEntries().map((_, i) => i);
   for (let i = idxs.length - 1; i > 0; i -= 1) {
     const j = Math.floor(Math.random() * (i + 1));
     const tmp = idxs[i];
@@ -160,16 +214,16 @@ function shuffleOrder() {
 }
 
 function ensureOrder() {
-  const items = getItems();
-  if (!order.length || order.length !== items.length) shuffleOrder();
+  const entries = getEntries();
+  if (!order.length || order.length !== entries.length) shuffleOrder();
   if (posIdx >= order.length) posIdx = 0;
 }
 
-function currentItem() {
-  const items = getItems();
+function currentEntry() {
+  const entries = getEntries();
   ensureOrder();
   const idx = order[posIdx];
-  return (idx != null && items[idx]) ? items[idx] : null;
+  return (idx != null && entries[idx]) ? entries[idx] : null;
 }
 
 function advance() {
@@ -253,23 +307,39 @@ function renderVowelCardFace(vowel, state) {
     </div>`;
 }
 
-function renderCardFace(item, state) {
-  if (!item) {
-    return `<div class="alphabet-empty-state">${deckKind === 'vowels' ? 'Vowel' : 'Alphabet'} data isn&rsquo;t available yet.</div>`;
+function renderCardFace(entry) {
+  if (!entry) {
+    const label = deckKind === 'vowels' ? 'Vowel' : deckKind === 'combined' ? 'Alphabet/vowel' : 'Alphabet';
+    return `<div class="alphabet-empty-state">${label} data isn&rsquo;t available yet.</div>`;
   }
-  return deckKind === 'vowels' ? renderVowelCardFace(item, state) : renderLetterCardFace(item, state);
+  const state = getDeckStateForKind(entry.kind);
+  return entry.kind === 'vowels' ? renderVowelCardFace(entry.item, state) : renderLetterCardFace(entry.item, state);
 }
 
-function renderProgressLine(state) {
-  const total = getItems().length;
-  const known = state ? Object.keys(state.known || {}).filter((id) => state.known[id]).length : 0;
+function countKnown(state) {
+  if (!state || !state.known) return 0;
+  return Object.keys(state.known).filter((id) => state.known[id]).length;
+}
+
+function renderProgressLine() {
+  if (deckKind === 'combined') {
+    const totalL = getLetters().length;
+    const totalV = getVowels().length;
+    const known = countKnown(getDeckStateForKind('letters')) + countKnown(getDeckStateForKind('vowels'));
+    return `${known} of ${totalL + totalV} marked known`;
+  }
+  const total = getEntries().length;
+  const known = countKnown(getDeckStateForKind(deckKind === 'vowels' ? 'vowels' : 'letters'));
   return `${known} of ${total} marked known`;
 }
 
 function renderShevaFooter() {
   const el = document.getElementById('alphabetShevaFooter');
   if (!el) return;
-  if (deckKind !== 'vowels') {
+  // Shown for the vowels deck AND the combined deck (both contain vowel
+  // cards this quick-reference is useful for); hidden for the pure letters
+  // deck, unchanged from pre-task-#18 behavior.
+  if (deckKind === 'letters') {
     el.style.display = 'none';
     el.innerHTML = '';
     return;
@@ -286,36 +356,77 @@ function renderShevaFooter() {
 }
 
 function render() {
-  const state = getDeckState();
   const cardArea = document.getElementById('alphabetCardArea');
   const progressEl = document.getElementById('alphabetProgressLine');
-  const titleEl = document.getElementById('alphabetOverlayTitle');
-  const labelEl = document.getElementById('alphabetOverlayLabel');
-  if (cardArea) cardArea.innerHTML = renderCardFace(currentItem(), state);
-  if (progressEl) progressEl.textContent = renderProgressLine(state);
-  if (titleEl) titleEl.textContent = deckKind === 'vowels' ? 'Vowel marks practice' : 'Alphabet practice';
+  const titleEl = document.getElementById('alphabetSectionTitle');
+  const labelEl = document.getElementById('alphabetSectionLabel');
+  if (cardArea) cardArea.innerHTML = renderCardFace(currentEntry());
+  if (progressEl) progressEl.textContent = renderProgressLine();
+  if (titleEl) {
+    titleEl.textContent = deckKind === 'vowels' ? 'Vowel marks practice'
+      : deckKind === 'combined' ? 'Letters + vowels practice'
+      : 'Alphabet practice';
+  }
   // Display-only labels: these decks ARE the textbook's own Lesson 1 (The
-  // Consonants) and Lesson 2 (The Vowels) content, so they're now labeled
-  // "Lesson 1"/"Lesson 2" to match — internal naming (deckKind
-  // 'letters'/'vowels', runtime.alphabet.letters/vowels, ids) is unchanged
-  // (coordinator addendum to task #16, display-rename only).
-  if (labelEl) labelEl.textContent = deckKind === 'vowels' ? 'Lesson 2' : 'Lesson 1';
+  // Consonants) and Lesson 2 (The Vowels) content, so they're labeled
+  // "Lesson 1"/"Lesson 2"/"Lessons 1-2" to match — internal naming
+  // (deckKind 'letters'/'vowels'/'combined', runtime.alphabet.letters/
+  // vowels, ids) is unchanged (task #16 display-rename + task #18 combined
+  // deck addenda).
+  if (labelEl) {
+    labelEl.textContent = deckKind === 'vowels' ? 'Lesson 2'
+      : deckKind === 'combined' ? 'Lessons 1-2'
+      : 'Lesson 1';
+  }
   renderShevaFooter();
 }
 
-// ─── Public entry point ───────────────────────────────────────────────────
-export function renderAlphabetOverlay() {
+// ─── Public entry point (task #18: renders the in-flow #alphabetSection —
+// called from main.js's syncLayoutVisibility() whenever
+// isAlphabetSectionActive() is true, the same way renderParsingPanel() /
+// renderGrammarPanel() / renderReaderPanel() are called for their modes) ──
+export function renderAlphabetSection() {
   render();
 }
 
-// ─── Overlay open/close (this module owns its own overlay, mirroring the
-// existing consent-overlay pattern index.html already uses elsewhere) ─────
+export function isAlphabetSectionActive() {
+  return sectionActive;
+}
+
+// `kind` is 'letters' (Lesson 1), 'vowels' (Lesson 2), or 'combined'
+// (Lessons 1-2, task #18 item 3). Always starts a fresh shuffle — no
+// persistence implications, matching the pre-task-#18 overlay's own
+// "reopening always starts a fresh shuffle" behavior.
+export function openAlphabetSection(kind) {
+  deckKind = kind === 'vowels' ? 'vowels' : kind === 'combined' ? 'combined' : 'letters';
+  sectionActive = true;
+  order = [];
+  posIdx = 0;
+  flipped = false;
+  ensureOrder();
+  render();
+}
+
+// Flips the module-local "which deck is showing" flag back off. Does NOT
+// touch the DOM itself (no #alphabetSection show/hide here) — main.js's
+// alphabetBackToVocab() wrapper calls syncLayoutVisibility() right after
+// this, which is what actually restores the vocab card area (see the
+// header comment's "task #18" note on why this stays a plain module-local
+// flag instead of a new studyMode).
+export function closeAlphabetSection() {
+  sectionActive = false;
+}
+
+// ─── Legacy overlay API (kept, unchanged, per the CLAUDE.md "never remove
+// an export an older shipped main.js still imports" rule — #alphabetOverlay
+// no longer exists in index.html as of task #18, so these are now inert
+// no-ops; each already null-checks `if (!el) return`, so they degrade
+// safely rather than throwing) ──────────────────────────────────────────
 export function isAlphabetOverlayOpen() {
   const el = document.getElementById('alphabetOverlay');
   return !!el && el.classList.contains('show');
 }
 
-// `kind` is 'letters' (0A, default) or 'vowels' (0B).
 export function openAlphabetOverlay(kind) {
   const el = document.getElementById('alphabetOverlay');
   if (!el) return;
@@ -338,16 +449,17 @@ export function closeAlphabetOverlay() {
 
 // ─── Click/change handlers (wired onto GLOBAL_CLICK_HANDLERS by main.js) ──
 export function alphabetFlip() {
-  if (!currentItem()) return;
+  if (!currentEntry()) return;
   flipped = !flipped;
   render();
 }
 
 function markCurrent(gotIt) {
-  const item = currentItem();
-  const state = getDeckState();
-  if (!item || !state) return;
-  const id = itemId(item);
+  const entry = currentEntry();
+  if (!entry) return;
+  const state = getDeckStateForKind(entry.kind);
+  if (!state) return;
+  const id = itemId(entry.item);
   if (!state.known || typeof state.known !== 'object') state.known = {};
   if (!state.seen || typeof state.seen !== 'object') state.seen = {};
   state.seen[id] = (Number.isFinite(state.seen[id]) ? state.seen[id] : 0) + 1;
@@ -374,9 +486,19 @@ export function alphabetShuffle() {
 }
 
 export function alphabetResetProgress() {
+  if (deckKind === 'combined') {
+    if (!confirm('Reset all Lessons 1-2 progress? This clears every letter and vowel marked known.')) return;
+    const sL = getDeckStateForKind('letters');
+    if (sL) { sL.known = {}; sL.seen = {}; }
+    const sV = getDeckStateForKind('vowels');
+    if (sV) { sV.known = {}; sV.seen = {}; }
+    host.saveState();
+    render();
+    return;
+  }
   const label = deckKind === 'vowels' ? 'Lesson 2 vowel marks' : 'Lesson 1 alphabet';
   if (!confirm(`Reset all ${label} progress? This clears every ${deckKind === 'vowels' ? 'vowel' : 'letter'} marked known.`)) return;
-  const state = getDeckState();
+  const state = getDeckStateForKind(deckKind);
   if (!state) return;
   state.known = {};
   state.seen = {};

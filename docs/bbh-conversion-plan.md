@@ -495,3 +495,12 @@ clean selector-entered sections (same layout family as the other modes);
 tracking reuses the letters/vowels maps); (4) tap guards on ALL modal
 close buttons via the existing clickShield pattern so a close tap cannot
 fall through on phones.
+
+## Addendum (user request, 2026-08-09): book-deck analytics scoping (into task #18)
+
+Per the Greek original: book-deck cards (bbh-bk-*) are EXCLUDED from most
+analytics (course totals, per-chapter/word breakdowns, coverage/mastery,
+stubborn/improved/slipping lists) but INCLUDED in the spaced-repetition
+due-time histogram/forecast — scheduled reviews are real work regardless
+of deck. Folded into task #18 (item 5) with ad1547e as the behavioral
+reference.

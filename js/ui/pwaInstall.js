@@ -11,6 +11,7 @@
 // lands right after the first-run consent/selector flow closes.
 
 import { getStorage, isLikelyIOS } from '../utils/storage.js';
+import { shieldClicksBriefly } from '../utils/clickShield.js';
 
 // ⚠️ Module-local string literal on purpose — NOT a store.js export. A brand-new
 // cross-module export risks the "frozen on update" SW failure mode (an old
@@ -242,6 +243,11 @@ export function closeInstallInstructions() {
   overlay.classList.remove('show');
   overlay.setAttribute('aria-hidden', 'true');
   if (!document.querySelector('.consent-overlay.show')) document.body.classList.remove('modal-open');
+  // Task #18 audit: every other modal close handler already absorbs the iOS
+  // ghost click (~300ms after the tap that closed the modal) via this same
+  // guard — this one was missing it, so a tap on the "Got it!"/X button
+  // could fall through onto whatever was now under the finger.
+  shieldClicksBriefly();
 }
 
 export function isInstallInstructionsOpen() {

@@ -21,6 +21,8 @@ export function installKeyboardShortcuts(deps) {
     closeInstallInstructions,
     isAlphabetOverlayOpen,
     closeAlphabetOverlay,
+    isAlphabetSectionActive,
+    alphabetBackToVocab,
     isDisclaimerModalOpen,
     isTransferModalOpen,
     closeTransferModal,
@@ -50,6 +52,17 @@ export function installKeyboardShortcuts(deps) {
     if (e.key === 'Escape' && isToggleInfoModalOpen()) { closeToggleInfoModal(); return; }
     if (e.key === 'Escape' && isTransferModalOpen()) { closeTransferModal(); return; }
     if (isDisclaimerModalOpen() || isTransferModalOpen() || isAnalyticsModalOpen() || isStudySelectorOpen() || isShortcutsModalOpen() || isToggleInfoModalOpen() || isContactAuthorModalOpen() || (typeof isInstallInstructionsOpen === 'function' && isInstallInstructionsOpen()) || (typeof isAlphabetOverlayOpen === 'function' && isAlphabetOverlayOpen())) return;
+    // Task #18: the alphabet/vowel practice section is not a modal (it's an
+    // in-flow swap of the vocab card area — see js/ui/alphabet.js's header),
+    // but runtime.studyMode stays 'vocab' while it's showing, so
+    // isReviewDeckMode() below would otherwise still be true and let Space/
+    // Enter/arrows/1-2-3 fire against the now-hidden vocab card. Guard it
+    // here instead, and let Escape act as its own "Back to lessons".
+    // typeof-guarded for SW cross-version safety, same as the checks above.
+    if (typeof isAlphabetSectionActive === 'function' && isAlphabetSectionActive()) {
+      if (e.key === 'Escape') { alphabetBackToVocab(); }
+      return;
+    }
     if (!isReviewDeckMode() || !getSelectedKeys().length) return;
 
     if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); flipCard(); }
