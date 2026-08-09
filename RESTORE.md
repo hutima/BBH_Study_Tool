@@ -20,15 +20,14 @@
   mixed-version guard fills `runtime.parsing` defaults after restore
   (mirrored shape, sync comments both sides). Also carried the grammar
   validator/generator tools (inert).
-- Current phase: PR C — Grammar Quiz bank + mode, plus user-requested
-  parsing UX round (grouped custom-set picker, 6-choice/all-that-apply
-  Build, contrast panel, mixed direction).
-- PR C status: 300 questions authored (5 blocks × 60, all lesson pages
-  read; fragments + author reports in session scratchpad), blinded via
-  deterministic shuffle (key files in scratchpad), 5 blind reviewers +
-  1 parsing-UX agent in flight. Next: score verdicts vs keys, fix/rewrite
-  defects, merge bank into source/bbh/grammar/questions.json, generate,
-  build Grammar mode UI (same seam pattern as Parsing), bump `?v=4`.
+- **PR C merged** as `2976b6a` (PR #6, `?v=4`): Grammar Quiz mode with the
+  full 300-question bank (5 authors → 5 blind reviewers with 300/300 answer
+  agreement → 31-defect fix pass → lint pass 131→0 → re-blind of all 125
+  edited questions 125/125, zero defects; all reviewStatus=reviewed with
+  page provenance), plus the user-requested parsing UX round (grouped
+  custom-set picker, 6-choice/all-that-apply Build, contrast panel, Mixed
+  direction). Export format v4.
+- Current phase: PR D — public-text Reader (OSHB).
 - User directives this session: (1) GitHub Pages is the primary deployment —
   app must stay static/build-free/subpath-relative; merging to the default
   branch deploys. (2) Optional lesson grouping by the textbook's 13
@@ -147,7 +146,8 @@
   commit message (key: L27-vs-a-16 niqqud discrepancy; no printed Hofal
   form exists; physical-book spot-checks recommended for a few
   scan-resolution cells).
-- Grammar questions: 0. Reader passages: 0.
+- Grammar questions: 300 (all reviewed, deterministic generated bank live).
+- Reader passages: 0.
 - Deployment posture: every merge to the default branch deploys via GitHub
   Pages, so each live-graph-changing PR bumps `?v=` + `CACHE_NAME`
   (PR B: 1→2) and updates the sw precache in the same PR.
@@ -174,22 +174,23 @@
 
 ## Next three actions
 
-1. PR C — Grammar Quiz: author `source/bbh/grammar/questions.json` in
-   lesson-block batches (Sonnet, ≥4 per lesson + ≥10 per 5-lesson
-   cumulative block, target ≥300 reviewed); build
-   `tools/validate_bbh_grammar_data.mjs` (anti-giveaway lints: length/
-   position balance, category-parallel distractors, no all/none-of-above,
-   T/F ≤55/45, no leak past gate) + `tools/gen_bbh_grammar_data.mjs`;
-   BLIND semantic review by separate agents (prompt+shuffled choices, no
-   stored answer); Grammar mode UI on the same seams as Parsing
-   (normalizeStudyMode 'grammar', new js/ui/grammar.js, cache `?v=3`).
-2. PR D — Reader: `tools/import_oshb_reader.mjs` over the pinned checkout
-   (/workspace/openscriptures/morphhb @ v.2.2), OSHB-morph→BBH gate map,
-   Strict/Guided/Challenge scoring, curated Genesis-first selections,
-   Reader UI + attribution.
-3. PR E — content completion: vocab 191→203 (IDs preserved), Lesson 0
-   alphabet deck (user request), Reference tables, guidance text; then
-   PR F release hardening + Opus final audit + PDF temp-dir deletion.
+1. PR D — Reader: `tools/import_oshb_reader.mjs` over the pinned checkout
+   (/workspace/openscriptures/morphhb @ v.2.2, verified HEAD =
+   6a5db284c715c18b239422e57bb89684e6a19f00), OSHB-morph→BBH gate map
+   (`source/bbh/reader/gate-map.json`), Strict/Guided/Challenge scoring
+   per the tier definitions in selections.json notes, curated
+   Genesis-first selections, Reader UI on the same seams (fourth mode or
+   distinct entry), OSHB CC-BY attribution in-app, display text preserved
+   byte-for-byte (no NFC), `?v=5`.
+2. PR E — content completion: vocab 191→203 (IDs preserved; Baker 203-term
+   cross-check; restore L5 שלום), Lesson 0 alphabet deck (user request,
+   separate from vocab machinery), Reference tables from the PDF,
+   guidance-text audit, Reading-block lesson-group presets (user request).
+3. PR F — release hardening: cached-v4 upgrade smoke, offline reload,
+   README/CLAUDE.md/changelog updates, extended release checks, Opus final
+   audit (0 of 3 Opus calls used so far), delete the PDF quarantine
+   temp dir, final report incl. default-branch flip + GitHub Support
+   follow-ups still owed by the user.
 
 ## Resume prompt
 
