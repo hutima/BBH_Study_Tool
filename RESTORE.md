@@ -50,10 +50,17 @@
   246 cards ("By book · advanced" + Tanakh core), 209-lesson lemmas
   globally excluded, SRS/export roundtrip verified; fixed an analytics
   course-total leak found en route; check_release now 23 reports.
-- **In flight: task #18 (last queued item)** — alphabet/vowel practice
-  converts from modal overlays to clean selector-entered sections, keeps
-  the standalone note, adds a combined letters+vowels deck entry, and
-  adds clickShield tap guards to ALL modal close buttons.
+- **Task #18 merged** as `cfdfbe5` (PR #17, `?v=14`): alphabet/vowel
+  practice as in-flow sections (modal retired; legacy exports inert),
+  combined 35-item letters+vowels deck, tap-guard audit on all 17 modal
+  close buttons, book-deck analytics scoping confirmed at Greek parity
+  (due histogram includes book decks; course panels exclude) and
+  smoke-locked.
+- **QUEUE EMPTY (2026-08-09).** All 18 tracked tasks complete and merged.
+  Live release: `?v=14` at `cfdfbe5`. No agents in flight, no pending
+  triggers, no user actions owed (default branch = Main verified; support
+  follow-up closed per user; two stale merged branches remain deletable
+  via GitHub UI only — proxy refuses ref deletions).
 - Historical note (13a/13b staging preserved below for archaeology):
   **13a data pipeline DONE (uncommitted — not yet merged)**: gentilic Ng
   now pn-class (isProperName + distinct `gent` flag) and compound-token
