@@ -108,11 +108,26 @@ function renderMixedHebrewText(raw) {
   return out;
 }
 
+// Task #26: shared TOGGLE-then-LABEL-then-(i) row shape — mirrors
+// js/ui/parsing.js's toggleHtml() (see that module's header comment for the
+// full rationale: a plain wrapper <div>, no row-level onclick; the switch is
+// its own <button> carrying the id/onclick/role=switch/aria-checked; the
+// (i) is a DOM SIBLING of the switch, not nested inside it, so a tap on/near
+// it can never bubble into the switch's click handler — no extra tap-guard
+// JS needed). Duplicated locally rather than imported from parsing.js — a
+// new cross-module ES import here would hit exactly the mixed-version
+// module-pairing hazard CLAUDE.md's cache-bust section warns about (an old
+// cached sibling module paired with a new importer can SyntaxError the
+// whole app). Keep any future edits to this shape mirrored across
+// parsing.js/grammar.js/reader.js's own copies. Reuses the SAME
+// #toggleInfoOverlay modal / showToggleInfo()/closeToggleInfoModal()
+// (js/app/main.js, on GLOBAL_CLICK_HANDLERS) parsing's rows call.
 function toggleHtml({ id, label, checked, onclick, title }) {
-  return `<button class="toggle-label" id="${id}" type="button" role="switch" aria-checked="${checked ? 'true' : 'false'}" onclick="${onclick}"${title ? ` title="${escapeHtml(title)}"` : ''}>
+  return `<div class="toggle-label toggle-row"${title ? ` title="${escapeHtml(title)}"` : ''}>
+    <button class="toggle-switch${checked ? ' on' : ''}" id="${id}" type="button" role="switch" aria-checked="${checked ? 'true' : 'false'}" aria-label="${escapeHtml(label)}" onclick="${onclick}"></button>
     <span class="toggle-text">${escapeHtml(label)}</span>
-    <span class="toggle-switch${checked ? ' on' : ''}" aria-hidden="true"></span>
-  </button>`;
+    <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.toggle-row'))">i</button>
+  </div>`;
 }
 
 // ─── Inventory access ───────────────────────────────────────────────────

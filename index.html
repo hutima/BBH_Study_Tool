@@ -23,11 +23,11 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="BBH Study Tool">
-<link rel="manifest" href="manifest.json?v=19">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=19">
-<link rel="icon" type="image/svg+xml" href="favicon.svg?v=19">
+<link rel="manifest" href="manifest.json?v=20">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png?v=20">
+<link rel="icon" type="image/svg+xml" href="favicon.svg?v=20">
 <title>Beginning Biblical Hebrew — Study Tool</title>
-<link rel="stylesheet" href="styles.css?v=19">
+<link rel="stylesheet" href="styles.css?v=20">
 <script>
 (function(){
   try {
@@ -123,31 +123,54 @@
         </div>
       </div>
     </div>
+<!-- Task #26: same TOGGLE-then-LABEL-then-(i) row shape task #25 shipped for
+     parsing's More-options rows (js/ui/parsing.js's toggleHtml/
+     .parsing-toggle-row), applied here as static markup since #controlsBar
+     isn't JS-rendered. Each row: a plain `.toggle-label.toggle-row` <div>
+     (no row-level onclick) containing, in DOM order, the switch itself as a
+     real <button id="...Btn" role="switch"> (the persistence onclick lives
+     here now, not on the row), the inert `.toggle-text` label, then a
+     `.toggle-info` "(i)" button reusing the SAME #toggleInfoOverlay modal /
+     showToggleInfo()/closeToggleInfoModal() the parsing rows use — see
+     js/app/main.js's "Per-toggle info modal" header comment. The row keeps
+     its original id (e.g. #shuffleToggle) purely for show/hide
+     (`style.display`, js/app/main.js's syncLayoutVisibility) and as the
+     element `showToggleInfo` reads its title/.toggle-text from; the switch
+     keeps its original id (e.g. #shuffleBtn) for the `.on`/aria-checked
+     state sync in syncToggleButtons(). Because the (i) is a DOM SIBLING of
+     the switch (not nested inside it), a tap on/near it structurally cannot
+     flip the switch — no extra tap-guard JS needed. -->
 <div class="controls-bar" id="controlsBar">
-<button class="toggle-label" id="shuffleToggle" type="button" role="switch" aria-checked="false" onclick="toggleShuffle()" title="Shuffle the deck order. Off keeps a fixed order (by lesson); on randomises the order each time the deck is built or reshuffled.">
+<div class="toggle-label toggle-row" id="shuffleToggle" title="Shuffle the deck order. Off keeps a fixed order (by lesson); on randomises the order each time the deck is built or reshuffled.">
+      <button class="toggle-switch" id="shuffleBtn" type="button" role="switch" aria-checked="false" aria-label="Shuffle" onclick="toggleShuffle()"></button>
       <span class="toggle-text">Shuffle</span>
-      <span class="toggle-switch" id="shuffleBtn" aria-hidden="true"></span>
-    </button>
-    <button class="toggle-label" id="hardReviewToggle" type="button" role="switch" aria-checked="false" onclick="toggleHardVocabReview()" title="Drill only vocab you've missed more than 10 times and that's still under 40% confidence">
+      <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.toggle-row'))">i</button>
+    </div>
+    <div class="toggle-label toggle-row" id="hardReviewToggle" title="Drill only vocab you've missed more than 10 times and that's still under 40% confidence">
+      <button class="toggle-switch" id="hardReviewBtn" type="button" role="switch" aria-checked="false" aria-label="Hard review" onclick="toggleHardVocabReview()"></button>
       <span class="toggle-text">Hard review</span>
-      <span class="toggle-switch" id="hardReviewBtn" aria-hidden="true"></span>
-    </button>
-    <button class="toggle-label" id="directionToggle" type="button" role="switch" aria-checked="false" onclick="toggleDirection()" title="Card direction. Off shows the Hebrew first (you recall the English meaning); on shows the English first (you recall the Hebrew form).">
+      <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.toggle-row'))">i</button>
+    </div>
+    <div class="toggle-label toggle-row" id="directionToggle" title="Card direction. Off shows the Hebrew first (you recall the English meaning); on shows the English first (you recall the Hebrew form).">
+      <button class="toggle-switch" id="directionBtn" type="button" role="switch" aria-checked="false" aria-label="English to Hebrew" onclick="toggleDirection()"></button>
       <span class="toggle-text">English → Hebrew</span>
-      <span class="toggle-switch" id="directionBtn" aria-hidden="true"></span>
-    </button>
-    <button class="toggle-label" id="spacedToggle" type="button" role="switch" aria-checked="false" onclick="toggleSpacedRepetition()" title="Spaced review. On schedules each card by how well you know it and only resurfaces it when it's due; off is a plain flip-through deck you mark until it's cleared.">
+      <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.toggle-row'))">i</button>
+    </div>
+    <div class="toggle-label toggle-row" id="spacedToggle" title="Spaced review. On schedules each card by how well you know it and only resurfaces it when it's due; off is a plain flip-through deck you mark until it's cleared.">
+      <button class="toggle-switch" id="spacedBtn" type="button" role="switch" aria-checked="false" aria-label="Spaced review" onclick="toggleSpacedRepetition()"></button>
       <span class="toggle-text">Spaced review</span>
-      <span class="toggle-switch" id="spacedBtn" aria-hidden="true"></span>
-    </button>
-    <button class="toggle-label" id="cadenceToggle" type="button" role="switch" aria-checked="false" onclick="toggleSpacingCadence()" title="Spacing cadence. Off = 8-month / continuous review (default): intervals grow gently and adapt to each card's difficulty, resting up to ~2 months — also works as an ongoing retention deck. A slip no longer wipes a well-known card: it runs a short relearn ladder, then resumes at half its old spacing. On = 2-month intensive: tighter intervals, ~2-week cap — for a fast-paced course. Affects spaced review only; switching reschedules future reviews, not cards already due.">
+      <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.toggle-row'))">i</button>
+    </div>
+    <div class="toggle-label toggle-row" id="cadenceToggle" title="Spacing cadence. Off = 8-month / continuous review (default): intervals grow gently and adapt to each card's difficulty, resting up to ~2 months — also works as an ongoing retention deck. A slip no longer wipes a well-known card: it runs a short relearn ladder, then resumes at half its old spacing. On = 2-month intensive: tighter intervals, ~2-week cap — for a fast-paced course. Affects spaced review only; switching reschedules future reviews, not cards already due.">
+      <button class="toggle-switch" id="cadenceBtn" type="button" role="switch" aria-checked="false" aria-label="2-month pace" onclick="toggleSpacingCadence()"></button>
       <span class="toggle-text">2-month pace</span>
-      <span class="toggle-switch" id="cadenceBtn" aria-hidden="true"></span>
-    </button>
-    <button class="toggle-label" id="unspacedDailyResetToggle" type="button" role="switch" aria-checked="false" onclick="toggleUnspacedDailyReset()" title="Auto-clear archived (Easy) cards once a day around 5 AM local time so you wake up to a fresh deck.">
+      <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.toggle-row'))">i</button>
+    </div>
+    <div class="toggle-label toggle-row" id="unspacedDailyResetToggle" title="Auto-clear archived (Easy) cards once a day around 5 AM local time so you wake up to a fresh deck.">
+      <button class="toggle-switch" id="unspacedDailyResetBtn" type="button" role="switch" aria-checked="false" aria-label="Daily archive reset" onclick="toggleUnspacedDailyReset()"></button>
       <span class="toggle-text">Daily archive reset</span>
-      <span class="toggle-switch" id="unspacedDailyResetBtn" aria-hidden="true"></span>
-    </button>
+      <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.toggle-row'))">i</button>
+    </div>
   </div>
     <div class="utility-section progress-tools-section" id="progressToolsGroup" role="group" aria-label="Progress tools">
       <span class="progress-tools-label">Progress tools</span>
@@ -538,7 +561,7 @@
         <details class="user-guide-changelog-version" open>
           <summary>Parsing, Grammar Quiz, Reader &amp; Alphabet/Vowel decks &middot; 2026-08</summary>
           <ul class="user-guide-list">
-            <li><strong>Parsing mode</strong> &mdash; drill verb/noun/pronoun forms gated to your current lesson, in Parse (identify), Build (construct), or Mixed direction, with Lesson focus, All to date (the default), Root journey, By feature, and Custom-set scoping, plus exclude-known and appendix-forms toggles. Parsing forms now show a transliteration line (respects the Transliteration show/hide toggle) and a clearer card layout &mdash; big Hebrew form, small italic transliteration, then the step label. More-options rows now lead with the toggle switch and carry a tappable (i) for a one-line explanation of each setting.</li>
+            <li><strong>Parsing mode</strong> &mdash; drill verb/noun/pronoun forms gated to your current lesson, in Parse (identify), Build (construct), or Mixed direction, with Lesson focus, All to date (the default), Root journey, By feature, and Custom-set scoping, plus exclude-known and appendix-forms toggles. Parsing forms now show a transliteration line (respects the Transliteration show/hide toggle) and a clearer card layout &mdash; big Hebrew form, small italic transliteration, then the step label. Every toggle switch app-wide (Parsing&rsquo;s More-options rows, the Advanced review settings toggles, Grammar&rsquo;s Review-missed, Reader&rsquo;s Challenge passages) now leads with the switch and carries a tappable (i) for a one-line explanation of each setting &mdash; the label text itself no longer flips anything.</li>
             <li><strong>Grammar Quiz mode</strong> &mdash; multiple-choice questions gated to your current lesson, with a review-missed filter and an All/Core-only difficulty switch.</li>
             <li><strong>Reader mode</strong> &mdash; curated Hebrew Bible passages across Genesis, Ruth, Jonah, Exodus, Deuteronomy, Judges, and 1&ndash;2 Samuel (Strict/Guided tiers, plus an opt-in Challenge tier for one passage above your current lesson, only shown once one exists at your lesson) with tap-to-inspect word details (pointed lemma, gloss, gentilic labels), personal review marks, and a per-passage literal-translation reveal; no grading, nothing scheduled.</li>
             <li><strong>Lesson 1 &middot; Alphabet</strong>, <strong>Lesson 2 &middot; Vowel marks</strong>, and a <strong>Lessons 1-2 combined</strong> deck &mdash; standalone flip-card decks covering the textbook&rsquo;s own Lesson 1 (The Consonants) and Lesson 2 (The Vowels) content (23 letters, 12 vowel points shown on real vocab words, or all 35 shuffled together), separate from every other mode and stat; lessons 1&ndash;2 no longer appear in the vocab lesson list since this is now their content. Opening one now shows an in-flow practice section in place of the vocab card area (no more popup), with a Back button to return to your vocab deck.</li>
@@ -766,15 +789,15 @@
   </div>
 </div>
 
-<script defer src="js/data/bbh_vocab.js?v=19"></script>
-<script defer src="js/data/bbh_advanced_vocab.js?v=19"></script>
-<script defer src="js/data/bbh_reference_data.js?v=19"></script>
-<script defer src="js/data/bbh_parsing.js?v=19"></script>
-<script defer src="js/data/bbh_grammar.js?v=19"></script>
-<script defer src="js/data/bbh_reader.js?v=19"></script>
-<script defer src="js/data/bbh_alphabet.js?v=19"></script>
-<script defer src="js/logic/pos_logic.js?v=19"></script>
-<script defer src="js/pwa/swUpdate.js?v=19"></script>
-<script type="module" src="js/app/main.js?v=19"></script>
+<script defer src="js/data/bbh_vocab.js?v=20"></script>
+<script defer src="js/data/bbh_advanced_vocab.js?v=20"></script>
+<script defer src="js/data/bbh_reference_data.js?v=20"></script>
+<script defer src="js/data/bbh_parsing.js?v=20"></script>
+<script defer src="js/data/bbh_grammar.js?v=20"></script>
+<script defer src="js/data/bbh_reader.js?v=20"></script>
+<script defer src="js/data/bbh_alphabet.js?v=20"></script>
+<script defer src="js/logic/pos_logic.js?v=20"></script>
+<script defer src="js/pwa/swUpdate.js?v=20"></script>
+<script type="module" src="js/app/main.js?v=20"></script>
 </body>
 </html>

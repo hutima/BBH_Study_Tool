@@ -246,6 +246,54 @@
   `scratchpad/smoke_task21.mjs` (2-line label fix), new
   `scratchpad/smoke_task25.mjs`. NOT committed per orchestrator
   instruction — working tree left for the orchestrator to review/commit.
+- **Task #26 IMPLEMENTED, UNCOMMITTED (2026-08-09)** — app-wide toggle-row
+  alignment, addendum in `docs/bbh-conversion-plan.md` (full detail
+  there): applied task #25's parsing-only TOGGLE-then-LABEL-then-(i) row
+  shape to every OTHER option toggle — vocab `#controlsBar` (6 rows:
+  Shuffle, Hard review, Direction, Spaced review, 2-month pace, Daily
+  archive reset; static markup in `index.html`, row keeps its own id for
+  show/hide, switch gets its own separate id for state sync — a
+  deliberate vocab-only split from parsing/grammar/reader, who put the id
+  directly on the switch), grammar's Review-missed toggle (`js/ui/
+  grammar.js`'s `toggleHtml()` rewritten in place), and reader's
+  Challenge-passages toggle (`js/ui/reader.js`, new local `toggleHtml()`,
+  replacing the old single-button Shown/Hidden control). Shared CSS
+  (`.toggle-row, .parsing-toggle-row` — identical rules, old name kept as
+  an alias) moved to `styles.css`'s shared toggle-switch primitives;
+  `js/ui/parsing.js` itself is UNTOUCHED. `js/app/main.js`'s
+  `installToggleInfoButtons()`/`installToggleInfoForContainer()` are now
+  dead code for `#controlsBar` (kept as a no-op shim, not deleted — every
+  row ships its own `(i)` in markup now, so their idempotent guard bails
+  every time). `?v=19` → `?v=20` (final step, all five files + CACHE_NAME
+  synced). `check_release.mjs` → 24/0 unchanged. New
+  `scratchpad/smoke_task26.mjs` (40 steps) all green — covers DOM order,
+  (i)-doesn't-flip, switch-flips, label-is-inert, and reload-persistence
+  for all 8 converted rows, plus asserts Spaced review's flip against the
+  PERSISTED `runtime.spacedRepetition` flag (not just `aria-checked`) and
+  a visible consequence (cadence/daily-reset row swap), and Reader's
+  Challenge switch against the challenge-badge count actually changing.
+  `scratchpad/smoke_task25.mjs` rerun against a fresh `before_worktree`
+  (created + removed by this task) — all 12 steps green, confirming
+  parsing is genuinely untouched. `scratchpad/smoke_pr_h.mjs` reruns with
+  the SAME single known-flake failure as its documented baseline (GA
+  `ERR_TUNNEL_CONNECTION_FAILED` console error, sandbox-only, not a
+  product bug). `scratchpad/smoke_book_vocab.mjs` (not a required target)
+  also rerun after a one-line selector fix (`#shuffleToggle` →
+  `#shuffleBtn` for `aria-checked`, matching the new row/switch id split)
+  — same single known-flake failure as its own baseline. One test-harness
+  bug found and fixed along the way (not a product bug): `smoke_task26.
+  mjs`'s own deck-loading step originally waited only 300ms after closing
+  the study selector before clicking `#advancedSettingsDetails summary`
+  — `js/utils/clickShield.js`'s 350ms post-modal-close click shield was
+  still armed and silently swallowed the native `<details>` toggle;
+  fixed by waiting 500ms (matching every other modal-close site in the
+  suite) and making the open-helper retry/assert. Files touched:
+  `index.html`, `js/app/main.js`, `js/ui/grammar.js`, `js/ui/reader.js`,
+  `styles.css`, `sw.js`, `pages/memorization.html`,
+  `docs/index-structure.md`, `docs/bbh-conversion-plan.md`, `RESTORE.md`,
+  new `scratchpad/smoke_task26.mjs`, one-line fix to
+  `scratchpad/smoke_book_vocab.mjs`. NOT committed per orchestrator
+  instruction — working tree left for the orchestrator to review/commit.
 - **Queue**: task #24 (Reader: more prose books + simple-poetry challenge
   tier), addendum already drafted in docs/bbh-conversion-plan.md.
 
@@ -349,12 +397,14 @@
 
 ## Current work and file ownership
 
-- No agents in flight. Working tree on `claude/new-session-988x25` (tip
-  `f912846`) carries task #25 (parsing UX round) IMPLEMENTED, UNCOMMITTED
-  — see the Resume status bullet above and the addendum in
-  `docs/bbh-conversion-plan.md` for full detail. Live release remains
-  `?v=18` until this is committed/merged; the working tree itself is
-  already bumped to `?v=19`.
+- No agents in flight. Task #25 (parsing UX round) is merged (`cbe0e04`,
+  PR #22, merge commit `81c8903`) — `Main` is live at `?v=19`. Working
+  tree on `claude/new-session-988x25` (branched from `Main` tip
+  `81c8903`, ledger commit `c51b314` on top) carries task #26 (app-wide
+  toggle-row alignment) IMPLEMENTED, UNCOMMITTED — see the Resume status
+  bullet above and the addendum in `docs/bbh-conversion-plan.md` for full
+  detail. Live release remains `?v=19` until this is committed/merged;
+  the working tree itself is already bumped to `?v=20`.
 
 ## Content counts
 

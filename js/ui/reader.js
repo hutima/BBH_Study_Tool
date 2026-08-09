@@ -334,6 +334,27 @@ function hasChallengeAtGate(lesson) {
   return gatedPassages(lesson).some((p) => p.tier === 'challenge');
 }
 
+// Task #26: shared TOGGLE-then-LABEL-then-(i) row shape — mirrors
+// js/ui/parsing.js's toggleHtml() (see that module's header comment for the
+// full rationale: a plain wrapper <div>, no row-level onclick; the switch is
+// its own <button> carrying the id/onclick/role=switch/aria-checked; the
+// (i) is a DOM SIBLING of the switch, not nested inside it, so a tap on/near
+// it can never bubble into the switch's click handler — no extra tap-guard
+// JS needed). Duplicated locally (not imported — this module imports
+// nothing, see the header comment above) rather than shared via a new
+// cross-module ES export, per CLAUDE.md's module-cache hazard rule. Keep
+// any future edits to this shape mirrored across parsing.js/grammar.js's
+// own copies. Reuses the SAME #toggleInfoOverlay modal /
+// showToggleInfo()/closeToggleInfoModal() (js/app/main.js, on
+// GLOBAL_CLICK_HANDLERS) parsing's rows call.
+function toggleHtml({ id, label, checked, onclick, title }) {
+  return `<div class="toggle-label toggle-row"${title ? ` title="${escapeHtml(title)}"` : ''}>
+    <button class="toggle-switch${checked ? ' on' : ''}" id="${id}" type="button" role="switch" aria-checked="${checked ? 'true' : 'false'}" aria-label="${escapeHtml(label)}" onclick="${onclick}"></button>
+    <span class="toggle-text">${escapeHtml(label)}</span>
+    <button class="toggle-info" type="button" aria-label="What this setting does" onclick="showToggleInfo(this.closest('.toggle-row'))">i</button>
+  </div>`;
+}
+
 // ─── Rendering: options panel ───────────────────────────────────────────
 function renderReaderOptionsPanel() {
   const panel = document.getElementById('readerOptionsPanel');
@@ -346,17 +367,14 @@ function renderReaderOptionsPanel() {
   }
 
   const challengeRow = hasChallengeAtGate(state.lesson) ? `
-    <div class="reader-options-row">
-      <span class="reader-field-label">Challenge passages</span>
-      <button
-        id="readerChallengeToggle"
-        class="ctrl-btn reader-challenge-toggle-btn${state.showChallenge ? ' active' : ''}"
-        type="button"
-        role="switch"
-        aria-checked="${state.showChallenge ? 'true' : 'false'}"
-        onclick="readerSetShowChallenge(${state.showChallenge ? 'false' : 'true'})"
-        title="Challenge passages deliberately include one word from a lesson you haven't reached yet, flagged in the passage header. Off by default."
-      >${state.showChallenge ? 'Shown' : 'Hidden'}</button>
+    <div class="reader-toggle-grid">
+      ${toggleHtml({
+        id: 'readerChallengeToggle',
+        label: 'Challenge passages',
+        checked: !!state.showChallenge,
+        onclick: `readerSetShowChallenge(${state.showChallenge ? 'false' : 'true'})`,
+        title: "Challenge passages deliberately include one word from a lesson you haven't reached yet, flagged in the passage header. Off by default."
+      })}
     </div>` : '';
 
   panel.innerHTML = `
