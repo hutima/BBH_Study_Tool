@@ -549,10 +549,16 @@ function renderCustomSetGroups(state, gatedParadigms) {
   return groups || '<div class="parsing-empty-note">No paradigms available at this lesson yet.</div>';
 }
 
-// ─── Rendering: scope control + per-mode inline pickers (PR G, §2.3/§5.5) ──
-// Segmented control (reuses .theme-switcher/.theme-btn — §5 amendment 5)
-// picking ONE of 5 mutually-exclusive scopes; the picker row directly below
-// it is entirely mode-dependent (only one of these ever renders).
+// ─── Rendering: scope control + per-mode inline pickers (PR G, §2.3/§5.5;
+// restyled to a 2-column card grid by PR H item 7a) ─────────────────────
+// A 2-column grid of selectable cards (same visual pattern as the
+// study-selector's session/preset cards — .chapter-btn/.session-btn: plain
+// label, gold border+highlight when active, own independent border-radius
+// per card rather than a fused .theme-switcher pill) picking ONE of 5
+// mutually-exclusive scopes; the picker row directly below it is entirely
+// mode-dependent (only one of these ever renders). "(verbs)" is dropped
+// from the Root journey card label — see renderRootPickerRow's "Root
+// (verbs)" field label for where that qualifier now lives.
 function renderScopeControl(state, rootIndex) {
   const mode = getScopeMode(state);
   const rootQualifies = rootIndex.some((r) => r.qualifies);
@@ -562,13 +568,17 @@ function renderScopeControl(state, rootIndex) {
     const caption = unlockLesson ? `unlocks at Lesson ${unlockLesson}` : 'no qualifying roots yet';
     rootDisabledAttrs = ` disabled aria-disabled="true" title="${escapeHtml(caption)}"`;
   }
+  const cards = [
+    { key: 'focused', label: 'Focused' },
+    { key: 'root', label: 'Root journey', attrs: rootDisabledAttrs },
+    { key: 'byFeature', label: 'By feature' },
+    { key: 'shuffle', label: 'Shuffle' },
+    { key: 'custom', label: 'Custom' }
+  ];
+  const cardsHtml = cards.map((c) => `
+      <button class="parsing-scope-card${mode === c.key ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('${c.key}')"${c.attrs || ''}>${escapeHtml(c.label)}</button>`).join('');
   return `
-    <div class="theme-switcher parsing-scope-switcher" id="parsingScopeControl" role="group" aria-label="Practice scope">
-      <button class="theme-btn${mode === 'focused' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('focused')">Focused</button>
-      <button class="theme-btn${mode === 'root' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('root')"${rootDisabledAttrs}>Root journey (verbs)</button>
-      <button class="theme-btn${mode === 'byFeature' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('byFeature')">By feature</button>
-      <button class="theme-btn${mode === 'shuffle' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('shuffle')">Shuffle</button>
-      <button class="theme-btn${mode === 'custom' ? ' active' : ''}" type="button" onclick="parsingSetScopeMode('custom')">Custom</button>
+    <div class="parsing-scope-grid" id="parsingScopeControl" role="group" aria-label="Practice scope">${cardsHtml}
     </div>`;
 }
 
@@ -607,7 +617,7 @@ function renderRootPickerRow(state, rootIndex) {
   const drillLabel = rootDrillActive ? 'Back to journey order' : 'Drill this root (weakest-first)';
   return `
     <div class="parsing-options-row parsing-scope-picker-row">
-      <label class="parsing-field-label" for="parsingRootSelect">Root</label>
+      <label class="parsing-field-label" for="parsingRootSelect">Root (verbs)</label>
       <select id="parsingRootSelect" class="parsing-select" onchange="parsingSetRoot(this.value)">${options}</select>
       <button class="ctrl-btn parsing-drill-root-btn" type="button" onclick="parsingToggleRootDrillMode()" title="Switch this root between the journey order (walks the conjugation system in lesson order) and weakest-first practice.">${escapeHtml(drillLabel)}</button>
     </div>`;
@@ -708,9 +718,9 @@ function renderParsingOptionsPanel() {
       ${pickerHtml}
       <div class="parsing-options-row parsing-primary-direction">
         <span class="parsing-field-label">Direction</span>
-        <div class="theme-switcher" id="parsingDirectionToggle" role="group" aria-label="Parse, build, or mix the form">
+        <div class="theme-switcher parsing-direction-pill" id="parsingDirectionToggle" role="group" aria-label="Parse, build, or mix the form">
           <button class="theme-btn${state.direction === 'parse' ? ' active' : ''}" type="button" onclick="parsingSetDirection('parse')">Parse</button>
-          <button class="theme-btn${state.direction === 'build' ? ' active' : ''}" type="button" onclick="parsingSetDirection('build')">Build the Form</button>
+          <button class="theme-btn${state.direction === 'build' ? ' active' : ''}" type="button" onclick="parsingSetDirection('build')" title="Build the Form">Build</button>
           <button class="theme-btn${state.direction === 'mixed' ? ' active' : ''}" type="button" onclick="parsingSetDirection('mixed')" title="Alternate Parse and Build cards within one session.">Mixed</button>
         </div>
       </div>

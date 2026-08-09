@@ -150,21 +150,32 @@ export const runtime = {
     initializedFromVocab: false
   },
 
-  // ── Lesson 0: Alphabet practice (PR E) ────────────────────────────────
+  // ── Lesson 0: Alphabet (0A) + Vowel marks (0B) practice (PR E, PR H item 3)
   // Completely separate from every vocab/parsing/grammar/reader subtree
   // above: no SRS, no XP/streaks/achievements, never touches selectedKeys/
   // presets, and is excluded from vocab stats and export vocab counts (see
-  // docs/bbh-conversion-plan.md "Lesson 0 — Alphabet practice" addendum).
-  // Owned/mutated only by js/ui/alphabet.js (via the live reference handed
-  // back from configureAlphabet's getState hook) and restored/persisted by
-  // js/state/persistence.js's sanitizeAlphabetState. `known`/`seen` are
-  // plain maps keyed by the letter's stable `order` (1-23) as a string.
+  // docs/bbh-conversion-plan.md "Lesson 0 — Alphabet practice" and "PR H
+  // punch-list item 3" addenda). Owned/mutated only by js/ui/alphabet.js
+  // (via the live reference handed back from configureAlphabet's getState
+  // hook) and restored/persisted by js/state/persistence.js's
+  // sanitizeAlphabetState. `known`/`seen` are plain maps keyed by the
+  // letter/vowel's stable `order` (1-23 / 1-12) as a string.
+  // PR H item 3 shape migration: flat {known,seen} -> nested per-deck
+  // {letters:{known,seen}, vowels:{known,seen}} so 0A and 0B track progress
+  // independently; schemaVersion stays 1 (additive reshape, not a version
+  // bump — see sanitizeAlphabetState's structural-detection comment).
   // SYNC: js/app/main.js keeps a mirrored copy of this default shape in its
   // mixed-version guard after restoreState() — update both together.
   alphabet: {
     schemaVersion: 1,
-    known: {},   // { [letterOrder]: true }
-    seen: {}     // { [letterOrder]: reviewCount }
+    letters: {
+      known: {},   // { [letterOrder]: true }
+      seen: {}     // { [letterOrder]: reviewCount }
+    },
+    vowels: {
+      known: {},   // { [vowelOrder]: true }
+      seen: {}     // { [vowelOrder]: reviewCount }
+    }
   },
 
   // ── Persisted directional stores (rebuilt from localStorage) ────────

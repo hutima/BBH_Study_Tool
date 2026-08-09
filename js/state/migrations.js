@@ -833,12 +833,14 @@ export const STATE_MIGRATIONS = [
     // Phase 2 PR E: introduces runtime.alphabet (Lesson 0 alphabet
     // practice — completely separate from vocab/parsing/grammar/reader, no
     // SRS, excluded from vocab stats/export counts). Any save/export from
-    // before this landed has no `alphabet` key at all; seed the v1 default
+    // before this landed has no `alphabet` key at all; seed the default
     // shape so downstream restore code (persistence.js
     // sanitizeAlphabetState) always sees a well-formed object. A save that
-    // already has SOME `alphabet` object (even a malformed one from a
-    // future version) is left alone — sanitizeAlphabetState fills in
-    // per-field defaults for anything odd.
+    // already has SOME `alphabet` object (even a malformed one, or the
+    // pre-PR-H flat {known,seen} shape) is left alone —
+    // sanitizeAlphabetState's own structural migration (PR H item 3, the
+    // letters/vowels split) fills in per-field defaults and reshapes the
+    // flat form for anything odd.
     name: 'alphabet-state-v1-init',
     match(saved) {
       return !isPlainObject(saved.alphabet);
@@ -846,8 +848,8 @@ export const STATE_MIGRATIONS = [
     migrate(saved) {
       saved.alphabet = {
         schemaVersion: 1,
-        known: {},
-        seen: {}
+        letters: { known: {}, seen: {} },
+        vowels: { known: {}, seen: {} }
       };
       return saved;
     }

@@ -300,6 +300,57 @@ not yet understanding", Talmid "officially a student", Doresh "checks the
 scrolls daily"). Consider extending the release-gate string scan with the
 known Greek transliteration list so regressions get caught.
 
+**Done, PR H.** Every title in `js/domain/gamification/levels.js`'s
+`XP_LEVELS` ladder converted (old Greek title -> new Hebrew title, `flav`
+text unchanged in every row):
+
+| Level | Old (Greek) | New (Hebrew) |
+|------:|-------------|--------------|
+| 1  | Alpha | Alef |
+| 2  | Paroikos | Ger |
+| 3  | Akouōn | Shomea |
+| 4  | Spongos | Sefog |
+| 5  | Mathētēs | Talmid |
+| 6  | Berean | Doresh |
+| 7  | Anagnōstēs | Qore |
+| 8  | Bibliophagos | Okhel-Sfarim |
+| 9  | Logophilos | Ohev-Milim |
+| 10 | Hermēneutēs | Meturgeman |
+| 11 | Grammatikos | Medakdek |
+| 12 | Exēgētēs | Darshan |
+| 13 | Rhētōr | Noem |
+| 14 | Didaskalos | Moreh |
+| 15 | Sophos | Chakham |
+| 16 | Chrysostomos | Peh-Zahav |
+| 17 | Theologos | Ma'amik |
+| 18 | Polymathēs | Rav-Yode'a |
+| 19 | Archōn | Sar |
+| 20 | Logothetēs | Sofer |
+| 21 | Pantokratōr | Kol-Yakhol |
+| 22 | Metanoia | Teshuvah |
+| 23 | Kērygma | Derashah |
+| 24 | Theopneustos | Mushpa-mi-Shamayim |
+| 25 | Parrhēsia | Chutzpah |
+| 26 | Hypostasis | Etzem |
+| 27 | Mystērion | Sod |
+| 28 | Plērōma | Melo |
+| 29 | Apokalypsis | Hitgalut |
+| 30 | Logos | Davar |
+
+Achievements/badges (`js/domain/gamification/xp.js` `computeAchievements`)
+were audited too — their names (First Light, Kindled, Diligent, Centurion,
+Three-fold Cord, Required Lexicon, Ch. N, …) turned out to be English, not
+Greek-transliteration-flavored, so none needed conversion.
+
+`tools/check_release.mjs` check4b now scans the live load graph for a
+word-boundary, case-insensitive list of the retired Greek words above
+(`logos` deliberately excluded — common English word, e.g. "app logos") so
+a title regressing back to its Greek pun fails the release build. Because
+that scan matches on the literal old words, this table (and any other
+mention of the old titles) must stay out of the live load graph — this doc
+is fine (`docs/` isn't scanned), but `js/domain/gamification/levels.js`'s
+own header comment deliberately does NOT repeat the old words verbatim.
+
 ## Addendum (user request, 2026-08-09): Reader book expansion (after tasks 12/13)
 
 Review Reader mode, then expand passage curation beyond Genesis: extend

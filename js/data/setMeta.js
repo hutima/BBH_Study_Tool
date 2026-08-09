@@ -59,85 +59,13 @@ export const CHAPTER_TITLES = {
 // is the same data under its natural BBH name.
 export const LESSON_TITLES = CHAPTER_TITLES;
 
-// Range presets for the lesson selector: five 10-lesson decade blocks, "all",
-// plus 13 "Unit" reading-block presets (the textbook's own illustrated-
-// Reading breakpoints) as a second preset group — 19 keys total.
+// Range presets for the lesson selector: "All Lessons" plus 13 "Unit"
+// reading-block presets (the textbook's own illustrated-Reading
+// breakpoints) — 14 keys total. PR H punch-list item 1 (2026-08-09)
+// removed the five prior rng1..rng5 decade-range presets (Lessons
+// 1-10 ... 41-50) from this selector-facing list; the underlying decade
+// grouping lives on internally as CHAPTER_TO_WEEK/WEEK_FIRST_CHAPTER below.
 export const SESSION_WEEK_META = {
-  "rng1": {
-    "label": "Lessons 1–10",
-    "lessons": [
-      1,
-      2,
-      3,
-      4,
-      5,
-      6,
-      7,
-      8,
-      9,
-      10
-    ]
-  },
-  "rng2": {
-    "label": "Lessons 11–20",
-    "lessons": [
-      11,
-      12,
-      13,
-      14,
-      15,
-      16,
-      17,
-      18,
-      19,
-      20
-    ]
-  },
-  "rng3": {
-    "label": "Lessons 21–30",
-    "lessons": [
-      21,
-      22,
-      23,
-      24,
-      25,
-      26,
-      27,
-      28,
-      29,
-      30
-    ]
-  },
-  "rng4": {
-    "label": "Lessons 31–40",
-    "lessons": [
-      31,
-      32,
-      33,
-      34,
-      35,
-      36,
-      37,
-      38,
-      39,
-      40
-    ]
-  },
-  "rng5": {
-    "label": "Lessons 41–50",
-    "lessons": [
-      41,
-      42,
-      43,
-      44,
-      45,
-      46,
-      47,
-      48,
-      49,
-      50
-    ]
-  },
   "all": {
     "label": "All Lessons",
     "lessons": [
@@ -310,7 +238,9 @@ export const SESSION_WEEK_META = {
   }
 };
 
-// Lesson number -> range index (1..5), derived from SESSION_WEEK_META rng1..rng5.
+// Lesson number -> decade-range index (1..5) — internal grouping only
+// (js/domain/deck/ordering.js getWeekForKey), no longer surfaced as
+// selector presets (see SESSION_WEEK_META comment above).
 export const CHAPTER_TO_WEEK = {
   "1": 1,
   "2": 1,
