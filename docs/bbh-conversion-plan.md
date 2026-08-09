@@ -446,3 +446,12 @@ re-score, curate real challenge passages (feature named in the passage
 header, badge highlighting verified with real data), and hide the toggle
 whenever no challenge passage exists at the learner's current gate — no
 inert controls.
+
+## Addendum (user screenshot, 2026-08-09): Reader renders OSHB slashes (into task #13)
+
+The Reader displays OSHB's morpheme-segmentation "/" markers inside the
+Hebrew (e.g. ה/תבה) — annotation, not Masoretic text. Fix in task #13:
+stored token text stays byte-exact for provenance; the RENDER strips the
+segment dividers (documented display transform; byte-equality validation
+continues to run against stored data). Task #13 also delivers the
+per-passage show/hide translation control the user expects.
