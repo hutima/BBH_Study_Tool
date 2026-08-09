@@ -624,3 +624,33 @@ negative-tested in both directions; user-guide privacy copy + changelog
 updated; CLAUDE.md "Telemetry" section records the policy change.
 Sandbox note: the snippet's blocked network call surfaces as an env-only
 `ERR_TUNNEL_CONNECTION_FAILED` console error in Playwright smokes.
+
+## Addendum (user request, 2026-08-09): task #23 — whole-Tanakh advanced vocab
+
+"Advanced vocab should cover every OT book just as a general memorization
+tool." The Advanced-vocabulary frequency buckets stop being scoped to the
+8-book Reader corpus: `gen_bbh_advanced_vocab.mjs` now feeds on ALL 39
+OSHB books at the same pinned commit (dev-time only, same importer
+pipeline), keeping every existing rule — nouns/verbs/adjectives only, no
+proper names/gentilics, corpus frequency >= 2, zero overlap with the 209
+lesson lemmas, buckets of 100 with sub-groups of 25, `bbh-adv-<strongs>`
+ids, excluded from course totals. Because ids are Strong's-keyed, existing
+saved marks stay valid with NO migration — only bucket membership shifts
+as corpus frequencies re-rank. Book Vocab likewise generalizes to every OT
+book (canonical order) since it only links existing cards; per-book
+coverage rises with the larger advanced pool. check_release check5c
+counts update accordingly.
+
+## Addendum (user request, 2026-08-09): task #24 — Reader: more prose + poetry challenge
+
+"Expand reader to other prose books to allow for more variety, maybe
+include simpler poetry as a challenge, since that's more intermediate."
+Two-part expansion of the curated Reader (still never the textbook's own
+Reader): (1) new prose-narrative books — Joshua, 1-2 Kings, Esther — with
+strict/guided selections curated into thin gate buckets for variety;
+(2) simple poetry (short, high-frequency Psalms — e.g. Ps 1/23/100/117/
+121/150 candidates) shipped ONLY as challenge-tier passages
+(`reader-ch-*`), labeled as poetry, since poetry's syntax/vocabulary is
+intermediate. All new passages follow the wooden-translation policy
+(LLM-wooden-reviewed, independently verified against token morphology,
+labeled unofficial) and the Strong's gloss pipeline.
