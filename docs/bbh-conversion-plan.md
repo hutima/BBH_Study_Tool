@@ -515,3 +515,16 @@ group last). (3) Every section collapsible (<details>), default
 collapsed, Expand/Collapse-all control. (4) Collapse state persisted in
 localStorage aux key bbhStudyToolReferenceStateV1 (page is standalone —
 main state modules untouched).
+
+## Addendum (user correction, 2026-08-09): task #20 — advanced vocab reworked to Greek model
+
+Task #15's per-book new-word decks were NOT the requested design. Per the
+Greek original (ad1547e advancedSection/bookVocabSection): (1) Advanced
+vocabulary = corpus-wide non-course lemmas in descending-frequency
+buckets (sub-groups of 25), new bbh-adv-* cards, excluded from course
+totals but present in selected-deck analytics; (2) Book vocab = every
+lexeme per book in sets of 50 by in-book frequency, each entry LINKING to
+its existing card (shared progress, no duplicates); (3) both rendered as
+collapsible sections placed AFTER the manual lesson selection with blurbs
+and meta counts; (4) bbh-bk-* marks migrate to bbh-adv-* by Strong's
+number. Runs after task #19.
