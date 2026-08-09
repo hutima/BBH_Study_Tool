@@ -10,7 +10,8 @@ the Phase-0 behavioral inventory of `ad1547e`, the shipped Phase-2 modules
 | Capability | Greek (`ad1547e`) | Hebrew (shipped) | Verdict |
 |---|---|---|---|
 | Dimension walk | one question per dimension, choices | same, gated pools | parity |
-| Answer entry | ALSO free-form English text, regex-parsed (`parseAnswerDimensions`) | buttons only | **gap (deliberate)** — see §2.1 |
+| Answer normalization | canonical answer strings regex-parsed into dims (`parseAnswerDimensions` — CORRECTION: parsed the card's own data, never user input) | structured `acceptedParses`, no normalizer needed | **Hebrew richer** |
+| Per-dimension-VALUE pool filters | `dimValueFilters` scoping the pool (e.g. aorist-only) | grading toggles only — **regression**, closed by §2.4 | **gap** |
 | Reverse drill | lookup walk picking a form from parse | Build the Form + all-that-apply + 6 choices | **Hebrew richer** |
 | Ambiguity | syncretism special-cases hard-coded | `acceptedParses` arrays, data-driven | **Hebrew richer** |
 | Known rule | 2/2 recent window | same, toggle-safe recompute | parity |
@@ -26,12 +27,11 @@ provenance) is categorically stronger than the Greek regex approach.
 
 ## 2. Gaps worth closing
 
-### 2.1 Free-form answer entry — recommend NOT restoring
-The Greek regex parser graded typed English parses ("aor act ind 3 sg").
-It was ~400 lines of fragile English-synonym regexes and a major source of
-false negatives. The button walk grades the same knowledge with zero parse
-ambiguity, and works far better on mobile (the user's priority). Decision:
-keep buttons; note for a future desktop power-mode only.
+### 2.1 (withdrawn after independent critique)
+The original §2.1 argued against restoring "free-form typed answers" — a
+feature the Greek app never actually had (its regex parser normalized the
+card's own canonical answer string, not user input). Row corrected above;
+no decision needed.
 
 ### 2.2 Root journeys — recommended, data is ready
 8 roots already span 2+ paradigms; שמר spans 11 paradigms / L16→L42
@@ -79,3 +79,41 @@ discourse drills, free-form entry (2.1).
    regroup per §2.3; CSS for mobile breakpoints.
 3. Cache bump `?v=7`; smoke additions (root scope end-to-end at two gates;
    mobile-viewport render assertions; options collapse persistence).
+
+## 5. Amendments from the independent Opus critique (adopted in full)
+
+1. **Root scope honesty:** only 123/429 forms carry roots (all verbs); 6
+   qualifying roots with appendix off; zero before L23. Root scope renders
+   disabled below its first material ("unlocks at Lesson 23"), labeled
+   "Root journey (verbs)". Recognition-family paradigms are INCLUDED
+   (they carry full acceptedParses; excluding them would delete 3 of 6
+   roots).
+2. **Journey mechanics:** deterministic order = (introducedLesson asc,
+   paradigm index asc, form index asc) — no PRNG in journey mode. New
+   cursor `runtime.parsing.journeyIndex` advances on Next, resets on
+   root/lesson change; journey IGNORES exclude-known for membership and
+   instead starts at the first not-known station. A separate "Drill this
+   root" action gives weakest-first within the root (existing ordering +
+   rootFilter).
+3. **`rootFilter` is its own first branch** in buildDrillPool (full
+   cumulative gated pool, then root filter; mutually exclusive with
+   focus/custom/shuffle). Optional params extend EXISTING exports only.
+4. **New "By feature" scope** (`dimValueFilter`, e.g. all imperatives /
+   all Piel forms / all construct nouns) — restores the Greek
+   `dimValueFilters` capability, works for the 306 root-less forms and
+   for lessons 1-22 where Root is empty. Values sourced from
+   `availableDimensionValues` over the gated pool only.
+5. **Mobile prerequisite:** split `render()` so answer-path handlers
+   re-render only the drill area; the options panel re-renders only from
+   scope/option handlers. `<details>` open state written via ontoggle
+   without re-render (also fixes the custom-group collapse discard).
+   Bottom sheet CUT — inline native `<select>` pickers appear under the
+   scope control when their mode is active; scope control reuses
+   `.theme-switcher` styling.
+6. **State:** keep `shuffleAll`/`customSetOn` booleans as stored truth
+   (derive the control's mode); add `rootFilter: null`,
+   `dimValueFilter: null`, `journeyIndex: 0`, `optionsOpen: false` in ALL
+   THREE sync points (runtime.js default, sanitizeParsingState with
+   clamping, main.js mixed-version guard); clear rootFilter at render
+   when <2 in-gate paradigms qualify; PROGRESS_EXPORT_VERSION stays 6
+   (additive keys + defaulting sanitizer — do not bump reflexively).
