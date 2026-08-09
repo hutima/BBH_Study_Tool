@@ -561,3 +561,10 @@ full panel width leaving dead space. At >=700px: two-column label/control
 layout with LEFT-aligned natural-width controls, scope cards in one
 auto-fit row, capped select/pill widths. Phone layout untouched. Runs
 after task #20 (styles.css collision).
+
+## Addendum (user feedback, 2026-08-09): focused-paradigm default label (into task #21)
+
+'None (today's new material)' is opaque. The default (no focused paradigm)
+pools the forms newly introduced AT the current lesson; relabel the option
+dynamically as 'New in Lesson N' (tracks the lesson selector). Behavior
+unchanged.
