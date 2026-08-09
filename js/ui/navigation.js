@@ -35,6 +35,14 @@ let host = {
   noteStudyInteraction: () => {},
   isMorphologyMode: () => false,
   isParsingMode: () => false,
+  // Grammar Quiz mode (Phase 2 PR C) — see js/ui/grammar.js. Injected the
+  // same way as isParsingMode; only setStudyMode below actually branches on
+  // it (Grammar owns its own lesson scope in runtime.grammar.lesson, never
+  // runtime.selectedKeys/runtime.deck, so it needs no other navigate()/
+  // markCard() guarding — those are unreachable in Grammar mode because
+  // main.js's syncLayoutVisibility hides navRow/markRow/ffRow there, same
+  // as Parsing, and isReviewDeckMode (main.js) already excludes 'grammar').
+  isGrammarMode: () => false,
   isReaderMode: () => false,
   normalizeStudyMode: (m) => m,
   resetMorphAnswerState: () => {},
@@ -547,6 +555,18 @@ export function setStudyMode(mode) {
 
   if (host.isReaderMode()) {
     host.renderReaderModule();
+    renderProgress();
+    host.saveState();
+    return;
+  }
+
+  // Grammar Quiz mode (Phase 2 PR C): short-circuit before any of the
+  // vocab-deck logic below runs, mirroring the Reader early-return above.
+  // Grammar owns its own lesson scope (runtime.grammar.lesson, restored/
+  // rendered by js/ui/grammar.js's renderGrammarPanel) and must never build
+  // or touch runtime.deck / vocab SRS — see docs/bbh-conversion-plan.md
+  // "Phase 2 architecture decisions" #6.
+  if (host.isGrammarMode && host.isGrammarMode()) {
     renderProgress();
     host.saveState();
     return;

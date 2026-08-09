@@ -53,7 +53,10 @@ let host = {
   // Phase 2 PR B: renders the Parsing analytics section (js/ui/parsing.js)
   // into its own container inside #analyticsOverlay. Kept as a host hook
   // (not a direct import) so analytics.js never depends on parsing.js.
-  renderParsingSection: () => {}
+  renderParsingSection: () => {},
+  // Phase 2 PR C: same pattern for the Grammar Quiz analytics section
+  // (js/ui/grammar.js) — analytics.js never depends on grammar.js either.
+  renderGrammarSection: () => {}
 };
 
 export function configureAnalytics(deps) {
@@ -1121,6 +1124,8 @@ export function renderAnalyticsOverlay() {
   // Phase 2 PR B: Parsing progress section — no-op host default until
   // main.js wires it to js/ui/parsing.js via configureAnalytics.
   host.renderParsingSection();
+  // Phase 2 PR C: Grammar Quiz progress section — same pattern.
+  host.renderGrammarSection();
 }
 
 // Single delegated handler for the tappable rows inside the stubborn /

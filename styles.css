@@ -10,7 +10,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=3') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-normal.woff2?v=4') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -18,7 +18,7 @@
     font-style: normal;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=3') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-normal.woff2?v=4') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -26,7 +26,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=3') format('woff2');
+    src: url('fonts/gentium-plus-latin-400-italic.woff2?v=4') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -34,7 +34,7 @@
     font-style: italic;
     font-weight: 400;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=3') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-400-italic.woff2?v=4') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -42,7 +42,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=3') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-normal.woff2?v=4') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -50,7 +50,7 @@
     font-style: normal;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=3') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-normal.woff2?v=4') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -58,7 +58,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=3') format('woff2');
+    src: url('fonts/gentium-plus-latin-700-italic.woff2?v=4') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -66,7 +66,7 @@
     font-style: italic;
     font-weight: 700;
     font-display: swap;
-    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=3') format('woff2');
+    src: url('fonts/gentium-plus-latin-ext-700-italic.woff2?v=4') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -91,7 +91,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-normal.woff2?v=3') format('woff2');
+    src: url('fonts/noto-sans-latin-normal.woff2?v=4') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -102,7 +102,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=3') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-normal.woff2?v=4') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
   @font-face {
@@ -113,7 +113,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-italic.woff2?v=3') format('woff2');
+    src: url('fonts/noto-sans-latin-italic.woff2?v=4') format('woff2');
     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
   }
   @font-face {
@@ -124,7 +124,7 @@
     size-adjust: 85%;
     ascent-override: 110%;
     descent-override: 37%;
-    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=3') format('woff2');
+    src: url('fonts/noto-sans-latin-ext-italic.woff2?v=4') format('woff2');
     unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
   }
 
@@ -140,7 +140,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-serif-hebrew.woff2?v=3') format('woff2');
+    src: url('fonts/noto-serif-hebrew.woff2?v=4') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
   @font-face {
@@ -148,7 +148,7 @@
     font-style: normal;
     font-weight: 400 700;
     font-display: swap;
-    src: url('fonts/noto-sans-hebrew.woff2?v=3') format('woff2');
+    src: url('fonts/noto-sans-hebrew.woff2?v=4') format('woff2');
     unicode-range: U+0590-05FF, U+FB1D-FB4F;
   }
 
@@ -6164,5 +6164,55 @@
 .parsing-status-wrong { color: var(--accent-red); }
 .parsing-status-unseen { color: var(--muted); }
 .parsing-recent-clear { padding: 2px 10px; font-size: calc((11px) * var(--text-scale)); }
+
+/* ── Grammar Quiz mode (Phase 2 PR C) — js/ui/grammar.js ──────────────────
+   Reuses truly-generic pre-existing classes (.ctrl-btn, .toggle-label/
+   .toggle-switch, .theme-switcher/.theme-btn, .utility-section,
+   .empty-state, .hebrew-text/.big, .quick-primary) exactly like Parsing
+   does. Everything specific to the Grammar Quiz layout — options row/select,
+   the question card, the answer summary, the analytics rows — gets its own
+   .grammar-* rules below rather than borrowing Parsing's own .parsing-*
+   layout classes, so the two modes' CSS stay decoupled even though they
+   look deliberately similar. */
+.grammar-section { margin-bottom: 20px; }
+.grammar-options-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; flex-wrap: wrap; }
+.grammar-field-label { font-family: var(--font-display); font-size: calc((12px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--muted); }
+.grammar-select { background: var(--surface); color: var(--cream); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-family: var(--font-body); font-size: calc((13px) * var(--text-scale)); max-width: 100%; }
+.grammar-toggle-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.grammar-toggle-grid .toggle-label { flex: 1 1 200px; }
+
+.grammar-area { display: flex; justify-content: center; }
+.grammar-card { width: 100%; max-width: 560px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); box-shadow: var(--shadow); padding: 28px 26px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.grammar-score-strip { display: flex; justify-content: center; gap: 18px; font-family: var(--font-display); font-size: calc((11px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.grammar-prompt { font-size: calc((16px) * var(--text-scale)); color: var(--cream); line-height: 1.5; margin-bottom: 16px; }
+.grammar-hebrew-inline { font-size: 1.05em; }
+.grammar-choice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; width: 100%; }
+.grammar-choice-grid-tf { grid-template-columns: repeat(2, minmax(120px, 1fr)); max-width: 360px; margin: 0 auto; }
+.grammar-choice-btn { width: 100%; }
+
+.grammar-summary { align-items: stretch; text-align: left; }
+.grammar-result { font-family: var(--font-display); font-size: calc((15px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; text-align: center; }
+.grammar-result-correct { color: var(--green); }
+.grammar-result-wrong { color: var(--accent-red); }
+.grammar-choice-list { list-style: none; padding: 0; margin: 10px 0 14px; display: flex; flex-direction: column; gap: 6px; font-size: calc((14px) * var(--text-scale)); color: var(--cream); }
+.grammar-cell-right { color: var(--green); font-weight: 600; }
+.grammar-cell-wrong { color: var(--accent-red); font-weight: 600; }
+.grammar-also-correct { color: var(--gold); }
+.grammar-picked-tag { font-size: calc((11px) * var(--text-scale)); color: var(--muted); text-transform: none; letter-spacing: 0; }
+.grammar-explanation { font-size: calc((13px) * var(--text-scale)); color: var(--cream); line-height: 1.5; margin-bottom: 10px; }
+.grammar-summary-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.grammar-tag-chip { border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; font-size: calc((11px) * var(--text-scale)); color: var(--muted); }
+.grammar-summary-source { font-size: calc((11px) * var(--text-scale)); color: var(--gold-dim); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 16px; }
+.grammar-next-btn { align-self: center; }
+
+.grammar-empty-state { max-width: 560px; }
+.grammar-empty-note { color: var(--muted); font-style: italic; font-size: calc((12px) * var(--text-scale)); padding: 6px 0; }
+
+/* Grammar analytics section (js/ui/grammar.js renderGrammarAnalytics),
+   rendered into #analyticsGrammarBody inside #analyticsGrammarCollapse. */
+.grammar-analytics-overall { font-weight: 600; margin-bottom: 8px; }
+.grammar-analytics-subhead { font-family: var(--font-display); font-size: calc((12px) * var(--text-scale)); letter-spacing: 1px; text-transform: uppercase; color: var(--gold); margin: 16px 0 6px; }
+.grammar-analytics-row { display: flex; justify-content: space-between; gap: 10px; font-size: calc((13px) * var(--text-scale)); color: var(--cream); }
+.grammar-missed-hint { font-size: calc((13px) * var(--text-scale)); color: var(--gold-light); line-height: 1.4; }
 
 

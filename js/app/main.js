@@ -190,6 +190,18 @@ import {
   parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt
 } from '../ui/parsing.js';
 
+// UI — Grammar Quiz (Phase 2 PR C). New file; imports NOTHING from other
+// app modules (see js/ui/grammar.js header). Configured like every other UI
+// module via configureGrammar(deps); its click/change handlers are added to
+// GLOBAL_CLICK_HANDLERS below, same as every other onclick="..." surface.
+import {
+  configureGrammar,
+  renderGrammarPanel,
+  renderGrammarAnalytics,
+  grammarSetLesson, grammarToggleReviewMissed, grammarSetDifficulty,
+  grammarSelectChoice, grammarNextQuestion
+} from '../ui/grammar.js';
+
 // UI
 import { installKeyboardShortcuts } from '../ui/keyboard.js';
 import { showLevelToast, showBadgeToast } from '../ui/toast.js';
@@ -344,7 +356,11 @@ import {
 // fresh `Date.now()` at individual call sites (see CLAUDE.md-adjacent note
 // in js/domain/parsing/drill.js). Used only as a deterministic shuffle seed
 // for js/ui/parsing.js's drill-pool ordering and Build-mode choice sets;
-// never persisted.
+// never persisted. Also handed to js/ui/grammar.js (Phase 2 PR C) as its
+// own session seed — sharing the one process-lifetime value is harmless
+// since the two modules shuffle disjoint id namespaces (form ids vs.
+// question ids), and it keeps "one seed captured once at session init" true
+// app-wide rather than minting a second independent one.
 const PARSING_SESSION_SEED = Date.now() & 0x7fffffff;
 
 // Wire UI modules with the host helpers they call back into.
@@ -412,6 +428,7 @@ configureNavigation({
   noteStudyInteraction: () => noteStudyInteraction(),
   normalizeStudyMode: (m) => normalizeStudyMode(m),
   isParsingMode: () => isParsingMode(),
+  isGrammarMode: () => isGrammarMode(),
   ensureDirectionalStores: () => ensureDirectionalStores(),
   getDirectionalMarksStore: () => getDirectionalMarksStore(),
   getDirectionalProgressStore: () => getDirectionalProgressStore(),
@@ -446,7 +463,8 @@ configureAnalytics({
   ensureUsageStats: () => ensureUsageStats(),
   accumulateActiveStudyTime: () => accumulateActiveStudyTime(),
   saveState: () => saveState(),
-  renderParsingSection: () => renderParsingAnalytics()
+  renderParsingSection: () => renderParsingAnalytics(),
+  renderGrammarSection: () => renderGrammarAnalytics()
 });
 configureParsing({
   getState: () => runtime.parsing,
@@ -456,6 +474,21 @@ configureParsing({
   // own chapter scope, so that (not the live selectedKeys, which parsing
   // mode reuses for unrelated legacy bookkeeping) is the source of truth
   // for "highest selected vocab lesson" on first-ever-use.
+  getSelectedVocabKeys: () => (
+    isPlainObject(runtime.modeSelections?.vocab) && Array.isArray(runtime.modeSelections.vocab.selectedKeys)
+  ) ? runtime.modeSelections.vocab.selectedKeys
+    : (runtime.studyMode === 'vocab' ? runtime.selectedKeys : []),
+  getSessionSeed: () => PARSING_SESSION_SEED,
+  saveState: () => saveState()
+});
+configureGrammar({
+  getState: () => runtime.grammar,
+  // Grammar mode never overwrites runtime.selectedKeys (unlike Parsing's
+  // legacy runtime.parsingChapter bookkeeping — see navigation.js's
+  // setStudyMode), so the live vocab selection is simply whatever
+  // modeSelections.vocab has stashed, falling back to the live
+  // selectedKeys when in vocab mode. Same "highest selected vocab lesson"
+  // first-ever-use rule as Parsing.
   getSelectedVocabKeys: () => (
     isPlainObject(runtime.modeSelections?.vocab) && Array.isArray(runtime.modeSelections.vocab.selectedKeys)
   ) ? runtime.modeSelections.vocab.selectedKeys
@@ -537,6 +570,11 @@ function isParsingMode() {
   return runtime.studyMode === 'parsing';
 }
 
+// Grammar Quiz mode (Phase 2 PR C) — see js/ui/grammar.js.
+function isGrammarMode() {
+  return runtime.studyMode === 'grammar';
+}
+
 function isReaderMode() {
   return runtime.studyMode === 'reader';
 }
@@ -545,13 +583,14 @@ function isCardStudyMode() {
   return runtime.studyMode === 'vocab' || runtime.studyMode === 'morph' || runtime.studyMode === 'parsing' || runtime.studyMode === 'reader';
 }
 
-// Parsing is deliberately NOT a "review deck" mode: it never uses
-// runtime.deck/navigate()/markCard() (its own step-walk/build UI in
-// js/ui/parsing.js owns its own flow), so it must stay out of this list —
-// otherwise the keyboard shortcuts in installKeyboardShortcuts (arrows,
-// space, 1/2/3, k, r) would fire vocab-deck card semantics against the
-// (unused, hidden) legacy per-mode deck parsing mode still carries for
-// backward-compat bookkeeping — see setStudyMode in js/ui/navigation.js.
+// Parsing and Grammar are deliberately NOT "review deck" modes: neither
+// ever uses runtime.deck/navigate()/markCard() (each owns its own
+// step-walk/quiz UI — js/ui/parsing.js, js/ui/grammar.js), so both must
+// stay out of this list — otherwise the keyboard shortcuts in
+// installKeyboardShortcuts (arrows, space, 1/2/3, k, r) would fire
+// vocab-deck card semantics against the (unused, hidden) legacy per-mode
+// deck parsing mode still carries for backward-compat bookkeeping — see
+// setStudyMode in js/ui/navigation.js.
 function isReviewDeckMode() {
   return runtime.studyMode === 'vocab' || runtime.studyMode === 'morph';
 }
@@ -585,15 +624,20 @@ function getProfileDescription() {
   return 'Vocabulary flashcards for Cook & Holmstedt, Beginning Biblical Hebrew.';
 }
 
-// Phase 2 PR B: Parsing is now a real, selectable mode. Grammar/Reader
-// remain deferred (no UI reaches 'morph'/'reader', so this never returns
-// them) — see CLAUDE.md / docs/bbh-conversion-plan.md.
+// Phase 2 PR B/C: Parsing and Grammar Quiz are now real, selectable modes.
+// Grammar-as-in-morph/Reader remain deferred (no UI reaches 'morph'/
+// 'reader', so this never returns them) — see CLAUDE.md /
+// docs/bbh-conversion-plan.md.
 function normalizeStudyMode(mode) {
-  return mode === 'parsing' ? 'parsing' : 'vocab';
+  if (mode === 'parsing') return 'parsing';
+  if (mode === 'grammar') return 'grammar';
+  return 'vocab';
 }
 
 function getModeDescription() {
-  return runtime.studyMode === 'parsing' ? 'Parsing Practice' : 'Vocabulary Flashcards';
+  if (runtime.studyMode === 'parsing') return 'Parsing Practice';
+  if (runtime.studyMode === 'grammar') return 'Grammar Quiz';
+  return 'Vocabulary Flashcards';
 }
 
 
@@ -974,6 +1018,8 @@ function syncToggleButtons() {
   if (modeShortcutVocabBtn) modeShortcutVocabBtn.classList.toggle('active', runtime.studyMode === 'vocab');
   const modeShortcutParsingBtn = document.getElementById('modeShortcutParsingBtn');
   if (modeShortcutParsingBtn) modeShortcutParsingBtn.classList.toggle('active', runtime.studyMode === 'parsing');
+  const modeShortcutGrammarBtn = document.getElementById('modeShortcutGrammarBtn');
+  if (modeShortcutGrammarBtn) modeShortcutGrammarBtn.classList.toggle('active', runtime.studyMode === 'grammar');
   syncThemeButtons();
   if (resetDeckBtn) {
     resetDeckBtn.textContent = runtime.spacedRepetition ? 'Reset spaced' : 'Reset unspaced';
@@ -989,12 +1035,14 @@ function syncToggleButtons() {
 }
 
 function syncLayoutVisibility() {
-  // Phase 2 PR B: Parsing mode owns an entirely separate UI (js/ui/parsing.js)
-  // and never touches runtime.deck/navigate()/markCard() — short-circuit here
-  // before any of the vocab-specific layout below runs, so vocab behavior
-  // stays pixel-identical when studyMode==='vocab' (the only path that falls
+  // Phase 2 PR B/C: Parsing and Grammar Quiz each own an entirely separate
+  // UI (js/ui/parsing.js, js/ui/grammar.js) and never touch
+  // runtime.deck/navigate()/markCard() — short-circuit here before any of
+  // the vocab-specific layout below runs, so vocab behavior stays
+  // pixel-identical when studyMode==='vocab' (the only path that falls
   // through past this block).
   const parsingSectionEl = document.getElementById('parsingSection');
+  const grammarSectionEl = document.getElementById('grammarSection');
   if (isParsingMode()) {
     const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
     const resetActionsEl = document.getElementById('resetActionsDetails');
@@ -1004,6 +1052,7 @@ function syncLayoutVisibility() {
     const ffRowEl = document.getElementById('ffRow');
     const reviewShellEl = document.querySelector('.review-shell');
     if (parsingSectionEl) parsingSectionEl.style.display = '';
+    if (grammarSectionEl) grammarSectionEl.style.display = 'none';
     if (advancedSettingsEl) advancedSettingsEl.style.display = 'none';
     if (resetActionsEl) resetActionsEl.style.display = 'none';
     if (cardAreaEl) cardAreaEl.style.display = 'none';
@@ -1014,7 +1063,28 @@ function syncLayoutVisibility() {
     renderParsingPanel();
     return;
   }
+  if (isGrammarMode()) {
+    const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
+    const resetActionsEl = document.getElementById('resetActionsDetails');
+    const cardAreaEl = document.getElementById('cardArea');
+    const navRowEl = document.getElementById('navRow');
+    const markRowEl = document.getElementById('markRow');
+    const ffRowEl = document.getElementById('ffRow');
+    const reviewShellEl = document.querySelector('.review-shell');
+    if (grammarSectionEl) grammarSectionEl.style.display = '';
+    if (parsingSectionEl) parsingSectionEl.style.display = 'none';
+    if (advancedSettingsEl) advancedSettingsEl.style.display = 'none';
+    if (resetActionsEl) resetActionsEl.style.display = 'none';
+    if (cardAreaEl) cardAreaEl.style.display = 'none';
+    if (navRowEl) navRowEl.style.display = 'none';
+    if (markRowEl) markRowEl.style.display = 'none';
+    if (ffRowEl) ffRowEl.style.display = 'none';
+    if (reviewShellEl) reviewShellEl.style.display = 'none';
+    renderGrammarPanel();
+    return;
+  }
   if (parsingSectionEl) parsingSectionEl.style.display = 'none';
+  if (grammarSectionEl) grammarSectionEl.style.display = 'none';
   const advancedSettingsEl = document.getElementById('advancedSettingsDetails');
   if (advancedSettingsEl) advancedSettingsEl.style.display = '';
 
@@ -2392,7 +2462,10 @@ const GLOBAL_CLICK_HANDLERS = {
   parsingToggleExcludeKnown, parsingToggleAppendix, parsingSetDirection, parsingToggleDim,
   parsingPickDimensionValue, parsingSubmitDontKnow, parsingPickBuildChoice,
   parsingToggleBuildPick, parsingCheckBuildPicks, parsingNextCard,
-  parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt
+  parsingResetKnownForms, parsingClearStats, parsingClearFormAttempt,
+  // Phase 2 PR C: Grammar Quiz mode (js/ui/grammar.js) click/change handlers.
+  grammarSetLesson, grammarToggleReviewMissed, grammarSetDifficulty,
+  grammarSelectChoice, grammarNextQuestion
 };
 if (typeof globalThis !== 'undefined') Object.assign(globalThis, GLOBAL_CLICK_HANDLERS);
 if (typeof window !== 'undefined' && window !== globalThis) Object.assign(window, GLOBAL_CLICK_HANDLERS);
@@ -2436,6 +2509,18 @@ if (!runtime.parsing || typeof runtime.parsing !== 'object') {
     initializedFromVocab: false
   };
 }
+// Same mixed-version guard for runtime.grammar (Phase 2 PR C). Shape
+// mirrors runtime.js's `grammar` default — keep the two in sync.
+if (!runtime.grammar || typeof runtime.grammar !== 'object') {
+  runtime.grammar = {
+    schemaVersion: 1,
+    lesson: 1,
+    reviewMissed: false,
+    difficulty: 'all',
+    attempts: {},
+    initializedFromVocab: false
+  };
+}
 // Rebuild after restore: runtime.appProfile may have changed, affecting grammar summary text
 buildSessions();
 buildChapterSelector();
@@ -2467,7 +2552,7 @@ function preventDoubleTapZoom(el) {
   }, false);
 }
 
-['shuffleToggle','directionToggle','spacedToggle','unspacedDailyResetToggle','modeShortcutVocabBtn','modeShortcutParsingBtn','themeSystemBtn','themeDarkBtn','themeLightBtn'].forEach(id => {
+['shuffleToggle','directionToggle','spacedToggle','unspacedDailyResetToggle','modeShortcutVocabBtn','modeShortcutParsingBtn','modeShortcutGrammarBtn','themeSystemBtn','themeDarkBtn','themeLightBtn'].forEach(id => {
   const el = document.getElementById(id);
   if (el) preventDoubleTapZoom(el);
 });

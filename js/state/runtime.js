@@ -98,6 +98,24 @@ export const runtime = {
     initializedFromVocab: false
   },
 
+  // ── Grammar Quiz mode (Phase 2 PR C) ─────────────────────────────────
+  // Fully independent of the vocab deck/SRS machinery and of the parsing
+  // subtree above — see docs/bbh-conversion-plan.md "Phase 2 architecture
+  // decisions" #6 and js/ui/grammar.js. Owned/mutated only by js/ui/grammar.js
+  // (via the live reference handed back from configureGrammar's getState
+  // hook) and restored/persisted by js/state/persistence.js's
+  // sanitizeGrammarState.
+  // SYNC: js/app/main.js keeps a mirrored copy of this default shape in its
+  // mixed-version guard after restoreState() — update both together.
+  grammar: {
+    schemaVersion: 1,
+    lesson: 1,
+    reviewMissed: false,
+    difficulty: 'all',        // 'all' | 'core'
+    attempts: {},              // { [questionId]: { seen, correct, recent, lastAt } }
+    initializedFromVocab: false
+  },
+
   // ── Persisted directional stores (rebuilt from localStorage) ────────
   deckStates: {},
   globalWordMarks: {},
