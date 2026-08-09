@@ -239,3 +239,15 @@ natural where Greek needed separate paradigms; (3) simplify the Parsing UI
 into user-sensible modules/groupings, designed mobile-first (current
 controls still clunky per user feedback). Tracked as follow-up task; not
 part of the Phase 2 definition of done.
+
+## Addendum (user mobile feedback, 2026-08-09): PR H punch list
+
+From live mobile testing screenshots: (1) remove the decade lesson presets
+(keep Units + All); (2) Lesson 0 rating row should match the vocab card
+button layout; (3) split Lesson 0 into 0A Alphabet and 0B Vowel marks —
+0B cards show the sign on its carrier plus a representative vocab word
+with the marked cluster highlighted (chosen deterministically at
+generation from the 209-card deck); (4) fix #grammarSection mobile layout
+(question card overlaps options/score strip; header/mode-bar collision);
+(5) vocab Hard/Uncertain/Easy rating buttons leak into Parsing mode via
+syncLayoutVisibility — hide outside vocab. Ships as PR H after PR G.
