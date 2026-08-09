@@ -678,3 +678,98 @@ strict/guided selections curated into thin gate buckets for variety;
 intermediate. All new passages follow the wooden-translation policy
 (LLM-wooden-reviewed, independently verified against token morphology,
 labeled unofficial) and the Strong's gloss pipeline.
+
+## Addendum (user requests + screenshots, 2026-08-09): task #25 — parsing UX round
+
+Four items from live mobile testing: (1) scope card "Focused" renamed
+"Lesson focus" (drills a single lesson's material); (2) scope card
+"Shuffle" renamed "All to date" (cumulative pool up to the current
+lesson) and made the DEFAULT scope for fresh state — display-only
+renames, internal keys 'focused'/'shuffle' unchanged, stored user
+choices never overridden, default mirrored in all three state sync
+points; (3) More-options rows rebuilt as TOGGLE first, then label, then
+a NEW (i) info button per option (vocab controlsBar tooltip style), with
+the tap area that flips the toggle limited to the toggle CONTROL itself
+(user constraint — a tap on/near the (i) must never flip the option;
+toggle keeps a >=44px target; (i) is its own tap-guarded target); (4)
+mobile Build-mode/root-journey layout bug: journey-map chips and the
+drill card share a row and crush into two columns on phones — stack
+full-width on narrow viewports for both Parse and Build.
+
+**Status: IMPLEMENTED, UNCOMMITTED (2026-08-09).** All four items shipped
+on `claude/new-session-988x25`, working tree left for the orchestrator per
+instruction (no commit/push).
+
+1. `js/ui/parsing.js`'s `renderScopeControl` card array relabeled
+   (`'Lesson focus'`/`'All to date'`, internal `'focused'`/`'shuffle'` keys
+   untouched); added a `title` to each card clarifying scope (Lesson focus
+   = current lesson's paradigms only; All to date = full cumulative gated
+   pool). The "Focused paradigm" picker-row label and the empty-state
+   guidance text were renamed to match. `docs/index-structure.md`'s
+   `parsingSection` row and `index.html`'s Parsing user-guide paragraph +
+   changelog bullet updated to the new names.
+2. Default scope flipped to `shuffleAll: true` (All to date) at all THREE
+   sync points that must agree per this module's own header comments:
+   `js/state/runtime.js`'s `parsing` default, `js/app/main.js`'s
+   mixed-version guard, and `js/state/persistence.js`'s
+   `sanitizeParsingState` (which now defaults `shuffleAll` to `true` ONLY
+   when the field is missing/invalid — `typeof src.shuffleAll ===
+   'boolean' ? src.shuffleAll : true` — so an explicit stored `false`
+   from a user who picked Lesson focus survives untouched). The pre-PR-B
+   `parsing-state-v1-init` migration seed in `js/state/migrations.js` was
+   also updated to `shuffleAll: true` for consistency (a save with no
+   `parsing` key at all is the same "never touched Parsing" case the new
+   default targets).
+3. `js/ui/parsing.js`'s `toggleHtml()` rebuilt: a plain `.parsing-toggle-row`
+   `<div>` (no row-level `onclick`) containing, in DOM order, the switch
+   itself as a real `<button class="toggle-switch">` (the row's `id` and
+   the persistence `onclick` moved here), the `<span class="toggle-text">`
+   label, then a new `<button class="toggle-info">` "(i)". The (i) reuses
+   the SAME `#toggleInfoOverlay` modal and `showToggleInfo`/
+   `closeToggleInfoModal` functions the vocab controlsBar's info buttons
+   already use (`main.js`) — `showToggleInfo` was added to
+   `GLOBAL_CLICK_HANDLERS` since parsing's rows call it from an
+   `onclick="..."` string (cross-module, no new ES import, per the
+   module-cache hazard rule). Because the (i) is a DOM *sibling* of the
+   switch (not nested inside it), a tap on/near it structurally cannot
+   bubble into the switch's click handler — no extra tap-guard JS was
+   needed. `styles.css` gained button-element resets on the shared
+   `.toggle-switch`/`.toggle-info` classes (safe no-ops on the `<span>`s
+   vocab/grammar still use there) and a `.parsing-toggle-row
+   .toggle-switch::before` invisible ≥44px hit area scoped to parsing's
+   rows only. Wrote one-sentence explanations for all 9 rows (Exclude
+   known, Appendix forms, and the 7 axis toggles — the axis toggles use
+   an "Ask about `<axis>` when parsing or building a form" template).
+4. Root cause: `.parsing-area { display: flex; justify-content: center; }`
+   had no explicit `flex-direction`, so whenever a root-journey's
+   `.parsing-journey-map` and the drill `.parsing-card` are both present
+   (`js/ui/parsing.js`'s `renderParsingArea`: `journeyMapHtml + bodyHtml`,
+   two block-level siblings) the default `row` direction split them into
+   two flex-shrunk columns. Fix: `@media (max-width: 699px) { .parsing-area
+   { flex-direction: column; } }` — stacks map-above/card-below on phones
+   in both Parse and Build; `>=700px` keeps the pre-existing row layout
+   untouched (task #21's desktop work not regressed — verified by
+   comparing computed `flex-direction`/`.parsing-scope-grid` layout against
+   a `git worktree` checkout of pre-change `HEAD`).
+
+Verification: `node tools/check_release.mjs` → 24 reports / 0 failures at
+`?v=19` (bumped from `?v=18` across `index.html`/`sw.js`/`styles.css`/
+`pages/memorization.html`/`docs/index-structure.md`, `CACHE_NAME` synced).
+`scratchpad/smoke_parsing.mjs` updated for the renamed scope labels + new
+default (added an explicit `clickScopeMode(page, 'Lesson focus')` right
+after first entering Parsing mode, since the rest of that file was written
+assuming the old Focused-by-default behavior) and reruns with the SAME
+4-failure baseline as the unmodified pre-task-25 tree (`(a)` GA
+`ERR_TUNNEL_CONNECTION_FAILED` console error, `(b)`/`(i)`/`(j)` a
+pre-existing `.mark-easy` selector collision with the Lesson-1/2 alphabet
+deck's own "Got it" button — confirmed identical on a `git worktree` of
+HEAD, not a regression). New `scratchpad/smoke_task25.mjs` (12 steps, all
+green) covers items (a)-(f) of the required verification list, including a
+seeded-localStorage check (via `page.addInitScript`, not a same-page
+`localStorage.setItem` + `reload` — the latter races a periodic
+`usageTick`-driven `saveState()` in this app and silently clobbers the
+seed) that a stored `focused` scope survives the new default. Screenshots
+in `scratchpad/`: `task25_more_options_375_{before,after}.png`,
+`task25_build_journey_375_{before,after}.png` (the before shot reproduces
+the reported crush exactly), `task25_build_journey_1280_{before,after}.png`,
+`task25_more_options_1280_after.png`.

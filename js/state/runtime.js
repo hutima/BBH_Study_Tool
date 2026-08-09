@@ -85,7 +85,13 @@ export const runtime = {
     lesson: 1,
     focusedParadigmId: null,
     direction: 'parse',       // 'parse' | 'build' | 'mixed'
-    shuffleAll: false,
+    // Task #25 item 2: "All to date" scope (shuffleAll) is the default for
+    // fresh state (was 'focused' — see js/ui/parsing.js's getScopeMode).
+    // SYNC (3 points, must agree): this default, js/state/persistence.js's
+    // sanitizeParsingState (fills in `true` only when the field is
+    // missing/invalid — an explicit stored `false` from a user who picked
+    // Lesson focus is preserved), and main.js's mixed-version guard above.
+    shuffleAll: true,
     customSetOn: false,       // whether customSet (below) actually scopes the pool
     customSet: {},            // { [paradigmId]: true }
     excludeKnown: false,
