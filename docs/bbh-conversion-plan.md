@@ -485,3 +485,13 @@ vocab against the whole compound lemma instead of the core segment, so
 known vocabulary like the object marker fails to match. Task #13: Ng →
 proper-name-class, per-core-segment vocab matching, corpus re-score with
 documented tier shifts.
+
+## Addendum (user request, 2026-08-09): task #18 — alphabet as a mode + combined deck + tap guards
+
+After task #15: (1) Lesson 1/2 practice converts from modal overlays to
+clean selector-entered sections (same layout family as the other modes);
+(2) the standalone-practice note (no SRS/XP/vocab stats) stays prominent;
+(3) new combined letters+vowel-marks deck entry (merged deck; known
+tracking reuses the letters/vowels maps); (4) tap guards on ALL modal
+close buttons via the existing clickShield pattern so a close tap cannot
+fall through on phones.
